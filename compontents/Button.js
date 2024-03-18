@@ -21,9 +21,9 @@ const styles = StyleSheet.create({
   text: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 14,
-    fontWeight: '500',
-    letterSpacing: -0.1,
+    fontSize: 18,
+    fontWeight: 400,
+    fontFamily: 'poppins-regular',
   },
 });
 
