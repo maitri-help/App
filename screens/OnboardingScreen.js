@@ -38,7 +38,7 @@ export default function OnboardingScreen({ navigation }) {
     }, [currentStep]);
 
     return (
-        <View style={{ flex: 1}}>
+        <View style={{ flex: 1 }}>
             <Swiper
                 ref={swiperRef}
                 loop={false}
@@ -51,8 +51,8 @@ export default function OnboardingScreen({ navigation }) {
                     <View key={index} style={styles.container}>
                         <Image source={step.image} style={stylesOnboard.onboardingImg} />
                         <View style={stylesOnboard.onboardingTextContainer}>
-                            <Text style={stylesOnboard.title}>{step.title}</Text>
-                            <Text style={stylesOnboard.text}>{step.text}</Text>
+                            <Text style={styles.title}>{step.title}</Text>
+                            <Text style={[styles.text, stylesOnboard.onboardingText]}>{step.text}</Text>
                         </View>
                         {index < onboardingData.length - 1 && (
                             <TouchableOpacity onPress={handleSkip} style={stylesOnboard.skipButton}>
@@ -66,12 +66,12 @@ export default function OnboardingScreen({ navigation }) {
                 <View style={stylesOnboard.onboardingButtonsContainer}>
                     <View style={styles.buttonContainer}>
                         <AppButton
-                            onPress={() => navigation.navigate('Login')}
+                            onPress={() => navigation.navigate('Register')}
                             title="Create Account"
                             buttonStyle={stylesOnboard.buttonStyle}
                         />
                     </View>
-                    <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                         <Text style={stylesOnboard.haveAccountText}>Already have an account? <Text style={stylesOnboard.loginText}>Log in</Text></Text>
                     </TouchableOpacity>
                 </View>
@@ -121,15 +121,8 @@ const stylesOnboard = StyleSheet.create({
         gap: 10,
         paddingHorizontal: 30,
     },
-    title: {
-        fontSize: 20,
-        fontWeight: '500',
-        fontFamily: 'poppins-medium',
-    },
-    text: {
+    onboardingText: {
         textAlign: 'center',
-        color: '#7A7A7A',
-        fontSize: 14,
     },
     skipButton: {
         position: 'absolute',
