@@ -7,6 +7,7 @@ import UserIcon from '../assets/icons/user-icon.svg';
 import EmailIcon from '../assets/icons/email-icon.svg';
 import PhoneIcon from '../assets/icons/phone-icon.svg';
 import ExclamationIcon from '../assets/icons/exclamation-icon.svg';
+import ArrowIcon from '../assets/icons/arrow-icon.svg';
 
 const validationSchema = yup.object().shape({
     fullName: yup.string().required('Full Name is required'),
@@ -121,7 +122,7 @@ export default function RegisterScreen({ navigation }) {
                                 </View>
                                 <View style={stylesRegister.submitButtonContainer}>
                                     <TouchableOpacity onPress={handleSubmit} style={stylesRegister.submitButton}>
-                                        <Text style={stylesRegister.submitButtonText}>&rarr;</Text>
+                                        <ArrowIcon width={18} height={18} color={'#fff'} />
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -229,21 +230,18 @@ const stylesRegister = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 12,
     },
-    submitButtonText: {
-        color: '#fff',
-        fontWeight: '600',
-        fontSize: 20,
-    },
-    haveAccountText: {
-        textDecorationLine: 'underline',
-        fontSize: 15,
-    },
     loginTextLink: {
         marginTop: 15,
+    },
+    haveAccountText: {
+        fontSize: 14,
+        fontWeight: '400',
+        fontFamily: 'poppins-regular',
     },
     loginText: {
         fontWeight: '600',
         fontFamily: 'poppins-semibold',
+        textDecorationLine: 'underline',
     },
     errorText: {
         color: 'red',
