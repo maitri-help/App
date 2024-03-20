@@ -26,16 +26,18 @@ export default function OnboardingScreen({ navigation }) {
         },
     ];
 
-    const handleSkip = () => {
-        setCurrentStep(onboardingData.length - 1);
-        swiperRef.current.scrollBy(1);
-    };
-
     useEffect(() => {
-        if (swiperRef.current && currentStep !== swiperRef.current.state.index) {
-            swiperRef.current.scrollBy(currentStep - swiperRef.current.state.index);
+        if (swiperRef.current) {
+            swiperRef.current.onIndexChanged = (index) => setCurrentStep(index);
         }
-    }, [currentStep]);
+    }, []);
+
+    const handleSkip = () => {
+        if (currentStep < onboardingData.length - 1) {
+            setCurrentStep(onboardingData.length - 1);
+            swiperRef.current.scrollBy(onboardingData.length - 1 - currentStep);
+        }
+    };
 
     return (
         <View style={{ flex: 1 }}>
@@ -43,9 +45,9 @@ export default function OnboardingScreen({ navigation }) {
                 ref={swiperRef}
                 loop={false}
                 index={currentStep}
-                onIndexChanged={(index) => setCurrentStep(index)}
                 showsButtons={false}
                 showsPagination={false}
+                onIndexChanged={(index) => setCurrentStep(index)}
             >
                 {onboardingData.map((step, index) => (
                     <View key={index} style={styles.container}>
@@ -54,6 +56,20 @@ export default function OnboardingScreen({ navigation }) {
                             <Text style={styles.title}>{step.title}</Text>
                             <Text style={[styles.text, stylesOnboard.onboardingText]}>{step.text}</Text>
                         </View>
+                        {index === onboardingData.length - 1 && (
+                            <View style={stylesOnboard.onboardingButtonsContainer}>
+                                <View style={styles.buttonContainer}>
+                                    <AppButton
+                                        onPress={() => navigation.navigate('Register')}
+                                        title="Create Account"
+                                        buttonStyle={stylesOnboard.buttonStyle}
+                                    />
+                                </View>
+                                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                    <Text style={stylesOnboard.haveAccountText}>Already have an account? <Text style={stylesOnboard.loginText}>Log in</Text></Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                         {index < onboardingData.length - 1 && (
                             <TouchableOpacity onPress={handleSkip} style={stylesOnboard.skipButton}>
                                 <Text style={stylesOnboard.skipButtonText}>Skip</Text>
@@ -62,25 +78,12 @@ export default function OnboardingScreen({ navigation }) {
                     </View>
                 ))}
             </Swiper>
-            {currentStep === onboardingData.length - 1 && (
-                <View style={stylesOnboard.onboardingButtonsContainer}>
-                    <View style={styles.buttonContainer}>
-                        <AppButton
-                            onPress={() => navigation.navigate('Register')}
-                            title="Create Account"
-                            buttonStyle={stylesOnboard.buttonStyle}
-                        />
-                    </View>
-                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                        <Text style={stylesOnboard.haveAccountText}>Already have an account? <Text style={stylesOnboard.loginText}>Log in</Text></Text>
-                    </TouchableOpacity>
-                </View>
-            )}
             <View style={stylesOnboard.dotsContainer}>
                 {onboardingData.map((_, index) => (
-                    <View
+                    <TouchableOpacity
                         key={index}
                         style={[stylesOnboard.dot, index === currentStep && stylesOnboard.activeDot]}
+                        onPress={() => swiperRef.current.scrollTo(index)}
                     />
                 ))}
             </View>

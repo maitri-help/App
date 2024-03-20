@@ -2,6 +2,10 @@
 import { StyleSheet } from 'react-native';
 
 export default styles = StyleSheet.create({
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
     container: {
         flex: 1,
         justifyContent: 'center',

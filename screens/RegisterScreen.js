@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Linking, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Linking, Keyboard, SafeAreaView } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import styles from '../Styles';
@@ -11,7 +11,10 @@ import ExclamationIcon from '../assets/icons/exclamation-icon.svg';
 const validationSchema = yup.object().shape({
     fullName: yup.string().required('Full Name is required'),
     email: yup.string().email('Enter a valid email').required('Email is required'),
-    phoneNumber: yup.string().matches(/^[0-9+]+$/, 'Enter a valid phone number').required('Phone Number is required'),
+    phoneNumber: yup.string().matches(
+        /^(?:(?:\+|00)(?:[1-9]\d{0,2}))?(?:\s*\d{7,})$/,
+        'Enter a valid phone number - No spaces or any special characters only "+" allowed.'
+    ).required('Phone Number is required'),
     acceptedTerms: yup.boolean().oneOf([true], 'You must accept the Privacy Policy and Terms & Conditions'),
 });
 
@@ -22,109 +25,111 @@ export default function RegisterScreen({ navigation }) {
     };
 
     return (
-        <TouchableOpacity
-            style={{ flex: 1 }}
-            onPress={() => Keyboard.dismiss()}
-            activeOpacity={1}
-        >
-            <Formik
-                initialValues={{ fullName: '', email: '', phoneNumber: '', acceptedTerms: false }}
-                onSubmit={handleSignUp}
-                validationSchema={validationSchema}
+        <SafeAreaView style={styles.safeArea}>
+            <TouchableOpacity
+                style={{ flex: 1, maxHeight: 667, }}
+                onPress={() => Keyboard.dismiss()}
+                activeOpacity={1}
             >
-                {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
-                    <View style={[styles.container, stylesRegister.container]}>
-                        <View style={stylesRegister.topTextsContainer}>
-                            <Text style={[styles.title, stylesRegister.title]}>Let's Get started</Text>
-                            <Text style={[styles.text, stylesRegister.text]}>Sign up and connect to your personal support hub</Text>
-                        </View>
-                        <View style={stylesRegister.formContainer}>
-                            <View style={stylesRegister.inputWrapper}>
-                                <TextInput
-                                    style={stylesRegister.input}
-                                    placeholder="Full Name"
-                                    value={values.fullName}
-                                    onChangeText={handleChange('fullName')}
-                                    onBlur={() => setFieldTouched('fullName')}
-                                />
-                                {touched.fullName && errors.fullName ?
-                                    <ExclamationIcon style={stylesRegister.inputErrorIcon} width={20} height={20} />
-                                    :
-                                    <UserIcon style={stylesRegister.inputIcon} width={20} height={20} />
-                                }
+                <Formik
+                    initialValues={{ fullName: '', email: '', phoneNumber: '', acceptedTerms: false }}
+                    onSubmit={handleSignUp}
+                    validationSchema={validationSchema}
+                >
+                    {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
+                        <View style={[styles.container, stylesRegister.container]}>
+                            <View style={stylesRegister.topTextsContainer}>
+                                <Text style={[styles.title, stylesRegister.title]}>Let's Get started</Text>
+                                <Text style={[styles.text, stylesRegister.text]}>Sign up and connect to your personal support hub</Text>
                             </View>
-                            {touched.fullName && errors.fullName &&
-                                <Text style={stylesRegister.errorText}>{errors.fullName}</Text>
-                            }
-                            <View style={stylesRegister.inputWrapper}>
-                                <TextInput
-                                    style={stylesRegister.input}
-                                    placeholder="Email"
-                                    value={values.email}
-                                    onChangeText={handleChange('email')}
-                                    keyboardType="email-address"
-                                    onBlur={() => setFieldTouched('email')}
-                                />
-                                {touched.email && errors.email ?
-                                    <ExclamationIcon style={stylesRegister.inputErrorIcon} width={20} height={20} />
-                                    :
-                                    <EmailIcon style={stylesRegister.inputIcon} width={20} height={20} />
+                            <View style={stylesRegister.formContainer}>
+                                <View style={stylesRegister.inputWrapper}>
+                                    <TextInput
+                                        style={stylesRegister.input}
+                                        placeholder="Full Name"
+                                        value={values.fullName}
+                                        onChangeText={handleChange('fullName')}
+                                        onBlur={() => setFieldTouched('fullName')}
+                                    />
+                                    {touched.fullName && errors.fullName ?
+                                        <ExclamationIcon style={stylesRegister.inputErrorIcon} width={20} height={20} />
+                                        :
+                                        <UserIcon style={stylesRegister.inputIcon} width={20} height={20} />
+                                    }
+                                </View>
+                                {touched.fullName && errors.fullName &&
+                                    <Text style={stylesRegister.errorText}>{errors.fullName}</Text>
                                 }
-                            </View>
-                            {touched.email && errors.email &&
-                                <Text style={stylesRegister.errorText}>{errors.email}</Text>
-                            }
-                            <View style={stylesRegister.inputWrapper}>
-                                <TextInput
-                                    style={stylesRegister.input}
-                                    placeholder="+1 Phone Number"
-                                    value={values.phoneNumber}
-                                    onChangeText={(text) => {
-                                        const newValue = text.replace(/\s/g, '');
-                                        setFieldValue('phoneNumber', newValue);
-                                    }}
-                                    keyboardType="phone-pad"
-                                    onBlur={() => setFieldTouched('phoneNumber')}
-                                />
-                                {touched.phoneNumber && errors.phoneNumber ?
-                                    <ExclamationIcon style={stylesRegister.inputErrorIcon} width={20} height={20} />
-                                    :
-                                    <PhoneIcon style={stylesRegister.inputIcon} width={20} height={20} />
+                                <View style={stylesRegister.inputWrapper}>
+                                    <TextInput
+                                        style={stylesRegister.input}
+                                        placeholder="Email"
+                                        value={values.email}
+                                        onChangeText={handleChange('email')}
+                                        keyboardType="email-address"
+                                        onBlur={() => setFieldTouched('email')}
+                                    />
+                                    {touched.email && errors.email ?
+                                        <ExclamationIcon style={stylesRegister.inputErrorIcon} width={20} height={20} />
+                                        :
+                                        <EmailIcon style={stylesRegister.inputIcon} width={20} height={20} />
+                                    }
+                                </View>
+                                {touched.email && errors.email &&
+                                    <Text style={stylesRegister.errorText}>{errors.email}</Text>
                                 }
-                            </View>
-                            {touched.phoneNumber && errors.phoneNumber &&
-                                <Text style={stylesRegister.errorText}>{errors.phoneNumber}</Text>
-                            }
-                            <View style={stylesRegister.formBottomContainer}>
-                                <TouchableOpacity onPress={() => { setFieldValue('acceptedTerms', !values.acceptedTerms); setFieldTouched('acceptedTerms'); }} style={stylesRegister.checkboxContainer}>
-                                    <View style={[stylesRegister.checkbox]}>
-                                        <View style={[values.acceptedTerms && stylesRegister.checkedCheckbox]}>
+                                <View style={stylesRegister.inputWrapper}>
+                                    <TextInput
+                                        style={stylesRegister.input}
+                                        placeholder="+1 Phone Number"
+                                        value={values.phoneNumber}
+                                        onChangeText={(text) => {
+                                            const newValue = text.replace(/\s/g, '');
+                                            setFieldValue('phoneNumber', newValue);
+                                        }}
+                                        keyboardType="phone-pad"
+                                        onBlur={() => setFieldTouched('phoneNumber')}
+                                    />
+                                    {touched.phoneNumber && errors.phoneNumber ?
+                                        <ExclamationIcon style={stylesRegister.inputErrorIcon} width={20} height={20} />
+                                        :
+                                        <PhoneIcon style={stylesRegister.inputIcon} width={20} height={20} />
+                                    }
+                                </View>
+                                {touched.phoneNumber && errors.phoneNumber &&
+                                    <Text style={stylesRegister.errorText}>{errors.phoneNumber}</Text>
+                                }
+                                <View style={stylesRegister.formBottomContainer}>
+                                    <TouchableOpacity onPress={() => { setFieldValue('acceptedTerms', !values.acceptedTerms); setFieldTouched('acceptedTerms'); }} style={stylesRegister.checkboxContainer}>
+                                        <View style={[stylesRegister.checkbox]}>
+                                            <View style={[values.acceptedTerms && stylesRegister.checkedCheckbox]}>
+                                            </View>
                                         </View>
-                                    </View>
-                                    <Text style={stylesRegister.checkboxText}>
-                                        I accept the
-                                        <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('#')}> Privacy Policy </Text>
-                                        and
-                                        <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('#')}> Terms & Conditions</Text>
-                                    </Text>
-                                </TouchableOpacity>
-                                {touched.acceptedTerms && !values.acceptedTerms &&
-                                    <Text style={stylesRegister.errorText}>{errors.acceptedTerms}</Text>
-                                }
-                                <TouchableOpacity onPress={() => navigation.navigate('Login')} style={stylesRegister.loginTextLink}>
-                                    <Text style={stylesRegister.haveAccountText}>Already have an account? <Text style={stylesRegister.loginText}>Log in</Text></Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={stylesRegister.submitButtonContainer}>
-                                <TouchableOpacity onPress={handleSubmit} style={stylesRegister.submitButton}>
-                                    <Text style={stylesRegister.submitButtonText}>&rarr;</Text>
-                                </TouchableOpacity>
+                                        <Text style={stylesRegister.checkboxText}>
+                                            I accept the
+                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')}> Privacy Policy </Text>
+                                            and
+                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')}> Terms & Conditions</Text>
+                                        </Text>
+                                    </TouchableOpacity>
+                                    {touched.acceptedTerms && !values.acceptedTerms && errors.acceptedTerms &&
+                                        <Text style={stylesRegister.errorText}>{errors.acceptedTerms}</Text>
+                                    }
+                                    <TouchableOpacity onPress={() => navigation.navigate('Login')} style={stylesRegister.loginTextLink}>
+                                        <Text style={stylesRegister.haveAccountText}>Already have an account? <Text style={stylesRegister.loginText}>Log in</Text></Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={stylesRegister.submitButtonContainer}>
+                                    <TouchableOpacity onPress={handleSubmit} style={stylesRegister.submitButton}>
+                                        <Text style={stylesRegister.submitButtonText}>&rarr;</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                )}
-            </Formik>
-        </TouchableOpacity>
+                    )}
+                </Formik>
+            </TouchableOpacity>
+        </SafeAreaView>
     );
 }
 
@@ -132,8 +137,7 @@ const stylesRegister = StyleSheet.create({
     container: {
         justifyContent: 'flex-start',
         paddingHorizontal: 40,
-        paddingTop: 80,
-        paddingBottom: 40,
+        paddingVertical: 40,
     },
     topTextsContainer: {
         alignItems: 'center',
@@ -158,7 +162,7 @@ const stylesRegister = StyleSheet.create({
         borderColor: '#666666',
         borderBottomWidth: 1,
         paddingLeft: 15,
-        paddingRight: 35,
+        paddingRight: 40,
         paddingVertical: 5,
     },
     inputIcon: {
