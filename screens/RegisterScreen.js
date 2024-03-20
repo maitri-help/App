@@ -21,14 +21,14 @@ const validationSchema = yup.object().shape({
 
 export default function RegisterScreen({ navigation }) {
 
-    const handleSignUp = (values) => {
-        console.log(values);
+    const handleSignUp = () => {
+        navigation.navigate('VerifyNumber');
     };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <TouchableOpacity
-                style={{ flex: 1, maxHeight: 667, }}
+                style={{ flex: 1 }}
                 onPress={() => Keyboard.dismiss()}
                 activeOpacity={1}
             >
@@ -38,32 +38,32 @@ export default function RegisterScreen({ navigation }) {
                     validationSchema={validationSchema}
                 >
                     {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
-                        <View style={[styles.container, stylesRegister.container]}>
-                            <View style={stylesRegister.topTextsContainer}>
+                        <View style={[styles.container, styles.authContainer]}>
+                            <View style={styles.topTextsContainer}>
                                 <Text style={[styles.title, stylesRegister.title]}>Let's Get started</Text>
                                 <Text style={[styles.text, stylesRegister.text]}>Sign up and connect to your personal support hub</Text>
                             </View>
-                            <View style={stylesRegister.formContainer}>
-                                <View style={stylesRegister.inputWrapper}>
+                            <View style={styles.formContainer}>
+                                <View style={styles.inputWrapper}>
                                     <TextInput
-                                        style={stylesRegister.input}
+                                        style={styles.input}
                                         placeholder="Full Name"
                                         value={values.fullName}
                                         onChangeText={handleChange('fullName')}
                                         onBlur={() => setFieldTouched('fullName')}
                                     />
                                     {touched.fullName && errors.fullName ?
-                                        <ExclamationIcon style={stylesRegister.inputErrorIcon} width={20} height={20} />
+                                        <ExclamationIcon style={styles.inputErrorIcon} width={20} height={20} />
                                         :
-                                        <UserIcon style={stylesRegister.inputIcon} width={20} height={20} />
+                                        <UserIcon style={styles.inputIcon} width={20} height={20} />
                                     }
                                 </View>
                                 {touched.fullName && errors.fullName &&
-                                    <Text style={stylesRegister.errorText}>{errors.fullName}</Text>
+                                    <Text style={styles.errorText}>{errors.fullName}</Text>
                                 }
-                                <View style={stylesRegister.inputWrapper}>
+                                <View style={styles.inputWrapper}>
                                     <TextInput
-                                        style={stylesRegister.input}
+                                        style={styles.input}
                                         placeholder="Email"
                                         value={values.email}
                                         onChangeText={handleChange('email')}
@@ -71,17 +71,17 @@ export default function RegisterScreen({ navigation }) {
                                         onBlur={() => setFieldTouched('email')}
                                     />
                                     {touched.email && errors.email ?
-                                        <ExclamationIcon style={stylesRegister.inputErrorIcon} width={20} height={20} />
+                                        <ExclamationIcon style={styles.inputErrorIcon} width={20} height={20} />
                                         :
-                                        <EmailIcon style={stylesRegister.inputIcon} width={20} height={20} />
+                                        <EmailIcon style={styles.inputIcon} width={20} height={20} />
                                     }
                                 </View>
                                 {touched.email && errors.email &&
-                                    <Text style={stylesRegister.errorText}>{errors.email}</Text>
+                                    <Text style={styles.errorText}>{errors.email}</Text>
                                 }
-                                <View style={stylesRegister.inputWrapper}>
+                                <View style={styles.inputWrapper}>
                                     <TextInput
-                                        style={stylesRegister.input}
+                                        style={styles.input}
                                         placeholder="+1 Phone Number"
                                         value={values.phoneNumber}
                                         onChangeText={(text) => {
@@ -92,21 +92,21 @@ export default function RegisterScreen({ navigation }) {
                                         onBlur={() => setFieldTouched('phoneNumber')}
                                     />
                                     {touched.phoneNumber && errors.phoneNumber ?
-                                        <ExclamationIcon style={stylesRegister.inputErrorIcon} width={20} height={20} />
+                                        <ExclamationIcon style={styles.inputErrorIcon} width={20} height={20} />
                                         :
-                                        <PhoneIcon style={stylesRegister.inputIcon} width={20} height={20} />
+                                        <PhoneIcon style={styles.inputIcon} width={20} height={20} />
                                     }
                                 </View>
                                 {touched.phoneNumber && errors.phoneNumber &&
-                                    <Text style={stylesRegister.errorText}>{errors.phoneNumber}</Text>
+                                    <Text style={styles.errorText}>{errors.phoneNumber}</Text>
                                 }
                                 <View style={stylesRegister.formBottomContainer}>
-                                    <TouchableOpacity onPress={() => { setFieldValue('acceptedTerms', !values.acceptedTerms); setFieldTouched('acceptedTerms'); }} style={stylesRegister.checkboxContainer}>
-                                        <View style={[stylesRegister.checkbox]}>
-                                            <View style={[values.acceptedTerms && stylesRegister.checkedCheckbox]}>
+                                    <TouchableOpacity onPress={() => { setFieldValue('acceptedTerms', !values.acceptedTerms); setFieldTouched('acceptedTerms'); }} style={styles.checkboxContainer}>
+                                        <View style={[styles.checkbox]}>
+                                            <View style={[values.acceptedTerms && styles.checkedCheckbox]}>
                                             </View>
                                         </View>
-                                        <Text style={stylesRegister.checkboxText}>
+                                        <Text style={styles.checkboxText}>
                                             I accept the
                                             <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')}> Privacy Policy </Text>
                                             and
@@ -114,7 +114,7 @@ export default function RegisterScreen({ navigation }) {
                                         </Text>
                                     </TouchableOpacity>
                                     {touched.acceptedTerms && !values.acceptedTerms && errors.acceptedTerms &&
-                                        <Text style={stylesRegister.errorText}>{errors.acceptedTerms}</Text>
+                                        <Text style={styles.errorText}>{errors.acceptedTerms}</Text>
                                     }
                                     <TouchableOpacity onPress={() => navigation.navigate('Login')} style={stylesRegister.loginTextLink}>
                                         <Text style={stylesRegister.haveAccountText}>Already have an account? <Text style={stylesRegister.loginText}>Log in</Text></Text>
@@ -135,75 +135,11 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const stylesRegister = StyleSheet.create({
-    container: {
-        justifyContent: 'flex-start',
-        paddingHorizontal: 40,
-        paddingVertical: 40,
-    },
-    topTextsContainer: {
-        alignItems: 'center',
-        gap: 5,
-        paddingHorizontal: 30,
-        marginBottom: 40,
-    },
     title: {
         textAlign: 'center',
     },
     text: {
         textAlign: 'center',
-    },
-    formContainer: {
-        width: '100%',
-    },
-    inputWrapper: {
-        marginBottom: 15,
-    },
-    input: {
-        height: 50,
-        borderColor: '#666666',
-        borderBottomWidth: 1,
-        paddingLeft: 15,
-        paddingRight: 40,
-        paddingVertical: 5,
-    },
-    inputIcon: {
-        color: '#000',
-        position: 'absolute',
-        right: 15,
-        top: 15,
-    },
-    inputErrorIcon: {
-        position: 'absolute',
-        right: 15,
-        top: 15,
-    },
-    checkboxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '100%',
-        marginBottom: 10,
-    },
-    checkbox: {
-        width: 18,
-        height: 18,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#666666',
-        marginRight: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 2,
-    },
-    checkedCheckbox: {
-        backgroundColor: '#1C4837',
-        width: '100%',
-        height: '100%',
-        borderRadius: 10,
-    },
-    checkboxText: {
-        marginRight: 5,
-        lineHeight: 20,
-        fontSize: 13,
     },
     formBottomContainer: {
         alignItems: 'center',
@@ -242,10 +178,5 @@ const stylesRegister = StyleSheet.create({
         fontWeight: '600',
         fontFamily: 'poppins-semibold',
         textDecorationLine: 'underline',
-    },
-    errorText: {
-        color: 'red',
-        marginBottom: 5,
-        width: '100%',
     },
 });

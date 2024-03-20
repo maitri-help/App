@@ -134,6 +134,7 @@ const stylesOnboard = StyleSheet.create({
     },
     skipButtonText: {
         fontWeight: '600',
+        fontFamily: 'poppins-semibold',
         textDecorationLine: 'underline',
         fontSize: 14,
         padding: 5,
@@ -151,7 +152,9 @@ const stylesOnboard = StyleSheet.create({
     },
     haveAccountText: {
         textDecorationLine: 'underline',
-        fontSize: 15,
+        fontSize: 14,
+        fontWeight: '400',
+        fontFamily: 'poppins-regular',
     },
     loginText: {
         fontWeight: '600',

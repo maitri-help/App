@@ -22,7 +22,7 @@ export default function LoginScreen({ navigation }) {
     return (
         <SafeAreaView style={styles.safeArea}>
             <TouchableOpacity
-                style={{ flex: 1, maxHeight: 667, }}
+                style={{ flex: 1, }}
                 onPress={() => Keyboard.dismiss()}
                 activeOpacity={1}
             >
@@ -32,15 +32,15 @@ export default function LoginScreen({ navigation }) {
                     validationSchema={validationSchema}
                 >
                     {({ handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
-                        <View style={[styles.container, stylesLogin.container]}>
-                            <View style={stylesLogin.topTextsContainer}>
+                        <View style={[styles.container, styles.authContainer]}>
+                            <View style={styles.topTextsContainer}>
                                 <Text style={[styles.title, stylesLogin.title]}>Welcome Back!</Text>
                                 <Text style={[styles.text, stylesLogin.text]}>Login to your Maitri account</Text>
                             </View>
-                            <View style={stylesLogin.formContainer}>
-                                <View style={stylesLogin.inputWrapper}>
+                            <View style={styles.formContainer}>
+                                <View style={styles.inputWrapper}>
                                     <TextInput
-                                        style={stylesLogin.input}
+                                        style={styles.input}
                                         placeholder="+1 Phone Number"
                                         value={values.phoneNumber}
                                         onChangeText={(text) => {
@@ -51,13 +51,13 @@ export default function LoginScreen({ navigation }) {
                                         onBlur={() => setFieldTouched('phoneNumber')}
                                     />
                                     {touched.phoneNumber && errors.phoneNumber ?
-                                        <ExclamationIcon style={stylesLogin.inputErrorIcon} width={20} height={20} />
+                                        <ExclamationIcon style={styles.inputErrorIcon} width={20} height={20} />
                                         :
-                                        <PhoneIcon style={stylesLogin.inputIcon} width={20} height={20} />
+                                        <PhoneIcon style={styles.inputIcon} width={20} height={20} />
                                     }
                                 </View>
                                 {touched.phoneNumber && errors.phoneNumber &&
-                                    <Text style={stylesLogin.errorText}>{errors.phoneNumber}</Text>
+                                    <Text style={styles.errorText}>{errors.phoneNumber}</Text>
                                 }
                             </View>
                             <View style={stylesLogin.submitButtonContainer}>
@@ -79,48 +79,11 @@ export default function LoginScreen({ navigation }) {
 }
 
 const stylesLogin = StyleSheet.create({
-    container: {
-        justifyContent: 'flex-start',
-        paddingHorizontal: 40,
-        paddingTop: 80,
-        paddingBottom: 40,
-    },
-    topTextsContainer: {
-        alignItems: 'center',
-        gap: 5,
-        paddingHorizontal: 30,
-        marginBottom: 40,
-    },
     title: {
         textAlign: 'center',
     },
     text: {
         textAlign: 'center',
-    },
-    formContainer: {
-        width: '100%',
-    },
-    inputWrapper: {
-        marginBottom: 15,
-    },
-    input: {
-        height: 50,
-        borderColor: '#666666',
-        borderBottomWidth: 1,
-        paddingLeft: 15,
-        paddingRight: 40,
-        paddingVertical: 5,
-    },
-    inputIcon: {
-        color: '#000',
-        position: 'absolute',
-        right: 15,
-        top: 15,
-    },
-    inputErrorIcon: {
-        position: 'absolute',
-        right: 15,
-        top: 15,
     },
     submitButtonContainer: {
         flexDirection: 'row',
@@ -155,10 +118,5 @@ const stylesLogin = StyleSheet.create({
         fontWeight: '600',
         fontFamily: 'poppins-semibold',
         textDecorationLine: 'underline',
-    },
-    errorText: {
-        color: 'red',
-        marginBottom: 5,
-        width: '100%',
     },
 });
