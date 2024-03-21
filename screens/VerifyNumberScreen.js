@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Keyboard, SafeArea
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import styles from '../Styles';
+import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 
 const OTP_LENGTH = 6;
 
@@ -15,7 +16,7 @@ const validationSchema = yup.object().shape({
         .max(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`),
 });
 
-export default function VerifyNumberScreen() {
+export default function VerifyNumberScreen({ navigation }) {
     const otpInputRef = useRef([]);
     const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
     const [countdown, setCountdown] = useState(30);
@@ -39,9 +40,18 @@ export default function VerifyNumberScreen() {
         setCountdown(30);
         setResendClickable(false);
         alert('A new code has been sent.');
+        const timer = setInterval(() => {
+            setCountdown((prevCount) => {
+                if (prevCount === 1) {
+                    clearInterval(timer);
+                    setResendClickable(true);
+                }
+                return prevCount - 1;
+            });
+        }, 1000);
     };
 
-    const handleOtpChange = (index, value) => {
+    const handleOtpChange = (index, value, setErrors) => {
         if (isNaN(value)) return;
         const newOtp = [...otp];
         newOtp[index] = value;
@@ -50,12 +60,13 @@ export default function VerifyNumberScreen() {
             otpInputRef.current[index + 1].focus();
         }
         if (index === OTP_LENGTH - 1 && value !== '') {
-            handleSubmit(); // Auto-submit when all OTP digits are entered
+            const enteredOtp = newOtp.join('');
+            handleSubmit(enteredOtp);
         }
+        setErrors({});
     };
 
-    const handleSubmit = () => {
-        const enteredOtp = otp.join('');
+    const handleSubmit = (enteredOtp) => {
         alert(`Submitting OTP: ${enteredOtp}`);
     };
 
@@ -68,11 +79,14 @@ export default function VerifyNumberScreen() {
             >
                 <Formik
                     initialValues={{ otp: '' }}
-                    onSubmit={() => {}} // Empty onSubmit since we're handling submission manually
+                    onSubmit={() => { }}
                     validationSchema={validationSchema}
                 >
-                    {({ handleChange, errors, touched }) => (
+                    {({ handleChange, setErrors, errors, touched }) => (
                         <View style={[styles.container, styles.authContainer]}>
+                            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backLink}>
+                                <ArrowLeftIcon width={20} height={20} color={'#000'} />
+                            </TouchableOpacity>
                             <View style={styles.topTextsContainer}>
                                 <Text style={[styles.title, stylesVerify.title]}>Verify your Number</Text>
                                 <Text style={[styles.text, stylesVerify.text]}>Enter the 6-digit code verification code sent to your phone</Text>
@@ -86,7 +100,7 @@ export default function VerifyNumberScreen() {
                                             index === OTP_LENGTH - 1 && value !== '' ? stylesVerify.lastInput : null,
                                             errors.otp && touched.otp && touched.otp[index] ? stylesVerify.errorInput : null,
                                         ]}
-                                        onChangeText={(text) => handleOtpChange(index, text)}
+                                        onChangeText={(text) => handleOtpChange(index, text, setErrors)}
                                         value={value}
                                         keyboardType="numeric"
                                         maxLength={1}
@@ -113,6 +127,7 @@ export default function VerifyNumberScreen() {
         </SafeAreaView>
     );
 }
+
 const stylesVerify = StyleSheet.create({
     title: {
         textAlign: 'center',
@@ -124,6 +139,7 @@ const stylesVerify = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         gap: 10,
+        marginTop: 100,
         marginBottom: 15,
     },
     otpInput: {

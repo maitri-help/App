@@ -110,4 +110,9 @@ export default styles = StyleSheet.create({
         fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
+    backLink: {
+        position: 'absolute',
+        top: 45,
+        left: 30,
+    },
 });
