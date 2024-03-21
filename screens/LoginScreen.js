@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Keyboard, SafeAreaView } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -15,6 +15,8 @@ const validationSchema = yup.object().shape({
 });
 
 export default function LoginScreen({ navigation }) {
+    const [isFormValid, setIsFormValid] = useState(false);
+
     const handleSignIn = (values) => {
         console.log(values);
     };
@@ -30,14 +32,28 @@ export default function LoginScreen({ navigation }) {
                     initialValues={{ phoneNumber: '', }}
                     onSubmit={handleSignIn}
                     validationSchema={validationSchema}
+                    validateOnChange={true}
+                    validateOnBlur={false}
+                    validateOnMount={false}
+                    initialErrors={{}}
+                    enableReinitialize={true}
+                    validate={(values) => {
+                        validationSchema.validate(values, { abortEarly: false })
+                            .then(() => {
+                                setIsFormValid(true);
+                            })
+                            .catch(() => {
+                                setIsFormValid(false);
+                            });
+                    }}
                 >
-                    {({ handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
+                    {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched, isValid }) => (
                         <View style={[styles.container, styles.authContainer]}>
                             <View style={styles.topTextsContainer}>
                                 <Text style={[styles.title, stylesLogin.title]}>Welcome Back!</Text>
                                 <Text style={[styles.text, stylesLogin.text]}>Login to your Maitri account</Text>
                             </View>
-                            <View style={styles.formContainer}>
+                            <View style={[styles.formContainer, stylesLogin.formContainer]}>
                                 <View style={styles.inputWrapper}>
                                     <TextInput
                                         style={styles.input}
@@ -61,7 +77,7 @@ export default function LoginScreen({ navigation }) {
                                 }
                             </View>
                             <View style={stylesLogin.submitButtonContainer}>
-                                <TouchableOpacity onPress={handleSubmit} style={stylesLogin.submitButton}>
+                                <TouchableOpacity onPress={handleSubmit} style={[stylesLogin.submitButton, !isFormValid && { opacity: 0.5 }]} disabled={!isFormValid}>
                                     <ArrowIcon width={18} height={18} color={'#fff'} />
                                 </TouchableOpacity>
                             </View>
@@ -85,11 +101,15 @@ const stylesLogin = StyleSheet.create({
     text: {
         textAlign: 'center',
     },
+    formContainer: {
+        marginTop: 120,
+    },
     submitButtonContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
         width: '100%',
-        paddingTop: 40,
+        paddingTop: 20,
+        marginBottom: 30,
     },
     submitButton: {
         backgroundColor: '#1C4837',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Linking, Keyboard, SafeAreaView } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -20,6 +20,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function RegisterScreen({ navigation }) {
+    const [isFormValid, setIsFormValid] = useState(false);
 
     const handleSignUp = () => {
         navigation.navigate('VerifyNumber');
@@ -36,8 +37,22 @@ export default function RegisterScreen({ navigation }) {
                     initialValues={{ fullName: '', email: '', phoneNumber: '', acceptedTerms: false }}
                     onSubmit={handleSignUp}
                     validationSchema={validationSchema}
+                    validateOnChange={true}
+                    validateOnBlur={false}
+                    validateOnMount={false}
+                    initialErrors={{}}
+                    enableReinitialize={true}
+                    validate={(values) => {
+                        validationSchema.validate(values, { abortEarly: false })
+                            .then(() => {
+                                setIsFormValid(true);
+                            })
+                            .catch(() => {
+                                setIsFormValid(false);
+                            });
+                    }}
                 >
-                    {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
+                    {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched, isValid }) => (
                         <View style={[styles.container, styles.authContainer]}>
                             <View style={styles.topTextsContainer}>
                                 <Text style={[styles.title, stylesRegister.title]}>Let's Get started</Text>
@@ -121,7 +136,7 @@ export default function RegisterScreen({ navigation }) {
                                     </TouchableOpacity>
                                 </View>
                                 <View style={stylesRegister.submitButtonContainer}>
-                                    <TouchableOpacity onPress={handleSubmit} style={stylesRegister.submitButton}>
+                                    <TouchableOpacity onPress={handleSubmit} style={[stylesRegister.submitButton, !isFormValid && { opacity: 0.5 }]} disabled={!isFormValid}>
                                         <ArrowIcon width={18} height={18} color={'#fff'} />
                                     </TouchableOpacity>
                                 </View>
