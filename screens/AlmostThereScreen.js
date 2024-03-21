@@ -16,7 +16,7 @@ const validationSchema = yup.object().shape({
         .max(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`),
 });
 
-export default function VerifyNumberScreen({ navigation }) {
+export default function AlmostThereScreen({ navigation }) {
     const otpInputRef = useRef([]);
     const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
     const [countdown, setCountdown] = useState(30);
@@ -68,7 +68,6 @@ export default function VerifyNumberScreen({ navigation }) {
 
     const handleSubmit = (enteredOtp) => {
         alert(`Submitting OTP: ${enteredOtp}`);
-        navigation.navigate('Success');
     };
 
     return (
@@ -89,7 +88,7 @@ export default function VerifyNumberScreen({ navigation }) {
                                 <ArrowLeftIcon width={20} height={20} color={'#000'} />
                             </TouchableOpacity>
                             <View style={styles.topTextsContainer}>
-                                <Text style={[styles.title, stylesVerify.title]}>Verify your Number</Text>
+                                <Text style={[styles.title, stylesVerify.title]}>Almost there!</Text>
                                 <Text style={[styles.text, stylesVerify.text]}>Enter the 6-digit code verification code sent to your phone</Text>
                             </View>
                             <View style={stylesVerify.otpInputContainer}>

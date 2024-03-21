@@ -17,8 +17,8 @@ const validationSchema = yup.object().shape({
 export default function LoginScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
 
-    const handleSignIn = (values) => {
-        console.log(values);
+    const handleSignIn = () => {
+        navigation.navigate('AlmostThere');
     };
 
     return (

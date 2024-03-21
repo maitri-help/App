@@ -12,6 +12,8 @@ import AssignmentsScreen from './screens/AssignmentsScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import VerifyNumberScreen from './screens/VerifyNumberScreen';
+import AlmostThereScreen from './screens/AlmostThereScreen';
+import SuccessScreen from './screens/SuccessScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import styles from './Styles';
 
@@ -75,6 +77,8 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="VerifyNumber" component={VerifyNumberScreen} />
+        <Stack.Screen name="AlmostThere" component={AlmostThereScreen} />
+        <Stack.Screen name="Success" component={SuccessScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

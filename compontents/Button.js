@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 18,
-    fontWeight: 400,
+    fontWeight: '400',
     fontFamily: 'poppins-regular',
   },
 });
