@@ -8,6 +8,7 @@ import EmailIcon from '../assets/icons/email-icon.svg';
 import PhoneIcon from '../assets/icons/phone-icon.svg';
 import ExclamationIcon from '../assets/icons/exclamation-icon.svg';
 import ArrowIcon from '../assets/icons/arrow-icon.svg';
+import handleSignUp from '../hooks/handleSignUp';
 
 const validationSchema = yup.object().shape({
     fullName: yup.string().required('Full Name is required'),
@@ -22,8 +23,14 @@ const validationSchema = yup.object().shape({
 export default function RegisterScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
 
-    const handleSignUp = () => {
+    const handleFormSubmit = (values) => {
+        console.log('Form values in handleFormSubmit:', values);
+
+        // Temporary
         navigation.navigate('VerifyNumber');
+        // End of Temporary
+
+        handleSignUp(values, navigation);
     };
 
     return (
@@ -35,7 +42,7 @@ export default function RegisterScreen({ navigation }) {
             >
                 <Formik
                     initialValues={{ fullName: '', email: '', phoneNumber: '', acceptedTerms: false }}
-                    onSubmit={handleSignUp}
+                    onSubmit={handleFormSubmit}
                     validationSchema={validationSchema}
                     validateOnChange={true}
                     validateOnBlur={false}
