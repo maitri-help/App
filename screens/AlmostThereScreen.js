@@ -17,7 +17,9 @@ const validationSchema = yup.object().shape({
         .max(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`),
 });
 
-export default function AlmostThereScreen({ navigation }) {
+export default function AlmostThereScreen({ route, navigation }) {
+    const { phoneNumber } = route.params;
+
     const otpInputRef = useRef([]);
     const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
     const [countdown, setCountdown] = useState(30);
@@ -76,7 +78,7 @@ export default function AlmostThereScreen({ navigation }) {
     };
 
     const handleSubmit = (enteredOtp) => {
-        verifyOtp(enteredOtp)
+        verifyOtp(phoneNumber, enteredOtp)
             .then((response) => {
                 console.log('OTP Verification Response:', response.data);
                 navigation.navigate('Main');

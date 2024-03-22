@@ -21,11 +21,7 @@ export default function LoginScreen({ navigation }) {
     const handleFormSubmit = (values) => {
         console.log('Form values in handleFormSubmit:', values);
 
-        // Temporary
-        // navigation.navigate('AlmostThere');
-        // End of Temporary
-
-        handleSignIn(values, navigation);
+        handleSignIn(values.phoneNumber, navigation);
     };
 
     return (

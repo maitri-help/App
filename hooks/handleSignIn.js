@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-export default function handleSignIn(values, navigation) {
-    const { phoneNumber } = values;
+export default function handleSignIn(phoneNumber, navigation) {
     const signInUrl = `http://34.253.29.107:3000/users/${phoneNumber}`;
     const sendOtpUrl = 'http://34.253.29.107:3000/auth/otp/send';
 
@@ -14,7 +13,7 @@ export default function handleSignIn(values, navigation) {
     axios.get(signInUrl, config)
         .then(response => {
             console.log('Sign In Success:', response.data);
-            navigation.navigate('AlmostThere');
+            navigation.navigate('AlmostThere', { phoneNumber });
 
             axios.post(sendOtpUrl, { phoneNumber }, config)
                 .then(otpResponse => {

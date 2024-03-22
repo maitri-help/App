@@ -8,8 +8,8 @@ export const sendOtp = (phoneNumber) => {
     return axios.post(sendOtpUrl, { phoneNumber });
 };
 
-export const verifyOtp = (otp) => {
-    return axios.post(verifyOtpUrl, { otp });
+export const verifyOtp = (phoneNumber, otp) => {
+    return axios.post(verifyOtpUrl, { phoneNumber, otp });
 };
 
 export const resendOtp = () => {
