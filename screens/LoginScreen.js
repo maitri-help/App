@@ -7,6 +7,7 @@ import ExclamationIcon from '../assets/icons/exclamation-icon.svg';
 import ArrowIcon from '../assets/icons/arrow-icon.svg';
 import styles from '../Styles';
 import handleSignIn from '../hooks/handleSignIn';
+import { useToast } from 'react-native-toast-notifications';
 
 const validationSchema = yup.object().shape({
     phoneNumber: yup.string().matches(
@@ -17,11 +18,19 @@ const validationSchema = yup.object().shape({
 
 export default function LoginScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
+    const toast = useToast();
 
-    const handleFormSubmit = (values) => {
+    const handleFormSubmit = async (values) => {
         console.log('Form values in handleFormSubmit:', values);
 
-        handleSignIn(values.phoneNumber, navigation);
+        try {
+            await handleSignIn(values.phoneNumber);
+            toast.show('Code is sent to: ' + values.phoneNumber, { type: 'success' });
+            navigation.navigate('AlmostThere', { phoneNumber: values.phoneNumber });
+        } catch (error) {
+            console.error('Sign in error:', error);
+            toast.show(`Phone number doesn't exists.`, { type: 'error' });
+        }
     };
 
     return (

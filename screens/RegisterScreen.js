@@ -9,6 +9,7 @@ import PhoneIcon from '../assets/icons/phone-icon.svg';
 import ExclamationIcon from '../assets/icons/exclamation-icon.svg';
 import ArrowIcon from '../assets/icons/arrow-icon.svg';
 import handleSignUp from '../hooks/handleSignUp';
+import { useToast } from 'react-native-toast-notifications';
 
 const validationSchema = yup.object().shape({
     fullName: yup.string().required('Full Name is required'),
@@ -22,11 +23,18 @@ const validationSchema = yup.object().shape({
 
 export default function RegisterScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
+    const toast = useToast();
 
-    const handleFormSubmit = (values) => {
+    const handleFormSubmit = async (values) => {
         console.log('Form values in handleFormSubmit:', values);
 
-        handleSignUp(values, navigation);
+        try {
+            await handleSignUp(values, navigation);
+            toast.show('Code sent successfully to: ' + values.phoneNumber, { type: 'success' });
+        } catch (error) {
+            console.error('Sign up error:', error);
+            toast.show(`Error in sending code to: ${values.phoneNumber}`, { type: 'error' });
+        }
     };
 
     return (

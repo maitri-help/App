@@ -6,6 +6,8 @@ import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import { verifyOtp, resendOtp } from '../hooks/otpService';
 import { storeAccessToken } from '../authStorage';
+import { useToast } from 'react-native-toast-notifications';
+import { handleResend } from '../hooks/handleResend';
 
 const OTP_LENGTH = 6;
 
@@ -20,6 +22,7 @@ const validationSchema = yup.object().shape({
 
 export default function AlmostThereScreen({ route, navigation }) {
     const { phoneNumber } = route.params;
+    const toast = useToast();
 
     const otpInputRef = useRef([]);
     const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
@@ -40,27 +43,8 @@ export default function AlmostThereScreen({ route, navigation }) {
         return () => clearInterval(timer);
     }, []);
 
-    const handleResend = () => {
-        resendOtp()
-            .then((response) => {
-                console.log('OTP Resent:', response.data);
-            })
-            .catch((error) => {
-                console.error('OTP Resend Error:', error);
-            });
-
-        setCountdown(30);
-        setResendClickable(false);
-
-        const timer = setInterval(() => {
-            setCountdown((prevCount) => {
-                if (prevCount === 1) {
-                    clearInterval(timer);
-                    setResendClickable(true);
-                }
-                return prevCount - 1;
-            });
-        }, 1000);
+    const handleResendPress = () => {
+        handleResend(phoneNumber, setCountdown, setResendClickable, toast);
     };
 
     const handleOtpChange = (index, value, setErrors) => {
@@ -83,10 +67,13 @@ export default function AlmostThereScreen({ route, navigation }) {
             .then((response) => {
                 const accessToken = response.data.accessToken;
                 storeAccessToken(accessToken);
+                console.log('OTP Verification Response:', response.data);
                 navigation.navigate('Main');
+                toast.show('Signed in successfully', { type: 'success' });
             })
             .catch((error) => {
                 console.error('OTP Verification Error:', error);
+                toast.show('Invaild Code. Please try again.', { type: 'error' });
             });
     };
 
@@ -134,7 +121,7 @@ export default function AlmostThereScreen({ route, navigation }) {
 
                             <View style={stylesVerify.bottomTextsContainer}>
                                 <Text style={stylesVerify.bottomTitle}>Didn't receive a code? </Text>
-                                <TouchableOpacity onPress={resendClickable ? handleResend : null}>
+                                <TouchableOpacity onPress={resendClickable ? handleResendPress : null}>
                                     <Text style={[stylesVerify.bottomText, resendClickable ? stylesVerify.resendClickable : null]}>
                                         {countdown > 0 ? `Resend in 00:${countdown.toString().padStart(2, '0')}s` : 'Resend'}
                                     </Text>

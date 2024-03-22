@@ -115,4 +115,31 @@ export default styles = StyleSheet.create({
         top: 45,
         left: 30,
     },
+    toast: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderRadius: '50%',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 15,
+        marginBottom: 10,
+    },
+    toastText: {
+        color: '#000',
+        fontSize: 13,
+        fontWeight: '400',
+        fontFamily: 'poppins-regular',
+    },
+    toastError: {
+        borderColor: '#EE0004',
+    },
+    toastSuccess: {
+        borderColor: '#0BE377',
+    },
 });

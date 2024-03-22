@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import useFonts from './hooks/useFonts';
-import { Image } from 'react-native';
+import { Image, View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -16,6 +16,7 @@ import AlmostThereScreen from './screens/AlmostThereScreen';
 import SuccessScreen from './screens/SuccessScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import styles from './Styles';
+import { ToastProvider } from 'react-native-toast-notifications'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -68,18 +69,34 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="OnboardingScreen" screenOptions={() => ({
-        headerShown: false,
-      })}>
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Main" component={MainNavigator} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="VerifyNumber" component={VerifyNumberScreen} />
-        <Stack.Screen name="AlmostThere" component={AlmostThereScreen} />
-        <Stack.Screen name="Success" component={SuccessScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ToastProvider
+      placement="top"
+      renderType={{
+        error: (toast) => (
+          <View style={[styles.toast, styles.toastError]}>
+            <Text style={styles.toastText}>{toast.message}</Text>
+          </View>
+        ),
+        success: (toast) => (
+          <View style={[styles.toast, styles.toastSuccess]}>
+            <Text style={styles.toastText}>{toast.message}</Text>
+          </View>
+        )
+      }}
+    >
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="OnboardingScreen" screenOptions={() => ({
+          headerShown: false,
+        })}>
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+          <Stack.Screen name="Main" component={MainNavigator} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="VerifyNumber" component={VerifyNumberScreen} />
+          <Stack.Screen name="AlmostThere" component={AlmostThereScreen} />
+          <Stack.Screen name="Success" component={SuccessScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ToastProvider>
   );
 }
