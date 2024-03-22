@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { storeAccessToken } from '../authStorage'; // Import AsyncStorage function to store access token
 
 export default function handleSignIn(phoneNumber, navigation) {
     const signInUrl = `http://34.253.29.107:3000/users/${phoneNumber}`;
@@ -13,6 +14,12 @@ export default function handleSignIn(phoneNumber, navigation) {
     axios.get(signInUrl, config)
         .then(response => {
             console.log('Sign In Success:', response.data);
+            
+            const accessToken = response.data.accessToken;
+            if (accessToken) {
+                storeAccessToken(accessToken);
+            }
+            
             navigation.navigate('AlmostThere', { phoneNumber });
 
             axios.post(sendOtpUrl, { phoneNumber }, config)

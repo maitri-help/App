@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import { verifyOtp, resendOtp } from '../hooks/otpService';
+import { storeAccessToken } from '../authStorage';
 
 const OTP_LENGTH = 6;
 
@@ -80,7 +81,8 @@ export default function AlmostThereScreen({ route, navigation }) {
     const handleSubmit = (enteredOtp) => {
         verifyOtp(phoneNumber, enteredOtp)
             .then((response) => {
-                console.log('OTP Verification Response:', response.data);
+                const accessToken = response.data.accessToken;
+                storeAccessToken(accessToken);
                 navigation.navigate('Main');
             })
             .catch((error) => {

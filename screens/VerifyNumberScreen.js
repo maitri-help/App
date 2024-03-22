@@ -76,9 +76,6 @@ export default function VerifyNumberScreen({ navigation }) {
     };
 
     const handleSubmit = (enteredOtp) => {
-        // Temporary
-        navigation.navigate('Success');
-        // End of Temporary
         verifyOtp(enteredOtp)
             .then((response) => {
                 console.log('OTP Verification Response:', response.data);

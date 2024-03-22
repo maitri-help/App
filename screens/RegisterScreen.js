@@ -26,10 +26,6 @@ export default function RegisterScreen({ navigation }) {
     const handleFormSubmit = (values) => {
         console.log('Form values in handleFormSubmit:', values);
 
-        // Temporary
-        // navigation.navigate('VerifyNumber');
-        // End of Temporary
-
         handleSignUp(values, navigation);
     };
 

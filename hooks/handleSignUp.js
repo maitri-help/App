@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { storeAccessToken } from '../authStorage';
 
 export default function handleSignUp(values, navigation) {
     const { fullName, email, phoneNumber } = values;
@@ -24,6 +25,12 @@ export default function handleSignUp(values, navigation) {
             axios.post(createUserUrl, userData, config)
                 .then(userResponse => {
                     console.log('User Created:', userResponse.data);
+
+                    const accessToken = userResponse.data.accessToken;
+                    if (accessToken) {
+                        storeAccessToken(accessToken);
+                    }
+
                     navigation.navigate('VerifyNumber');
                 })
                 .catch(userError => {
@@ -33,4 +40,4 @@ export default function handleSignUp(values, navigation) {
         .catch(otpError => {
             console.error('OTP Sending Error:', otpError);
         });
-};
+}
