@@ -4,6 +4,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
+import { verifyOtp, resendOtp } from '../hooks/otpService';
 
 const OTP_LENGTH = 6;
 
@@ -37,9 +38,17 @@ export default function AlmostThereScreen({ navigation }) {
     }, []);
 
     const handleResend = () => {
+        resendOtp()
+            .then((response) => {
+                console.log('OTP Resent:', response.data);
+            })
+            .catch((error) => {
+                console.error('OTP Resend Error:', error);
+            });
+
         setCountdown(30);
         setResendClickable(false);
-        alert('A new code has been sent.');
+
         const timer = setInterval(() => {
             setCountdown((prevCount) => {
                 if (prevCount === 1) {
@@ -67,7 +76,14 @@ export default function AlmostThereScreen({ navigation }) {
     };
 
     const handleSubmit = (enteredOtp) => {
-        alert(`Submitting OTP: ${enteredOtp}`);
+        verifyOtp(enteredOtp)
+            .then((response) => {
+                console.log('OTP Verification Response:', response.data);
+                navigation.navigate('Main');
+            })
+            .catch((error) => {
+                console.error('OTP Verification Error:', error);
+            });
     };
 
     return (

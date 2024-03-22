@@ -6,6 +6,7 @@ import PhoneIcon from '../assets/icons/phone-icon.svg';
 import ExclamationIcon from '../assets/icons/exclamation-icon.svg';
 import ArrowIcon from '../assets/icons/arrow-icon.svg';
 import styles from '../Styles';
+import handleSignIn from '../hooks/handleSignIn';
 
 const validationSchema = yup.object().shape({
     phoneNumber: yup.string().matches(
@@ -17,8 +18,14 @@ const validationSchema = yup.object().shape({
 export default function LoginScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
 
-    const handleSignIn = () => {
-        navigation.navigate('AlmostThere');
+    const handleFormSubmit = (values) => {
+        console.log('Form values in handleFormSubmit:', values);
+
+        // Temporary
+        // navigation.navigate('AlmostThere');
+        // End of Temporary
+
+        handleSignIn(values, navigation);
     };
 
     return (
@@ -30,7 +37,7 @@ export default function LoginScreen({ navigation }) {
             >
                 <Formik
                     initialValues={{ phoneNumber: '', }}
-                    onSubmit={handleSignIn}
+                    onSubmit={handleFormSubmit}
                     validationSchema={validationSchema}
                     validateOnChange={true}
                     validateOnBlur={false}
