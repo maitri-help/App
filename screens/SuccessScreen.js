@@ -5,7 +5,7 @@ import styles from '../Styles';
 export default function LoginScreen({ navigation }) {
     useEffect(() => {
         const timer = setTimeout(() => {
-            navigation.navigate('Main');
+            navigation.navigate('Identify');
         }, 5000);
 
         return () => clearTimeout(timer);
