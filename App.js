@@ -21,7 +21,7 @@ import { ToastProvider } from 'react-native-toast-notifications'
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function MainNavigator() {
+function MainNavigator({ setIsLoggedIn }) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -49,6 +49,7 @@ function MainNavigator() {
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     async function loadAppResources() {
@@ -89,12 +90,43 @@ export default function App() {
           headerShown: false,
         })}>
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen name="Main" component={MainNavigator} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="VerifyNumber" component={VerifyNumberScreen} />
-          <Stack.Screen name="AlmostThere" component={AlmostThereScreen} />
-          <Stack.Screen name="Success" component={SuccessScreen} />
+          <Stack.Screen
+            name="Main"
+            options={{ gestureEnabled: false }}
+          >
+            {() => <MainNavigator setIsLoggedIn={setIsLoggedIn} />}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{
+              gestureEnabled: !isLoggedIn,
+            }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={RegisterScreen}
+            options={{
+              gestureEnabled: !isLoggedIn,
+            }}
+          />
+          <Stack.Screen
+            name="VerifyNumber"
+            component={VerifyNumberScreen}
+            options={{
+              gestureEnabled: !isLoggedIn,
+            }} />
+          <Stack.Screen
+            name="AlmostThere" component={AlmostThereScreen}
+            options={{
+              gestureEnabled: !isLoggedIn,
+            }} />
+          <Stack.Screen
+            name="Success"
+            component={SuccessScreen}
+            options={{
+              gestureEnabled: !isLoggedIn,
+            }} />
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>
