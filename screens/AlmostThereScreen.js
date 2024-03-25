@@ -68,7 +68,7 @@ export default function AlmostThereScreen({ route, navigation }) {
                 const accessToken = response.data.accessToken;
                 storeAccessToken(accessToken);
                 console.log('OTP Verification Response:', response.data);
-                navigation.navigate('Main');
+                navigation.navigate('Identify');
                 toast.show('Signed in successfully', { type: 'success' });
             })
             .catch((error) => {

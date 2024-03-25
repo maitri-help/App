@@ -15,6 +15,9 @@ import VerifyNumberScreen from './screens/VerifyNumberScreen';
 import AlmostThereScreen from './screens/AlmostThereScreen';
 import SuccessScreen from './screens/SuccessScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
+import IdentifyScreen from './screens/IdentifyScreen';
+import IdentifyAlmostThereScreen from './screens/IdentifyAlmostThereScreen';
+import ThankYouScreen from './screens/ThankYouScreen';
 import styles from './Styles';
 import { ToastProvider } from 'react-native-toast-notifications'
 
@@ -90,43 +93,17 @@ export default function App() {
           headerShown: false,
         })}>
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen
-            name="Main"
-            options={{ gestureEnabled: false }}
-          >
+          <Stack.Screen name="Main" options={{ gestureEnabled: false }}>
             {() => <MainNavigator setIsLoggedIn={setIsLoggedIn} />}
           </Stack.Screen>
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{
-              gestureEnabled: !isLoggedIn,
-            }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={RegisterScreen}
-            options={{
-              gestureEnabled: !isLoggedIn,
-            }}
-          />
-          <Stack.Screen
-            name="VerifyNumber"
-            component={VerifyNumberScreen}
-            options={{
-              gestureEnabled: !isLoggedIn,
-            }} />
-          <Stack.Screen
-            name="AlmostThere" component={AlmostThereScreen}
-            options={{
-              gestureEnabled: !isLoggedIn,
-            }} />
-          <Stack.Screen
-            name="Success"
-            component={SuccessScreen}
-            options={{
-              gestureEnabled: !isLoggedIn,
-            }} />
+          <Stack.Screen name="Login" component={LoginScreen} options={{ gestureEnabled: !isLoggedIn }} />
+          <Stack.Screen name="Register" component={RegisterScreen} options={{ gestureEnabled: !isLoggedIn }} />
+          <Stack.Screen name="VerifyNumber" component={VerifyNumberScreen} options={{ gestureEnabled: !isLoggedIn }} />
+          <Stack.Screen name="AlmostThere" component={AlmostThereScreen} options={{ gestureEnabled: !isLoggedIn }} />
+          <Stack.Screen name="Success" component={SuccessScreen} options={{ gestureEnabled: !isLoggedIn }} />
+          <Stack.Screen name="Identify" component={IdentifyScreen} options={{ gestureEnabled: false }} />
+          <Stack.Screen name="IdentifyAlmostThere" component={IdentifyAlmostThereScreen} />
+          <Stack.Screen name="ThankYou" component={ThankYouScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>
