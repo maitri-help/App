@@ -115,6 +115,11 @@ export default styles = StyleSheet.create({
         top: 45,
         left: 30,
     },
+    backLinkInline: {
+        width: 18,
+        height: 18,
+        resizeMode: 'contain',
+    },
     toast: {
         paddingVertical: 12,
         paddingHorizontal: 22,
@@ -142,4 +147,26 @@ export default styles = StyleSheet.create({
     toastSuccess: {
         borderColor: '#0BE377',
     },
+    topBar: {
+        borderBottomColor: '#E5E5E5',
+        borderBottomWidth: 1,
+        paddingTop: 30,
+        paddingBottom: 20,
+        paddingHorizontal: 30,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 15,
+    },
+    topBarBack: {
+        justifyContent: 'flex-start',
+    },
+    topBarTitle: {
+        fontSize: 18,
+        fontWeight: '400',
+        fontFamily: 'poppins-regular',
+    },
+    modalContainer: {
+        backgroundColor: '#fff'
+    }
 });

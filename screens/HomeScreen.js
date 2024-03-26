@@ -1,32 +1,43 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import AppButton from '../compontents/Button';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
-import Logo from '../assets/img/maitri-logo.svg';
+import BellIcon from '../assets/icons/bell-icon.svg';
 
 export default function HomeScreen({ navigation }) {
     return (
-        <View style={styles.container}>
-            <View style={stylesHome.homeContainer}>
-                <Logo width={90} height={90} />
-                <View style={styles.buttonContainer}>
-                    <AppButton
-                        onPress={() => navigation.navigate('Assignments')}
-                        title="See assignments"
-                    />
-                </View>
+        <SafeAreaView style={styles.safeArea}>
+            <View style={styles.topBar}>
+                <Text style={stylesHome.greetingsText}>Good morning Ben!</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={stylesHome.bellWrapper}>
+                    <BellIcon style={stylesHome.bellIcon} />
+                    <View style={stylesHome.indicator}></View>
+                </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
 const stylesHome = StyleSheet.create({
-    homeContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 20,
-        fontSize: 14,
-        fontWeight: '400',
+    greetingsText: {
+        fontSize: 18,
+        fontWeight: '500',
+        fontFamily: 'poppins-medium',
     },
+    bellWrapper: {
+        position: 'relative',
+    },
+    bellIcon: {
+        width: 20,
+        height: 20,
+        color: '#000',
+    },
+    indicator: {
+        backgroundColor: '#E91145',
+        width: 8,
+        height: 8,
+        borderRadius: '50%',
+        position: 'absolute',
+        bottom: 1,
+        right: -4,
+    }
 });

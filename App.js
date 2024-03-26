@@ -7,8 +7,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeIcon from './assets/icons/home-icon.svg';
 import AssignmentsCheckIcon from './assets/icons/assignments-check-icon.svg';
+import CirclesIcon from './assets/icons/circles-icon.svg';
+import ProfileIcon from './assets/icons/profile-icon.svg';
 import HomeScreen from './screens/HomeScreen';
 import AssignmentsScreen from './screens/AssignmentsScreen';
+import CirclesScreen from './screens/CirclesScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import NotificationsScreen from './screens/NotificationsScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import VerifyNumberScreen from './screens/VerifyNumberScreen';
@@ -30,9 +35,13 @@ function MainNavigator({ setIsLoggedIn }) {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color }) => {
           if (route.name === 'Home') {
-            return <HomeIcon color={color} width={18} height={18} />;
+            return <HomeIcon color={color} width={19} height={19} />;
           } else if (route.name === 'Assignments') {
-            return <AssignmentsCheckIcon color={color} width={18} height={18} />;
+            return <AssignmentsCheckIcon color={color} width={19} height={19} />;
+          } else if (route.name === 'Circles') {
+            return <CirclesIcon color={color} width={21} height={21} />;
+          } else if (route.name === 'Profile') {
+            return <ProfileIcon color={color} width={19} height={19} />;
           }
         },
         tabBarActiveTintColor: '#1C4837',
@@ -46,6 +55,8 @@ function MainNavigator({ setIsLoggedIn }) {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Assignments" component={AssignmentsScreen} />
+      <Tab.Screen name="Circles" component={CirclesScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
@@ -104,6 +115,7 @@ export default function App() {
           <Stack.Screen name="Identify" component={IdentifyScreen} options={{ gestureEnabled: false }} />
           <Stack.Screen name="IdentifyAlmostThere" component={IdentifyAlmostThereScreen} />
           <Stack.Screen name="ThankYou" component={ThankYouScreen} />
+          <Stack.Screen name="Notifications" component={NotificationsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>

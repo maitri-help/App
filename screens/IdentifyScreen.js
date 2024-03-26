@@ -1,11 +1,21 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView, Modal } from 'react-native';
 import { Formik } from 'formik';
 import styles from '../Styles';
 import { useToast } from 'react-native-toast-notifications';
+import IdentifyAlmostThereScreen from './IdentifyAlmostThereScreen';
 
 export default function IdentifyScreen({ navigation }) {
     const toast = useToast();
+    const [showAlmostThere, setShowAlmostThere] = useState(false);
+
+    const handleAlmostThere = () => {
+        setShowAlmostThere(true);
+    };
+
+    const handleCloseAlmostThere = () => {
+        setShowAlmostThere(false);
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -15,7 +25,7 @@ export default function IdentifyScreen({ navigation }) {
                     if (values.role === 'Lead') {
                         navigation.navigate('Main');
                     } else if (values.role === 'Supporter') {
-                        navigation.navigate('IdentifyAlmostThere');
+                        handleAlmostThere();
                     } else {
                         toast.show('Please select a role', {
                             type: 'error',
@@ -73,6 +83,14 @@ export default function IdentifyScreen({ navigation }) {
                                 <Text style={stylesIdentify.optionButtonText}>I've been invited to join a support circle and lend a helping hand</Text>
                             </TouchableOpacity>
                         </View>
+                        <Modal
+                            visible={showAlmostThere}
+                            animationType="slide"
+                            transparent={true}
+                            onRequestClose={handleCloseAlmostThere}
+                        >
+                            <IdentifyAlmostThereScreen onClose={handleCloseAlmostThere} />
+                        </Modal>
                     </View>
                 )}
             </Formik>

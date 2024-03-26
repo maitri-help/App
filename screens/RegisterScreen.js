@@ -28,12 +28,17 @@ export default function RegisterScreen({ navigation }) {
     const handleFormSubmit = async (values) => {
         console.log('Form values in handleFormSubmit:', values);
 
+        // Temporary
+        navigation.navigate('VerifyNumber', { phoneNumber: values.phoneNumber });
+        // End of Temporary
+
         try {
             await handleSignUp(values, navigation);
+            navigation.navigate('VerifyNumber', { phoneNumber: values.phoneNumber });
             toast.show('Code sent successfully to: ' + values.phoneNumber, { type: 'success' });
         } catch (error) {
             console.error('Sign up error:', error);
-            toast.show(`Error in sending code to: ${values.phoneNumber}`, { type: 'error' });
+            toast.show('Sign up failed. Please try again.', { type: 'error' });
         }
     };
 

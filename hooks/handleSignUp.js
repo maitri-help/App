@@ -11,11 +11,9 @@ export default function handleSignUp(values, navigation) {
         }
     };
 
-    axios.post(sendOtpUrl, { phoneNumber })
+    return axios.post(sendOtpUrl, { phoneNumber })
         .then(otpResponse => {
             console.log('OTP Sent:', otpResponse.data);
-
-            navigation.navigate('VerifyNumber', { phoneNumber });
 
             const userData = {
                 fullName,
@@ -23,15 +21,14 @@ export default function handleSignUp(values, navigation) {
                 phoneNumber,
             };
 
-            axios.post(createUserUrl, userData, config)
-                .then(userResponse => {
-                    console.log('User Created:', userResponse.data);
-                })
-                .catch(userError => {
-                    console.error('User Creation Error:', userError);
-                });
+            return axios.post(createUserUrl, userData, config);
         })
-        .catch(otpError => {
-            console.error('OTP Sending Error:', otpError);
+        .then(userResponse => {
+            console.log('User Created:', userResponse.data);
+            return userResponse;
+        })
+        .catch(error => {
+            console.error('Sign Up Error:', error);
+            throw error;
         });
 }
