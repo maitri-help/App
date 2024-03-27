@@ -9,7 +9,7 @@ export default function NotificationsScreen({ navigation }) {
         <SafeAreaView style={styles.safeArea}>
             <View style={[styles.topBar, styles.topBarBack]}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backLinkInline}>
-                    <ArrowLeftIcon width={20} height={20} color={'#000'} />
+                    <ArrowLeftIcon style={styles.backLinkIcon} />
                 </TouchableOpacity>
                 <Text style={styles.topBarTitle}>Notifications</Text>
             </View>

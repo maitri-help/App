@@ -92,7 +92,7 @@ export default function AlmostThereScreen({ route, navigation }) {
                     {({ handleChange, setErrors, errors, touched }) => (
                         <View style={[styles.container, styles.authContainer]}>
                             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backLink}>
-                                <ArrowLeftIcon width={20} height={20} color={'#000'} />
+                                <ArrowLeftIcon style={styles.backLinkIcon} />
                             </TouchableOpacity>
                             <View style={styles.topTextsContainer}>
                                 <Text style={[styles.title, stylesVerify.title]}>Almost there!</Text>

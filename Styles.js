@@ -10,7 +10,6 @@ export default styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
     },
     buttonContainer: {
         width: '100%',
@@ -112,20 +111,32 @@ export default styles = StyleSheet.create({
     },
     backLink: {
         position: 'absolute',
-        top: 45,
-        left: 30,
+        top: 38,
+        left: 25,
+        width: 30,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 2,
+    },
+    backLinkIcon: {
+        width: 18,
+        height: 18,
+        color: '#000',
+        pointerEvents: 'none',
     },
     backLinkInline: {
         width: 18,
         height: 18,
-        resizeMode: 'contain',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     toast: {
         paddingVertical: 12,
         paddingHorizontal: 22,
         backgroundColor: '#fff',
         borderWidth: 2,
-        borderRadius: '50%',
+        borderRadius: 30,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -166,7 +177,25 @@ export default styles = StyleSheet.create({
         fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        pointerEvents: 'none',
+    },
+    overlayTouchable: {
+        flex: 1,
+    },
+    modal: {
+        flex: 1,
+    },
     modalContainer: {
-        backgroundColor: '#fff'
+        width: '100%',
+        height: '66%',
+        backgroundColor: '#fff',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+    },
+    modalContent: {
+        flex: 1,
     }
 });

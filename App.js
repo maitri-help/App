@@ -21,8 +21,6 @@ import AlmostThereScreen from './screens/AlmostThereScreen';
 import SuccessScreen from './screens/SuccessScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import IdentifyScreen from './screens/IdentifyScreen';
-import IdentifyAlmostThereScreen from './screens/IdentifyAlmostThereScreen';
-import ThankYouScreen from './screens/ThankYouScreen';
 import styles from './Styles';
 import { ToastProvider } from 'react-native-toast-notifications'
 
@@ -113,8 +111,6 @@ export default function App() {
           <Stack.Screen name="AlmostThere" component={AlmostThereScreen} options={{ gestureEnabled: !isLoggedIn }} />
           <Stack.Screen name="Success" component={SuccessScreen} options={{ gestureEnabled: !isLoggedIn }} />
           <Stack.Screen name="Identify" component={IdentifyScreen} options={{ gestureEnabled: false }} />
-          <Stack.Screen name="IdentifyAlmostThere" component={IdentifyAlmostThereScreen} />
-          <Stack.Screen name="ThankYou" component={ThankYouScreen} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
         </Stack.Navigator>
       </NavigationContainer>

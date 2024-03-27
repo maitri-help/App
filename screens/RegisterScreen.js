@@ -28,12 +28,14 @@ export default function RegisterScreen({ navigation }) {
     const handleFormSubmit = async (values) => {
         console.log('Form values in handleFormSubmit:', values);
 
-        // Temporary
-        navigation.navigate('VerifyNumber', { phoneNumber: values.phoneNumber });
-        // End of Temporary
-
         try {
-            await handleSignUp(values, navigation);
+            const signUpResponse = await handleSignUp(values, navigation);
+            if (signUpResponse.exists) {
+                console.log('User with phone number already exists:', values.phoneNumber);
+                toast.show('User with phone number already exists', { type: 'error' });
+                return;
+            }
+
             navigation.navigate('VerifyNumber', { phoneNumber: values.phoneNumber });
             toast.show('Code sent successfully to: ' + values.phoneNumber, { type: 'success' });
         } catch (error) {

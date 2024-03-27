@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Keyboard, Animated, TouchableWithoutFeedback, StyleSheet, SafeAreaView, Modal } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Keyboard, Modal, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
@@ -17,42 +17,25 @@ const validationSchema = yup.object().shape({
         .max(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`),
 });
 
-export default function IdentifyAlmostThereScreen({ onClose }) {
+export default function IdentifyAlmostThereScreen({ visible, onClose, navigation, setThankYouModalVisible }) {
     const toast = useToast();
     const [otpValues, setOtpValues] = useState(Array(OTP_LENGTH).fill(''));
     const otpInputs = useRef([]);
-    const translateY = new Animated.Value(400);
-
-    const handleSubmit = (enteredOtp) => {
-        if (enteredOtp === '000000') {
-            toast.show('Welcome to Maitri!', { type: 'success' });
-            navigation.navigate('Main');
-        } else {
-            toast.show('Invalid Code. Please try again.', { type: 'error' });
-        }
-    };
-
-    useEffect(() => {
-        Animated.timing(translateY, {
-            toValue: 200,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
-    }, []);
-
-    const handleClose = () => {
-        Animated.timing(translateY, {
-            toValue: 400,
-            duration: 300,
-            useNativeDriver: true,
-        }).start(() => onClose());
-    };
 
     return (
-        <SafeAreaView style={[styles.safeArea, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
-            <TouchableWithoutFeedback onPress={handleClose}>
-                <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-                    <Animated.View style={[styles.container, styles.authContainer, { transform: [{ translateY }] }]}>
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={visible}
+            onRequestClose={onClose}
+        >
+            <View style={styles.modal}>
+                <TouchableOpacity
+                    style={styles.overlayTouchable}
+                    onPress={onClose}
+                />
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
                         <TouchableOpacity
                             style={{ flex: 1 }}
                             onPress={() => Keyboard.dismiss()}
@@ -60,13 +43,12 @@ export default function IdentifyAlmostThereScreen({ onClose }) {
                         >
                             <Formik
                                 initialValues={{ otp: '' }}
-                                onSubmit={() => handleSubmit(otpValues.join(''))}
                                 validationSchema={validationSchema}
                             >
                                 {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
                                     <View style={[styles.container, styles.authContainer]}>
-                                        <TouchableOpacity onPress={handleClose} style={styles.backLink}>
-                                            <ArrowLeftIcon width={20} height={20} color={'#000'} />
+                                        <TouchableOpacity onPress={onClose} style={styles.backLink}>
+                                            <ArrowLeftIcon style={styles.backLinkIcon} />
                                         </TouchableOpacity>
                                         <View style={styles.topTextsContainer}>
                                             <Text style={[styles.title, stylesVerify.title]}>Almost there!</Text>
@@ -88,8 +70,9 @@ export default function IdentifyAlmostThereScreen({ onClose }) {
                                                         const isAllFieldsFilled = newOtpValues.every(value => value !== '');
                                                         if (isAllFieldsFilled) {
                                                             if (enteredOtp === '000000') {
-                                                                toast.show('Joining successful!', { type: 'success' });
+                                                                toast.show('Welcome to Maitri!', { type: 'success' });
                                                                 navigation.navigate('Main');
+                                                                onClose();
                                                             } else {
                                                                 toast.show('Invalid Code. Please try again.', { type: 'error' });
                                                             }
@@ -111,7 +94,10 @@ export default function IdentifyAlmostThereScreen({ onClose }) {
                                         )}
 
                                         <View style={stylesVerify.bottomTextsContainer}>
-                                            <TouchableOpacity onPress={handleClose}>
+                                            <TouchableOpacity onPress={() => {
+                                                onClose();
+                                                setThankYouModalVisible(true);
+                                            }}>
                                                 <Text style={stylesVerify.bottomText}>
                                                     I don't have a code
                                                 </Text>
@@ -121,10 +107,10 @@ export default function IdentifyAlmostThereScreen({ onClose }) {
                                 )}
                             </Formik>
                         </TouchableOpacity>
-                    </Animated.View>
+                    </View>
                 </View>
-            </TouchableWithoutFeedback>
-        </SafeAreaView>
+            </View>
+        </Modal >
     );
 }
 
@@ -139,8 +125,7 @@ const stylesVerify = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         gap: 10,
-        marginTop: 100,
-        marginBottom: 15,
+        marginVertical: 15,
     },
     otpInput: {
         width: 40,
@@ -158,7 +143,7 @@ const stylesVerify = StyleSheet.create({
         borderColor: '#EE0004',
     },
     bottomTextsContainer: {
-        marginTop: 60,
+        marginTop: 15,
         alignItems: 'center',
         gap: 10,
     },

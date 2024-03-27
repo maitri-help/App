@@ -35,7 +35,7 @@ const stylesHome = StyleSheet.create({
         backgroundColor: '#E91145',
         width: 8,
         height: 8,
-        borderRadius: '50%',
+        borderRadius: 4,
         position: 'absolute',
         bottom: 1,
         right: -4,
