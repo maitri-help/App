@@ -11,6 +11,9 @@ export default styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    contentContainer: {
+        paddingHorizontal: 30,
+    },
     buttonContainer: {
         width: '100%',
         paddingHorizontal: 40,
@@ -161,8 +164,7 @@ export default styles = StyleSheet.create({
     topBar: {
         borderBottomColor: '#E5E5E5',
         borderBottomWidth: 1,
-        paddingTop: 30,
-        paddingBottom: 20,
+        paddingVertical: 20,
         paddingHorizontal: 30,
         flexDirection: 'row',
         alignItems: 'center',

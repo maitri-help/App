@@ -49,6 +49,5 @@ const styles = StyleSheet.create({
     backgroundColor: lightThemeColor,
     color: '#737373',
     textTransform: 'capitalize',
-    lineHeight: 1,
   }
 });
