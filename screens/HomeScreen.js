@@ -1,10 +1,119 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import CustomBox from '../compontents/CustomBox';
+import Task from '../compontents/Task';
 
 export default function HomeScreen({ navigation }) {
+    const [activeTab, setActiveTab] = useState('All');
+
+    const handleTabPress = (tab) => {
+        setActiveTab(tab);
+    };
+
+    const allTasks = [
+        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', image: require('../assets/emojis/robot-icon.png') },
+        { id: 3, title: 'Buy groceries', assignee: ['Chandler Bing', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/robot-icon.png') },
+        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/robot-icon.png') },
+    ];
+
+    const unassignedTasks = [
+        { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/robot-icon.png') },
+    ];
+
+    const personalTasks = [
+        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 4, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/robot-icon.png') },
+    ];
+
+    const renderTasks = (tasks) => {
+        if (tasks.length === 0) {
+            switch (activeTab) {
+                case 'All':
+                    return (
+                        <View style={stylesHome.tasksContainer}>
+                            <ScrollView contentContainerStyle={stylesHome.tasksScrollEmpty}>
+                                <View style={[styles.contentContainer, stylesHome.tasks]}>
+                                    <View style={stylesHome.tasksTop}>
+                                        <Text style={stylesHome.tasksWelcome}>
+                                            Welcome to Maitri!
+                                        </Text>
+                                        <View style={stylesHome.tasksImgWrapper}>
+                                            <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesHome.tasksImg} />
+                                        </View>
+                                    </View>
+                                    <View style={stylesHome.tasksBottom}>
+                                        <Text style={stylesHome.tasksDescription}>
+                                            Click here To add your first task
+                                        </Text>
+                                        <View style={stylesHome.tasksArrowImgWrapper}>
+                                            <Image source={require('../assets/img/purple-arrow-down.png')} style={stylesHome.tasksArrowImg} />
+                                        </View>
+                                    </View>
+                                </View>
+                            </ScrollView>
+                        </View>
+                    );
+                case 'Unassigned':
+                    return (
+                        <View style={stylesHome.tasksContainer}>
+                            <ScrollView contentContainerStyle={stylesHome.tasksScrollEmpty}>
+                                <View style={[styles.contentContainer, stylesHome.tasks]}>
+                                    <View style={stylesHome.unassignedContainer}>
+                                        <View style={stylesHome.textWrapper}>
+                                            <Text style={[styles.text, stylesHome.text]}>
+                                                All tasks have been assigned
+                                            </Text>
+                                        </View>
+                                        <View style={stylesHome.illustrationWrapper}>
+                                            <Image source={require('../assets/img/mimi-illustration.png')} style={stylesHome.illustration} />
+                                        </View>
+                                    </View>
+                                </View>
+                            </ScrollView>
+                        </View>
+                    );
+                case 'Personal':
+                    return (
+                        <View style={stylesHome.tasksContainer}>
+                            <ScrollView contentContainerStyle={stylesHome.tasksScrollEmpty}>
+                                <View style={[styles.contentContainer, stylesHome.tasks]}>
+                                    <View style={stylesHome.tasksPersonalTop}>
+                                        <Text style={[styles.text, stylesHome.text]}>
+                                            You have no personal tasks yet
+                                        </Text>
+                                    </View>
+                                    <View style={stylesHome.tasksBottom}>
+                                        <Text style={stylesHome.tasksDescription}>
+                                            Click here To add your first task
+                                        </Text>
+                                        <View style={stylesHome.tasksArrowImgWrapper}>
+                                            <Image source={require('../assets/img/purple-arrow-down.png')} style={stylesHome.tasksArrowImg} />
+                                        </View>
+                                    </View>
+                                </View>
+                            </ScrollView>
+                        </View>
+                    );
+                default:
+                    return null;
+            }
+        }
+
+        return (
+            <View style={stylesHome.tasksContainer}>
+                <ScrollView contentContainerStyle={stylesHome.tasksScroll}>
+                    {tasks.map(task => (
+                        <Task key={task.id} title={task.title} assignee={task.assignee} time={task.time} image={task.image} />
+                    ))}
+                </ScrollView>
+            </View>
+        );
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.topBar}>
@@ -18,7 +127,7 @@ export default function HomeScreen({ navigation }) {
                 <ScrollView horizontal={true} style={stylesHome.boxesScroll}>
                     <View style={{ marginLeft: 20 }} />
                     <CustomBox
-                        title="Rachel Green "
+                        title="Rachel Green"
                         subtitle="Has completed"
                         largerText="Do the Laundry"
                         buttons={[{ title: 'Say thank you!', bgColor: '#fff', textColor: '#000' }]}
@@ -59,27 +168,21 @@ export default function HomeScreen({ navigation }) {
                     <View style={{ marginRight: 20 }} />
                 </ScrollView>
             </View>
-            <View style={stylesHome.tasksContainer}>
-                <ScrollView contentContainerStyle={stylesHome.tasksScroll}>
-                    <View style={[styles.contentContainer, stylesHome.tasks]}>
-                        <View style={stylesHome.tasksTop}>
-                            <Text style={stylesHome.tasksWelcome}>
-                                Welcome to Maitri!
-                            </Text>
-                            <View style={stylesHome.tasksImgWrapper}>
-                                <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesHome.tasksImg} />
-                            </View>
-                        </View>
-                        <View style={stylesHome.tasksBottom}>
-                            <Text style={stylesHome.tasksDescription}>
-                                Click here To add your first task
-                            </Text>
-                            <View style={stylesHome.tasksArrowImgWrapper}>
-                                <Image source={require('../assets/img/purple-arrow-down.png')} style={stylesHome.tasksArrowImg} />
-                            </View>
-                        </View>
-                    </View>
-                </ScrollView>
+
+            <View style={[stylesHome.tabsContainer, styles.contentContainer]}>
+                <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesHome.tab, activeTab === 'All' && stylesHome.activeTab]}>
+                    <Text style={[stylesHome.tabText, activeTab === 'All' && stylesHome.activeTabText]}>All tasks</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleTabPress('Unassigned')} style={[stylesHome.tab, activeTab === 'Unassigned' && stylesHome.activeTab]}>
+                    <Text style={[stylesHome.tabText, activeTab === 'Unassigned' && stylesHome.activeTabText]}>Unassigned</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleTabPress('Personal')} style={[stylesHome.tab, activeTab === 'Personal' && stylesHome.activeTab]}>
+                    <Text style={[stylesHome.tabText, activeTab === 'Personal' && stylesHome.activeTabText]}>Personal</Text>
+                </TouchableOpacity>
+            </View>
+
+            <View style={stylesHome.tabsContentContainer}>
+                {activeTab === 'All' ? renderTasks(allTasks) : activeTab === 'Unassigned' ? renderTasks(unassignedTasks) : activeTab === 'Personal' ? renderTasks(personalTasks) : null}
             </View>
         </SafeAreaView>
     );
@@ -109,13 +212,50 @@ const stylesHome = StyleSheet.create({
         right: -4,
     },
     boxesContainer: {
-        marginBottom: 20,
+        marginBottom: 10,
+    },
+    boxesScroll: {
+        paddingTop: 25,
+        paddingBottom: 20,
+    },
+    tabsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 15,
+        marginBottom: 10,
+    },
+    tab: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderColor: '#1C4837',
+        borderWidth: 1,
+        borderRadius: 15,
+    },
+    activeTab: {
+        backgroundColor: '#1C4837',
+    },
+    tabText: {
+        color: '#000',
+    },
+    activeTabText: {
+        color: '#fff',
+    },
+    tabsContentContainer: {
+        flex: 1,
     },
     tasksContainer: {
         flex: 1,
     },
     tasksScroll: {
+        gap: 15,
+        paddingHorizontal: 30,
+        paddingTop: 10,
+        paddingBottom: 20,
+    },
+    tasksScrollEmpty: {
         flex: 1,
+        paddingTop: 10,
+        paddingHorizontal: 30,
     },
     tasks: {
         flex: 1,
@@ -155,4 +295,24 @@ const stylesHome = StyleSheet.create({
         resizeMode: 'contain',
         marginLeft: -120,
     },
+    unassignedContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        gap: 25,
+    },
+    illustrationWrapper: {
+        alignItems: 'center',
+    },
+    illustration: {
+        width: 120,
+        height: 120,
+        resizeMode: 'contain',
+    },
+    text: {
+        textAlign: 'center',
+    },
+    tasksPersonalTop: {
+        justifyContent: 'center',
+        flex: 1,
+    }
 });

@@ -73,7 +73,6 @@ const stylesBox = StyleSheet.create({
     container: {
         padding: 18,
         borderRadius: 20,
-        marginVertical: 25,
         marginHorizontal: 8,
         position: 'relative',
         overflow: 'hidden',
