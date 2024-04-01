@@ -1,19 +1,10 @@
-import axios from 'axios';
+import { sendOtp, createUser, getUser } from './api';
 
 export default async function handleSignUp(values, navigation) {
     const { fullName, email, phoneNumber } = values;
-    const sendOtpUrl = 'http://34.253.29.107:3000/auth/otp/send';
-    const createUserUrl = 'http://34.253.29.107:3000/users';
-    const getUserUrl = `http://34.253.29.107:3000/users/${phoneNumber}`;
-
-    const config = {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
 
     try {
-        const existingUserResponse = await axios.get(getUserUrl);
+        const existingUserResponse = await getUser(phoneNumber);
         if (existingUserResponse.data) {
             console.log('User with phone number already exists:', phoneNumber);
             return { exists: true };
@@ -22,10 +13,11 @@ export default async function handleSignUp(values, navigation) {
         const [firstName, ...lastNameArray] = fullName.split(' ');
         const lastName = lastNameArray.join(' ');
 
-        const userResponse = await axios.post(createUserUrl, { firstName, lastName, email, phoneNumber }, config);
+        const userResponse = await createUser({ firstName, lastName, email, phoneNumber });
+
         console.log('User Created:', userResponse.data);
 
-        const otpResponse = await axios.post(sendOtpUrl, { phoneNumber });
+        const otpResponse = await sendOtp(phoneNumber);
         console.log('OTP Sent:', otpResponse.data);
 
         return { exists: false };

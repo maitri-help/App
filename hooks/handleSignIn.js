@@ -1,29 +1,26 @@
-import axios from 'axios';
+import { storeUserData } from '../authStorage';
+import { sendOtp, getUser } from './api';
 
 export default function handleSignIn(phoneNumber) {
     return new Promise((resolve, reject) => {
-        const signInUrl = `http://34.253.29.107:3000/users/${phoneNumber}`;
-        const sendOtpUrl = 'http://34.253.29.107:3000/auth/otp/send';
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
-
-        axios.get(signInUrl, config)
+        getUser(phoneNumber)
             .then(response => {
                 console.log('Sign In Success:', response.data);
 
                 if (response.status === 200) {
-                    return axios.post(sendOtpUrl, { phoneNumber }, config);
+                    storeUserData(response.data);
+                    return sendOtp(phoneNumber);
                 } else {
                     reject(new Error('Phone number not found'));
                 }
             })
             .then(otpResponse => {
-                console.log('OTP Sent:', otpResponse.data);
-                resolve();
+                if (otpResponse && otpResponse.data) {
+                    console.log('OTP Sent:', otpResponse.data);
+                    resolve();
+                } else {
+                    reject(new Error('No OTP response received'));
+                }
             })
             .catch(error => {
                 console.error('Sign In Error:', error);

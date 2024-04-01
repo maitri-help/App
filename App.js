@@ -98,10 +98,7 @@ export default function App() {
       }}
     >
       <NavigationContainer>
-        {/* <Stack.Navigator initialRouteName="OnboardingScreen" screenOptions={() => ({
-          headerShown: false,
-        })}> */}
-        <Stack.Navigator initialRouteName="Main" screenOptions={() => ({
+        <Stack.Navigator initialRouteName="OnboardingScreen" screenOptions={() => ({
           headerShown: false,
         })}>
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />

@@ -4,8 +4,8 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
-import { verifyOtp, resendOtp } from '../hooks/otpService';
-import { storeAccessToken } from '../authStorage';
+import { verifyOtp, getUser } from '../hooks/api';
+import { storeUserData, storeAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { handleResend } from '../hooks/handleResend';
 
@@ -67,13 +67,21 @@ export default function AlmostThereScreen({ route, navigation }) {
             .then((response) => {
                 const accessToken = response.data.accessToken;
                 storeAccessToken(accessToken);
-                console.log('OTP Verification Response:', response.data);
+
+                getUser(phoneNumber)
+                    .then(response => {
+                        storeUserData(response.data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user data:', error);
+                    });
+
                 navigation.navigate('Main');
                 toast.show('Signed in successfully', { type: 'success' });
             })
             .catch((error) => {
                 console.error('OTP Verification Error:', error);
-                toast.show('Invaild Code. Please try again.', { type: 'error' });
+                toast.show('Invalid Code. Please try again.', { type: 'error' });
             });
     };
 

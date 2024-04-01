@@ -1,12 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import CustomBox from '../compontents/CustomBox';
 import Task from '../compontents/Task';
+import { getAccessToken, getUserData } from '../authStorage';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
+    const [firstName, setFirstName] = useState('');
+    const [greetingText, setGreetingText] = useState('');
+
+    useEffect(() => {
+        async function fetchUserData() {
+            try {
+                const accessToken = await getAccessToken();
+                console.log('Access Token from authStorage:', accessToken);
+                if (accessToken) {
+                    const userData = await getUserData();
+                    setFirstName(userData.firstName);
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        }
+        fetchUserData();
+
+        const currentHour = new Date().getHours();
+        if (currentHour < 12) {
+            setGreetingText('Good morning');
+        } else if (currentHour < 18) {
+            setGreetingText('Good afternoon');
+        } else {
+            setGreetingText('Good evening');
+        }
+    }, []);
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
@@ -117,7 +145,7 @@ export default function HomeScreen({ navigation }) {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.topBar}>
-                <Text style={stylesHome.greetingsText}>Good morning Ben!</Text>
+                <Text style={stylesHome.greetingsText}>{greetingText} {firstName}!</Text>
                 <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={stylesHome.bellWrapper}>
                     <BellIcon style={stylesHome.bellIcon} />
                     <View style={stylesHome.indicator}></View>

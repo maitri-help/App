@@ -1,11 +1,46 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export const storeUserData = async (userData) => {
+    try {
+        await AsyncStorage.setItem('userData', JSON.stringify(userData));
+        console.log('User data stored successfully');
+    } catch (error) {
+        console.error('Error storing user data:', error);
+    }
+};
+
+export const getUserData = async () => {
+    try {
+        const userDataString = await AsyncStorage.getItem('userData');
+        if (userDataString !== null) {
+            const userData = JSON.parse(userDataString);
+            console.log('User data retrieved successfully:', userData);
+            return userData;
+        } else {
+            console.log('No user data found');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error retrieving user data:', error);
+        return null;
+    }
+};
+
+export const clearUserData = async () => {
+    try {
+        await AsyncStorage.removeItem('userData');
+        console.log('User data cleared successfully');
+    } catch (error) {
+        console.error('Error clearing user data:', error);
+    }
+};
+
 export const storeAccessToken = async (accessToken) => {
     try {
         await AsyncStorage.setItem('accessToken', accessToken);
-        console.log('AccessToken stored successfully');
+        console.log('Access token stored successfully');
     } catch (error) {
-        console.error('Error storing accessToken:', error);
+        console.error('Error storing access token:', error);
     }
 };
 
@@ -13,14 +48,14 @@ export const getAccessToken = async () => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
         if (accessToken !== null) {
-            console.log('AccessToken retrieved successfully:', accessToken);
+            console.log('Access token retrieved successfully:', accessToken);
             return accessToken;
         } else {
-            console.log('No accessToken found');
+            console.log('No access token found');
             return null;
         }
     } catch (error) {
-        console.error('Error retrieving accessToken:', error);
+        console.error('Error retrieving access token:', error);
         return null;
     }
 };
@@ -28,8 +63,8 @@ export const getAccessToken = async () => {
 export const clearAccessToken = async () => {
     try {
         await AsyncStorage.removeItem('accessToken');
-        console.log('AccessToken cleared successfully');
+        console.log('Access token cleared successfully');
     } catch (error) {
-        console.error('Error clearing accessToken:', error);
+        console.error('Error clearing access token:', error);
     }
 };

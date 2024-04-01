@@ -4,7 +4,7 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
-import { verifyOtp, resendOtp } from '../hooks/otpService';
+import { verifyOtp } from '../hooks/api';
 import { storeAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { handleResend } from '../hooks/handleResend';
@@ -73,7 +73,7 @@ export default function VerifyNumberScreen({ route, navigation }) {
             })
             .catch((error) => {
                 console.error('OTP Verification Error:', error);
-                toast.show('Invaild Code. Please try again.', { type: 'error' });
+                toast.show('Invalid Code. Please try again.', { type: 'error' });
             });
     };
 
