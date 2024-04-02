@@ -137,17 +137,16 @@ const stylesLogin = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 12,
+        elevation: 8,
     },
     registerTextLink: {
         marginTop: 15,
     },
     newHereText: {
         fontSize: 14,
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     registerText: {
-        fontWeight: '600',
         fontFamily: 'poppins-semibold',
         textDecorationLine: 'underline',
     },

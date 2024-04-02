@@ -166,7 +166,6 @@ const stylesVerify = StyleSheet.create({
         textAlign: 'center',
         fontSize: 16,
         color: '#252525',
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     errorInput: {
@@ -178,19 +177,16 @@ const stylesVerify = StyleSheet.create({
         gap: 10,
     },
     bottomTitle: {
-        fontWeight: '600',
         fontFamily: 'poppins-semibold',
         fontSize: 15,
     },
     bottomText: {
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
         fontSize: 14,
         color: '#7A7A7A'
     },
     resendClickable: {
         color: '#000',
-        fontWeight: '500',
         fontFamily: 'poppins-medium',
         textDecorationLine: 'underline',
     }

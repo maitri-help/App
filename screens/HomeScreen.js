@@ -41,20 +41,20 @@ export default function HomeScreen({ navigation }) {
     };
 
     const allTasks = [
-        // { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
-        // { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', image: require('../assets/emojis/robot-icon.png') },
-        // { id: 3, title: 'Buy groceries', assignee: ['Chandler Bing', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
-        // { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/robot-icon.png') },
-        // { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', image: require('../assets/emojis/robot-icon.png') },
+        { id: 3, title: 'Buy groceries', assignee: ['Chandler Bing', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/robot-icon.png') },
+        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/robot-icon.png') },
     ];
 
     const unassignedTasks = [
-        // { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/robot-icon.png') },
+        { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/robot-icon.png') },
     ];
 
     const personalTasks = [
-        // { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
-        // { id: 4, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 4, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/robot-icon.png') },
     ];
 
     const renderTasks = (tasks) => {
@@ -64,7 +64,7 @@ export default function HomeScreen({ navigation }) {
                     return (
                         <View style={stylesHome.tasksContainer}>
                             <ScrollView contentContainerStyle={stylesHome.tasksScrollEmpty}>
-                                <View style={[styles.contentContainer, stylesHome.tasks]}>
+                                <View style={[styles.contentContainer, stylesHome.tasksEmpty]}>
                                     <View style={stylesHome.tasksTop}>
                                         <Text style={stylesHome.tasksWelcome}>
                                             Welcome to Maitri!
@@ -89,7 +89,7 @@ export default function HomeScreen({ navigation }) {
                     return (
                         <View style={stylesHome.tasksContainer}>
                             <ScrollView contentContainerStyle={stylesHome.tasksScrollEmpty}>
-                                <View style={[styles.contentContainer, stylesHome.tasks]}>
+                                <View style={[styles.contentContainer, stylesHome.tasksEmpty]}>
                                     <View style={stylesHome.unassignedContainer}>
                                         <View style={stylesHome.textWrapper}>
                                             <Text style={[styles.text, stylesHome.text]}>
@@ -108,7 +108,7 @@ export default function HomeScreen({ navigation }) {
                     return (
                         <View style={stylesHome.tasksContainer}>
                             <ScrollView contentContainerStyle={stylesHome.tasksScrollEmpty}>
-                                <View style={[styles.contentContainer, stylesHome.tasks]}>
+                                <View style={[styles.contentContainer, stylesHome.tasksEmpty]}>
                                     <View style={stylesHome.tasksPersonalTop}>
                                         <Text style={[styles.text, stylesHome.text]}>
                                             You have no personal tasks yet
@@ -219,7 +219,6 @@ export default function HomeScreen({ navigation }) {
 const stylesHome = StyleSheet.create({
     greetingsText: {
         fontSize: 18,
-        fontWeight: '500',
         fontFamily: 'poppins-medium',
     },
     bellWrapper: {
@@ -239,9 +238,6 @@ const stylesHome = StyleSheet.create({
         bottom: 1,
         right: -4,
     },
-    boxesContainer: {
-        marginBottom: 5,
-    },
     boxesScroll: {
         paddingVertical: 20,
     },
@@ -249,20 +245,24 @@ const stylesHome = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         gap: 15,
-        marginBottom: 10,
+        marginVertical: 10,
     },
     tab: {
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderColor: '#1C4837',
         borderWidth: 1,
-        borderRadius: 15,
+        borderRadius: 20,
+        alignItems: 'center',
     },
     activeTab: {
         backgroundColor: '#1C4837',
     },
     tabText: {
         color: '#000',
+        fontFamily: 'poppins-regular',
+        fontSize: 13,
+        lineHeight: 17,
     },
     activeTabText: {
         color: '#fff',
@@ -284,15 +284,19 @@ const stylesHome = StyleSheet.create({
         paddingTop: 10,
         paddingHorizontal: 30,
     },
+    tasksEmpty: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+    },
     tasks: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
     },
     tasksWelcome: {
         textAlign: 'center',
         fontSize: 20,
-        fontWeight: '700',
         fontFamily: 'poppins-bold',
         marginBottom: 15,
     },
@@ -308,10 +312,9 @@ const stylesHome = StyleSheet.create({
     tasksDescription: {
         textAlign: 'center',
         fontSize: 16,
-        fontWeight: '600',
-        fontFamily: 'poppins-semibold',
+        fontFamily: 'poppins-medium',
         lineHeight: 20,
-        marginBottom: 20,
+        marginBottom: 10,
     },
     tasksArrowImgWrapper: {
         alignItems: 'center',

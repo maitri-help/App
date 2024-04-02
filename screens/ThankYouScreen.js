@@ -53,7 +53,6 @@ const stylesThankYou = StyleSheet.create({
         textAlign: 'center',
     },
     textMedium: {
-        fontWeight: '500',
         fontFamily: 'poppins-medium',
     },
     textsContainer: {

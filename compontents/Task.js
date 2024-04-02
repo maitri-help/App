@@ -33,6 +33,7 @@ const stylesTask = StyleSheet.create({
         },
         shadowOpacity: 0.09,
         shadowRadius: 8.00,
+        elevation: 8,
     },
     taskImageWrapper: {
         width: 50,
@@ -56,7 +57,6 @@ const stylesTask = StyleSheet.create({
         color: '#000',
         fontSize: 14,
         fontFamily: 'poppins-regular',
-        fontWeight: '400',
         lineHeight: 16,
         marginBottom: 2,
     },
@@ -64,14 +64,12 @@ const stylesTask = StyleSheet.create({
         color: '#747474',
         fontSize: 12,
         fontFamily: 'poppins-regular',
-        fontWeight: '400',
         lineHeight: 14,
     },
     taskTime: {
         color: '#9F9F9F',
         fontSize: 12,
         fontFamily: 'poppins-light',
-        fontWeight: '300',
         lineHeight: 14,
     }
 });

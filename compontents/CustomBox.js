@@ -94,7 +94,6 @@ const stylesBox = StyleSheet.create({
     },
     title: {
         fontSize: 16,
-        fontWeight: '500',
         fontFamily: 'poppins-medium',
         lineHeight: 18,
         color: '#000',
@@ -104,7 +103,6 @@ const stylesBox = StyleSheet.create({
     },
     subtitle: {
         fontSize: 14,
-        fontWeight: '500',
         fontFamily: 'poppins-medium',
         color: '#000',
         opacity: 0.5,
@@ -114,7 +112,6 @@ const stylesBox = StyleSheet.create({
     },
     largerText: {
         fontSize: 18,
-        fontWeight: '600',
         fontFamily: 'poppins-semibold',
         marginBottom: 5,
         textAlign: 'center',

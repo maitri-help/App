@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontSize: 18,
-    fontWeight: '400',
     fontFamily: 'poppins-regular',
   },
   buttonSmall: {
@@ -35,13 +34,13 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.12,
     shadowRadius: 10,
+    elevation: 8,
   },
   buttonSmallText: {
     color: '#fff',
     textAlign: 'center',
     fontSize: 14,
     lineHeight: 18,
-    fontWeight: '500',
     fontFamily: 'poppins-medium',
   }
 });

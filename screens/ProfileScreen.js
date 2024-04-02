@@ -20,6 +20,5 @@ const stylesProfile = StyleSheet.create({
         alignItems: 'center',
         gap: 20,
         fontSize: 14,
-        fontWeight: '400',
     },
 });

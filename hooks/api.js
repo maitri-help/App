@@ -21,3 +21,7 @@ export function getUser(phoneNumber) {
 export function createUser(data) {
     return axios.post(`${baseUrl}/users`, data);
 }
+
+export function createUserType(userId, userType) {
+    return axios.post(`${baseUrl}/users/${userId}/user/type`, { userType });
+}

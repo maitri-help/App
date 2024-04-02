@@ -40,7 +40,7 @@ export default function OnboardingScreen({ navigation }) {
     };
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: '#fff' }}>
             <Swiper
                 ref={swiperRef}
                 loop={false}
@@ -133,7 +133,6 @@ const stylesOnboard = StyleSheet.create({
         right: 25,
     },
     skipButtonText: {
-        fontWeight: '600',
         fontFamily: 'poppins-semibold',
         textDecorationLine: 'underline',
         fontSize: 14,
@@ -153,11 +152,9 @@ const stylesOnboard = StyleSheet.create({
     haveAccountText: {
         textDecorationLine: 'underline',
         fontSize: 14,
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     loginText: {
-        fontWeight: '600',
         fontFamily: 'poppins-semibold',
     }
 });

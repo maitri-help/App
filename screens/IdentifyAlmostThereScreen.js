@@ -136,7 +136,6 @@ const stylesVerify = StyleSheet.create({
         textAlign: 'center',
         fontSize: 16,
         color: '#252525',
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     errorInput: {
@@ -150,7 +149,6 @@ const stylesVerify = StyleSheet.create({
     bottomText: {
         fontSize: 14,
         color: '#000',
-        fontWeight: '500',
         fontFamily: 'poppins-medium',
         textDecorationLine: 'underline',
     },

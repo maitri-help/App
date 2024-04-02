@@ -84,6 +84,7 @@ export default function App() {
   return (
     <ToastProvider
       placement="top"
+      offsetTop={30}
       renderType={{
         error: (toast) => (
           <View style={[styles.toast, styles.toastError]}>

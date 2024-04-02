@@ -1,10 +1,11 @@
 
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 
 export default styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#fff',
+        paddingTop: (Platform.OS === 'android') ? 30 : 0,
     },
     container: {
         flex: 1,
@@ -41,13 +42,11 @@ export default styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: '500',
         fontFamily: 'poppins-medium',
     },
     text: {
         color: '#7A7A7A',
         fontSize: 14,
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     inputWrapper: {
@@ -60,7 +59,6 @@ export default styles = StyleSheet.create({
         paddingLeft: 15,
         paddingRight: 40,
         paddingVertical: 5,
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     inputIcon: {
@@ -101,7 +99,6 @@ export default styles = StyleSheet.create({
         marginRight: 5,
         lineHeight: 20,
         fontSize: 13,
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     errorText: {
@@ -109,7 +106,6 @@ export default styles = StyleSheet.create({
         marginBottom: 5,
         width: '100%',
         fontSize: 13,
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     backLink: {
@@ -147,12 +143,13 @@ export default styles = StyleSheet.create({
         },
         shadowOpacity: 0.16,
         shadowRadius: 15,
+        elevation: 8,
         marginVertical: 5,
     },
     toastText: {
         color: '#000',
         fontSize: 14,
-        fontWeight: '400',
+        lineHeight: 18,
         fontFamily: 'poppins-regular',
     },
     toastError: {
@@ -176,7 +173,6 @@ export default styles = StyleSheet.create({
     },
     topBarTitle: {
         fontSize: 18,
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     overlay: {

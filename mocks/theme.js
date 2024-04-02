@@ -18,18 +18,15 @@ export function getTheme() {
     monthTextColor: '#000',
     textMonthFontSize: 18,
     textMonthFontFamily: 'poppins-medium',
-    textMonthFontWeight: '500',
     // day names
     textSectionTitleColor: '#000',
     textDayHeaderFontSize: 12,
     textDayHeaderFontFamily: 'poppins-regular',
-    textDayHeaderFontWeight: '400',
     // dates
     dayTextColor: '#000',
     todayTextColor: '#26847B',
     textDayFontSize: 14,
     textDayFontFamily: 'poppins-medium',
-    textDayFontWeight: '500',
     textDayStyle: {marginTop: Platform.OS === 'android' ? 2 : 4},
     // selected date
     selectedDayBackgroundColor: themeColor,

@@ -21,7 +21,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function VerifyNumberScreen({ route, navigation }) {
-    const { phoneNumber } = route.params;
+    const { phoneNumber, userId } = route.params;
     const toast = useToast();
 
     const otpInputRef = useRef([]);
@@ -68,7 +68,7 @@ export default function VerifyNumberScreen({ route, navigation }) {
                 const accessToken = response.data.accessToken;
                 storeAccessToken(accessToken);
                 console.log('OTP Verification Response:', response.data);
-                navigation.navigate('Success');
+                navigation.navigate('Success', { userId });
                 toast.show('Signed in successfully', { type: 'success' });
             })
             .catch((error) => {
@@ -158,7 +158,6 @@ const stylesVerify = StyleSheet.create({
         textAlign: 'center',
         fontSize: 16,
         color: '#252525',
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     errorInput: {
@@ -170,19 +169,16 @@ const stylesVerify = StyleSheet.create({
         gap: 10,
     },
     bottomTitle: {
-        fontWeight: '600',
         fontFamily: 'poppins-semibold',
         fontSize: 15,
     },
     bottomText: {
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
         fontSize: 14,
         color: '#7A7A7A'
     },
     resendClickable: {
         color: '#000',
-        fontWeight: '500',
         fontFamily: 'poppins-medium',
         textDecorationLine: 'underline',
     }

@@ -27,17 +27,22 @@ export default function RegisterScreen({ navigation }) {
 
     const handleFormSubmit = async (values) => {
         console.log('Form values in handleFormSubmit:', values);
-
+    
         try {
             const signUpResponse = await handleSignUp(values, navigation);
-            if (signUpResponse.exists) {
+            console.log('Sign up response:', signUpResponse);
+            const { exists, userId } = signUpResponse;
+    
+            if (exists) {
                 console.log('User with phone number already exists:', values.phoneNumber);
                 toast.show('User with phone number already exists', { type: 'error' });
                 return;
             }
-
-            navigation.navigate('VerifyNumber', { phoneNumber: values.phoneNumber });
-            toast.show('Code sent successfully to: ' + values.phoneNumber, { type: 'success' });
+    
+            if (userId) {
+                navigation.navigate('VerifyNumber', { phoneNumber: values.phoneNumber, userId });
+                toast.show('Code sent successfully to: ' + values.phoneNumber, { type: 'success' });
+            }
         } catch (error) {
             console.error('Sign up error:', error);
             toast.show('Sign up failed. Please try again.', { type: 'error' });
@@ -198,17 +203,16 @@ const stylesRegister = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 12,
+        elevation: 8,
     },
     loginTextLink: {
         marginTop: 15,
     },
     haveAccountText: {
         fontSize: 14,
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
     },
     loginText: {
-        fontWeight: '600',
         fontFamily: 'poppins-semibold',
         textDecorationLine: 'underline',
     },

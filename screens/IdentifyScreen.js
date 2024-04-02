@@ -5,12 +5,15 @@ import styles from '../Styles';
 import { useToast } from 'react-native-toast-notifications';
 import IdentifyAlmostThereScreen from './IdentifyAlmostThereScreen';
 import ThankYouScreen from './ThankYouScreen';
+import { createUserType } from '../hooks/api';
 
-export default function IdentifyScreen({ navigation }) {
+export default function IdentifyScreen({ navigation, route }) {
     const toast = useToast();
     const [almostThereModalVisible, setAlmostThereModalVisible] = useState(false);
     const [thankYouModalVisible, setThankYouModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+    const { userId } = route.params;
 
     useEffect(() => {
         if (almostThereModalVisible || thankYouModalVisible) {
@@ -35,7 +38,17 @@ export default function IdentifyScreen({ navigation }) {
                     initialValues={{ role: '' }}
                     onSubmit={(values) => {
                         if (values.role === 'Lead') {
-                            navigation.navigate('Main');
+                            createUserType(userId, values.role)
+                                .then(() => {
+                                    navigation.navigate('Main');
+                                })
+                                .catch((error) => {
+                                    console.error('Error creating user type:', error);
+                                    toast.show('An error occurred. Please try again.', {
+                                        type: 'error',
+                                        duration: 3000,
+                                    });
+                                });
                         } else if (values.role === 'Supporter') {
                             setAlmostThereModalVisible(true);
                         } else {
@@ -178,7 +191,6 @@ const stylesIdentify = StyleSheet.create({
     },
     optionButtonTitle: {
         fontSize: 16,
-        fontWeight: '500',
         fontFamily: 'poppins-medium',
     },
     emoji: {
@@ -188,7 +200,6 @@ const stylesIdentify = StyleSheet.create({
     optionButtonText: {
         color: '#7A7A7A',
         fontSize: 13,
-        fontWeight: '400',
         fontFamily: 'poppins-regular',
         textAlign: 'center'
     }

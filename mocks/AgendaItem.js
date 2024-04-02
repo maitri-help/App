@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.09,
         shadowRadius: 8.00,
+        elevation: 8,
         marginHorizontal: 20,
         marginTop: 8,
         marginBottom: 7,
@@ -91,7 +92,6 @@ const styles = StyleSheet.create({
         color: '#747474',
         fontSize: 12,
         fontFamily: 'poppins-regular',
-        fontWeight: '400',
         lineHeight: 14,
     },
     itemTimes: {
@@ -102,13 +102,11 @@ const styles = StyleSheet.create({
         color: '#9F9F9F',
         fontSize: 12,
         fontFamily: 'poppins-regular',
-        fontWeight: '400',
         lineHeight: 14,
     },
     itemTitleText: {
         color: '#000',
         fontFamily: 'poppins-medium',
-        fontWeight: '500',
         fontSize: 14,
     },
     emptyItem: {

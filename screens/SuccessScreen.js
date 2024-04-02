@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import styles from '../Styles';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen({ navigation, route }) {
+    const { userId } = route.params;
+
     useEffect(() => {
         const timer = setTimeout(() => {
-            navigation.navigate('Identify');
+            navigation.navigate('Identify', { userId });
         }, 5000);
 
         return () => clearTimeout(timer);
