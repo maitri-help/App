@@ -5,7 +5,8 @@ import styles from '../Styles';
 import { useToast } from 'react-native-toast-notifications';
 import IdentifyAlmostThereScreen from './IdentifyAlmostThereScreen';
 import ThankYouScreen from './ThankYouScreen';
-import { createUserType } from '../hooks/api';
+import { updateUserType } from '../hooks/api';
+import { updateUserTypeInStorage } from '../authStorage'; 
 
 export default function IdentifyScreen({ navigation, route }) {
     const toast = useToast();
@@ -38,12 +39,14 @@ export default function IdentifyScreen({ navigation, route }) {
                     initialValues={{ role: '' }}
                     onSubmit={(values) => {
                         if (values.role === 'Lead') {
-                            createUserType(userId, values.role)
+                            updateUserType(userId, values.role)
                                 .then(() => {
+                                    toast.show('Welcome to Maitri!', { type: 'success' });
+                                    updateUserTypeInStorage('Lead');
                                     navigation.navigate('Main');
                                 })
                                 .catch((error) => {
-                                    console.error('Error creating user type:', error);
+                                    console.error('Error updating user type:', error);
                                     toast.show('An error occurred. Please try again.', {
                                         type: 'error',
                                         duration: 3000,

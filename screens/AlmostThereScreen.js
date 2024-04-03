@@ -21,7 +21,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function AlmostThereScreen({ route, navigation }) {
-    const { phoneNumber } = route.params;
+    const { phoneNumber, userId } = route.params;
     const toast = useToast();
 
     const otpInputRef = useRef([]);
@@ -70,13 +70,20 @@ export default function AlmostThereScreen({ route, navigation }) {
 
                 getUser(phoneNumber)
                     .then(response => {
-                        storeUserData(response.data);
+                        const userData = response.data;
+                        const userType = userData.userType;
+
+                        if (userType === "default") {
+                            navigation.navigate('Identify', { userId });
+                        } else {
+                            storeUserData(userData);
+                            navigation.navigate('Main');
+                        }
                     })
                     .catch(error => {
                         console.error('Error fetching user data:', error);
                     });
 
-                navigation.navigate('Main');
                 toast.show('Signed in successfully', { type: 'success' });
             })
             .catch((error) => {

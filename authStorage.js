@@ -68,3 +68,18 @@ export const clearAccessToken = async () => {
         console.error('Error clearing access token:', error);
     }
 };
+
+export const updateUserTypeInStorage = async (userType) => {
+    try {
+        const userData = await getUserData();
+        if (userData) {
+            const updatedUserData = { ...userData, userType };
+            await storeUserData(updatedUserData);
+            console.log('User type updated successfully:', userType);
+        } else {
+            console.log('No user data found');
+        }
+    } catch (error) {
+        console.error('Error updating user type in storage:', error);
+    }
+};

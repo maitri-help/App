@@ -24,12 +24,15 @@ export default function LoginScreen({ navigation }) {
         console.log('Form values in handleFormSubmit:', values);
 
         try {
-            await handleSignIn(values.phoneNumber);
+            const { userId, otpResponse } = await handleSignIn(values);
+            console.log('userId:', userId);
+            console.log('OTP response:', otpResponse);
+
             toast.show('Code is sent to: ' + values.phoneNumber, { type: 'success' });
-            navigation.navigate('AlmostThere', { phoneNumber: values.phoneNumber });
+            navigation.navigate('AlmostThere', { phoneNumber: values.phoneNumber, userId });
         } catch (error) {
             console.error('Sign in error:', error);
-            toast.show(`Phone number doesn't exists.`, { type: 'error' });
+            toast.show(`Phone number doesn't exist.`, { type: 'error' });
         }
     };
 

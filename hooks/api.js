@@ -22,6 +22,6 @@ export function createUser(data) {
     return axios.post(`${baseUrl}/users`, data);
 }
 
-export function createUserType(userId, userType) {
-    return axios.post(`${baseUrl}/users/${userId}/user/type`, { userType });
+export function updateUserType(userId, userType) {
+    return axios.patch(`${baseUrl}/users/${userId}/user/type`, { userType });
 }

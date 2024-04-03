@@ -9,6 +9,7 @@ import { getAccessToken, getUserData } from '../authStorage';
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
     const [firstName, setFirstName] = useState('');
+    const [userRole, setUserRole] = useState('');
     const [greetingText, setGreetingText] = useState('');
 
     useEffect(() => {
@@ -19,6 +20,7 @@ export default function HomeScreen({ navigation }) {
                 if (accessToken) {
                     const userData = await getUserData();
                     setFirstName(userData.firstName);
+                    setUserRole(userData.userType);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -145,7 +147,7 @@ export default function HomeScreen({ navigation }) {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.topBar}>
-                <Text style={stylesHome.greetingsText}>{greetingText} {firstName}!</Text>
+                <Text style={stylesHome.greetingsText}>{greetingText} {firstName}! ({userRole})</Text>
                 <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={stylesHome.bellWrapper}>
                     <BellIcon style={stylesHome.bellIcon} />
                     <View style={stylesHome.indicator}></View>

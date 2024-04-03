@@ -22,7 +22,9 @@ import SuccessScreen from './screens/SuccessScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import IdentifyScreen from './screens/IdentifyScreen';
 import styles from './Styles';
-import { ToastProvider } from 'react-native-toast-notifications'
+import { ToastProvider } from 'react-native-toast-notifications';
+import * as Linking from 'expo-linking';
+import { clearUserData } from './authStorage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -62,6 +64,22 @@ function MainNavigator({ setIsLoggedIn }) {
 export default function App() {
   const [isReady, setIsReady] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    Linking.addEventListener('url', handleAppReload);
+
+    return () => {
+      Linking.removeEventListener('url', handleAppReload);
+    };
+  }, []);
+
+  // Function to handle app reload
+  const handleAppReload = async (event) => {
+    const url = event.url || '';
+    if (url.includes('exp://192.168.100.3:8081/--/')) {
+      await clearUserData();
+    }
+  };
 
   useEffect(() => {
     async function loadAppResources() {
