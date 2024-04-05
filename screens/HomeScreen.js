@@ -9,7 +9,6 @@ import { getAccessToken, getUserData } from '../authStorage';
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
     const [firstName, setFirstName] = useState('');
-    const [userRole, setUserRole] = useState('');
     const [greetingText, setGreetingText] = useState('');
 
     useEffect(() => {
@@ -20,7 +19,6 @@ export default function HomeScreen({ navigation }) {
                 if (accessToken) {
                     const userData = await getUserData();
                     setFirstName(userData.firstName);
-                    setUserRole(userData.userType);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -147,7 +145,7 @@ export default function HomeScreen({ navigation }) {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.topBar}>
-                <Text style={stylesHome.greetingsText}>{greetingText} {firstName}! ({userRole})</Text>
+                <Text style={stylesHome.greetingsText}>{greetingText} {firstName}!</Text>
                 <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={stylesHome.bellWrapper}>
                     <BellIcon style={stylesHome.bellIcon} />
                     <View style={stylesHome.indicator}></View>
@@ -155,7 +153,7 @@ export default function HomeScreen({ navigation }) {
             </View>
             <View style={stylesHome.boxesContainer}>
                 <ScrollView horizontal={true} style={stylesHome.boxesScroll}>
-                    <View style={{ marginLeft: 20 }} />
+                    <View style={{ marginLeft: 15 }} />
                     <CustomBox
                         title="Rachel Green"
                         subtitle="Has completed"
@@ -195,7 +193,7 @@ export default function HomeScreen({ navigation }) {
                         bgImgColor="#FFD8BC"
                         bgImg={2}
                     />
-                    <View style={{ marginRight: 20 }} />
+                    <View style={{ marginRight: 15 }} />
                 </ScrollView>
             </View>
 
@@ -225,6 +223,12 @@ const stylesHome = StyleSheet.create({
     },
     bellWrapper: {
         position: 'relative',
+        width: 30,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: -5,
+        marginVertical: -5,
     },
     bellIcon: {
         width: 20,
@@ -237,8 +241,8 @@ const stylesHome = StyleSheet.create({
         height: 8,
         borderRadius: 4,
         position: 'absolute',
-        bottom: 1,
-        right: -4,
+        bottom: 4,
+        right: 1,
     },
     boxesScroll: {
         paddingVertical: 20,
@@ -277,14 +281,14 @@ const stylesHome = StyleSheet.create({
     },
     tasksScroll: {
         gap: 15,
-        paddingHorizontal: 30,
+        paddingHorizontal: 25,
         paddingTop: 10,
         paddingBottom: 20,
     },
     tasksScrollEmpty: {
         flex: 1,
         paddingTop: 10,
-        paddingHorizontal: 30,
+        paddingHorizontal: 25,
     },
     tasksEmpty: {
         flex: 1,

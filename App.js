@@ -14,6 +14,7 @@ import AssignmentsScreen from './screens/AssignmentsScreen';
 import CirclesScreen from './screens/CirclesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
+import PendingRequestScreen from './screens/PendingRequestScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import VerifyNumberScreen from './screens/VerifyNumberScreen';
@@ -67,10 +68,6 @@ export default function App() {
 
   useEffect(() => {
     Linking.addEventListener('url', handleAppReload);
-
-    return () => {
-      Linking.removeEventListener('url', handleAppReload);
-    };
   }, []);
 
   // Function to handle app reload
@@ -131,6 +128,7 @@ export default function App() {
           <Stack.Screen name="Success" component={SuccessScreen} options={{ gestureEnabled: !isLoggedIn }} />
           <Stack.Screen name="Identify" component={IdentifyScreen} options={{ gestureEnabled: false }} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          <Stack.Screen name="PendingRequest" component={PendingRequestScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>

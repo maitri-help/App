@@ -5,7 +5,7 @@ export default styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#fff',
-        paddingTop: (Platform.OS === 'android') ? 30 : 0,
+        paddingTop: (Platform.OS === 'android') ? 40 : 0,
     },
     container: {
         flex: 1,
@@ -13,11 +13,11 @@ export default styles = StyleSheet.create({
         alignItems: 'center',
     },
     contentContainer: {
-        paddingHorizontal: 30,
+        paddingHorizontal: 25,
     },
     buttonContainer: {
         width: '100%',
-        paddingHorizontal: 40,
+        paddingHorizontal: 25,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -29,7 +29,7 @@ export default styles = StyleSheet.create({
     topTextsContainer: {
         alignItems: 'center',
         gap: 5,
-        paddingHorizontal: 30,
+        paddingHorizontal: 25,
         marginBottom: 40,
     },
     authContainer: {
@@ -125,10 +125,12 @@ export default styles = StyleSheet.create({
         pointerEvents: 'none',
     },
     backLinkInline: {
-        width: 18,
-        height: 18,
+        width: 30,
+        height: 30,
         alignItems: 'center',
         justifyContent: 'center',
+        marginHorizontal: -6,
+        marginVertical: -6,
     },
     toast: {
         paddingVertical: 12,
@@ -162,11 +164,11 @@ export default styles = StyleSheet.create({
         borderBottomColor: '#E5E5E5',
         borderBottomWidth: 1,
         paddingVertical: 20,
-        paddingHorizontal: 30,
+        paddingHorizontal: 25,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: 15,
+        gap: 12,
     },
     topBarBack: {
         justifyContent: 'flex-start',
