@@ -42,19 +42,19 @@ export default function HomeScreen({ navigation }) {
 
     const allTasks = [
         { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
-        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', image: require('../assets/emojis/robot-icon.png') },
-        { id: 3, title: 'Buy groceries', assignee: ['Chandler Bing', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
-        { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/robot-icon.png') },
-        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', image: require('../assets/emojis/doctor-icon.png') },
+        { id: 3, title: 'Buy groceries', assignee: ['Ross Geller', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', image: require('../assets/emojis/hearts-icon.png') },
+        { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/doctor-icon.png') },
+        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/smiling-face-icon.png') },
     ];
 
     const unassignedTasks = [
-        { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/robot-icon.png') },
+        { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', image: require('../assets/emojis/doctor-icon.png') },
     ];
 
     const personalTasks = [
         { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', image: require('../assets/emojis/robot-icon.png') },
-        { id: 4, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/robot-icon.png') },
+        { id: 4, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', image: require('../assets/emojis/smiling-face-icon.png') },
     ];
 
     const renderTasks = (tasks) => {
