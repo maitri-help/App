@@ -6,30 +6,34 @@ import CircleItem from '../compontents/CircleItem';
 import PlusIcon from '../assets/icons/plus-icon.svg';
 
 export default function CirclesScreen({ navigation }) {
-    const [activeTab, setActiveTab] = useState('All');
+    const [activeTab, setActiveTab] = useState('Circles');
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
     };
 
+    const handlePressCircleItemCount = (tab) => {
+        setActiveTab(tab);
+    };
+
     const tabContents = {
         First: [
-            // { firstName: 'Monica', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/unicorn-icon.png'), circle: 'First circle' },
-            // { firstName: 'Richard', lastName: 'Burke', image: require('../assets/emojis/male-icon.png'), circle: 'First circle' },
-            // { firstName: 'Emily', lastName: 'Waltham', image: require('../assets/emojis/female-icon.png'), circle: 'First circle' },
+            { firstName: 'Monica', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/unicorn-icon.png'), circle: 'First circle' },
+            { firstName: 'Richard', lastName: 'Burke', image: require('../assets/emojis/male-icon.png'), circle: 'First circle' },
+            { firstName: 'Emily', lastName: 'Waltham', image: require('../assets/emojis/female-icon.png'), circle: 'First circle' },
         ],
         Second: [
-            // { firstName: 'Chandler', lastName: 'Bing', color: '#FF8A35', image: require('../assets/emojis/hedgehog-icon.png'), circle: 'Second circle' },
-            // { firstName: 'Ross', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/waving-icon.png'), circle: 'Second circle' },
-            // { firstName: 'Ben', lastName: 'Geller', color: '#7FCC72', image: require('../assets/emojis/victory-icon.png'), circle: 'Second circle' },
-            // { firstName: 'Janice', lastName: 'Hosenstein', color: '#FF8A35', image: require('../assets/emojis/smiling-face-icon.png'), circle: 'Second circle' },
+            { firstName: 'Chandler', lastName: 'Bing', color: '#FF8A35', image: require('../assets/emojis/hedgehog-icon.png'), circle: 'Second circle' },
+            { firstName: 'Ross', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/waving-icon.png'), circle: 'Second circle' },
+            { firstName: 'Ben', lastName: 'Geller', color: '#7FCC72', image: require('../assets/emojis/victory-icon.png'), circle: 'Second circle' },
+            { firstName: 'Janice', lastName: 'Hosenstein', color: '#FF8A35', image: require('../assets/emojis/smiling-face-icon.png'), circle: 'Second circle' },
         ],
         Third: [
-            // { firstName: 'Rachel', lastName: 'Green', color: '#26847B', image: require('../assets/emojis/rock-icon.png'), circle: 'Third circle' },
-            // { firstName: 'Phoebe', lastName: 'Buffay', color: '#E5D9B6', image: require('../assets/emojis/cat-icon.png'), circle: 'Third circle' },
-            // { firstName: 'Joey', lastName: 'Tribbiani', color: '#7FCC72', image: require('../assets/emojis/cupid-icon.png'), circle: 'Third circle' },
-            // { firstName: 'Gunther', lastName: '', color: '#26847B', image: require('../assets/emojis/heart-icon.png'), circle: 'Third circle' },
-            // { firstName: 'Mike', lastName: 'Hannigan', image: require('../assets/emojis/lion-icon.png'), circle: 'Third circle' },
+            { firstName: 'Rachel', lastName: 'Green', color: '#26847B', image: require('../assets/emojis/rock-icon.png'), circle: 'Third circle' },
+            { firstName: 'Phoebe', lastName: 'Buffay', color: '#E5D9B6', image: require('../assets/emojis/cat-icon.png'), circle: 'Third circle' },
+            { firstName: 'Joey', lastName: 'Tribbiani', color: '#7FCC72', image: require('../assets/emojis/cupid-icon.png'), circle: 'Third circle' },
+            { firstName: 'Gunther', lastName: '', color: '#26847B', image: require('../assets/emojis/heart-icon.png'), circle: 'Third circle' },
+            { firstName: 'Mike', lastName: 'Hannigan', image: require('../assets/emojis/lion-icon.png'), circle: 'Third circle' },
         ]
     };
 
@@ -78,7 +82,13 @@ export default function CirclesScreen({ navigation }) {
                         </Text>
                     </View>
                     <View style={stylesCircles.circlesContainer}>
-                        <CirclesView circleItemsContent={circleItemsContent} additionalItemCountThird={additionalItemCountThird} additionalItemCountSecond={additionalItemCountSecond} additionalItemCountFirst={additionalItemCountFirst} />
+                        <CirclesView
+                            circleItemsContent={circleItemsContent}
+                            additionalItemCountThird={additionalItemCountThird}
+                            additionalItemCountSecond={additionalItemCountSecond}
+                            additionalItemCountFirst={additionalItemCountFirst}
+                            onPressCircleItemCount={handlePressCircleItemCount}
+                        />
                     </View>
                 </>
             );

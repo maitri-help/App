@@ -1,8 +1,10 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, Platform, TouchableOpacity } from 'react-native';
 import Circles from '../assets/img/circles.svg';
 
-export default function CirclesView({ circleItemsContent, additionalItemCountFirst, additionalItemCountSecond, additionalItemCountThird }) {
+export default function CirclesView({ circleItemsContent, additionalItemCountFirst, additionalItemCountSecond, additionalItemCountThird, onPressCircleItemCount }) {
+    const [isPressed, setIsPressed] = useState(false);
+
     return (
         <View style={stylesCircles.circlesContainerInner}>
             <Circles width={545} height={545} style={stylesCircles.circles} />
@@ -25,19 +27,28 @@ export default function CirclesView({ circleItemsContent, additionalItemCountFir
                             )}
                         </View>
                         {index === 2 && additionalItemCountThird > 0 && (
-                            <View style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountThird]}>
+                            <TouchableOpacity style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountThird, isPressed && stylesCircles.circleItemCountPressed]} onPress={() => onPressCircleItemCount('Third')}
+                                onPressIn={() => setIsPressed(true)}
+                                onPressOut={() => setIsPressed(false)}
+                            >
                                 <Text style={stylesCircles.circleItemCountText}>+{additionalItemCountThird}</Text>
-                            </View>
+                            </TouchableOpacity>
                         )}
                         {index === 1 && additionalItemCountSecond > 0 && (
-                            <View style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountSecond]}>
+                            <TouchableOpacity style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountSecond, isPressed && stylesCircles.circleItemCountPressed]} onPress={() => onPressCircleItemCount('Second')}
+                                onPressIn={() => setIsPressed(true)}
+                                onPressOut={() => setIsPressed(false)}
+                            >
                                 <Text style={stylesCircles.circleItemCountText}>+{additionalItemCountSecond}</Text>
-                            </View>
+                            </TouchableOpacity>
                         )}
                         {index === 0 && additionalItemCountFirst > 0 && (
-                            <View style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountFirst]}>
+                            <TouchableOpacity style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountFirst, isPressed && stylesCircles.circleItemCountPressed]} onPress={() => onPressCircleItemCount('First')}
+                                onPressIn={() => setIsPressed(true)}
+                                onPressOut={() => setIsPressed(false)}
+                            >
                                 <Text style={stylesCircles.circleItemCountText}>+{additionalItemCountFirst}</Text>
-                            </View>
+                            </TouchableOpacity>
                         )}
                     </React.Fragment>
                 ))}
@@ -152,6 +163,9 @@ const stylesCircles = StyleSheet.create({
         position: 'absolute',
         zIndex: 3,
     },
+    circleItemCountPressed: {
+        opacity: 1,
+    },
     circleItemCountText: {
         color: '#A0A0A0',
         fontSize: 13,
@@ -159,14 +173,14 @@ const stylesCircles = StyleSheet.create({
         lineHeight: 18,
     },
     circleItemCountFirst: {
-        bottom: 200,
-        transform: [{ translateX: 70 }],
+        bottom: (Platform.OS === 'android') ? 210 : 200,
+        transform: [{ translateX: (Platform.OS === 'android') ? 60 : 70 }],
     },
     circleItemCountSecond: {
-        transform: [{ translateX: 175 }],
+        transform: [{ translateX: (Platform.OS === 'android') ? 160 : 175 }],
     },
     circleItemCountThird: {
-        bottom: 35,
+        bottom: (Platform.OS === 'android') ? 45 : 35,
         transform: [{ translateX: 145 }],
     },
 });
