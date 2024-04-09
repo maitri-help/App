@@ -14,22 +14,22 @@ export default function CirclesScreen({ navigation }) {
 
     const tabContents = {
         First: [
-            { firstName: 'Monica', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/unicorn-icon.png'), circle: 'First circle' },
-            { firstName: 'Richard', lastName: 'Burke', image: require('../assets/emojis/male-icon.png'), circle: 'First circle' },
-            { firstName: 'Emily', lastName: 'Waltham', image: require('../assets/emojis/female-icon.png'), circle: 'First circle' },
+            // { firstName: 'Monica', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/unicorn-icon.png'), circle: 'First circle' },
+            // { firstName: 'Richard', lastName: 'Burke', image: require('../assets/emojis/male-icon.png'), circle: 'First circle' },
+            // { firstName: 'Emily', lastName: 'Waltham', image: require('../assets/emojis/female-icon.png'), circle: 'First circle' },
         ],
         Second: [
-            { firstName: 'Chandler', lastName: 'Bing', color: '#FF8A35', image: require('../assets/emojis/hedgehog-icon.png'), circle: 'Second circle' },
-            { firstName: 'Ross', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/waving-icon.png'), circle: 'Second circle' },
-            { firstName: 'Ben', lastName: 'Geller', color: '#7FCC72', image: require('../assets/emojis/victory-icon.png'), circle: 'Second circle' },
-            { firstName: 'Janice', lastName: 'Hosenstein', color: '#FF8A35', image: require('../assets/emojis/smiling-face-icon.png'), circle: 'Second circle' },
+            // { firstName: 'Chandler', lastName: 'Bing', color: '#FF8A35', image: require('../assets/emojis/hedgehog-icon.png'), circle: 'Second circle' },
+            // { firstName: 'Ross', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/waving-icon.png'), circle: 'Second circle' },
+            // { firstName: 'Ben', lastName: 'Geller', color: '#7FCC72', image: require('../assets/emojis/victory-icon.png'), circle: 'Second circle' },
+            // { firstName: 'Janice', lastName: 'Hosenstein', color: '#FF8A35', image: require('../assets/emojis/smiling-face-icon.png'), circle: 'Second circle' },
         ],
         Third: [
-            { firstName: 'Rachel', lastName: 'Green', color: '#26847B', image: require('../assets/emojis/rock-icon.png'), circle: 'Third circle' },
-            { firstName: 'Phoebe', lastName: 'Buffay', color: '#E5D9B6', image: require('../assets/emojis/cat-icon.png'), circle: 'Third circle' },
-            { firstName: 'Joey', lastName: 'Tribbiani', color: '#7FCC72', image: require('../assets/emojis/cupid-icon.png'), circle: 'Third circle' },
-            { firstName: 'Gunther', lastName: '', color: '#26847B', image: require('../assets/emojis/heart-icon.png'), circle: 'Third circle' },
-            { firstName: 'Mike', lastName: 'Hannigan', image: require('../assets/emojis/lion-icon.png'), circle: 'Third circle' },
+            // { firstName: 'Rachel', lastName: 'Green', color: '#26847B', image: require('../assets/emojis/rock-icon.png'), circle: 'Third circle' },
+            // { firstName: 'Phoebe', lastName: 'Buffay', color: '#E5D9B6', image: require('../assets/emojis/cat-icon.png'), circle: 'Third circle' },
+            // { firstName: 'Joey', lastName: 'Tribbiani', color: '#7FCC72', image: require('../assets/emojis/cupid-icon.png'), circle: 'Third circle' },
+            // { firstName: 'Gunther', lastName: '', color: '#26847B', image: require('../assets/emojis/heart-icon.png'), circle: 'Third circle' },
+            // { firstName: 'Mike', lastName: 'Hannigan', image: require('../assets/emojis/lion-icon.png'), circle: 'Third circle' },
         ]
     };
 
@@ -113,7 +113,7 @@ export default function CirclesScreen({ navigation }) {
                 return (
                     <View style={[styles.contentContainer, stylesCircles.circleListEmptyContainer]}>
                         <Text style={stylesCircles.circleListEmptyText}>
-                            There are no supporters in this circle yet.
+                            There are no supporters in this circle yet
                         </Text>
                         <Image source={require('../assets/img/mimi-hearts-illustration.png')} style={stylesCircles.circleListEmptyIllustration} />
                     </View>
@@ -293,7 +293,7 @@ const stylesCircles = StyleSheet.create({
     },
     circleListEmptyTexts: {
         gap: 20,
-        maxWidth: 190,
+        maxWidth: 200,
     },
     circleListEmptyText: {
         textAlign: 'center',
