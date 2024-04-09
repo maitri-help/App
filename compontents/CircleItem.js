@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 export default function CircleItem({ item }) {
     return (
         <View style={stylesCircles.circleListItem}>
-            <View style={stylesCircles.circleListItemImageWrapper}>
+            <View style={[stylesCircles.circleListItemImageWrapper, item.color ? {borderColor: item.color} : null ]}>
                 {item.image && <Image source={item.image} style={stylesCircles.circleListItemImage} />}
             </View>
             <View style={stylesCircles.circleListItemTextWrapper}>

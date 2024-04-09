@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Platform } from 'react-native';
 import Circles from '../assets/img/circles.svg';
 
 export default function CirclesView({ circleItemsContent }) {
     return (
-        <>
+        <View style={stylesCircles.circlesContainerInner}>
             <Circles width={545} height={545} style={stylesCircles.circles} />
             <View style={stylesCircles.circleItems}>
                 {circleItemsContent.map((item, index) => (
@@ -25,11 +25,16 @@ export default function CirclesView({ circleItemsContent }) {
                     </View>
                 ))}
             </View>
-        </>
+        </View>
     );
 }
 
 const stylesCircles = StyleSheet.create({
+    circlesContainerInner: {
+        position: 'relative',
+        marginLeft: '-52%',
+        flexShrink: 1,
+    },
     circles: {
         position: 'relative',
         zIndex: 1,
@@ -48,6 +53,7 @@ const stylesCircles = StyleSheet.create({
     },
     circleItemWrapper: {
         position: 'absolute',
+        alignItems: 'center',
     },
     circleItem: {
         backgroundColor: '#fff',
@@ -62,11 +68,15 @@ const stylesCircles = StyleSheet.create({
         lineHeight: 16,
     },
     circleItemTextOutside: {
-        paddingTop: 4,
-        marginBottom: -20
+        marginBottom: -22,
+        backgroundColor: '#fff',
+        padding: 3,
+        borderRadius: 10,
+        marginTop: 2,
+        overflow: 'hidden'
     },
     circleItemOuterWrapper: {
-        bottom: -15,
+        bottom: -12,
         transform: [{ translateX: 60 }],
     },
     circleItemOuter: {
@@ -78,7 +88,7 @@ const stylesCircles = StyleSheet.create({
     },
     circleItemMiddleWrapper: {
         top: 80,
-        transform: [{ translateX: 100 }],
+        transform: [{ translateX: (Platform.OS === 'android') ? 90 : 98 }],
     },
     circleItemMiddle: {
         borderColor: '#8BD759',

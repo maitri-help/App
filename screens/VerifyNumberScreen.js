@@ -157,6 +157,7 @@ const stylesVerify = StyleSheet.create({
         borderColor: '#000',
         textAlign: 'center',
         fontSize: 16,
+        lineHeight: 23,
         color: '#252525',
         fontFamily: 'poppins-regular',
     },
