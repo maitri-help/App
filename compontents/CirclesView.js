@@ -2,27 +2,44 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, Platform } from 'react-native';
 import Circles from '../assets/img/circles.svg';
 
-export default function CirclesView({ circleItemsContent }) {
+export default function CirclesView({ circleItemsContent, additionalItemCountFirst, additionalItemCountSecond, additionalItemCountThird }) {
     return (
         <View style={stylesCircles.circlesContainerInner}>
             <Circles width={545} height={545} style={stylesCircles.circles} />
             <View style={stylesCircles.circleItems}>
                 {circleItemsContent.map((item, index) => (
-                    <View key={index} style={[stylesCircles.circleItemWrapper, index === 0 ? stylesCircles.circleItemOuterWrapper : index === 1 ? stylesCircles.circleItemMiddleWrapper : stylesCircles.circleItemInnerWrapper]}>
-                        {item.image && (
-                            <>
+                    <React.Fragment key={index}>
+                        <View style={[stylesCircles.circleItemWrapper, index === 0 ? stylesCircles.circleItemOuterWrapper : index === 1 ? stylesCircles.circleItemMiddleWrapper : stylesCircles.circleItemInnerWrapper]}>
+                            {item.image && (
+                                <React.Fragment>
+                                    <View style={[stylesCircles.circleItem, index === 0 ? stylesCircles.circleItemOuter : index === 1 ? stylesCircles.circleItemMiddle : stylesCircles.circleItemInner]}>
+                                        <Image source={item.image} style={[stylesCircles.emoji, index === 0 ? stylesCircles.emojiOuter : index === 1 ? stylesCircles.emojiMiddle : stylesCircles.emojiInner]} />
+                                    </View>
+                                    <Text style={[stylesCircles.circleItemText, stylesCircles.circleItemTextOutside]}>{item.firstName}</Text>
+                                </React.Fragment>
+                            )}
+                            {!item.image && (
                                 <View style={[stylesCircles.circleItem, index === 0 ? stylesCircles.circleItemOuter : index === 1 ? stylesCircles.circleItemMiddle : stylesCircles.circleItemInner]}>
-                                    <Image source={item.image} style={[stylesCircles.emoji, index === 0 ? stylesCircles.emojiOuter : index === 1 ? stylesCircles.emojiMiddle : stylesCircles.emojiInner]} />
+                                    <Text style={stylesCircles.circleItemText}>{item.firstName}</Text>
                                 </View>
-                                <Text style={[stylesCircles.circleItemText, stylesCircles.circleItemTextOutside]}>{item.firstName}</Text>
-                            </>
-                        )}
-                        {!item.image && (
-                            <View style={[stylesCircles.circleItem, index === 0 ? stylesCircles.circleItemOuter : index === 1 ? stylesCircles.circleItemMiddle : stylesCircles.circleItemInner]}>
-                                <Text style={stylesCircles.circleItemText}>{item.firstName}</Text>
+                            )}
+                        </View>
+                        {index === 2 && additionalItemCountThird > 0 && (
+                            <View style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountThird]}>
+                                <Text style={stylesCircles.circleItemCountText}>+{additionalItemCountThird}</Text>
                             </View>
                         )}
-                    </View>
+                        {index === 1 && additionalItemCountSecond > 0 && (
+                            <View style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountSecond]}>
+                                <Text style={stylesCircles.circleItemCountText}>+{additionalItemCountSecond}</Text>
+                            </View>
+                        )}
+                        {index === 0 && additionalItemCountFirst > 0 && (
+                            <View style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountFirst]}>
+                                <Text style={stylesCircles.circleItemCountText}>+{additionalItemCountFirst}</Text>
+                            </View>
+                        )}
+                    </React.Fragment>
                 ))}
             </View>
         </View>
@@ -122,5 +139,34 @@ const stylesCircles = StyleSheet.create({
     emojiInner: {
         width: 50,
         height: 50,
+    },
+    circleItemCount: {
+        borderColor: '#D1D1D1',
+        borderWidth: 2,
+        backgroundColor: '#fff',
+        width: 36,
+        height: 36,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        zIndex: 3,
+    },
+    circleItemCountText: {
+        color: '#A0A0A0',
+        fontSize: 13,
+        fontFamily: 'poppins-medium',
+        lineHeight: 18,
+    },
+    circleItemCountFirst: {
+        bottom: 200,
+        transform: [{ translateX: 70 }],
+    },
+    circleItemCountSecond: {
+        transform: [{ translateX: 175 }],
+    },
+    circleItemCountThird: {
+        bottom: 35,
+        transform: [{ translateX: 145 }],
     },
 });
