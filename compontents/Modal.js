@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Modal, TouchableOpacity, StyleSheet } from 'react-native';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import styles from '../Styles';
 
-export default function ModalComponent({ visible, onClose, modalTopNav, modalTopNavLink, modalTopNavTitle, children, style }) {
+export default function ModalComponent({ visible, onClose, modalTopNav, modalTopNavLink, modalTopNavChildren, children, style }) {
     return (
         <Modal
             animationType="slide"
@@ -23,9 +23,7 @@ export default function ModalComponent({ visible, onClose, modalTopNav, modalTop
                                 <TouchableOpacity onPress={modalTopNavLink || onClose} style={styles.backLinkInline}>
                                     <ArrowLeftIcon style={styles.backLinkIcon} />
                                 </TouchableOpacity>
-                                <Text style={styles.topBarTitle}>
-                                    {modalTopNavTitle}
-                                </Text>
+                                {modalTopNavChildren}
                             </View>
                         }
                         {children}
@@ -53,4 +51,11 @@ const stylesModal = StyleSheet.create({
     overlayTouchable: {
         flex: 1,
     },
+    modalTopNav: {
+        paddingVertical: 25,
+        paddingHorizontal: 25,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    }
 });

@@ -125,12 +125,12 @@ export default styles = StyleSheet.create({
         pointerEvents: 'none',
     },
     backLinkInline: {
-        width: 30,
-        height: 30,
+        width: 35,
+        height: 35,
         alignItems: 'center',
         justifyContent: 'center',
-        marginHorizontal: -6,
-        marginVertical: -6,
+        marginHorizontal: -8,
+        marginVertical: -8,
     },
     toast: {
         paddingVertical: 12,

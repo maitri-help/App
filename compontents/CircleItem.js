@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-export default function CircleItem({ item }) {
+export default function CircleItem({ item, onPress }) {
     return (
-        <View style={stylesCircles.circleListItem}>
+        <TouchableOpacity onPress={onPress} style={stylesCircles.circleListItem}>
             <View style={[stylesCircles.circleListItemImageWrapper, item.color ? {borderColor: item.color} : null ]}>
                 {item.image && <Image source={item.image} style={stylesCircles.circleListItemImage} />}
             </View>
@@ -11,7 +11,7 @@ export default function CircleItem({ item }) {
                 <Text style={stylesCircles.circleListItemName}>{item.firstName} {item.lastName}</Text>
                 <Text style={stylesCircles.circleListItemText}>{item.circle}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }
 

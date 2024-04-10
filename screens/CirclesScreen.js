@@ -5,14 +5,22 @@ import CirclesView from '../compontents/CirclesView';
 import CircleItem from '../compontents/CircleItem';
 import PlusIcon from '../assets/icons/plus-icon.svg';
 import SendInviteScreen from './SendInviteScreen';
+import SupporterCardScreen from './SupporterCardScreen';
 
 export default function CirclesScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Circles');
     const [sendInvitesModalVisible, setSendInvitesModalVisible] = useState(false);
+    const [supporterCardModalVisible, setSupporterCardModalVisible] = useState(false);
+    const [selectedCircleItem, setSelectedCircleItem] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
+    const handleCircleItemPress = (item) => {
+        setSelectedCircleItem(item);
+        setSupporterCardModalVisible(true);
+    };
+
     useEffect(() => {
-        if (sendInvitesModalVisible) {
+        if (sendInvitesModalVisible || supporterCardModalVisible) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
@@ -25,7 +33,7 @@ export default function CirclesScreen({ navigation }) {
                 useNativeDriver: true,
             }).start();
         }
-    }, [sendInvitesModalVisible]);
+    }, [sendInvitesModalVisible || supporterCardModalVisible]);
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
@@ -132,7 +140,7 @@ export default function CirclesScreen({ navigation }) {
             return (
                 <View style={stylesCircles.circleListItems}>
                     {allContent.map((item, index) => (
-                        <CircleItem key={index} item={item} />
+                        <CircleItem key={index} item={item} onPress={() => handleCircleItemPress(item)} />
                     ))}
                 </View>
             );
@@ -152,7 +160,7 @@ export default function CirclesScreen({ navigation }) {
             return (
                 <View style={stylesCircles.circleListItems}>
                     {tabContent.map((item, index) => (
-                        <CircleItem key={index} item={item} />
+                        <CircleItem key={index} item={item} onPress={() => handleCircleItemPress(item)} />
                     ))}
                 </View>
             );
@@ -210,7 +218,7 @@ export default function CirclesScreen({ navigation }) {
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
-            {(sendInvitesModalVisible) && (
+            {(sendInvitesModalVisible || supporterCardModalVisible) && (
                 <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
             )}
 
@@ -218,6 +226,19 @@ export default function CirclesScreen({ navigation }) {
                 visible={sendInvitesModalVisible}
                 onClose={() => setSendInvitesModalVisible(false)}
                 navigation={navigation}
+            />
+
+            <SupporterCardScreen
+                visible={supporterCardModalVisible}
+                onClose={() => {
+                    setSupporterCardModalVisible(false);
+                    setSelectedCircleItem(null);
+                }}
+                navigation={navigation}
+                image={selectedCircleItem ? selectedCircleItem.image : ''}
+                color={selectedCircleItem ? selectedCircleItem.color : ''}
+                firstName={selectedCircleItem ? selectedCircleItem.firstName : ''}
+                lastName={selectedCircleItem ? selectedCircleItem.lastName : ''}
             />
         </>
     );
