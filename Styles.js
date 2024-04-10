@@ -163,7 +163,7 @@ export default styles = StyleSheet.create({
     topBar: {
         borderBottomColor: '#E5E5E5',
         borderBottomWidth: 1,
-        paddingVertical: 20,
+        paddingVertical: 18,
         paddingHorizontal: 25,
         flexDirection: 'row',
         alignItems: 'center',
@@ -176,26 +176,11 @@ export default styles = StyleSheet.create({
     topBarTitle: {
         fontSize: 18,
         fontFamily: 'poppins-regular',
+        lineHeight: 24,
     },
     overlay: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.5)',
         pointerEvents: 'none',
     },
-    overlayTouchable: {
-        flex: 1,
-    },
-    modal: {
-        flex: 1,
-    },
-    modalContainer: {
-        width: '100%',
-        height: '66%',
-        backgroundColor: '#fff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-    },
-    modalContent: {
-        flex: 1,
-    }
 });

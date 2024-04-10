@@ -1,12 +1,31 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import styles from '../Styles';
 import CirclesView from '../compontents/CirclesView';
 import CircleItem from '../compontents/CircleItem';
 import PlusIcon from '../assets/icons/plus-icon.svg';
+import SendInviteScreen from './SendInviteScreen';
 
 export default function CirclesScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Circles');
+    const [sendInvitesModalVisible, setSendInvitesModalVisible] = useState(false);
+    const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        if (sendInvitesModalVisible) {
+            Animated.timing(overlayOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(overlayOpacity, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [sendInvitesModalVisible]);
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
@@ -152,44 +171,55 @@ export default function CirclesScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <ScrollView contentContainerStyle={[stylesCircles.scrollContainer, hasEmptyContent() && !(activeTab === 'Circles') ? stylesCircles.scrollContainerFull : null]}>
-                <View style={[stylesCircles.tabsContainer, styles.contentContainer]}>
-                    <TouchableOpacity onPress={() => handleTabPress('Circles')} style={[stylesCircles.tab, activeTab === 'Circles' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'Circles' && stylesCircles.activeTabText]}>Circles</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesCircles.tab, activeTab === 'All' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'All' && stylesCircles.activeTabText]}>All</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('First')} style={[stylesCircles.tab, activeTab === 'First' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'First' && stylesCircles.activeTabText]}>First</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('Second')} style={[stylesCircles.tab, activeTab === 'Second' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'Second' && stylesCircles.activeTabText]}>Second</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('Third')} style={[stylesCircles.tab, activeTab === 'Third' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'Third' && stylesCircles.activeTabText]}>Third</Text>
+        <>
+            <SafeAreaView style={styles.safeArea}>
+                <ScrollView contentContainerStyle={[stylesCircles.scrollContainer, hasEmptyContent() && !(activeTab === 'Circles') ? stylesCircles.scrollContainerFull : null]}>
+                    <View style={[stylesCircles.tabsContainer, styles.contentContainer]}>
+                        <TouchableOpacity onPress={() => handleTabPress('Circles')} style={[stylesCircles.tab, activeTab === 'Circles' && stylesCircles.activeTab]}>
+                            <Text style={[stylesCircles.tabText, activeTab === 'Circles' && stylesCircles.activeTabText]}>Circles</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesCircles.tab, activeTab === 'All' && stylesCircles.activeTab]}>
+                            <Text style={[stylesCircles.tabText, activeTab === 'All' && stylesCircles.activeTabText]}>All</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleTabPress('First')} style={[stylesCircles.tab, activeTab === 'First' && stylesCircles.activeTab]}>
+                            <Text style={[stylesCircles.tabText, activeTab === 'First' && stylesCircles.activeTabText]}>First</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleTabPress('Second')} style={[stylesCircles.tab, activeTab === 'Second' && stylesCircles.activeTab]}>
+                            <Text style={[stylesCircles.tabText, activeTab === 'Second' && stylesCircles.activeTabText]}>Second</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleTabPress('Third')} style={[stylesCircles.tab, activeTab === 'Third' && stylesCircles.activeTab]}>
+                            <Text style={[stylesCircles.tabText, activeTab === 'Third' && stylesCircles.activeTabText]}>Third</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    {circlesContent(activeTab)}
+
+                </ScrollView>
+
+                <View style={stylesCircles.floatingButtonWrapper}>
+                    {hasEmptyContent() && (
+                        <View style={stylesCircles.floatingButtonEmpty}>
+                            <Text style={stylesCircles.floatingButtonEmptyText}>
+                                {getFloatingButtonText()}
+                            </Text>
+                            <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCircles.floatingButtonEmptyImg} />
+                        </View>
+                    )}
+                    <TouchableOpacity style={stylesCircles.floatingButton} onPress={() => setSendInvitesModalVisible(true)}>
+                        <PlusIcon color={'#fff'} />
                     </TouchableOpacity>
                 </View>
+            </SafeAreaView>
+            {(sendInvitesModalVisible) && (
+                <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+            )}
 
-                {circlesContent(activeTab)}
-
-            </ScrollView>
-
-            <View style={stylesCircles.floatingButtonWrapper}>
-                {hasEmptyContent() && (
-                    <View style={stylesCircles.floatingButtonEmpty}>
-                        <Text style={stylesCircles.floatingButtonEmptyText}>
-                            {getFloatingButtonText()}
-                        </Text>
-                        <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCircles.floatingButtonEmptyImg} />
-                    </View>
-                )}
-                <TouchableOpacity style={stylesCircles.floatingButton}>
-                    <PlusIcon color={'#fff'} />
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+            <SendInviteScreen
+                visible={sendInvitesModalVisible}
+                onClose={() => setSendInvitesModalVisible(false)}
+                navigation={navigation}
+            />
+        </>
     );
 }
 
