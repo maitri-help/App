@@ -22,6 +22,7 @@ import AlmostThereScreen from './screens/AlmostThereScreen';
 import SuccessScreen from './screens/SuccessScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import IdentifyScreen from './screens/IdentifyScreen';
+import SuppGreatNewsScreen from './screens/SuppGreatNewsScreen';
 import styles from './Styles';
 import { ToastProvider } from 'react-native-toast-notifications';
 import * as Linking from 'expo-linking';
@@ -114,9 +115,6 @@ export default function App() {
       }}
     >
       <NavigationContainer>
-        {/* <Stack.Navigator initialRouteName="OnboardingScreen" screenOptions={() => ({
-          headerShown: false,
-        })}> */}
         <Stack.Navigator initialRouteName="Main" screenOptions={() => ({
           headerShown: false,
         })}>
@@ -132,6 +130,7 @@ export default function App() {
           <Stack.Screen name="Identify" component={IdentifyScreen} options={{ gestureEnabled: false }} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
           <Stack.Screen name="PendingRequest" component={PendingRequestScreen} />
+          <Stack.Screen name="SuppGreatNews" component={SuppGreatNewsScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>

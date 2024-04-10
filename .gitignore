@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+package-lock.json
 
 # Expo
 .expo/
@@ -23,6 +24,7 @@ web-build/
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+yarn.lock
 
 # macOS
 .DS_Store
@@ -33,3 +35,4 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
