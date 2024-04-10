@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
+import styles from '../Styles';
 
-export default function ModalComponent({ visible, onClose, children, style }) {
+export default function ModalComponent({ visible, onClose, modalTopNav, modalTopNavLink, modalTopNavTitle, children, style }) {
     return (
         <Modal
             animationType="slide"
@@ -16,6 +18,16 @@ export default function ModalComponent({ visible, onClose, children, style }) {
                 />
                 <View style={[stylesModal.modalContainer, style && style.modalContainer]}>
                     <View style={[stylesModal.modalContent, style && style.modalContent]}>
+                        {modalTopNav &&
+                            <View style={stylesModal.modalTopNav}>
+                                <TouchableOpacity onPress={modalTopNavLink || onClose} style={styles.backLinkInline}>
+                                    <ArrowLeftIcon style={styles.backLinkIcon} />
+                                </TouchableOpacity>
+                                <Text style={styles.topBarTitle}>
+                                    {modalTopNavTitle}
+                                </Text>
+                            </View>
+                        }
                         {children}
                     </View>
                 </View>
