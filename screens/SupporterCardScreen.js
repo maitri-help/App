@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, Keyboard, StyleSheet, ScrollView } from 'react-native';
-import Modal from '../compontents/Modal';
+import { View, Text, Image, TextInput, TouchableOpacity, Keyboard, StyleSheet, ScrollView, Modal } from 'react-native';
+import ModalCustom from '../compontents/Modal';
 import styles from '../Styles';
 import EditIcon from '../assets/icons/edit-icon.svg';
+import CheckIcon from '../assets/icons/check-icon.svg';
 import ClockIcon from '../assets/icons/clock-icon.svg';
 import PhoneIcon from '../assets/icons/phone-classic-icon.svg';
 import EmailIcon from '../assets/icons/mail-icon.svg';
 
-export default function SupporterCardScreen({ visible, onClose, image, color, firstName, lastName, circle, tasks = [], phone, email, navigation }) {
+export default function SupporterCardScreen({ visible, onClose, image, color, firstName, lastName, circle, tasks = [], phone, email, nickname, navigation }) {
     const [selectedCircle, setSelectedCircle] = useState('Third');
+    const [showInnerModal, setShowInnerModal] = useState(false);
+    const [isEditable, setIsEditable] = useState(false);
 
     useEffect(() => {
         if (circle && ['First', 'Second', 'Third'].includes(circle)) {
@@ -22,8 +25,20 @@ export default function SupporterCardScreen({ visible, onClose, image, color, fi
         setSelectedCircle(option);
     };
 
+    const toggleEditable = () => {
+        setIsEditable(!isEditable);
+    };
+
+    const openInnerModal = () => {
+        setShowInnerModal(true);
+    };
+
+    const closeInnerModal = () => {
+        setShowInnerModal(false);
+    };
+
     return (
-        <Modal visible={visible} onClose={onClose} style={stylesSupporter} modalTopNav
+        <ModalCustom visible={visible} onClose={onClose} style={stylesSupporter} modalTopNav
             modalTopNavChildren={
                 <View style={stylesSupporter.supporterTop}>
                     <View style={stylesSupporter.supporterTopLeft}>
@@ -34,8 +49,12 @@ export default function SupporterCardScreen({ visible, onClose, image, color, fi
                             <Text style={stylesSupporter.circleItemName}>{firstName} {lastName}</Text>
                         </View>
                     </View>
-                    <TouchableOpacity style={stylesSupporter.editIconWrapper}>
-                        <EditIcon width={22} height={22} color={'#000'} style={stylesSupporter.editIcon} />
+                    <TouchableOpacity style={stylesSupporter.editIconWrapper} onPress={toggleEditable}>
+                        {isEditable ? (
+                            <CheckIcon width={22} height={22} color={'#000'} style={stylesSupporter.checkIcon} />
+                        ) : (
+                            <EditIcon width={22} height={22} color={'#000'} style={stylesSupporter.editIcon} />
+                        )}
                     </TouchableOpacity>
                 </View>
             }
@@ -49,34 +68,31 @@ export default function SupporterCardScreen({ visible, onClose, image, color, fi
                     >
                         <View style={stylesSupporter.supporterNickCircles}>
                             <View style={stylesSupporter.supporterNickname}>
-                                <TextInput
-                                    style={stylesSupporter.input}
-                                    maxLength={16}
-                                    placeholder='Nickname'
-                                    placeholderTextColor="#787878"
-                                />
+                                {isEditable ? (
+                                    <TextInput
+                                        style={[stylesSupporter.input, stylesSupporter.inputNickname]}
+                                        maxLength={16}
+                                        placeholder='Nickname'
+                                        placeholderTextColor="#787878"
+                                        defaultValue={nickname ? nickname : ''}
+                                    />
+                                ) : (
+                                    <Text style={stylesSupporter.nickname}>
+                                        {nickname ? nickname : 'Nickname'}
+                                    </Text>
+                                )}
                             </View>
                             <View style={stylesSupporter.supporterCircles}>
-                                <TouchableOpacity
-                                    style={[stylesSupporter.supporterCircle, selectedCircle === 'First' && stylesSupporter.supporterCircleSelected]}
-                                    onPress={() => handleSelectCircle('First')}
-                                >
-                                    <Text style={[stylesSupporter.supporterCircleText, selectedCircle === 'First' && stylesSupporter.supporterCircleTextSelected]}>First circle</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[stylesSupporter.supporterCircle, selectedCircle === 'Second' && stylesSupporter.supporterCircleSelected]}
-                                    onPress={() => handleSelectCircle('Second')}
-                                >
-                                    <Text style={[stylesSupporter.supporterCircleText, selectedCircle === 'Second' && stylesSupporter.supporterCircleTextSelected]}>Second circle</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[stylesSupporter.supporterCircle, selectedCircle === 'Third' && stylesSupporter.supporterCircleSelected]}
-                                    onPress={() => handleSelectCircle('Third')}
-                                >
-                                    <Text style={[stylesSupporter.supporterCircleText, selectedCircle === 'Third' && stylesSupporter.supporterCircleTextSelected]}>Third circle</Text>
-                                </TouchableOpacity>
+                                {['First', 'Second', 'Third'].map((option) => (
+                                    <TouchableOpacity
+                                        key={option}
+                                        style={[stylesSupporter.supporterCircle, !isEditable && selectedCircle !== option ? stylesSupporter.supporterCircleHidden : '', selectedCircle === option && stylesSupporter.supporterCircleSelected]}
+                                        onPress={() => handleSelectCircle(option)}
+                                        disabled={!isEditable}
+                                    >
+                                        <Text style={[stylesSupporter.supporterCircleText, selectedCircle === option && stylesSupporter.supporterCircleTextSelected]}>{option} circle</Text>
+                                    </TouchableOpacity>
+                                ))}
                             </View>
                         </View>
                         <View style={stylesSupporter.supporterTasks}>
@@ -102,40 +118,146 @@ export default function SupporterCardScreen({ visible, onClose, image, color, fi
                                 <View style={stylesSupporter.supporterContactInfoIconCircle}>
                                     <PhoneIcon width={14} height={14} color={'#1C4837'} />
                                 </View>
-                                <TextInput
-                                    style={[stylesSupporter.input, stylesSupporter.supporterContactInfoText]}
-                                    maxLength={16}
-                                    keyboardType="numeric"
-                                    value={phone}
-                                    placeholderTextColor="#787878"
-                                />
+                                {isEditable ? (
+                                    <TextInput
+                                        style={[stylesSupporter.input, stylesSupporter.inputContact]}
+                                        maxLength={16}
+                                        keyboardType="numeric"
+                                        defaultValue={phone ? phone : ''}
+                                        placeholder={'Phone number'}
+                                        placeholderTextColor="#787878"
+                                    />
+                                ) : (
+                                    <Text style={stylesSupporter.supporterContactInfoText}>
+                                        {phone ? phone : 'Phone number'}
+                                    </Text>
+                                )}
                             </View>
                             <View style={stylesSupporter.supporterContactInfo}>
                                 <View style={stylesSupporter.supporterContactInfoIconCircle}>
                                     <EmailIcon width={14} height={14} color={'#1C4837'} />
                                 </View>
-                                <TextInput
-                                    style={[stylesSupporter.input, stylesSupporter.supporterContactInfoText]}
-                                    maxLength={320}
-                                    keyboardType="email-address"
-                                    value={email}
-                                    placeholderTextColor="#787878"
-                                />
+                                {isEditable ? (
+                                    <TextInput
+                                        style={[stylesSupporter.input, stylesSupporter.inputContact]}
+                                        maxLength={320}
+                                        keyboardType="email-address"
+                                        defaultValue={email ? email : ''}
+                                        placeholder={'Email address'}
+                                        placeholderTextColor="#787878"
+                                    />
+                                ) : (
+                                    <Text style={stylesSupporter.supporterContactInfoText}>
+                                        {email ? email : 'Email address'}
+                                    </Text>
+                                )}
                             </View>
                         </View>
-                        <View style={stylesSupporter.supporterDelete}>
-                            <TouchableOpacity style={stylesSupporter.supporterDeleteLink}>
-                                <Text style={stylesSupporter.supporterDeleteLinkText}>Delete Supporter</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {isEditable && (
+                            <View style={stylesSupporter.supporterDelete}>
+                                <TouchableOpacity style={stylesSupporter.supporterDeleteLink} onPress={openInnerModal}>
+                                    <Text style={stylesSupporter.supporterDeleteLinkText}>Delete Supporter</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-        </Modal >
+
+            {showInnerModal && (
+                <Modal visible={showInnerModal} animationType='fade' onRequestClose={closeInnerModal} transparent>
+                    <TouchableOpacity onPress={closeInnerModal} style={stylesSupporter.innerModalContainer}>
+                        <View style={stylesSupporter.innerModalContent}>
+                            <View style={stylesSupporter.innerModalTexts}>
+                                <Text style={stylesSupporter.innerModalTitle}>You are about to remove a supporter from your tribe</Text>
+                                <Text style={stylesSupporter.innerModalSubtitle}>This will not be visible to the supporter</Text>
+                            </View>
+                            <View style={stylesSupporter.innerModalButtons}>
+                                <TouchableOpacity style={[stylesSupporter.innerModalButton, stylesSupporter.innerModalButtonRed]} onPress={() => { }}>
+                                    <Text style={[stylesSupporter.innerModalButtonText, stylesSupporter.innerModalButtonRedText]}>Remove</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[stylesSupporter.innerModalButton, stylesSupporter.innerModalButtonWhite]} onPress={closeInnerModal}>
+                                    <Text style={[stylesSupporter.innerModalButtonText, stylesSupporter.innerModalButtonWhiteText]}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+            )}
+        </ModalCustom>
     );
 }
 
 const stylesSupporter = StyleSheet.create({
+    innerModalContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    innerModalContent: {
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        maxWidth: 350,
+        paddingHorizontal: 20,
+        paddingVertical: 30,
+    },
+    innerModalTexts: {
+        marginBottom: 20,
+    },
+    innerModalTitle: {
+        color: '#000',
+        fontSize: 14,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+        marginBottom: 5
+    },
+    innerModalSubtitle: {
+        color: '#000',
+        fontSize: 12,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+    },
+    innerModalButtons: {
+        flexDirection: 'row',
+        gap: 10,
+        justifyContent: 'center',
+    },
+    innerModalButton: {
+        alignItems: 'center',
+        minWidth: 125,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 16,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 6,
+    },
+    innerModalButtonRed: {
+        backgroundColor: '#FF7070',
+    },
+    innerModalButtonWhite: {
+        backgroundColor: '#fff',
+    },
+    innerModalButtonText: {
+        fontSize: 14,
+        fontFamily: 'poppins-medium',
+        lineHeight: 18,
+    },
+    innerModalButtonRedText: {
+        color: '#fff',
+    },
+    innerModalButtonWhiteText: {
+        color: '#000',
+    },
     modalContainer: {
         height: '80%',
     },
@@ -195,11 +317,31 @@ const stylesSupporter = StyleSheet.create({
     },
     input: {
         color: '#000',
+        fontFamily: 'poppins-regular',
+        borderWidth: 0,
+        padding: 0,
+        margin: 0
+    },
+    inputNickname: {
+        fontSize: 14,
+        lineHeight: 18,
+        marginBottom: -2,
+    },
+    inputContact: {
+        fontSize: 13,
+        lineHeight: 18,
+    },
+    nickname: {
+        color: '#000',
         fontSize: 14,
         fontFamily: 'poppins-regular',
         lineHeight: 18,
-        borderWidth: 0,
-        padding: 0,
+    },
+    supporterContactInfoText: {
+        color: '#000',
+        fontSize: 13,
+        fontFamily: 'poppins-regular',
+        lineHeight: 18,
     },
     supporterCircles: {
         flexDirection: 'row',
@@ -216,6 +358,9 @@ const stylesSupporter = StyleSheet.create({
     },
     supporterCircleSelected: {
         backgroundColor: '#1C4837',
+    },
+    supporterCircleHidden: {
+        display: 'none',
     },
     supporterCircleText: {
         color: '#000',

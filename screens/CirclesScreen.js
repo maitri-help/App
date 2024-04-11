@@ -48,6 +48,7 @@ export default function CirclesScreen({ navigation }) {
             {
                 firstName: 'Monica',
                 lastName: 'Geller',
+                nickname: 'Monica',
                 color: '#A571F9',
                 image: require('../assets/emojis/unicorn-icon.png'),
                 circle: 'First',
@@ -90,6 +91,7 @@ export default function CirclesScreen({ navigation }) {
             {
                 firstName: 'Chandler',
                 lastName: 'Bing',
+                nickname: 'Chandler',
                 color: '#FF8A35',
                 image: require('../assets/emojis/hedgehog-icon.png'),
                 circle: 'Second',
@@ -104,6 +106,7 @@ export default function CirclesScreen({ navigation }) {
             {
                 firstName: 'Ross',
                 lastName: 'Geller',
+                nickname: 'Ross',
                 color: '#A571F9',
                 image: require('../assets/emojis/waving-icon.png'),
                 circle: 'Second',
@@ -148,6 +151,7 @@ export default function CirclesScreen({ navigation }) {
             {
                 firstName: 'Rachel',
                 lastName: 'Green',
+                nickname: 'Rach',
                 color: '#26847B',
                 image: require('../assets/emojis/rock-icon.png'),
                 circle: 'Third',
@@ -162,6 +166,7 @@ export default function CirclesScreen({ navigation }) {
             {
                 firstName: 'Phoebe',
                 lastName: 'Buffay',
+                nickname: 'Phoebes',
                 color: '#E5D9B6',
                 image: require('../assets/emojis/cat-icon.png'),
                 circle: 'Third',
@@ -176,6 +181,7 @@ export default function CirclesScreen({ navigation }) {
             {
                 firstName: 'Joey',
                 lastName: 'Tribbiani',
+                nickname: 'Joe',
                 color: '#7FCC72',
                 image: require('../assets/emojis/cupid-icon.png'),
                 circle: 'Third',
@@ -396,6 +402,7 @@ export default function CirclesScreen({ navigation }) {
                 tasks={selectedCircleItem ? selectedCircleItem.tasks : []}
                 phone={selectedCircleItem ? selectedCircleItem.phone : ''}
                 email={selectedCircleItem ? selectedCircleItem.email : ''}
+                nickname={selectedCircleItem ? selectedCircleItem.nickname : ''}
             />
         </>
     );
