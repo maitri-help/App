@@ -114,7 +114,7 @@ export default function App() {
       }}
     >
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="OnboardingScreen" screenOptions={() => ({
+        <Stack.Navigator initialRouteName="Main" screenOptions={() => ({
           headerShown: false,
         })}>
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
