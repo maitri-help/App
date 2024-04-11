@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, Keyboard, StyleSheet, ScrollView } from 'react-native';
-import Modal from '../compontents/Modal';
+import { View, Text, Image, TextInput, TouchableOpacity, Keyboard, StyleSheet, ScrollView, Modal } from 'react-native';
+import ModalCustom from '../compontents/Modal';
 import styles from '../Styles';
 import EditIcon from '../assets/icons/edit-icon.svg';
 import ClockIcon from '../assets/icons/clock-icon.svg';
@@ -9,6 +9,7 @@ import EmailIcon from '../assets/icons/mail-icon.svg';
 
 export default function SupporterCardScreen({ visible, onClose, image, color, firstName, lastName, circle, tasks = [], phone, email, navigation }) {
     const [selectedCircle, setSelectedCircle] = useState('Third');
+    const [showInnerModal, setShowInnerModal] = useState(false);
 
     useEffect(() => {
         if (circle && ['First', 'Second', 'Third'].includes(circle)) {
@@ -22,8 +23,16 @@ export default function SupporterCardScreen({ visible, onClose, image, color, fi
         setSelectedCircle(option);
     };
 
+    const openInnerModal = () => {
+        setShowInnerModal(true);
+    };
+
+    const closeInnerModal = () => {
+        setShowInnerModal(false);
+    };
+
     return (
-        <Modal visible={visible} onClose={onClose} style={stylesSupporter} modalTopNav
+        <ModalCustom visible={visible} onClose={onClose} style={stylesSupporter} modalTopNav
             modalTopNavChildren={
                 <View style={stylesSupporter.supporterTop}>
                     <View style={stylesSupporter.supporterTopLeft}>
@@ -124,18 +133,109 @@ export default function SupporterCardScreen({ visible, onClose, image, color, fi
                             </View>
                         </View>
                         <View style={stylesSupporter.supporterDelete}>
-                            <TouchableOpacity style={stylesSupporter.supporterDeleteLink}>
+                            <TouchableOpacity style={stylesSupporter.supporterDeleteLink} onPress={openInnerModal}>
                                 <Text style={stylesSupporter.supporterDeleteLinkText}>Delete Supporter</Text>
                             </TouchableOpacity>
                         </View>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-        </Modal >
+
+            {showInnerModal && (
+                <Modal visible={showInnerModal} animationType='fade' onRequestClose={closeInnerModal} transparent>
+                    <TouchableOpacity onPress={closeInnerModal} style={stylesSupporter.innerModalContainer}>
+                        <View style={stylesSupporter.innerModalContent}>
+                            <View style={stylesSupporter.innerModalTexts}>
+                                <Text style={stylesSupporter.innerModalTitle}>You are about to remove a supporter from your tribe</Text>
+                                <Text style={stylesSupporter.innerModalSubtitle}>This will not be visible to the supporter</Text>
+                            </View>
+                            <View style={stylesSupporter.innerModalButtons}>
+                                <TouchableOpacity style={[stylesSupporter.innerModalButton, stylesSupporter.innerModalButtonRed]} onPress={() => { }}>
+                                    <Text style={[stylesSupporter.innerModalButtonText, stylesSupporter.innerModalButtonRedText]}>Remove</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[stylesSupporter.innerModalButton, stylesSupporter.innerModalButtonWhite]} onPress={closeInnerModal}>
+                                    <Text style={[stylesSupporter.innerModalButtonText, stylesSupporter.innerModalButtonWhiteText]}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+            )}
+        </ModalCustom>
     );
 }
 
 const stylesSupporter = StyleSheet.create({
+    innerModalContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    innerModalContent: {
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        maxWidth: 350,
+        paddingHorizontal: 20,
+        paddingVertical: 30,
+    },
+    innerModalTexts: {
+        marginBottom: 20,
+    },
+    innerModalTitle: {
+        color: '#000',
+        fontSize: 14,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+        marginBottom: 5
+    },
+    innerModalSubtitle: {
+        color: '#000',
+        fontSize: 12,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+    },
+    innerModalButtons: {
+        flexDirection: 'row',
+        gap: 10,
+        justifyContent: 'center',
+    },
+    innerModalButton: {
+        alignItems: 'center',
+        minWidth: 125,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 16,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 6,
+    },
+    innerModalButtonRed: {
+        backgroundColor: '#FF7070',
+    },
+    innerModalButtonWhite: {
+        backgroundColor: '#fff',
+    },
+    innerModalButtonText: {
+        fontSize: 14,
+        fontFamily: 'poppins-medium',
+        lineHeight: 18,
+    },
+    innerModalButtonRedText: {
+        color: '#fff',
+    },
+    innerModalButtonWhiteText: {
+        color: '#000',
+    },
+
     modalContainer: {
         height: '80%',
     },
