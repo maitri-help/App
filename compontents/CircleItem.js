@@ -9,7 +9,7 @@ export default function CircleItem({ item, onPress }) {
             </View>
             <View style={stylesCircles.circleListItemTextWrapper}>
                 <Text style={stylesCircles.circleListItemName}>{item.firstName} {item.lastName}</Text>
-                <Text style={stylesCircles.circleListItemText}>{item.circle}</Text>
+                <Text style={stylesCircles.circleListItemText}>{item.circle} circle</Text>
             </View>
         </TouchableOpacity>
     );

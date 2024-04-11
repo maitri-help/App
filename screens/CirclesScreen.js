@@ -45,23 +45,176 @@ export default function CirclesScreen({ navigation }) {
 
     const tabContents = {
         First: [
-            { firstName: 'Monica', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/unicorn-icon.png'), circle: 'First circle' },
-            { firstName: 'Richard', lastName: 'Burke', image: require('../assets/emojis/male-icon.png'), circle: 'First circle' },
-            { firstName: 'Emily', lastName: 'Waltham', image: require('../assets/emojis/female-icon.png'), circle: 'First circle' },
+            {
+                firstName: 'Monica',
+                lastName: 'Geller',
+                color: '#A571F9',
+                image: require('../assets/emojis/unicorn-icon.png'),
+                circle: 'First',
+                tasks: [
+                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
+                    { task: 'Help with burea', time: '-' },
+                    { task: 'Tidy up and clean the house', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'monica.geller@example.com'
+            },
+            {
+                firstName: 'Richard',
+                lastName: 'Burke',
+                image: require('../assets/emojis/male-icon.png'),
+                circle: 'First',
+                tasks: [
+                    { task: 'Call the National Insurance', time: 'Wednesday, 1 pm' },
+                    { task: 'Take medication', time: 'Friday, 9 am' },
+                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'richard.burke@example.com'
+            },
+            {
+                firstName: 'Emily',
+                lastName: 'Waltham',
+                image: require('../assets/emojis/female-icon.png'),
+                circle: 'First',
+                tasks: [
+                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
+                    { task: 'Help with burea', time: '-' },
+                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'emily.waltham@example.com'
+            },
         ],
         Second: [
-            { firstName: 'Chandler', lastName: 'Bing', color: '#FF8A35', image: require('../assets/emojis/hedgehog-icon.png'), circle: 'Second circle' },
-            { firstName: 'Ross', lastName: 'Geller', color: '#A571F9', image: require('../assets/emojis/waving-icon.png'), circle: 'Second circle' },
-            { firstName: 'Ben', lastName: 'Geller', color: '#7FCC72', image: require('../assets/emojis/victory-icon.png'), circle: 'Second circle' },
-            { firstName: 'Janice', lastName: 'Hosenstein', color: '#FF8A35', image: require('../assets/emojis/smiling-face-icon.png'), circle: 'Second circle' },
+            {
+                firstName: 'Chandler',
+                lastName: 'Bing',
+                color: '#FF8A35',
+                image: require('../assets/emojis/hedgehog-icon.png'),
+                circle: 'Second',
+                tasks: [
+                    { task: 'Take out biggie', time: 'Today, 6 pm' },
+                    { task: 'Transportation to Sheba Hospital', time: 'Tomorrow, 8 am' },
+                    { task: 'Tidy up and clean the house', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'chandler.bing@example.com'
+            },
+            {
+                firstName: 'Ross',
+                lastName: 'Geller',
+                color: '#A571F9',
+                image: require('../assets/emojis/waving-icon.png'),
+                circle: 'Second',
+                tasks: [
+                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
+                    { task: 'Help with burea', time: '-' },
+                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'ross.geller@example.com'
+            },
+            {
+                firstName: 'Ben',
+                lastName: 'Geller',
+                color: '#7FCC72',
+                image: require('../assets/emojis/victory-icon.png'),
+                circle: 'Second',
+                tasks: [
+                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
+                    { task: 'Help with burea', time: '-' },
+                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'ben.geller@example.com'
+            },
+            {
+                firstName: 'Janice',
+                lastName: 'Hosenstein',
+                color: '#FF8A35',
+                image: require('../assets/emojis/smiling-face-icon.png'),
+                circle: 'Second',
+                tasks: [
+                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
+                    { task: 'Help with burea', time: '-' },
+                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'janice.hosenstein@example.com'
+            },
         ],
         Third: [
-            { firstName: 'Rachel', lastName: 'Green', color: '#26847B', image: require('../assets/emojis/rock-icon.png'), circle: 'Third circle' },
-            { firstName: 'Phoebe', lastName: 'Buffay', color: '#E5D9B6', image: require('../assets/emojis/cat-icon.png'), circle: 'Third circle' },
-            { firstName: 'Joey', lastName: 'Tribbiani', color: '#7FCC72', image: require('../assets/emojis/cupid-icon.png'), circle: 'Third circle' },
-            { firstName: 'Gunther', lastName: '', color: '#26847B', image: require('../assets/emojis/heart-icon.png'), circle: 'Third circle' },
-            { firstName: 'Mike', lastName: 'Hannigan', image: require('../assets/emojis/lion-icon.png'), circle: 'Third circle' },
-        ]
+            {
+                firstName: 'Rachel',
+                lastName: 'Green',
+                color: '#26847B',
+                image: require('../assets/emojis/rock-icon.png'),
+                circle: 'Third',
+                tasks: [
+                    { task: 'Water the plants', time: 'Tommorow, 1 pm' },
+                    { task: 'Buy groceries', time: 'Wednesday, 6 pm' },
+                    { task: 'Physiotherapy appointment', time: 'Monday, 3 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'rachel.green@example.com'
+            },
+            {
+                firstName: 'Phoebe',
+                lastName: 'Buffay',
+                color: '#E5D9B6',
+                image: require('../assets/emojis/cat-icon.png'),
+                circle: 'Third',
+                tasks: [
+                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
+                    { task: 'Help with burea', time: '-' },
+                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'phoebe.buffay@example.com'
+            },
+            {
+                firstName: 'Joey',
+                lastName: 'Tribbiani',
+                color: '#7FCC72',
+                image: require('../assets/emojis/cupid-icon.png'),
+                circle: 'Third',
+                tasks: [
+                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
+                    { task: 'Help with burea', time: '-' },
+                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'joey.tribbiani@example.com'
+            },
+            {
+                firstName: 'Gunther',
+                lastName: '',
+                color: '#26847B',
+                image: require('../assets/emojis/heart-icon.png'),
+                circle: 'Third',
+                tasks: [
+                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
+                    { task: 'Help with burea', time: '-' },
+                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'gunther@example.com'
+            },
+            {
+                firstName: 'Mike',
+                lastName: 'Hannigan',
+                image: require('../assets/emojis/lion-icon.png'),
+                circle: 'Third',
+                tasks: [
+                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
+                    { task: 'Help with burea', time: '-' },
+                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
+                ],
+                phone: '050-555-555',
+                email: 'mike.hannigan@example.com'
+            },
+        ],
     };
 
     const hasEmptyContent = () => {
@@ -79,7 +232,7 @@ export default function CirclesScreen({ navigation }) {
         const allContent = [];
         ['First', 'Second', 'Third'].forEach((tab) => {
             tabContents[tab].forEach((item) => {
-                allContent.push({ ...item, circle: `${tab} circle` });
+                allContent.push({ ...item, circle: `${tab}` });
             });
         });
         return allContent;
@@ -239,6 +392,10 @@ export default function CirclesScreen({ navigation }) {
                 color={selectedCircleItem ? selectedCircleItem.color : ''}
                 firstName={selectedCircleItem ? selectedCircleItem.firstName : ''}
                 lastName={selectedCircleItem ? selectedCircleItem.lastName : ''}
+                circle={selectedCircleItem ? selectedCircleItem.circle : ''}
+                tasks={selectedCircleItem ? selectedCircleItem.tasks : []}
+                phone={selectedCircleItem ? selectedCircleItem.phone : ''}
+                email={selectedCircleItem ? selectedCircleItem.email : ''}
             />
         </>
     );
