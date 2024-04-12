@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image, SafeAreaView, Text, TouchableOpacity  } from 'react-native';
+import { View, StyleSheet, Image, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
 import AppButton from '../compontents/Button';
 import CloseIcon from '../assets/icons/close-icon.svg';
@@ -10,40 +10,44 @@ const SuppExistingScreen = () => {
   const lastName = 'LASTNAME';
 
   return (
-    <SafeAreaView style={stylesSuppGN.safeArea}>
-      <View style={styles.container}>
-        <TouchableOpacity style={stylesSuppGN.closeIconWrapper} onPress={() => console.log('Close')}>
-          <CloseIcon width={31} height={31} />
-        </TouchableOpacity>
-        <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star1} />
-        <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star2} />
-        <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star3} />
-        <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star4} />
-        <View style={stylesSuppGN.headerWrapper}>
-          <Text style={stylesSuppGN.title}>Great News!</Text>
+    <SafeAreaView style={[styles.safeArea, stylesSuppGN.safeArea]}>
+      <View style={styles.contentContainer}>
+        <View style={stylesSuppGN.innerContainer}>
+          <View style={stylesSuppGN.topBar}>
+            <TouchableOpacity style={stylesSuppGN.closeIconWrapper} onPress={() => console.log('Close')}>
+              <CloseIcon width={19} height={19} color={'#000'} />
+            </TouchableOpacity>
+          </View>
+          <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star1} />
+          <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star2} />
+          <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star3} />
+          <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star4} />
+          <View style={stylesSuppGN.headerWrapper}>
+            <Text style={stylesSuppGN.title}>Great News!</Text>
+          </View>
+          <View style={stylesSuppGN.bodyWrapper}>
+            <Text style={stylesSuppGN.text}>
+              <Text style={stylesSuppGN.boldText}>{`${firstName} ${lastName}`}</Text>
+              {" added you to their support circle\n\n"}
+              {"Let's get you set up and start spreading the love"}
+            </Text>
+          </View>
+          <View style={stylesSuppGN.illustrationWrapper}>
+            <Image source={require('../assets/img/mimi-and-friend-illustration-min.png')}
+              style={stylesSuppGN.illustration}
+            />
+          </View>
+          <View style={stylesSuppGN.buttonContainer}>
+            <AppButton
+              title="I'm Ready!"
+              onPress={() => console.log('Button pressed!')}
+              buttonStyle={stylesSuppGN.button}
+            />
+          </View>
+          <TouchableOpacity style={stylesSuppGN.notYouTextWrapper} onPress={() => console.log('Back')}>
+            <Text style={stylesSuppGN.notYouText}>Not You? Click Here</Text>
+          </TouchableOpacity>
         </View>
-        <View style={stylesSuppGN.bodyWrapper}>
-          <Text style={stylesSuppGN.text}>
-            <Text style={stylesSuppGN.boldText}>{`${firstName} ${lastName}`}</Text>
-            {" added you to their support circle\n\n"}
-            {"Let’s get you set up and start spreading the love"}
-          </Text>
-        </View>
-        <View style={stylesSuppGN.illustrationWrapper}>
-          <Image source={require('../assets/img/mimi-and-friend-illustration-min.png')} 
-            style={stylesSuppGN.illustration}
-          />
-        </View>
-        <View style={stylesSuppGN.buttonContainer}>
-          <AppButton 
-            title="I'm Ready!" 
-            onPress={() => console.log('Button pressed!')} 
-            buttonStyle={stylesSuppGN.button}
-          />
-        </View>
-        <TouchableOpacity style={stylesSuppGN.notYouTextWrapper} onPress={() => console.log('Back')}>
-          <Text style={stylesSuppGN.notYouText}>Not You? Click Here</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -51,13 +55,11 @@ const SuppExistingScreen = () => {
 
 const stylesSuppGN = StyleSheet.create({
   safeArea: {
-    flex: 1,
     backgroundColor: '#E5F5E3',
   },
-  container: {
+  innerContainer: {
+    position: 'relative',
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   illustrationWrapper: {
     position: 'absolute',
@@ -94,10 +96,8 @@ const stylesSuppGN = StyleSheet.create({
   buttonContainer: {
     position: 'absolute',
     top: 591,
-    alignSelf: 'center',
-  },
-  button: {
-    width: 296,
+    width: '100%',
+    paddingHorizontal: 15,
   },
   boldText: {
     fontFamily: 'poppins-bold',
@@ -145,10 +145,10 @@ const stylesSuppGN = StyleSheet.create({
     height: 50, // adjust as needed
     transform: [{ rotate: '85deg' }],
   },
-  closeIconWrapper: {
-    position: 'absolute',
-    left: 320,
-    top: 62,
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 30,
   },
 });
 
