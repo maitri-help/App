@@ -23,6 +23,7 @@ import SuccessScreen from './screens/SuccessScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import IdentifyScreen from './screens/IdentifyScreen';
 import SuppGreatNewsScreen from './screens/SuppGreatNewsScreen';
+import SuppIDScreen from './screens/SuppIDScreen';
 import styles from './Styles';
 import { ToastProvider } from 'react-native-toast-notifications';
 import * as Linking from 'expo-linking';
@@ -131,6 +132,7 @@ export default function App() {
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
           <Stack.Screen name="PendingRequest" component={PendingRequestScreen} />
           <Stack.Screen name="SuppGreatNews" component={SuppGreatNewsScreen}/>
+          <Stack.Screen name="SuppID" component={SuppIDScreen}/>
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>
