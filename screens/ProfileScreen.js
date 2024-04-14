@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
 import Logo from '../assets/img/maitri-logo.svg';
-import { getAccessToken, getUserData } from '../authStorage';
+import { getAccessToken, getUserData, clearUserData, clearAccessToken } from '../authStorage';
 
 export default function ProfileScreen({ navigation }) {
     const [firstName, setFirstName] = useState('');
@@ -27,10 +27,24 @@ export default function ProfileScreen({ navigation }) {
         fetchUserData();
     }, []);
 
+
+    const handleLogout = async () => {
+        try {
+            await clearUserData();
+            await clearAccessToken();
+            navigation.navigate('Login');
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={[styles.topBar, stylesProfile.topBar]}>
                 <Text style={stylesProfile.topBarText}>{firstName} {lastName} ({userRole})</Text>
+                <TouchableOpacity style={stylesProfile.logoutButton} onPress={handleLogout}>
+                    <Text style={stylesProfile.logoutButtonText}>Logout</Text>
+                </TouchableOpacity>
             </View>
             <View style={styles.container}>
                 <View style={stylesProfile.profileContainer}>
@@ -51,10 +65,17 @@ const stylesProfile = StyleSheet.create({
     },
     topBar: {
         justifyContent: 'center',
+        alignItems: 'center',
     },
     topBarText: {
         fontSize: 18,
         fontFamily: 'poppins-medium',
         lineHeight: 20,
+    },
+    logoutButtonText: {
+        color: '#FF7070',
+        fontSize: 16,
+        fontFamily: 'poppins-medium',
+        lineHeight: 18,
     }
 });

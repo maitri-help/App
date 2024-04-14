@@ -25,8 +25,7 @@ import IdentifyScreen from './screens/IdentifyScreen';
 import SuppGreatNewsScreen from './screens/SuppGreatNewsScreen';
 import styles from './Styles';
 import { ToastProvider } from 'react-native-toast-notifications';
-import * as Linking from 'expo-linking';
-import { clearUserData } from './authStorage';
+import { checkAuthentication, getOnboardingCompleted } from './authStorage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -65,19 +64,9 @@ function MainNavigator({ setIsLoggedIn }) {
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    Linking.addEventListener('url', handleAppReload);
-  }, []);
-
-  // Function to handle app reload
-  const handleAppReload = async (event) => {
-    const url = event.url || '';
-    if (url.includes('exp://192.168.100.3:8081/--/')) {
-      await clearUserData();
-    }
-  };
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
   useEffect(() => {
     async function loadAppResources() {
@@ -93,7 +82,19 @@ export default function App() {
     loadAppResources();
   }, []);
 
-  if (!isReady) {
+  useEffect(() => {
+    const checkAuthAndOnboarding = async () => {
+      const authStatus = await checkAuthentication();
+      setIsLoggedIn(authStatus !== null);
+      const onboardingCompleted = await getOnboardingCompleted();
+      setHasCompletedOnboarding(onboardingCompleted);
+      setLoading(false);
+    };
+
+    checkAuthAndOnboarding();
+  }, []);
+
+  if (!isReady || loading) {
     return <Image source={require('./assets/splash.png')} style={styles.splashImg} />;
   }
 
@@ -115,13 +116,11 @@ export default function App() {
       }}
     >
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="OnboardingScreen" screenOptions={() => ({
-          headerShown: false,
-        })}>
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen name="Main" options={{ gestureEnabled: false }}>
-            {() => <MainNavigator setIsLoggedIn={setIsLoggedIn} />}
-          </Stack.Screen>
+        <Stack.Navigator initialRouteName={!isLoggedIn ? (hasCompletedOnboarding ? 'Login' : 'Onboarding') : 'Main'} screenOptions={{ headerShown: false }}>
+          {!isLoggedIn || !hasCompletedOnboarding ? (
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ gestureEnabled: false }} />
+          ) : null}
+          <Stack.Screen name="Main" component={MainNavigator} options={{ gestureEnabled: false }} />
           <Stack.Screen name="Login" component={LoginScreen} options={{ gestureEnabled: !isLoggedIn }} />
           <Stack.Screen name="Register" component={RegisterScreen} options={{ gestureEnabled: !isLoggedIn }} />
           <Stack.Screen name="VerifyNumber" component={VerifyNumberScreen} options={{ gestureEnabled: !isLoggedIn }} />
@@ -130,7 +129,7 @@ export default function App() {
           <Stack.Screen name="Identify" component={IdentifyScreen} options={{ gestureEnabled: false }} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
           <Stack.Screen name="PendingRequest" component={PendingRequestScreen} />
-          <Stack.Screen name="SuppGreatNews" component={SuppGreatNewsScreen}/>
+          <Stack.Screen name="SuppGreatNews" component={SuppGreatNewsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>

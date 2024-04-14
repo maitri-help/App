@@ -1,9 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+
+const baseUrl = 'http://34.253.29.107:3000';
 
 export const storeUserData = async (userData) => {
     try {
         await AsyncStorage.setItem('userData', JSON.stringify(userData));
-        console.log('User data stored successfully');
+        console.log('User data stored successfully:', userData);
     } catch (error) {
         console.error('Error storing user data:', error);
     }
@@ -32,6 +35,41 @@ export const clearUserData = async () => {
         console.log('User data cleared successfully');
     } catch (error) {
         console.error('Error clearing user data:', error);
+    }
+};
+
+export const setOnboardingCompleted = async (isCompleted) => {
+    try {
+        await AsyncStorage.setItem('onboardingCompleted', JSON.stringify(isCompleted));
+        console.log('Onboarding completion status stored successfully');
+    } catch (error) {
+        console.error('Error storing onboarding completion status:', error);
+    }
+};
+
+export const getOnboardingCompleted = async () => {
+    try {
+        const onboardingCompletedString = await AsyncStorage.getItem('onboardingCompleted');
+        if (onboardingCompletedString !== null) {
+            const isCompleted = JSON.parse(onboardingCompletedString);
+            console.log('Onboarding completion status retrieved successfully:', isCompleted);
+            return isCompleted;
+        } else {
+            console.log('No onboarding completion status found');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error retrieving onboarding completion status:', error);
+        return false;
+    }
+};
+
+export const clearOnboardingCompleted = async () => {
+    try {
+        await AsyncStorage.removeItem('onboardingCompleted');
+        console.log('Onboarding completion status cleared successfully');
+    } catch (error) {
+        console.error('Error clearing onboarding completion status:', error);
     }
 };
 
@@ -81,5 +119,25 @@ export const updateUserTypeInStorage = async (userType) => {
         }
     } catch (error) {
         console.error('Error updating user type in storage:', error);
+    }
+};
+
+export const checkAuthentication = async () => {
+    try {
+        const accessToken = await getAccessToken();
+        if (accessToken) {
+            const response = await axios.get(`${baseUrl}/users/me`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+            console.log('Authentication response:', response.data);
+            return response.data;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error('Error checking authentication:', error);
+        return null;
     }
 };

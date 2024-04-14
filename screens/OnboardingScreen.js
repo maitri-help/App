@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import AppButton from '../compontents/Button';
 import styles from '../Styles';
+import { setOnboardingCompleted } from '../authStorage';
 
-export default function OnboardingScreen({ navigation }) {
+export default function OnboardingScreen() {
     const [currentStep, setCurrentStep] = useState(0);
     const swiperRef = useRef(null);
+
+    const navigation = useNavigation();
 
     const onboardingData = [
         {
@@ -39,6 +43,16 @@ export default function OnboardingScreen({ navigation }) {
         }
     };
 
+    const handleCreateAccount = async () => {
+        await setOnboardingCompleted(true);
+        navigation.navigate('Register');
+    };
+
+    const handleLogin = async () => {
+        await setOnboardingCompleted(true);
+        navigation.navigate('Login');
+    };
+
     return (
         <View style={{ flex: 1, backgroundColor: '#fff' }}>
             <Swiper
@@ -60,12 +74,12 @@ export default function OnboardingScreen({ navigation }) {
                             <View style={stylesOnboard.onboardingButtonsContainer}>
                                 <View style={styles.buttonContainer}>
                                     <AppButton
-                                        onPress={() => navigation.navigate('Register')}
+                                        onPress={handleCreateAccount}
                                         title="Create Account"
                                         buttonStyle={stylesOnboard.buttonStyle}
                                     />
                                 </View>
-                                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                <TouchableOpacity onPress={handleLogin}>
                                     <Text style={stylesOnboard.haveAccountText}>Already have an account? <Text style={stylesOnboard.loginText}>Log in</Text></Text>
                                 </TouchableOpacity>
                             </View>
