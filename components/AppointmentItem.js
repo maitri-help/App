@@ -1,19 +1,36 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import CheckIcon from '../assets/icons/check-medium-icon.svg';
 
 export default function AppointmentItem({ appointment }) {
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleToggleCheckbox = () => {
+    setIsChecked(prevState => !prevState);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.imageWrapper}>
-        <Image source={appointment.image} style={styles.image} />
+    <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={handleToggleCheckbox}>
+      <View style={styles.wrapper}>
+        <View style={styles.imageWrapper}>
+          <Image source={appointment.image} style={styles.image} />
+        </View>
+
+        <View style={styles.textContainer}>
+          <Text style={[styles.title, isChecked ? styles.textStriked : '']}>{appointment.title}</Text>
+          {appointment.assignee && <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>{appointment.assignee}</Text>}
+          <Text style={[styles.time, isChecked ? styles.textStriked : '']}>{appointment.time}</Text>
+        </View>
       </View>
 
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{appointment.title}</Text>
-        {appointment.description && <Text style={styles.description}>{appointment.description}</Text>}
-        <Text style={styles.slot}>{appointment.slot}</Text>
+      <View style={[isChecked ? styles.checkboxChecked : styles.checkbox]}>
+        {isChecked &&
+          <View style={styles.checkboxInner}>
+            <CheckIcon style={styles.checkboxIcon} />
+          </View>
+        }
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -21,6 +38,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 15,
+    gap: 15,
     backgroundColor: '#fff',
     borderRadius: 20,
     shadowColor: "#000",
@@ -31,40 +51,77 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.09,
     shadowRadius: 8.00,
     elevation: 8,
-    marginBottom: 12,
-    padding: 17,
+  },
+  wrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
   },
   imageWrapper: {
-    height: 50,
     width: 50,
+    height: 50,
     borderRadius: 25,
     borderWidth: 2,
+    borderColor: '#1C4837',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    height: 30,
+    width: 30,
+    resizeMode: 'contain'
+  },
+  textContainer: {
+    flexShrink: 1,
+    gap: 3,
+  },
+  title: {
+    color: '#000',
+    fontSize: 14,
+    fontFamily: 'poppins-regular',
+    lineHeight: 16,
+    marginBottom: 2,
+  },
+  assignee: {
+    color: '#747474',
+    fontSize: 12,
+    fontFamily: 'poppins-regular',
+    lineHeight: 14,
+  },
+  time: {
+    color: '#9F9F9F',
+    fontSize: 12,
+    fontFamily: 'poppins-light',
+    lineHeight: 14,
+  },
+  textStriked: {
+    textDecorationLine: 'line-through',
+  },
+  checkbox: {
+    borderWidth: 1,
     borderColor: '#000',
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {
-    height: 25,
-    width: 25,
-    resizeMode: 'contain',
+  checkboxChecked: {
+    borderColor: '#6AAA5F',
   },
-  textContainer: {
+  checkboxInner: {
+    backgroundColor: '#6AAA5F',
     justifyContent: 'center',
-    marginLeft: 15,
-    flex: 1
+    alignItems: 'center',
+    width: 18,
+    height: 18,
+    borderRadius: 9,
   },
-  title: {
-    fontSize: 14,
-    color: '#000',
-    marginBottom: 3,
-  },
-  description: {
-    fontSize: 12,
-    color: '#ccc',
-    marginBottom: 3,
-  },
-  slot: {
-    fontSize: 12,
-    color: '#ccc',
-  },
+  checkboxIcon: {
+    width: 16,
+    height: 16,
+    resizeMode: 'contain',
+    color: '#fff',
+  }
 });

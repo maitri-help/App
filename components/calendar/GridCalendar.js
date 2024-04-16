@@ -138,7 +138,7 @@ export default function GridCalendar({ setDate }) {
   };
 
   const renderDays = ({ item }) => (
-    <View style={styles.dateWrapper}>
+    <View style={styles.dayWrapper}>
       <Text style={styles.day}>{item}</Text>
     </View>
   );
@@ -149,7 +149,7 @@ export default function GridCalendar({ setDate }) {
         style={styles.dateContainer(item)}
         onPress={() => selectDate(item.date)}
         disabled={item.disabled}>
-        <Text style={styles.date(item)}>{item.date}</Text>
+        <Text style={[styles.date(item), item.disabled && styles.disabledDate]}>{item.date}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -174,10 +174,10 @@ export default function GridCalendar({ setDate }) {
         numColumns={7}
         data={days}
         renderItem={renderDays}
-        style={{ marginVertical: 10 }}
+        style={styles.daysWrapper}
       />
 
-      <FlatList numColumns={7} data={monthDates} renderItem={renderDates} />
+      <FlatList numColumns={7} data={monthDates} renderItem={renderDates} style={styles.datesWrapper} />
     </View>
   );
 }
@@ -191,14 +191,15 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 5,
     },
     shadowOpacity: 0.09,
     shadowRadius: 8.00,
-    elevation: 8,
-    marginTop: 5,
+    elevation: 9,
+    marginTop: 3,
     marginBottom: 25,
-    paddingVertical: 5,
+    paddingTop: 7,
+    paddingBottom: 10,
   },
   calendarTop: {
     flexDirection: 'row',
@@ -206,11 +207,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 15,
     paddingVertical: 5,
-    paddingHorizontal: 15,
+    paddingHorizontal: 13,
   },
   monthHeading: {
     flex: 1,
+    fontFamily: 'poppins-medium',
     fontSize: 18,
+    lineHeight: 24,
     color: '#000',
   },
   chevronWrapper: {
@@ -218,7 +221,8 @@ const styles = StyleSheet.create({
     width: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: -5,
+    marginVertical: -5,
+    marginRight: -10,
   },
   chevron: {
     height: 14,
@@ -227,26 +231,43 @@ const styles = StyleSheet.create({
   },
   dateWrapper: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
+  dayWrapper: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 2,
+    paddingBottom: 10,
+  },
+  daysWrapper: {
+    marginTop: 5,
+    paddingHorizontal: 5,
+  },
+  datesWrapper: {
+    paddingHorizontal: 5,
+  },
   dateContainer: item => ({
-    height: 30,
-    width: 30,
-    borderRadius: 15,
+    height: 32,
+    width: 32,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: item.selected ? '#1C4837' : '#fff',
-    opacity: item.disabled ? 0.5 : 1,
   }),
   date: item => ({
+    fontFamily: item.selected ? 'poppins-semibold' : 'poppins-regular',
     fontSize: 14,
+    lineHeight: 20,
     color: item.selected ? '#fff' : '#000',
-    marginBottom: -2,
   }),
+  disabledDate: {
+    color: '#A4A4A4',
+  },
   day: {
     fontSize: 12,
-    color: '#ccc',
+    color: '#8A8A8E',
   },
 });
 

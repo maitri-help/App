@@ -382,7 +382,7 @@ export default function CirclesScreen({ navigation }) {
                             <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCircles.floatingButtonEmptyImg} />
                         </View>
                     )}
-                    <TouchableOpacity style={stylesCircles.floatingButton} onPress={() => setSendInvitesModalVisible(true)}>
+                    <TouchableOpacity style={styles.floatingButton} activeOpacity={1} onPress={() => setSendInvitesModalVisible(true)}>
                         <PlusIcon color={'#fff'} />
                     </TouchableOpacity>
                 </View>
@@ -497,28 +497,6 @@ const stylesCircles = StyleSheet.create({
         fontFamily: 'poppins-regular',
         lineHeight: 18,
         marginBottom: 9,
-    },
-    floatingButton: {
-        backgroundColor: '#1C4837',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginLeft: 1,
-        marginRight: 15,
-        marginBottom: 20,
-        position: 'relative',
-        zIndex: 2,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 12,
-        elevation: 8,
-        marginVertical: 5,
     },
     circleListEmptyContainer: {
         flex: 1,

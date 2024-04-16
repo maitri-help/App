@@ -72,19 +72,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dateContainer: {
-    height: 72,
+    height: 70,
     width: 50,
     borderRadius: 50,
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 11,
   },
   dayOfWeek: selected => ({
+    fontFamily: selected ? 'poppins-semibold' : 'poppins-medium',
     fontSize: 14,
+    lineHeight: 18,
     color: selected ? '#fff' : '#000',
   }),
   date: selected => ({
+    fontFamily: selected ? 'poppins-semibold' : 'poppins-light',
     fontSize: 14,
+    lineHeight: 18,
     color: selected ? '#fff' : '#000',
   }),
 });

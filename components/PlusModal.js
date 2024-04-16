@@ -3,101 +3,47 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Modal,
   FlatList,
   Image,
   Text,
   Dimensions,
 } from 'react-native';
-import ArrowLeft from '../assets/icons/arrow-left-icon.svg';
-import PlusIcon from '../assets/icons/plus-icon.svg';
 import { modalservices } from '../data/ModalServices';
+import Modal from '../components/Modal';
 const { width, height } = Dimensions.get('window');
+import styles from '../Styles';
 
-export default function PlusModal({ plusModal, setPlusModal, style }) {
+export default function PlusModal({ visible, onClose, navigation }) {
   const [selectedService, setSelectedService] = useState(null);
 
-  const closeModal = () => {
-    setPlusModal(false);
-    setSelectedService(null);
-  };
-
   return (
-    <View style={[styles.plusContainer, style]}>
-      <TouchableOpacity
-        onPress={() => {
-          setPlusModal(!plusModal);
-        }}
-        style={styles.plusInnerContainer}>
-        <PlusIcon style={styles.plus} />
-      </TouchableOpacity>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={plusModal}
-        onRequestClose={closeModal}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <TouchableOpacity
-                onPress={closeModal}
-                style={styles.modalHeaderIcon}>
-                <ArrowLeft style={styles.arrowLeft} />
-              </TouchableOpacity>
-              <Text style={styles.modalHeaderTitle}>
-                What Are You Looking For?
-              </Text>
-            </View>
-            <FlatList
-              data={modalservices}
-              numColumns={2}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity style={[styles.serviceItem]}>
-                  <Image source={item.icon} style={styles.serviceIcon} />
-                  <Text style={styles.serviceText}>{item.title}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        </View>
-      </Modal>
-    </View>
+    <Modal visible={visible} onClose={onClose} style={stylesPlus} modalTopNav
+      modalTopNavChildren={
+        <>
+          <Text style={styles.topBarTitle}>
+            What Are You Looking For?
+          </Text>
+        </>
+      }
+    >
+      <View style={stylesPlus.modalContainer}>
+        <FlatList
+          data={modalservices}
+          numColumns={2}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={[stylesPlus.serviceItem]}>
+              <Image source={item.icon} style={stylesPlus.serviceIcon} />
+              <Text style={stylesPlus.serviceText}>{item.title}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    </Modal>
   );
 };
 
-const styles = StyleSheet.create({
-  plusContainer: {
-    backgroundColor: '#1C4837',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 3.45,
-    elevation: 2,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  plusInnerContainer: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  plus: {
-    width: 15,
-    height: 15,
-    color: '#fff'
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
+const stylesPlus = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#fff',
     borderTopLeftRadius: 40,
