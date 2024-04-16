@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
-import AppButton from '../compontents/Button';
+import AppButton from '../components/Button';
 import ArrowBackIcon from '../assets/icons/arrow-left-icon.svg';
 
 const SuppIDScreen = () => {

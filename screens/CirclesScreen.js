@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import styles from '../Styles';
-import CirclesView from '../compontents/CirclesView';
-import CircleItem from '../compontents/CircleItem';
+import CirclesView from '../components/CirclesView';
+import CircleItem from '../components/CircleItem';
 import PlusIcon from '../assets/icons/plus-icon.svg';
 import SendInviteScreen from './SendInviteScreen';
 import SupporterCardScreen from './SupporterCardScreen';
@@ -13,6 +13,21 @@ export default function CirclesScreen({ navigation }) {
     const [supporterCardModalVisible, setSupporterCardModalVisible] = useState(false);
     const [selectedCircleItem, setSelectedCircleItem] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+    const [circleItemsContent, setCircleItemsContent] = useState([]);
+
+    useEffect(() => {
+        generateRandomCircleItems();
+    }, []);
+
+    const generateRandomCircleItems = () => {
+        const circleItemsContent = [
+            getRandomItem(tabContents.Third) || { firstName: 'Peer', image: null },
+            getRandomItem(tabContents.Second) || { firstName: 'Friend', image: null },
+            getRandomItem(tabContents.First) || { firstName: 'Parent', image: null },
+        ];
+        setCircleItemsContent(circleItemsContent);
+    };
 
     const handleCircleItemPress = (item) => {
         setSelectedCircleItem(item);
@@ -250,12 +265,6 @@ export default function CirclesScreen({ navigation }) {
 
     const circlesContent = (tab) => {
         if (tab === 'Circles') {
-            const circleItemsContent = [
-                getRandomItem(tabContents.Third) || { firstName: 'Peer', image: null },
-                getRandomItem(tabContents.Second) || { firstName: 'Friend', image: null },
-                getRandomItem(tabContents.First) || { firstName: 'Parent', image: null },
-            ];
-
             const additionalItemCountThird = Math.max(0, tabContents.Third.length - 1);
             const additionalItemCountSecond = Math.max(0, tabContents.Second.length - 1);
             const additionalItemCountFirst = Math.max(0, tabContents.First.length - 1);
@@ -274,6 +283,7 @@ export default function CirclesScreen({ navigation }) {
                             additionalItemCountSecond={additionalItemCountSecond}
                             additionalItemCountFirst={additionalItemCountFirst}
                             onPressCircleItemCount={handlePressCircleItemCount}
+                            onPressCircleItem={handleCircleItemPress}
                         />
                     </View>
                 </>

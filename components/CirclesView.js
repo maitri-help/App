@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Image, Platform, TouchableOpacity } from 'react-native';
 import Circles from '../assets/img/circles.svg';
 
-export default function CirclesView({ circleItemsContent, additionalItemCountFirst, additionalItemCountSecond, additionalItemCountThird, onPressCircleItemCount }) {
-    const [isPressed, setIsPressed] = useState(false);
+export default function CirclesView({ circleItemsContent, additionalItemCountFirst, additionalItemCountSecond, additionalItemCountThird, onPressCircleItemCount, onPressCircleItem }) {
 
     return (
         <View style={stylesCircles.circlesContainerInner}>
@@ -14,9 +13,9 @@ export default function CirclesView({ circleItemsContent, additionalItemCountFir
                         <View style={[stylesCircles.circleItemWrapper, index === 0 ? stylesCircles.circleItemOuterWrapper : index === 1 ? stylesCircles.circleItemMiddleWrapper : stylesCircles.circleItemInnerWrapper]}>
                             {item.image && (
                                 <React.Fragment>
-                                    <View style={[stylesCircles.circleItem, index === 0 ? stylesCircles.circleItemOuter : index === 1 ? stylesCircles.circleItemMiddle : stylesCircles.circleItemInner]}>
+                                    <TouchableOpacity activeOpacity={1} onPress={() => onPressCircleItem(item)} style={[stylesCircles.circleItem, index === 0 ? stylesCircles.circleItemOuter : index === 1 ? stylesCircles.circleItemMiddle : stylesCircles.circleItemInner]}>
                                         <Image source={item.image} style={[stylesCircles.emoji, index === 0 ? stylesCircles.emojiOuter : index === 1 ? stylesCircles.emojiMiddle : stylesCircles.emojiInner]} />
-                                    </View>
+                                    </TouchableOpacity>
                                     <Text style={[stylesCircles.circleItemText, stylesCircles.circleItemTextOutside]}>{item.firstName}</Text>
                                 </React.Fragment>
                             )}
@@ -27,25 +26,19 @@ export default function CirclesView({ circleItemsContent, additionalItemCountFir
                             )}
                         </View>
                         {index === 2 && additionalItemCountThird > 0 && (
-                            <TouchableOpacity style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountThird, isPressed && stylesCircles.circleItemCountPressed]} onPress={() => onPressCircleItemCount('Third')}
-                                onPressIn={() => setIsPressed(true)}
-                                onPressOut={() => setIsPressed(false)}
+                            <TouchableOpacity activeOpacity={1} style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountThird]} onPress={() => onPressCircleItemCount('Third')}
                             >
                                 <Text style={stylesCircles.circleItemCountText}>+{additionalItemCountThird}</Text>
                             </TouchableOpacity>
                         )}
                         {index === 1 && additionalItemCountSecond > 0 && (
-                            <TouchableOpacity style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountSecond, isPressed && stylesCircles.circleItemCountPressed]} onPress={() => onPressCircleItemCount('Second')}
-                                onPressIn={() => setIsPressed(true)}
-                                onPressOut={() => setIsPressed(false)}
+                            <TouchableOpacity activeOpacity={1} style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountSecond]} onPress={() => onPressCircleItemCount('Second')}
                             >
                                 <Text style={stylesCircles.circleItemCountText}>+{additionalItemCountSecond}</Text>
                             </TouchableOpacity>
                         )}
                         {index === 0 && additionalItemCountFirst > 0 && (
-                            <TouchableOpacity style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountFirst, isPressed && stylesCircles.circleItemCountPressed]} onPress={() => onPressCircleItemCount('First')}
-                                onPressIn={() => setIsPressed(true)}
-                                onPressOut={() => setIsPressed(false)}
+                            <TouchableOpacity activeOpacity={1} style={[stylesCircles.circleItemCount, stylesCircles.circleItemCountFirst]} onPress={() => onPressCircleItemCount('First')}
                             >
                                 <Text style={stylesCircles.circleItemCountText}>+{additionalItemCountFirst}</Text>
                             </TouchableOpacity>
@@ -162,9 +155,6 @@ const stylesCircles = StyleSheet.create({
         alignItems: 'center',
         position: 'absolute',
         zIndex: 3,
-    },
-    circleItemCountPressed: {
-        opacity: 1,
     },
     circleItemCountText: {
         color: '#A0A0A0',

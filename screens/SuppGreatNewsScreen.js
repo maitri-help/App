@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Image, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
-import AppButton from '../compontents/Button';
+import AppButton from '../components/Button';
 import CloseIcon from '../assets/icons/close-icon.svg';
 
 const SuppExistingScreen = () => {

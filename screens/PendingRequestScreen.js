@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
-import Notification from '../compontents/Notification';
+import Notification from '../components/Notification';
 
 export default function PendingRequestScreen({ navigation }) {
     const notificationsPending = [

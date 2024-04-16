@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
-import CustomBox from '../compontents/CustomBox';
-import Task from '../compontents/Task';
+import CustomBox from '../components/CustomBox';
+import Task from '../components/Task';
 import { getAccessToken, getUserData } from '../authStorage';
 
 export default function HomeScreen({ navigation }) {

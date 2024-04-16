@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, Keyboard, StyleSheet, ScrollView, Modal } from 'react-native';
-import ModalCustom from '../compontents/Modal';
+import ModalCustom from '../components/Modal';
 import styles from '../Styles';
 import EditIcon from '../assets/icons/edit-icon.svg';
 import CheckIcon from '../assets/icons/check-icon.svg';

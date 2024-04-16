@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import Modal from '../compontents/Modal';
+import Modal from '../components/Modal';
 import styles from '../Styles';
 import ShareIcon from '../assets/icons/share-icon.svg';
 

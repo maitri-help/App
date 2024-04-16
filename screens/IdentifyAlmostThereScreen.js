@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { useToast } from 'react-native-toast-notifications';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
-import Modal from '../compontents/Modal';
+import Modal from '../components/Modal';
 
 const OTP_LENGTH = 6;
 

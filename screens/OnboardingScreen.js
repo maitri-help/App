@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
-import AppButton from '../compontents/Button';
+import AppButton from '../components/Button';
 import styles from '../Styles';
 import { setOnboardingCompleted } from '../authStorage';
 

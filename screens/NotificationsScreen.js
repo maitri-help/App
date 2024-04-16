@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Platform, View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, LayoutAnimation, UIManager } from 'react-native';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
-import Notification from '../compontents/Notification';
+import Notification from '../components/Notification';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {

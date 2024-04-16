@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
-import Modal from '../compontents/Modal';
+import Modal from '../components/Modal';
 
 export default function ThankYouScreen({ visible, onClose, setAlmostThereModalVisible }) {
 
