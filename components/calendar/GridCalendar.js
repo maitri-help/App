@@ -177,7 +177,11 @@ export default function GridCalendar({ setDate }) {
         style={styles.daysWrapper}
       />
 
-      <FlatList numColumns={7} data={monthDates} renderItem={renderDates} style={styles.datesWrapper} />
+      <FlatList
+        numColumns={7}
+        data={monthDates}
+        renderItem={renderDates}
+        style={styles.datesWrapper} />
     </View>
   );
 }

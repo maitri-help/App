@@ -6,82 +6,115 @@ import {
   FlatList,
   Image,
   Text,
-  Dimensions,
 } from 'react-native';
 import { modalservices } from '../data/ModalServices';
 import Modal from '../components/Modal';
-const { width, height } = Dimensions.get('window');
 import styles from '../Styles';
 
 export default function PlusModal({ visible, onClose, navigation }) {
   const [selectedService, setSelectedService] = useState(null);
 
+  const [pressedItem, setPressedItem] = useState(null);
+
+  const handlePressIn = (itemId) => {
+    setPressedItem(itemId);
+  };
+
+  const handlePressOut = () => {
+    setPressedItem(null);
+  };
+
   return (
     <Modal visible={visible} onClose={onClose} style={stylesPlus} modalTopNav
       modalTopNavChildren={
         <>
-          <Text style={styles.topBarTitle}>
+          <Text style={[styles.topBarTitle, stylesPlus.topBarTitle]}>
             What Are You Looking For?
           </Text>
         </>
       }
     >
-      <View style={stylesPlus.modalContainer}>
-        <FlatList
-          data={modalservices}
-          numColumns={2}
-          keyExtractor={item => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={[stylesPlus.serviceItem]}>
+      <FlatList
+        style={stylesPlus.servicesListWrapper}
+        contentContainerStyle={stylesPlus.servicesListContent}
+        data={modalservices}
+        numColumns={2}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => (
+          <View style={stylesPlus.columnWrapper}>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={[
+                stylesPlus.serviceItem,
+                pressedItem === item.id && stylesPlus.serviceItemPressed,
+              ]}
+              onPressIn={() => handlePressIn(item.id)}
+              onPressOut={handlePressOut}
+            >
               <Image source={item.icon} style={stylesPlus.serviceIcon} />
-              <Text style={stylesPlus.serviceText}>{item.title}</Text>
+              <Text
+                style={[
+                  stylesPlus.serviceText,
+                  pressedItem === item.id && stylesPlus.serviceTextPressed,
+                ]}
+              >{item.title}</Text>
             </TouchableOpacity>
-          )}
-        />
-      </View>
+          </View>
+        )}
+      />
     </Modal>
   );
 };
 
 const stylesPlus = StyleSheet.create({
   modalContainer: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
-    paddingBottom: 20,
-    height: height / 1.25,
+    height: '80%'
   },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  servicesListWrapper: {
+    flex: 1,
+  },
+  servicesListContent: {
     justifyContent: 'center',
-    marginTop: 38,
-    marginBottom: 28,
+    gap: 25,
+    paddingHorizontal: 16,
   },
-  modalHeaderIcon: {
-    position: 'absolute',
-    left: 26,
-  },
-  modalHeaderTitle: {
-    fontSize: 16,
-    color: '#000',
+  columnWrapper: {
+    flex: 1,
+    alignItems: 'center',
   },
   serviceItem: {
+    justifyContent: 'center',
     alignItems: 'center',
-    width: width / 2.15,
-    marginBottom: 50,
+    aspectRatio: 1 / 1,
+    borderRadius: 70,
+    padding: 13,
   },
-
+  serviceItemPressed: {
+    backgroundColor: '#E3E3E3',
+  },
   serviceIcon: {
     width: 50,
     height: 50,
+    resizeMode: 'contain',
+    marginBottom: 10,
   },
   serviceText: {
-    marginTop: 16,
+    color: '#000',
+    fontFamily: 'poppins-regular',
+    fontSize: 13,
+    lineHeight: 15,
     textAlign: 'center',
+    paddingBottom: 5,
   },
-  arrowLeft: {
-    width: 24.19,
-    height: 19.83,
+  serviceTextPressed: {
+    fontFamily: 'poppins-semibold',
   },
+  topBarTitle: {
+    textAlign: 'center',
+    flex: 1,
+  },
+  backLinkInline: {
+    position: 'absolute',
+    left: 25,
+  }
 })

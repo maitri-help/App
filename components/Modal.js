@@ -20,7 +20,7 @@ export default function ModalComponent({ visible, onClose, modalTopNav, modalTop
                     <View style={[stylesModal.modalContent, style && style.modalContent]}>
                         {modalTopNav &&
                             <View style={stylesModal.modalTopNav}>
-                                <TouchableOpacity onPress={modalTopNavLink || onClose} style={styles.backLinkInline}>
+                                <TouchableOpacity onPress={modalTopNavLink || onClose} style={[styles.backLinkInline, style && style.backLinkInline]}>
                                     <ArrowLeftIcon style={styles.backLinkIcon} />
                                 </TouchableOpacity>
                                 {modalTopNavChildren}
@@ -42,8 +42,8 @@ const stylesModal = StyleSheet.create({
         width: '100%',
         height: '66%',
         backgroundColor: '#fff',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40,
     },
     modalContent: {
         flex: 1,
@@ -52,10 +52,12 @@ const stylesModal = StyleSheet.create({
         flex: 1,
     },
     modalTopNav: {
+        position: 'relative',
         paddingVertical: 25,
         paddingHorizontal: 25,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
+        width: '100%',
     }
 });

@@ -150,7 +150,7 @@ const stylesCal = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#1C4837',
         paddingHorizontal: 12,
-        paddingVertical: 5,
+        paddingVertical: 4,
         borderRadius: 20,
     },
     tabActive: {
