@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from "react-native";
 
 export default function Task({ title, assignee, time, image }) {
     const formattedAssignee = Array.isArray(assignee) ? assignee.join(', ') : assignee;
@@ -26,14 +26,14 @@ const stylesTask = StyleSheet.create({
         padding: 15,
         backgroundColor: '#fff',
         borderRadius: 20,
-        shadowColor: "#000",
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
             height: 4,
         },
         shadowOpacity: 0.09,
         shadowRadius: 8.00,
-        elevation: 8,
+        elevation: 12,
     },
     taskImageWrapper: {
         width: 50,

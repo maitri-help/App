@@ -138,14 +138,14 @@ export default styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderWidth: 2,
         borderRadius: 30,
-        shadowColor: "#000",
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
             height: 4,
         },
         shadowOpacity: 0.16,
         shadowRadius: 15,
-        elevation: 8,
+        elevation: 10,
         marginVertical: 5,
     },
     toastText: {
@@ -195,14 +195,14 @@ export default styles = StyleSheet.create({
         marginBottom: 20,
         position: 'relative',
         zIndex: 2,
-        shadowColor: "#000",
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.7)' : '#000',
         shadowOffset: {
             width: 0,
             height: 4,
         },
         shadowOpacity: 0.25,
         shadowRadius: 12,
-        elevation: 8,
+        elevation: 12,
         marginVertical: 5,
     },
 });

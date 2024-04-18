@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   FlatList,
+  Platform,
 } from 'react-native';
 import LeftChevron from '../../assets/icons/chevron-left-icon.svg';
 import RightChevron from '../../assets/icons/chevron-right-icon.svg';
@@ -182,14 +183,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: '#fff',
     borderRadius: 20,
-    shadowColor: "#000",
+    shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
     shadowOffset: {
       width: 0,
       height: 5,
     },
     shadowOpacity: 0.09,
     shadowRadius: 8.00,
-    elevation: 9,
+    elevation: 14,
     marginTop: 3,
     marginBottom: 25,
     paddingTop: 7,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
 
 const AppButton = ({ onPress, title, buttonStyle, textStyle, buttonSmall }) => {
   return (
@@ -27,14 +27,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderRadius: 10,
-    shadowColor: "#000",
+    shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
     shadowOffset: {
         width: 0,
         height: 4,
     },
     shadowOpacity: 0.12,
     shadowRadius: 10,
-    elevation: 8,
+    elevation: 10,
   },
   buttonSmallText: {
     color: '#fff',

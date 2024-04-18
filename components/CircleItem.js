@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 
 export default function CircleItem({ item, onPress }) {
     return (
         <TouchableOpacity onPress={onPress} style={stylesCircles.circleListItem}>
-            <View style={[stylesCircles.circleListItemImageWrapper, item.color ? {borderColor: item.color} : null ]}>
+            <View style={[stylesCircles.circleListItemImageWrapper, item.color ? { borderColor: item.color } : null]}>
                 {item.image && <Image source={item.image} style={stylesCircles.circleListItemImage} />}
             </View>
             <View style={stylesCircles.circleListItemTextWrapper}>
@@ -23,14 +23,14 @@ const stylesCircles = StyleSheet.create({
         padding: 15,
         backgroundColor: '#fff',
         borderRadius: 20,
-        shadowColor: "#000",
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
             height: 4,
         },
         shadowOpacity: 0.09,
         shadowRadius: 8.00,
-        elevation: 8,
+        elevation: 12,
     },
     circleListItemImageWrapper: {
         width: 50,

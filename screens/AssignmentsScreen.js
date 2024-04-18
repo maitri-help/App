@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform } from 'react-native';
 import styles from '../Styles';
 import { AppointmentList } from '../data/appointments';
 import AppointmentItem from '../components/AppointmentItem';
@@ -150,14 +150,14 @@ const stylesCal = StyleSheet.create({
         backgroundColor: '#fff',
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        shadowColor: "#000",
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
             height: 6,
         },
         shadowOpacity: 0.08,
         shadowRadius: 8,
-        elevation: 10,
+        elevation: 14,
     },
     tabs: {
         flexDirection: 'row',

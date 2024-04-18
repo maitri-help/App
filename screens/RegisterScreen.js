@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Linking, Keyboard, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Linking, Keyboard, SafeAreaView, Platform } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import styles from '../Styles';
@@ -196,14 +196,14 @@ const stylesRegister = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: "#000",
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
             height: 4,
         },
         shadowOpacity: 0.25,
         shadowRadius: 12,
-        elevation: 8,
+        elevation: 10,
     },
     loginTextLink: {
         marginTop: 15,

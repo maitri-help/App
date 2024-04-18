@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, Keyboard, StyleSheet, ScrollView, Modal } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity, Keyboard, StyleSheet, ScrollView, Modal, Platform } from 'react-native';
 import ModalCustom from '../components/Modal';
 import styles from '../Styles';
 import EditIcon from '../assets/icons/edit-icon.svg';
@@ -232,14 +232,14 @@ const stylesSupporter = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 16,
-        shadowColor: "#000",
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
             height: 3,
         },
         shadowOpacity: 0.1,
         shadowRadius: 6,
-        elevation: 6,
+        elevation: 8,
     },
     innerModalButtonRed: {
         backgroundColor: '#FF7070',
