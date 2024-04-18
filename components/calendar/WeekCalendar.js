@@ -8,29 +8,26 @@ import {
 
 const days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
-export default function WeekCalendar({ date, setDate }) {
+export default function WeekCalendar({ defaultDate, setDate }) {
   const [weekDates, setWeekDates] = useState([]);
 
   useEffect(() => {
-    const today = new Date();
-    const startOfWeek = new Date(today);
-    const endOfWeek = new Date(today);
-    const diff = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1);
-    startOfWeek.setDate(diff);
-    endOfWeek.setDate(diff + 6);
+    updateWeekDates(defaultDate);
+  }, [defaultDate]);
 
+  const updateWeekDates = currentDate => {
     const formattedDates = [];
     for (let i = 0; i < 7; i++) {
-      const day = new Date(today);
-      day.setDate(diff + i);
+      const day = new Date(currentDate);
+      day.setDate(currentDate.getDate() - currentDate.getDay() + i + (i === 0 ? 0 : 1));
       formattedDates.push({
         date: day.getDate(),
         dayOfWeek: days[i],
-        selected: day.getDate() === today.getDate(),
+        selected: day.getDate() === currentDate.getDate(),
       });
     }
     setWeekDates(formattedDates);
-  }, []);
+  };
 
   const handleDateSelection = selectedDate => {
     setDate(selectedDate);

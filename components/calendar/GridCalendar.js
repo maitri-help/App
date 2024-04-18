@@ -40,9 +40,7 @@ export const monthNum = [
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-export default function GridCalendar({ setDate }) {
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+export default function GridCalendar({ setDate, selectedDate, currentYearProp, currentMonthProp, setCurrentYear, setCurrentMonth }) {
   const [monthDates, setMonthDates] = useState([]);
 
   useEffect(() => {
@@ -66,11 +64,11 @@ export default function GridCalendar({ setDate }) {
     };
 
     const lastDayOfPrevMonth = getLastDayOfMonth(
-      currentYear,
-      getLastMonth(currentYear, currentMonth),
+      currentYearProp,
+      getLastMonth(currentYearProp, currentMonthProp)
     );
-    const firstDayOfWeek = getFirstDayOfWeek(currentYear, currentMonth);
-    const totalDaysInMonth = getLastDayOfMonth(currentYear, currentMonth);
+    const firstDayOfWeek = getFirstDayOfWeek(currentYearProp, currentMonthProp);
+    const totalDaysInMonth = getLastDayOfMonth(currentYearProp, currentMonthProp);
 
     const prevMonthDays = [];
     for (
@@ -83,7 +81,15 @@ export default function GridCalendar({ setDate }) {
 
     const currentMonthDays = [];
     for (let i = 1; i <= totalDaysInMonth; i++) {
-      currentMonthDays.push({ date: i, selected: false, disabled: false });
+      currentMonthDays.push({
+        date: i,
+        selected:
+          selectedDate &&
+          currentYearProp === parseInt(selectedDate.split('-')[0]) &&
+          currentMonthProp === parseInt(selectedDate.split('-')[1]) &&
+          i === parseInt(selectedDate.split('-')[2]),
+        disabled: false,
+      });
     }
 
     const nextMonthDays = [];
@@ -92,49 +98,29 @@ export default function GridCalendar({ setDate }) {
       nextMonthDays.push({ date: i, selected: false, disabled: true });
     }
 
-    const currentDate = new Date().getDate();
-
-    const currentDateItem = currentMonthDays.find(
-      item => item.date === currentDate,
-    );
-
-    if (currentDateItem && !currentDateItem.disabled) {
-      currentDateItem.selected = true;
-    }
-
     setMonthDates([...prevMonthDays, ...currentMonthDays, ...nextMonthDays]);
-  }, [currentYear, currentMonth]);
+  }, [currentYearProp, currentMonthProp, selectedDate]);
 
   const nextMonth = () => {
-    if (currentMonth === 12) {
+    if (currentMonthProp === 12) {
       setCurrentMonth(1);
-      setCurrentYear(currentYear + 1);
+      setCurrentYear(currentYearProp + 1);
     } else {
-      setCurrentMonth(currentMonth + 1);
+      setCurrentMonth(currentMonthProp + 1);
     }
   };
 
   const previousMonth = () => {
-    if (currentMonth === 1) {
+    if (currentMonthProp === 1) {
       setCurrentMonth(12);
-      setCurrentYear(currentYear - 1);
+      setCurrentYear(currentYearProp - 1);
     } else {
-      setCurrentMonth(currentMonth - 1);
+      setCurrentMonth(currentMonthProp - 1);
     }
   };
 
   const selectDate = selectedDate => {
-    const formattedDate = `${currentYear}-${monthNum[currentMonth - 1]
-      }-${selectedDate}`;
-    setDate(formattedDate);
-    setMonthDates(
-      monthDates.map(dateItem => {
-        dateItem.selected =
-          dateItem.date === selectedDate && !dateItem.disabled;
-        console.log('dateItem', dateItem);
-        return dateItem;
-      }),
-    );
+    setDate(selectedDate);
   };
 
   const renderDays = ({ item }) => (
@@ -147,9 +133,12 @@ export default function GridCalendar({ setDate }) {
     <View style={styles.dateWrapper}>
       <TouchableOpacity
         style={styles.dateContainer(item)}
-        onPress={() => selectDate(item.date)}
-        disabled={item.disabled}>
-        <Text style={[styles.date(item), item.disabled && styles.disabledDate]}>{item.date}</Text>
+        onPress={() => selectDate(`${currentYearProp}-${currentMonthProp}-${item.date}`)}
+        disabled={item.disabled}
+      >
+        <Text style={[styles.date(item), item.disabled && styles.disabledDate]}>
+          {item.date}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -158,7 +147,7 @@ export default function GridCalendar({ setDate }) {
     <View style={styles.calendar}>
       <View style={[styles.calendarTop]}>
         <Text style={styles.monthHeading}>
-          {months[currentMonth - 1]} {currentYear}
+          {months[currentMonthProp - 1]} {currentYearProp}
         </Text>
 
         <TouchableOpacity onPress={previousMonth} style={styles.chevronWrapper}>
@@ -181,7 +170,8 @@ export default function GridCalendar({ setDate }) {
         numColumns={7}
         data={monthDates}
         renderItem={renderDates}
-        style={styles.datesWrapper} />
+        style={styles.datesWrapper}
+      />
     </View>
   );
 }

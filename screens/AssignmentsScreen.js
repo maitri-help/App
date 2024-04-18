@@ -12,10 +12,12 @@ export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
     const [plusModalVisible, setPlusModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-    const [SelectedDateGrid, setSelectedDateGrid] = useState(
-        `${new Date().getFullYear()}-${monthNum[new Date().getMonth()]
-        }-${new Date().getDate()}`,
+    const [selectedDateGrid, setSelectedDateGrid] = useState(
+        `${new Date().getFullYear()}-${monthNum[new Date().getMonth()]}-${new Date().getDate()}`
     );
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+    const [defaultWeekDate, setDefaultWeekDate] = useState(new Date());
 
     useEffect(() => {
         if (plusModalVisible) {
@@ -33,7 +35,17 @@ export default function AssignmentsScreen({ navigation }) {
         }
     }, [plusModalVisible]);
 
-    const handleTodayPress = () => { };
+    const handleTodayPress = () => {
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1;
+        const currentYear = today.getFullYear();
+        setSelectedDateGrid(
+            `${currentYear}-${monthNum[currentMonth - 1]}-${today.getDate()}`
+        );
+        setCurrentMonth(currentMonth);
+        setCurrentYear(currentYear);
+        setDefaultWeekDate(today);
+    };
 
     return (
         <>
@@ -62,9 +74,20 @@ export default function AssignmentsScreen({ navigation }) {
                         </TouchableOpacity>
 
                         {activeTab === 'Month' ? (
-                            <GridCalendar date={SelectedDateGrid} setDate={setSelectedDateGrid} />
+                            <GridCalendar
+                                setDate={setSelectedDateGrid}
+                                selectedDate={selectedDateGrid}
+                                currentYearProp={currentYear}
+                                currentMonthProp={currentMonth}
+                                setCurrentYear={setCurrentYear}
+                                setCurrentMonth={setCurrentMonth}
+                            />
                         ) : (
-                            <WeekCalendar date={SelectedDateGrid} setDate={setSelectedDateGrid} />
+                            <WeekCalendar
+                                setDate={setSelectedDateGrid}
+                                selectedDate={selectedDateGrid}
+                                defaultDate={defaultWeekDate}
+                            />
                         )}
                     </View>
                 </View>
