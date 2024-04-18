@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import Circles from '../assets/img/circles.svg';
 
 export default function CirclesView({ circleItemsContent, additionalItemCountFirst, additionalItemCountSecond, additionalItemCountThird, onPressCircleItemCount, onPressCircleItem }) {
 
     return (
         <View style={stylesCircles.circlesContainerInner}>
-            <Circles width={545} height={545} style={stylesCircles.circles} />
+            <Circles style={stylesCircles.circles} />
             <View style={stylesCircles.circleItems}>
                 {circleItemsContent.map((item, index) => (
                     <React.Fragment key={index}>
@@ -53,17 +53,20 @@ export default function CirclesView({ circleItemsContent, additionalItemCountFir
 const stylesCircles = StyleSheet.create({
     circlesContainerInner: {
         position: 'relative',
-        marginLeft: '-52%',
-        flexShrink: 1,
+        marginLeft: -200,
+        width: 545,
+        height: 545,
     },
     circles: {
         position: 'relative',
         zIndex: 1,
+        width: 545,
+        height: 545,
     },
     circleItems: {
         position: 'absolute',
         top: 0,
-        left: 0,
+        right: 0,
         width: '100%',
         height: '100%',
         zIndex: 2,
@@ -108,8 +111,8 @@ const stylesCircles = StyleSheet.create({
         borderRadius: 30,
     },
     circleItemMiddleWrapper: {
-        top: 80,
-        transform: [{ translateX: (Platform.OS === 'android') ? 90 : 98 }],
+        top: 70,
+        transform: [{ translateX: 98 }],
     },
     circleItemMiddle: {
         borderColor: '#8BD759',
@@ -120,7 +123,7 @@ const stylesCircles = StyleSheet.create({
     },
     circleItemInnerWrapper: {
         bottom: 135,
-        transform: [{ translateX: -25 }],
+        transform: [{ translateX: -15 }],
     },
     circleItemInner: {
         borderColor: '#1C4837',
@@ -163,14 +166,14 @@ const stylesCircles = StyleSheet.create({
         lineHeight: 18,
     },
     circleItemCountFirst: {
-        bottom: (Platform.OS === 'android') ? 210 : 200,
-        transform: [{ translateX: (Platform.OS === 'android') ? 60 : 70 }],
+        bottom: 200,
+        transform: [{ translateX: 75 }],
     },
     circleItemCountSecond: {
-        transform: [{ translateX: (Platform.OS === 'android') ? 160 : 175 }],
+        transform: [{ translateX: 185 }],
     },
     circleItemCountThird: {
-        bottom: (Platform.OS === 'android') ? 45 : 35,
-        transform: [{ translateX: 145 }],
+        bottom: 35,
+        transform: [{ translateX: 155 }],
     },
 });
