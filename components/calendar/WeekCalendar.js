@@ -8,34 +8,41 @@ import {
 
 const days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
-export default function WeekCalendar({ defaultDate, setDate }) {
+export default function WeekCalendar({ defaultDate, setDate, setWeekStartDate, weekSelectedDate }) {
   const [weekDates, setWeekDates] = useState([]);
 
   useEffect(() => {
     updateWeekDates(defaultDate);
   }, [defaultDate]);
 
-  const updateWeekDates = currentDate => {
+  const updateWeekDates = (currentDate) => {
     const formattedDates = [];
+    const weekStartDate = new Date(currentDate);
+    weekStartDate.setDate(currentDate.getDate() - currentDate.getDay());
     for (let i = 0; i < 7; i++) {
-      const day = new Date(currentDate);
-      day.setDate(currentDate.getDate() - currentDate.getDay() + i + (i === 0 ? 0 : 1));
+      const day = new Date(weekStartDate);
+      day.setDate(weekStartDate.getDate() + i);
       formattedDates.push({
         date: day.getDate(),
         dayOfWeek: days[i],
-        selected: day.getDate() === currentDate.getDate(),
+        selected: day.getTime() === currentDate.getTime(),
       });
     }
+    setWeekStartDate(weekStartDate);
     setWeekDates(formattedDates);
   };
 
-  const handleDateSelection = selectedDate => {
-    setDate(selectedDate);
+  const handleDateSelection = (selectedDate) => {
+    const formattedDate = `${defaultDate.getFullYear()}-${(defaultDate.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${selectedDate.toString().padStart(2, '0')}`;
+    setDate(formattedDate);
+
     setWeekDates(
-      weekDates.map(date => ({
-        ...date,
-        selected: date.date === selectedDate,
-      })),
+      weekDates.map((day) => ({
+        ...day,
+        selected: day.date === selectedDate,
+      }))
     );
   };
 
@@ -48,7 +55,8 @@ export default function WeekCalendar({ defaultDate, setDate }) {
           style={[
             styles.dateContainer,
             day.selected && { backgroundColor: '#1C4837' },
-          ]}>
+          ]}
+        >
           <Text style={styles.dayOfWeek(day.selected)}>{day.dayOfWeek}</Text>
           <Text style={styles.date(day.selected)}>{day.date}</Text>
         </TouchableOpacity>
@@ -60,7 +68,6 @@ export default function WeekCalendar({ defaultDate, setDate }) {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingTop: 5,
     paddingBottom: 25,
   },
   scrollViewContent: {

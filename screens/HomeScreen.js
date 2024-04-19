@@ -283,7 +283,7 @@ const stylesHome = StyleSheet.create({
         gap: 15,
         paddingHorizontal: 25,
         paddingTop: 10,
-        paddingBottom: 20,
+        paddingBottom: 30,
     },
     tasksScrollEmpty: {
         flex: 1,

@@ -116,5 +116,6 @@ const stylesPlus = StyleSheet.create({
   backLinkInline: {
     position: 'absolute',
     left: 25,
+    zIndex: 2,
   }
 })

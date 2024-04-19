@@ -41,10 +41,23 @@ export const monthNum = [
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-export default function GridCalendar({ setDate, selectedDate, currentYearProp, currentMonthProp, setCurrentYear, setCurrentMonth }) {
+export default function GridCalendar({ setDate, selectedDate, currentYearProp, currentMonthProp, setCurrentYear, setCurrentMonth, setWeekStartDate }) {
   const [monthDates, setMonthDates] = useState([]);
 
   useEffect(() => {
+    if (!selectedDate) {
+      return;
+    }
+
+    const getFirstDayOfMonth = (year, month) => {
+      return new Date(year, month - 1, 1).getDay();
+    };
+
+    const firstDayOfWeek = getFirstDayOfMonth(currentYearProp, currentMonthProp);
+
+    const weekStartDate = new Date(selectedDate);
+    weekStartDate.setDate(weekStartDate.getDate() - weekStartDate.getDay());
+
     const getLastDayOfMonth = (year, month) => {
       return new Date(year, month, 0).getDate();
     };
@@ -54,21 +67,10 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
       else return month - 1;
     };
 
-    const getFirstDayOfWeek = (year, month) => {
-      let firstDay = new Date(year, month - 1, 1).getDay();
-      if (firstDay === 0) {
-        firstDay = 6;
-      } else {
-        firstDay -= 1;
-      }
-      return firstDay;
-    };
-
     const lastDayOfPrevMonth = getLastDayOfMonth(
       currentYearProp,
       getLastMonth(currentYearProp, currentMonthProp)
     );
-    const firstDayOfWeek = getFirstDayOfWeek(currentYearProp, currentMonthProp);
     const totalDaysInMonth = getLastDayOfMonth(currentYearProp, currentMonthProp);
 
     const prevMonthDays = [];
@@ -80,15 +82,18 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
       prevMonthDays.push({ date: i, selected: false, disabled: true });
     }
 
+    const currentYear = parseInt(selectedDate.split('-')[0]);
+    const currentMonth = parseInt(selectedDate.split('-')[1]);
+    const currentDay = parseInt(selectedDate.split('-')[2]);
+
+    const isSameDate = currentYear === currentYearProp &&
+      currentMonth === currentMonthProp;
+
     const currentMonthDays = [];
     for (let i = 1; i <= totalDaysInMonth; i++) {
       currentMonthDays.push({
         date: i,
-        selected:
-          selectedDate &&
-          currentYearProp === parseInt(selectedDate.split('-')[0]) &&
-          currentMonthProp === parseInt(selectedDate.split('-')[1]) &&
-          i === parseInt(selectedDate.split('-')[2]),
+        selected: isSameDate && i === currentDay,
         disabled: false,
       });
     }
@@ -100,6 +105,8 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
     }
 
     setMonthDates([...prevMonthDays, ...currentMonthDays, ...nextMonthDays]);
+
+    setWeekStartDate(weekStartDate);
   }, [currentYearProp, currentMonthProp, selectedDate]);
 
   const nextMonth = () => {
@@ -120,9 +127,9 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
     }
   };
 
-  const selectDate = selectedDate => {
+  const selectDate = (selectedDate) => {
     setDate(selectedDate);
-  };
+};
 
   const renderDays = ({ item }) => (
     <View style={styles.dayWrapper}>

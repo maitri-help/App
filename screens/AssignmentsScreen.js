@@ -12,12 +12,14 @@ export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
     const [plusModalVisible, setPlusModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-    const [selectedDateGrid, setSelectedDateGrid] = useState(
+    const [selectedDate, setSelectedDate] = useState(
         `${new Date().getFullYear()}-${monthNum[new Date().getMonth()]}-${new Date().getDate()}`
     );
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
     const [defaultWeekDate, setDefaultWeekDate] = useState(new Date());
+    const [weekStartDate, setWeekStartDate] = useState(new Date());
+    const [weekSelectedDate, setWeekSelectedDate] = useState(selectedDate);
 
     useEffect(() => {
         if (plusModalVisible) {
@@ -39,12 +41,25 @@ export default function AssignmentsScreen({ navigation }) {
         const today = new Date();
         const currentMonth = today.getMonth() + 1;
         const currentYear = today.getFullYear();
-        setSelectedDateGrid(
+        setSelectedDate(
             `${currentYear}-${monthNum[currentMonth - 1]}-${today.getDate()}`
         );
         setCurrentMonth(currentMonth);
         setCurrentYear(currentYear);
         setDefaultWeekDate(today);
+    };
+
+    const handleDateSelection = (date) => {
+        setSelectedDate(date);
+        setWeekSelectedDate(date);
+    };
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        if (tab === 'Week') {
+            setWeekSelectedDate(selectedDate);
+            setDefaultWeekDate(new Date(selectedDate));
+        }
     };
 
     return (
@@ -62,7 +77,7 @@ export default function AssignmentsScreen({ navigation }) {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 activeOpacity={0.5}
-                                onPress={() => setActiveTab('Week')} style={[stylesCal.tab, activeTab === 'Week' ? stylesCal.tabActive : '']}>
+                                onPress={() => handleTabChange('Week')} style={[stylesCal.tab, activeTab === 'Week' ? stylesCal.tabActive : '']}>
                                 <Text style={[stylesCal.tabText, activeTab === 'Week' ? stylesCal.tabActiveText : '']}>Week</Text>
                             </TouchableOpacity>
                         </View>
@@ -75,18 +90,22 @@ export default function AssignmentsScreen({ navigation }) {
 
                         {activeTab === 'Month' ? (
                             <GridCalendar
-                                setDate={setSelectedDateGrid}
-                                selectedDate={selectedDateGrid}
+                                setDate={handleDateSelection}
+                                selectedDate={selectedDate}
                                 currentYearProp={currentYear}
                                 currentMonthProp={currentMonth}
                                 setCurrentYear={setCurrentYear}
                                 setCurrentMonth={setCurrentMonth}
+                                setWeekStartDate={setWeekStartDate}
                             />
                         ) : (
                             <WeekCalendar
-                                setDate={setSelectedDateGrid}
-                                selectedDate={selectedDateGrid}
+                                setDate={handleDateSelection}
+                                selectedDate={selectedDate}
                                 defaultDate={defaultWeekDate}
+                                setWeekStartDate={setWeekStartDate}
+                                weekSelectedDate={weekSelectedDate}
+                                setWeekSelectedDate={setWeekSelectedDate}
                             />
                         )}
                     </View>
@@ -191,7 +210,6 @@ const stylesCal = StyleSheet.create({
     todayWrapper: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        paddingHorizontal: 5,
         paddingVertical: 10,
     },
     today: {
@@ -202,7 +220,8 @@ const stylesCal = StyleSheet.create({
         textDecorationLine: 'underline',
     },
     appointmentWrapper: {
-        paddingVertical: 20,
+        paddingTop: 20,
+        paddingBottom: 30,
         gap: 15,
     },
     floatingButtonWrapper: {
