@@ -91,8 +91,8 @@ export default function LoginScreen({ navigation }) {
                                     <Text style={styles.errorText}>{errors.phoneNumber}</Text>
                                 }
                             </View>
-                            <View style={stylesLogin.submitButtonContainer}>
-                                <TouchableOpacity onPress={handleSubmit} style={[stylesLogin.submitButton, !isFormValid && { opacity: 0.5 }]} disabled={!isFormValid}>
+                            <View style={styles.submitButtonContainer}>
+                                <TouchableOpacity onPress={handleSubmit} style={[styles.submitButton, !isFormValid && { opacity: 0.5 }]} disabled={!isFormValid}>
                                     <ArrowIcon width={18} height={18} color={'#fff'} />
                                 </TouchableOpacity>
                             </View>
@@ -118,29 +118,6 @@ const stylesLogin = StyleSheet.create({
     },
     formContainer: {
         marginTop: 120,
-    },
-    submitButtonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        width: '100%',
-        paddingTop: 20,
-        marginBottom: 30,
-    },
-    submitButton: {
-        backgroundColor: '#1C4837',
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 12,
-        elevation: 10,
     },
     registerTextLink: {
         marginTop: 15,

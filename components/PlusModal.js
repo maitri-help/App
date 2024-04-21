@@ -1,68 +1,86 @@
 import React, { useState } from 'react';
 import {
   StyleSheet,
-  View,
   TouchableOpacity,
-  FlatList,
-  Image,
-  Text,
+  Keyboard,
 } from 'react-native';
-import { modalservices } from '../data/ModalServices';
 import Modal from '../components/Modal';
-import styles from '../Styles';
+import { Formik } from 'formik';
+import { modalServiceTasks } from '../data/ModalServiceTasks';
+import ServiceItemSelection from './plusModalSteps/ServiceItemSelection';
+import TaskSelection from './plusModalSteps/TaskSelection';
+import FormFields from './plusModalSteps/FormFields';
 
-export default function PlusModal({ visible, onClose, navigation }) {
-  const [selectedService, setSelectedService] = useState(null);
+const initialValues = {
+  selectedService: { id: null, title: '', icon: null },
+  taskName: '',
+};
 
-  const [pressedItem, setPressedItem] = useState(null);
+export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, navigation }) {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedTaskName, setSelectedTaskName] = useState('');
 
-  const handlePressIn = (itemId) => {
-    setPressedItem(itemId);
-  };
-
-  const handlePressOut = () => {
-    setPressedItem(null);
+  const handleSubmit = (values) => {
+    console.log('Form values:', values);
   };
 
   return (
-    <Modal visible={visible} onClose={onClose} style={stylesPlus} modalTopNav
-      modalTopNavChildren={
-        <>
-          <Text style={[styles.topBarTitle, stylesPlus.topBarTitle]}>
-            What Are You Looking For?
-          </Text>
-        </>
-      }
+    <Modal
+      visible={visible}
+      onClose={onClose}
+      style={stylesPlus}
     >
-      <FlatList
-        style={stylesPlus.servicesListWrapper}
-        contentContainerStyle={stylesPlus.servicesListContent}
-        data={modalservices}
-        numColumns={2}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={stylesPlus.columnWrapper}>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={[
-                stylesPlus.serviceItem,
-                pressedItem === item.id && stylesPlus.serviceItemPressed,
-              ]}
-              onPressIn={() => handlePressIn(item.id)}
-              onPressOut={handlePressOut}
-            >
-              <Image source={item.icon} style={stylesPlus.serviceIcon} />
-              <Text
-                style={[
-                  stylesPlus.serviceText,
-                  pressedItem === item.id && stylesPlus.serviceTextPressed,
-                ]}
-              >{item.title}</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    </Modal>
+      <TouchableOpacity
+        style={{ flex: 1 }}
+        onPress={() => Keyboard.dismiss()}
+        activeOpacity={1}
+      >
+        <Formik
+          initialValues={{ ...initialValues, selectedService }}
+          onSubmit={handleSubmit}
+        >
+          {(formikProps) => (
+            <>
+              {currentStep === 1 && (
+                <ServiceItemSelection
+                  selected={selectedService}
+                  setSelectedService={setSelectedService}
+                  onClose={onClose}
+                  onPress={() => setCurrentStep(2)}
+                  setCurrentStep={setCurrentStep}
+                />
+              )}
+              {currentStep === 2 && (
+                <TaskSelection
+                  selectedService={selectedService}
+                  modalServiceTasks={modalServiceTasks}
+                  onTaskSelect={(taskName) => {
+                    setSelectedTaskName(taskName);
+                    formikProps.setFieldValue('taskName', taskName);
+                    setCurrentStep(3);
+                  }}
+                  currentStep={currentStep}
+                  onBack={() => setCurrentStep(currentStep - 1)}
+                  setCurrentStep={setCurrentStep}
+                />
+              )}
+              {currentStep === 3 && (
+                <FormFields
+                  selectedService={selectedService}
+                  modalServiceTasks={modalServiceTasks}
+                  taskName={selectedTaskName}
+                  currentStep={currentStep}
+                  onBack={() => setCurrentStep(currentStep - 1)}
+                  setCurrentStep={setCurrentStep}
+                  selectedCircle={selectedCircle}
+                  setSelectedCircle={setSelectedCircle}
+                />
+              )}
+            </>
+          )}
+        </Formik>
+      </TouchableOpacity>
+    </Modal >
   );
 };
 
@@ -70,52 +88,4 @@ const stylesPlus = StyleSheet.create({
   modalContainer: {
     height: '80%'
   },
-  servicesListWrapper: {
-    flex: 1,
-  },
-  servicesListContent: {
-    justifyContent: 'center',
-    gap: 25,
-    paddingHorizontal: 16,
-  },
-  columnWrapper: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  serviceItem: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    aspectRatio: 1 / 1,
-    borderRadius: 70,
-    padding: 13,
-  },
-  serviceItemPressed: {
-    backgroundColor: '#E3E3E3',
-  },
-  serviceIcon: {
-    width: 50,
-    height: 50,
-    resizeMode: 'contain',
-    marginBottom: 10,
-  },
-  serviceText: {
-    color: '#000',
-    fontFamily: 'poppins-regular',
-    fontSize: 13,
-    lineHeight: 15,
-    textAlign: 'center',
-    paddingBottom: 5,
-  },
-  serviceTextPressed: {
-    fontFamily: 'poppins-semibold',
-  },
-  topBarTitle: {
-    textAlign: 'center',
-    flex: 1,
-  },
-  backLinkInline: {
-    position: 'absolute',
-    left: 25,
-    zIndex: 2,
-  }
 })

@@ -137,7 +137,14 @@ export const checkAuthentication = async () => {
             return null;
         }
     } catch (error) {
-        console.error('Error checking authentication:', error);
+        if (error.response && error.response.status === 401) {
+            console.error('Authentication failed. Please login again.', error);
+            clearUserData();
+        } else {
+            clearUserData();
+            console.error('Error checking authentication:', error);
+            throw error;
+        }
         return null;
     }
 };

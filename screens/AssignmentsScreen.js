@@ -20,6 +20,8 @@ export default function AssignmentsScreen({ navigation }) {
     const [defaultWeekDate, setDefaultWeekDate] = useState(new Date());
     const [weekStartDate, setWeekStartDate] = useState(new Date());
     const [weekSelectedDate, setWeekSelectedDate] = useState(selectedDate);
+    const [selectedService, setSelectedService] = useState({ id: null, title: '', icon: null });
+    const [selectedCircle, setSelectedCircle] = useState('Third');
 
     useEffect(() => {
         if (plusModalVisible) {
@@ -60,6 +62,10 @@ export default function AssignmentsScreen({ navigation }) {
             setWeekSelectedDate(selectedDate);
             setDefaultWeekDate(new Date(selectedDate));
         }
+    };
+
+    const handlePlusModalClose = () => {
+        setPlusModalVisible(false);
     };
 
     return (
@@ -139,7 +145,11 @@ export default function AssignmentsScreen({ navigation }) {
 
             <PlusModal
                 visible={plusModalVisible}
-                onClose={() => setPlusModalVisible(false)}
+                onClose={handlePlusModalClose}
+                selectedService={selectedService}
+                setSelectedService={setSelectedService}
+                selectedCircle={selectedCircle}
+                setSelectedCircle={setSelectedCircle}
                 navigation={navigation}
             />
         </>

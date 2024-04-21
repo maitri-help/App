@@ -132,6 +132,10 @@ export default styles = StyleSheet.create({
         marginHorizontal: -8,
         marginVertical: -8,
     },
+    backLinkCustom: {
+        top: 'auto',
+        left: 20,
+    },
     toast: {
         paddingVertical: 12,
         paddingHorizontal: 22,
@@ -173,6 +177,15 @@ export default styles = StyleSheet.create({
     topBarBack: {
         justifyContent: 'flex-start',
     },
+    modalTopNav: {
+        position: 'relative',
+        paddingVertical: 25,
+        paddingHorizontal: 25,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        width: '100%',
+    },
     topBarTitle: {
         fontSize: 18,
         fontFamily: 'poppins-regular',
@@ -204,5 +217,28 @@ export default styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 12,
         marginVertical: 5,
+    },
+    submitButtonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        width: '100%',
+        paddingTop: 20,
+        marginBottom: 30,
+    },
+    submitButton: {
+        backgroundColor: '#1C4837',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 12,
+        elevation: 10,
     },
 });

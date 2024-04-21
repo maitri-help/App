@@ -1,4 +1,4 @@
-export const modalservices = [
+export const modalServices = [
   { id: '1', title: 'Ride', icon: require('../assets/emojis/car-icon.png'), },
   { id: '2', title: 'Meal', icon: require('../assets/emojis/fork-knife-icon.png'), },
   { id: '3', title: 'Errand', icon: require('../assets/emojis/home-icon.png'), },

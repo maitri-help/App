@@ -19,7 +19,7 @@ export default function ModalComponent({ visible, onClose, modalTopNav, modalTop
                 <View style={[stylesModal.modalContainer, style && style.modalContainer]}>
                     <View style={[stylesModal.modalContent, style && style.modalContent]}>
                         {modalTopNav &&
-                            <View style={stylesModal.modalTopNav}>
+                            <View style={styles.modalTopNav}>
                                 <TouchableOpacity onPress={modalTopNavLink || onClose} style={[styles.backLinkInline, style && style.backLinkInline]}>
                                     <ArrowLeftIcon style={styles.backLinkIcon} />
                                 </TouchableOpacity>
@@ -51,13 +51,4 @@ const stylesModal = StyleSheet.create({
     overlayTouchable: {
         flex: 1,
     },
-    modalTopNav: {
-        position: 'relative',
-        paddingVertical: 25,
-        paddingHorizontal: 25,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        width: '100%',
-    }
 });

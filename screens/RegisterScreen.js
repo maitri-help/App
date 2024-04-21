@@ -27,18 +27,18 @@ export default function RegisterScreen({ navigation }) {
 
     const handleFormSubmit = async (values) => {
         console.log('Form values in handleFormSubmit:', values);
-    
+
         try {
             const signUpResponse = await handleSignUp(values, navigation);
             console.log('Sign up response:', signUpResponse);
             const { exists, userId } = signUpResponse;
-    
+
             if (exists) {
                 console.log('User with phone number already exists:', values.phoneNumber);
                 toast.show('User with phone number already exists', { type: 'error' });
                 return;
             }
-    
+
             if (userId) {
                 navigation.navigate('VerifyNumber', { phoneNumber: values.phoneNumber, userId });
                 toast.show('Code sent successfully to: ' + values.phoneNumber, { type: 'success' });
@@ -158,8 +158,8 @@ export default function RegisterScreen({ navigation }) {
                                         <Text style={stylesRegister.haveAccountText}>Already have an account? <Text style={stylesRegister.loginText}>Log in</Text></Text>
                                     </TouchableOpacity>
                                 </View>
-                                <View style={stylesRegister.submitButtonContainer}>
-                                    <TouchableOpacity onPress={handleSubmit} style={[stylesRegister.submitButton, !isFormValid && { opacity: 0.5 }]} disabled={!isFormValid}>
+                                <View style={[styles.submitButtonContainer, stylesRegister.submitButtonContainer]}>
+                                    <TouchableOpacity onPress={handleSubmit} style={[styles.submitButton, !isFormValid && { opacity: 0.5 }]} disabled={!isFormValid}>
                                         <ArrowIcon width={18} height={18} color={'#fff'} />
                                     </TouchableOpacity>
                                 </View>
@@ -183,28 +183,6 @@ const stylesRegister = StyleSheet.create({
         alignItems: 'center',
         paddingTop: 20,
     },
-    submitButtonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        width: '100%',
-        paddingTop: 40,
-    },
-    submitButton: {
-        backgroundColor: '#1C4837',
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 12,
-        elevation: 10,
-    },
     loginTextLink: {
         marginTop: 15,
     },
@@ -216,4 +194,7 @@ const stylesRegister = StyleSheet.create({
         fontFamily: 'poppins-semibold',
         textDecorationLine: 'underline',
     },
+    submitButtonContainer: {
+        paddingTop: 40,
+    }
 });
