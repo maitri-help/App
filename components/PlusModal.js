@@ -10,15 +10,15 @@ import { modalServiceTasks } from '../data/ModalServiceTasks';
 import ServiceItemSelection from './plusModalSteps/ServiceItemSelection';
 import TaskSelection from './plusModalSteps/TaskSelection';
 import FormFields from './plusModalSteps/FormFields';
+import DateTime from './plusModalSteps/DateTime';
 
 const initialValues = {
   selectedService: { id: null, title: '', icon: null },
   taskName: '',
 };
 
-export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, navigation }) {
+export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, navigation, taskName, setTaskName, isOtherTask, setIsOtherTask }) {
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedTaskName, setSelectedTaskName] = useState('');
 
   const handleSubmit = (values) => {
     console.log('Form values:', values);
@@ -55,25 +55,36 @@ export default function PlusModal({ visible, onClose, selectedService, setSelect
                   selectedService={selectedService}
                   modalServiceTasks={modalServiceTasks}
                   onTaskSelect={(taskName) => {
-                    setSelectedTaskName(taskName);
+                    setTaskName(taskName);
                     formikProps.setFieldValue('taskName', taskName);
                     setCurrentStep(3);
                   }}
                   currentStep={currentStep}
                   onBack={() => setCurrentStep(currentStep - 1)}
                   setCurrentStep={setCurrentStep}
+                  setIsOtherTask={setIsOtherTask}
                 />
               )}
               {currentStep === 3 && (
                 <FormFields
                   selectedService={selectedService}
                   modalServiceTasks={modalServiceTasks}
-                  taskName={selectedTaskName}
+                  taskName={taskName}
+                  setTaskName={setTaskName}
                   currentStep={currentStep}
                   onBack={() => setCurrentStep(currentStep - 1)}
                   setCurrentStep={setCurrentStep}
                   selectedCircle={selectedCircle}
                   setSelectedCircle={setSelectedCircle}
+                  isOtherTask={isOtherTask}
+                />
+              )}
+              {currentStep === 4 && (
+                <DateTime
+                  taskName={taskName}
+                  currentStep={currentStep}
+                  onBack={() => setCurrentStep(currentStep - 1)}
+                  setCurrentStep={setCurrentStep}
                 />
               )}
             </>

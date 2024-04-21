@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 
-export default function FormFields({ selectedService, modalServiceTasks, currentStep, taskName, onSubmit, onBack, selectedCircle, setSelectedCircle }) {
+export default function FormFields({ selectedService, modalServiceTasks, currentStep, setCurrentStep, taskName, setTaskName, onSubmit, onBack, selectedCircle, setSelectedCircle, isOtherTask }) {
+    const taskNameRef = useRef(null);
 
     useEffect(() => {
+        console.log("Task Name in FormFields:", taskName);
         console.log("Selected service:", selectedService);
         if (selectedService && modalServiceTasks[selectedService.id]) {
             console.log("Setting tasks:", modalServiceTasks[selectedService.id]);
         } else {
             console.log("No tasks found");
         }
-    }, [selectedService, modalServiceTasks]);
+    }, [selectedService, modalServiceTasks, taskName]);
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -23,6 +25,10 @@ export default function FormFields({ selectedService, modalServiceTasks, current
 
     const handleSelectCircle = (option) => {
         setSelectedCircle(option);
+    };
+
+    const handleDateTime = () => {
+        setCurrentStep(4);
     };
 
     return (
@@ -39,11 +45,14 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                 <View style={[styles.contentContainer, stylesFields.fieldsList]}>
                     <View style={stylesFields.fieldsListInner}>
                         <View style={[stylesFields.fieldGroup, stylesFields.fieldGroupFirst]}>
-                            {taskName === '' || taskName === 'Other' ? (
+                            {isOtherTask ? (
                                 <TextInput
+                                    ref={taskNameRef}
                                     style={[stylesFields.field, stylesFields.fieldTask]}
                                     placeholder="Task name"
                                     placeholderTextColor="#737373"
+                                    onChangeText={setTaskName}
+                                    value={taskName}
                                 />
                             ) : (
                                 <Text style={[stylesFields.field, stylesFields.fieldTask]}>{taskName}</Text>
@@ -84,7 +93,7 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                                 <Text style={stylesFields.fieldLabel}>
                                     Date & Time
                                 </Text>
-                                <TouchableOpacity style={stylesFields.fieldLink}>
+                                <TouchableOpacity onPress={handleDateTime} style={stylesFields.fieldLink}>
                                     <Text style={stylesFields.fieldLink}>Fill Time and date</Text>
                                 </TouchableOpacity>
                             </View>

@@ -172,6 +172,7 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
         data={days}
         renderItem={renderDays}
         style={styles.daysWrapper}
+        scrollEnabled={false}
       />
 
       <FlatList
@@ -179,6 +180,7 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
         data={monthDates}
         renderItem={renderDates}
         style={styles.datesWrapper}
+        scrollEnabled={false}
       />
     </View>
   );

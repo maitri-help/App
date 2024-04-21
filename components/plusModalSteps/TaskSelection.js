@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'rea
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 
-export default function TaskSelection({ selectedService, modalServiceTasks, onTaskSelect, setCurrentStep, currentStep, onBack }) {
+export default function TaskSelection({ selectedService, modalServiceTasks, onTaskSelect, setCurrentStep, currentStep, onBack, setIsOtherTask }) {
     const [tasks, setTasks] = useState([]);
     const [selectedTask, setSelectedTask] = useState(null);
     const [selectedServiceIcon, setSelectedServiceIcon] = useState(null);
@@ -37,12 +37,14 @@ export default function TaskSelection({ selectedService, modalServiceTasks, onTa
     const handleTaskSelect = (task) => {
         setSelectedTask(task);
         onTaskSelect(task);
+        setIsOtherTask(false);
         setCurrentStep(3);
     };
 
     const handleCustomTask = () => {
         setSelectedTask(null);
         onTaskSelect('');
+        setIsOtherTask(true);
         setCurrentStep(3);
     };
 

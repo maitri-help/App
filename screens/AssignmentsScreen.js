@@ -22,6 +22,9 @@ export default function AssignmentsScreen({ navigation }) {
     const [weekSelectedDate, setWeekSelectedDate] = useState(selectedDate);
     const [selectedService, setSelectedService] = useState({ id: null, title: '', icon: null });
     const [selectedCircle, setSelectedCircle] = useState('Third');
+    const [taskName, setTaskName] = useState('');
+    const [selectedTaskName, setSelectedTaskName] = useState('');
+    const [isOtherTask, setIsOtherTask] = useState(false);
 
     useEffect(() => {
         if (plusModalVisible) {
@@ -151,6 +154,10 @@ export default function AssignmentsScreen({ navigation }) {
                 selectedCircle={selectedCircle}
                 setSelectedCircle={setSelectedCircle}
                 navigation={navigation}
+                taskName={taskName}
+                setTaskName={setTaskName}
+                isOtherTask={isOtherTask}
+                setIsOtherTask={setIsOtherTask}
             />
         </>
     );
