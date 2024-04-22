@@ -5,8 +5,7 @@ import { useFormikContext } from 'formik';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 
-export default function ServiceItemSelection({ onPress, setSelectedService, setCurrentStep, onClose }) {
-    const { values, setFieldValue } = useFormikContext();
+export default function ServiceItemSelection({ onPress, selectedService, setSelectedService, setCurrentStep, onClose }) {
     const [pressedItem, setPressedItem] = useState(null);
 
     const handlePressIn = (item) => {
@@ -53,13 +52,13 @@ export default function ServiceItemSelection({ onPress, setSelectedService, setC
                             activeOpacity={1}>
                             <View style={
                                 [stylesServices.serviceItem,
-                                (values.selectedService?.id === item.id || pressedItem === item.id) && stylesServices.serviceItemPressed
+                                (selectedService.id === item.id || pressedItem === item.id) && stylesServices.serviceItemPressed
                                 ]
                             }>
                                 <Image source={item.icon} style={stylesServices.serviceIcon} />
                                 <Text style={
                                     [stylesServices.serviceText,
-                                    (values.selectedService?.id === item.id || pressedItem === item.id) && stylesServices.serviceTextPressed
+                                    (selectedService.id === item.id || pressedItem === item.id) && stylesServices.serviceTextPressed
                                     ]
                                 }>
                                     {item.title}

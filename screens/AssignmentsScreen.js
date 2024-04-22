@@ -12,6 +12,7 @@ export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
     const [plusModalVisible, setPlusModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
+
     const [selectedDate, setSelectedDate] = useState(
         `${new Date().getFullYear()}-${monthNum[new Date().getMonth()]}-${new Date().getDate()}`
     );
@@ -20,11 +21,17 @@ export default function AssignmentsScreen({ navigation }) {
     const [defaultWeekDate, setDefaultWeekDate] = useState(new Date());
     const [weekStartDate, setWeekStartDate] = useState(new Date());
     const [weekSelectedDate, setWeekSelectedDate] = useState(selectedDate);
+
     const [selectedService, setSelectedService] = useState({ id: null, title: '', icon: null });
     const [selectedCircle, setSelectedCircle] = useState('Third');
     const [taskName, setTaskName] = useState('');
-    const [selectedTaskName, setSelectedTaskName] = useState('');
     const [isOtherTask, setIsOtherTask] = useState(false);
+    const [modalSelectedDate, setModalSelectedDate] = useState(
+        `${new Date().getFullYear()}-${monthNum[new Date().getMonth()]}-${new Date().getDate()}`
+    );
+    const [modalCurrentYear, setModalCurrentYear] = useState(new Date().getFullYear());
+    const [modalCurrentMonth, setModalCurrentMonth] = useState(new Date().getMonth() + 1);
+    const [modalWeekStartDate, setModalWeekStartDate] = useState(new Date());
 
     useEffect(() => {
         if (plusModalVisible) {
@@ -57,6 +64,11 @@ export default function AssignmentsScreen({ navigation }) {
     const handleDateSelection = (date) => {
         setSelectedDate(date);
         setWeekSelectedDate(date);
+    };
+
+    const handleModalDateSelection = (date) => {
+        setModalSelectedDate(date);
+        setModalWeekStartDate(date);
     };
 
     const handleTabChange = (tab) => {
@@ -158,6 +170,13 @@ export default function AssignmentsScreen({ navigation }) {
                 setTaskName={setTaskName}
                 isOtherTask={isOtherTask}
                 setIsOtherTask={setIsOtherTask}
+                setDate={handleModalDateSelection}
+                selectedDate={modalSelectedDate}
+                currentYearProp={modalCurrentYear}
+                currentMonthProp={modalCurrentMonth}
+                setCurrentYear={setModalCurrentYear}
+                setCurrentMonth={setModalCurrentMonth}
+                setWeekStartDate={setModalWeekStartDate}
             />
         </>
     );

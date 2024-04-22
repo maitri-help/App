@@ -5,24 +5,14 @@ import {
   Keyboard,
 } from 'react-native';
 import Modal from '../components/Modal';
-import { Formik } from 'formik';
 import { modalServiceTasks } from '../data/ModalServiceTasks';
 import ServiceItemSelection from './plusModalSteps/ServiceItemSelection';
 import TaskSelection from './plusModalSteps/TaskSelection';
 import FormFields from './plusModalSteps/FormFields';
 import DateTime from './plusModalSteps/DateTime';
 
-const initialValues = {
-  selectedService: { id: null, title: '', icon: null },
-  taskName: '',
-};
-
-export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, navigation, taskName, setTaskName, isOtherTask, setIsOtherTask }) {
+export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, navigation, taskName, setTaskName, isOtherTask, setIsOtherTask, setDate, selectedDate, currentYearProp, currentMonthProp, setCurrentYear, setCurrentMonth, setWeekStartDate, }) {
   const [currentStep, setCurrentStep] = useState(1);
-
-  const handleSubmit = (values) => {
-    console.log('Form values:', values);
-  };
 
   return (
     <Modal
@@ -35,61 +25,60 @@ export default function PlusModal({ visible, onClose, selectedService, setSelect
         onPress={() => Keyboard.dismiss()}
         activeOpacity={1}
       >
-        <Formik
-          initialValues={{ ...initialValues, selectedService }}
-          onSubmit={handleSubmit}
-        >
-          {(formikProps) => (
-            <>
-              {currentStep === 1 && (
-                <ServiceItemSelection
-                  selected={selectedService}
-                  setSelectedService={setSelectedService}
-                  onClose={onClose}
-                  onPress={() => setCurrentStep(2)}
-                  setCurrentStep={setCurrentStep}
-                />
-              )}
-              {currentStep === 2 && (
-                <TaskSelection
-                  selectedService={selectedService}
-                  modalServiceTasks={modalServiceTasks}
-                  onTaskSelect={(taskName) => {
-                    setTaskName(taskName);
-                    formikProps.setFieldValue('taskName', taskName);
-                    setCurrentStep(3);
-                  }}
-                  currentStep={currentStep}
-                  onBack={() => setCurrentStep(currentStep - 1)}
-                  setCurrentStep={setCurrentStep}
-                  setIsOtherTask={setIsOtherTask}
-                />
-              )}
-              {currentStep === 3 && (
-                <FormFields
-                  selectedService={selectedService}
-                  modalServiceTasks={modalServiceTasks}
-                  taskName={taskName}
-                  setTaskName={setTaskName}
-                  currentStep={currentStep}
-                  onBack={() => setCurrentStep(currentStep - 1)}
-                  setCurrentStep={setCurrentStep}
-                  selectedCircle={selectedCircle}
-                  setSelectedCircle={setSelectedCircle}
-                  isOtherTask={isOtherTask}
-                />
-              )}
-              {currentStep === 4 && (
-                <DateTime
-                  taskName={taskName}
-                  currentStep={currentStep}
-                  onBack={() => setCurrentStep(currentStep - 1)}
-                  setCurrentStep={setCurrentStep}
-                />
-              )}
-            </>
+        <>
+          {currentStep === 1 && (
+            <ServiceItemSelection
+              selectedService={selectedService}
+              setSelectedService={setSelectedService}
+              onClose={onClose}
+              onPress={() => setCurrentStep(2)}
+              setCurrentStep={setCurrentStep}
+            />
           )}
-        </Formik>
+          {currentStep === 2 && (
+            <TaskSelection
+              selectedService={selectedService}
+              modalServiceTasks={modalServiceTasks}
+              onTaskSelect={(taskName) => {
+                setTaskName(taskName);
+                setCurrentStep(3);
+              }}
+              currentStep={currentStep}
+              onBack={() => setCurrentStep(currentStep - 1)}
+              setCurrentStep={setCurrentStep}
+              setIsOtherTask={setIsOtherTask}
+            />
+          )}
+          {currentStep === 3 && (
+            <FormFields
+              selectedService={selectedService}
+              modalServiceTasks={modalServiceTasks}
+              taskName={taskName}
+              setTaskName={setTaskName}
+              currentStep={currentStep}
+              onBack={() => setCurrentStep(currentStep - 1)}
+              setCurrentStep={setCurrentStep}
+              selectedCircle={selectedCircle}
+              setSelectedCircle={setSelectedCircle}
+              isOtherTask={isOtherTask}
+            />
+          )}
+          {currentStep === 4 && (
+            <DateTime
+              taskName={taskName}
+              currentStep={currentStep}
+              onBack={() => setCurrentStep(currentStep - 1)}
+              setCurrentStep={setCurrentStep}
+              setDate={setDate}
+              selectedDate={selectedDate}
+              currentYearProp={currentYearProp}
+              currentMonthProp={currentMonthProp}
+              setCurrentYear={setCurrentYear}
+              setCurrentMonth={setCurrentMonth}
+              setWeekStartDate={setWeekStartDate}
+            />
+          )}
+        </>
       </TouchableOpacity>
     </Modal >
   );
