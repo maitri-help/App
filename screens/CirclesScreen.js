@@ -440,7 +440,7 @@ const stylesCircles = StyleSheet.create({
         backgroundColor: '#1C4837',
     },
     tabText: {
-        color: '#000',
+        color: '#1C4837',
         fontFamily: 'poppins-regular',
         fontSize: 12,
         lineHeight: 16,

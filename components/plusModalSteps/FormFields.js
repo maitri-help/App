@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
+import LocationPicker from './LocationPicker';
 
 export default function FormFields({ selectedService, modalServiceTasks, currentStep, setCurrentStep, taskName, setTaskName, onSubmit, onBack, selectedCircle, setSelectedCircle, isOtherTask }) {
-    const taskNameRef = useRef(null);
+    const [selectedLocation, setSelectedLocation] = useState(null);
 
     useEffect(() => {
         console.log("Task Name in FormFields:", taskName);
@@ -31,6 +32,10 @@ export default function FormFields({ selectedService, modalServiceTasks, current
         setCurrentStep(4);
     };
 
+    const handleLocationSelect = (location) => {
+        setSelectedLocation(location);
+    };
+
     return (
         <>
             <View style={[styles.modalTopNav, stylesFields.modalTopNav]}>
@@ -47,7 +52,6 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                         <View style={[stylesFields.fieldGroup, stylesFields.fieldGroupFirst]}>
                             {isOtherTask ? (
                                 <TextInput
-                                    ref={taskNameRef}
                                     style={[stylesFields.field, stylesFields.fieldTask]}
                                     placeholder="Task name"
                                     placeholderTextColor="#737373"
@@ -73,6 +77,11 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                                 </Text>
 
                                 <View style={stylesFields.circleItems}>
+                                    <TouchableOpacity
+                                        style={[stylesFields.circleItem, stylesFields.circleItemSelected]}
+                                    >
+                                        <Text style={[stylesFields.circleItemText, stylesFields.circleItemTextSelected]}>Personal</Text>
+                                    </TouchableOpacity>
                                     {['First', 'Second', 'Third'].map((option) => (
                                         <TouchableOpacity
                                             key={option}
@@ -94,7 +103,7 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                                     Date & Time
                                 </Text>
                                 <TouchableOpacity onPress={handleDateTime} style={stylesFields.fieldLink}>
-                                    <Text style={stylesFields.fieldLink}>Fill Time and date</Text>
+                                    <Text style={stylesFields.fieldLinkText}>Fill time and date</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -103,12 +112,7 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                                 <Text style={stylesFields.fieldLabel} numberOfLines={1}>
                                     Location
                                 </Text>
-                                <TextInput
-                                    style={stylesFields.field}
-                                    multiline
-                                    placeholder="Fill the location"
-                                    placeholderTextColor="#737373"
-                                />
+                                <LocationPicker onSelect={handleLocationSelect} />
                             </View>
                         </View>
                     </View>
@@ -169,9 +173,9 @@ const stylesFields = StyleSheet.create({
         lineHeight: 20,
         fontFamily: 'poppins-medium',
     },
-    fieldLink: {
+    fieldLinkText: {
         fontSize: 13,
-        lineHeight: 24,
+        lineHeight: 16,
         fontFamily: 'poppins-regular',
         color: '#737373',
         textDecorationLine: 'underline',
@@ -189,10 +193,10 @@ const stylesFields = StyleSheet.create({
     },
     circleItems: {
         flexDirection: 'row',
-        gap: 8,
+        gap: 7,
     },
     circleItem: {
-        paddingHorizontal: 12,
+        paddingHorizontal: 10,
         paddingVertical: 5,
         borderColor: '#1C4837',
         borderWidth: 1,
@@ -203,7 +207,7 @@ const stylesFields = StyleSheet.create({
         backgroundColor: '#1C4837',
     },
     circleItemText: {
-        color: '#000',
+        color: '#1C4837',
         fontFamily: 'poppins-regular',
         fontSize: 12,
         lineHeight: 16,

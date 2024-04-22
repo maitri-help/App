@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
-import GridCalendar, { monthNum } from '../calendar/GridCalendar';
+import GridCalendar from '../calendar/GridCalendar';
 
 export default function DateTime({ currentStep, setCurrentStep, taskName, setTaskName, onSubmit, onBack, setDate, selectedDate, currentYearProp, currentMonthProp, setCurrentYear, setCurrentMonth, setWeekStartDate, }) {
 

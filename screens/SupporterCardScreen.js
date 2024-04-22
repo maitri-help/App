@@ -292,7 +292,7 @@ const stylesSupporter = StyleSheet.create({
         gap: 3,
     },
     circleItemName: {
-        color: '#000',
+        color: '#1C4837',
         fontSize: 14,
         fontFamily: 'poppins-regular',
         lineHeight: 16,
@@ -363,7 +363,7 @@ const stylesSupporter = StyleSheet.create({
         display: 'none',
     },
     supporterCircleText: {
-        color: '#000',
+        color: '#1C4837',
         fontFamily: 'poppins-regular',
         fontSize: 12,
         lineHeight: 16,
