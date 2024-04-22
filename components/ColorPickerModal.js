@@ -75,7 +75,7 @@ const stylesColor = StyleSheet.create({
   colorListContent: {
     justifyContent: 'center',
     gap: 20,
-    paddingHorizontal: 16,
+    padding: 16,
   },
   columnWrapper: {
     flex: 1,
@@ -99,13 +99,13 @@ const stylesColor = StyleSheet.create({
     width: 85,
     height: 85,
     borderRadius: 50,
-    shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+    shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.6)' : '#000',
     shadowOffset: {
         width: 0,
-        height: 6,
+        height: 3,
     },
-    shadowOpacity: 1,
-    shadowRadius: 10, // Add this
-    elevation: 10, // And this
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
   },
 });

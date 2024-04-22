@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity, Animated } from 'react-native';import styles from '../Styles';
+import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity, Animated, Platform } from 'react-native'; import styles from '../Styles';
 import AppButton from '../components/Button';
 import ArrowBackIcon from '../assets/icons/arrow-left-icon.svg';
 import ColorPickerModal from '../components/ColorPickerModal';
@@ -13,7 +13,7 @@ const SuppIDScreen = () => {
   const [selectedColor, setSelectedColor] = useState(null);
 
   const overlayOpacity = useRef(new Animated.Value(0)).current;
-  
+
 
   const handleColorSelect = (color) => {
     console.log('Color selected:', color);
@@ -23,33 +23,33 @@ const SuppIDScreen = () => {
 
   useEffect(() => {
     if (colorModalVisible) {
-        Animated.timing(overlayOpacity, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
+      Animated.timing(overlayOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
     } else {
-        Animated.timing(overlayOpacity, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true,
-        }).start();
+      Animated.timing(overlayOpacity, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
     }
-}, [colorModalVisible]);
+  }, [colorModalVisible]);
 
   return (
     <>
-    <SafeAreaView style={[styles.safeArea]}>
-      <View style={styles.contentContainer}>
+      <SafeAreaView style={[styles.safeArea]}>
+        <View style={styles.contentContainer}>
           <View style={stylesSuppID.topBar}>
             <TouchableOpacity onPress={() => console.log('Back')}>
               <ArrowBackIcon width={19} height={19} color={'#000'} />
             </TouchableOpacity>
           </View>
           <View style={stylesSuppID.textContainer}>
-            <Text style={[styles.title, stylesSuppID.headerText]}>Hey <Text style={{fontWeight: 'bold'}}>{firstName}</Text></Text>
-            <Text style={[styles.text, {paddingBottom: 20}, stylesSuppID.paragraph]}>Welcome to Maitri!</Text>
-            <Text style={[styles.text, stylesSuppID.paragraph]}>Let's start by customizing your persona. This is how you'll show up on <Text style={{fontWeight: 'bold'}}>{leadName}</Text>'s support circle.</Text>
+            <Text style={[styles.title, stylesSuppID.headerText]}>Hey <Text style={{ fontWeight: 'bold' }}>{firstName}</Text></Text>
+            <Text style={[styles.text, { paddingBottom: 20 }, stylesSuppID.paragraph]}>Welcome to Maitri!</Text>
+            <Text style={[styles.text, stylesSuppID.paragraph]}>Let's start by customizing your persona. This is how you'll show up on <Text style={{ fontWeight: 'bold' }}>{leadName}</Text>'s support circle.</Text>
             <Text style={[styles.text, stylesSuppID.paragraph]}>Choose a color and emoji that best represent you.</Text>
           </View>
           <View style={[styles.buttonContainer, stylesSuppID.buttonContainer]}>
@@ -60,10 +60,10 @@ const SuppIDScreen = () => {
               textStyle={stylesSuppID.customButtonText}
               activeOpacity={1}
             />
-            
+
             <ColorPickerModal
               visible={colorModalVisible}
-              onClose={() => setColorModalVisible(false)} 
+              onClose={() => setColorModalVisible(false)}
               onColorSelect={handleColorSelect}
               selectedColor={selectedColor}
             />
@@ -80,16 +80,16 @@ const SuppIDScreen = () => {
               onPress={() => console.log('Next button pressed!')}
               buttonStyle={[styles.buttonContainer]}
             />
-      </View>
+          </View>
         </View>
-    </SafeAreaView>
+      </SafeAreaView>
 
-    {(colorModalVisible) && (
-       <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
-    )}
+      {(colorModalVisible) && (
+        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+      )}
 
     </>
-    
+
   );
 };
 
@@ -101,14 +101,14 @@ const stylesSuppID = StyleSheet.create({
     alignItems: 'center',
   },
   headerText: {
-    marginBottom: 40, 
+    marginBottom: 40,
   },
   paragraph: {
     marginBottom: 10,
     textAlign: 'center',
   },
   buttonContainer: {
-    marginTop: 60, 
+    marginTop: 60,
   },
   button: {
     backgroundColor: '#fff'
@@ -118,10 +118,16 @@ const stylesSuppID = StyleSheet.create({
   },
   customButton: {
     paddingVertical: 12,
-    paddingHorizontal: 28,
+    paddingHorizontal: 30,
     backgroundColor: '#fff',
-    shadowColor: "#000",
-    elevation: 5,
+    shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+    shadowOffset: {
+        width: 0,
+        height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
     marginBottom: 20,
   },
   customButtonText: {
