@@ -3,14 +3,17 @@ import { View, StyleSheet, SafeAreaView, Text, TouchableOpacity, Animated, Platf
 import AppButton from '../components/Button';
 import ArrowBackIcon from '../assets/icons/arrow-left-icon.svg';
 import ColorPickerModal from '../components/ColorPickerModal';
+import EmojiPickerModal from '../components/EmojiPickerModal';
 
 const SuppIDScreen = () => {
 
   const firstName = '[FIRSTNAME]';
   const leadName = '[LEADNAME]';
 
+  const [emojiModalVisible, setEmojiModalVisible] = useState(false);
   const [colorModalVisible, setColorModalVisible] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedEmoji, setSelectedEmoji] = useState(null);
 
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -18,11 +21,15 @@ const SuppIDScreen = () => {
   const handleColorSelect = (color) => {
     console.log('Color selected:', color);
     setSelectedColor(color);
-    setColorModalVisible(false);
+  };
+
+  const handleEmojiSelect = (emoji) => {
+    console.log('Emoji selected:', emoji)
+    setSelectedEmoji(emoji);
   };
 
   useEffect(() => {
-    if (colorModalVisible) {
+    if (colorModalVisible || emojiModalVisible) {
       Animated.timing(overlayOpacity, {
         toValue: 1,
         duration: 300,
@@ -35,7 +42,7 @@ const SuppIDScreen = () => {
         useNativeDriver: true,
       }).start();
     }
-  }, [colorModalVisible]);
+  }, [{colorModalVisible, emojiModalVisible}]);
 
   return (
     <>
@@ -69,17 +76,25 @@ const SuppIDScreen = () => {
             />
             <AppButton
               title="Emoji"
-              onPress={() => console.log('Emoji button pressed!')}
+              onPress={() => setEmojiModalVisible(true)}
               buttonStyle={stylesSuppID.customButton}
               textStyle={stylesSuppID.customButtonText}
             />
+            <EmojiPickerModal
+              visible={emojiModalVisible}
+              onClose={() => setEmojiModalVisible(false)}
+              onEmojiSelect={handleEmojiSelect}
+              selectedEmoji={selectedEmoji}
+              />
           </View>
+
           <View style={stylesSuppID.nextButtonContainer}>
             <AppButton
               title="Next"
               onPress={() => console.log('Next button pressed!')}
               buttonStyle={[styles.buttonContainer]}
             />
+
           </View>
         </View>
       </SafeAreaView>
@@ -87,7 +102,9 @@ const SuppIDScreen = () => {
       {(colorModalVisible) && (
         <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
       )}
-
+      {(emojiModalVisible) && (
+        <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+      )}
     </>
 
   );
