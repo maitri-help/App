@@ -23,15 +23,11 @@ export default function AssignmentsScreen({ navigation }) {
     const [weekSelectedDate, setWeekSelectedDate] = useState(selectedDate);
 
     const [selectedService, setSelectedService] = useState({ id: null, title: '', icon: null });
-    const [selectedCircle, setSelectedCircle] = useState('Third');
+    const [selectedCircle, setSelectedCircle] = useState('Personal');
     const [taskName, setTaskName] = useState('');
+    const [description, setDescription] = useState('');
     const [isOtherTask, setIsOtherTask] = useState(false);
-    const [modalSelectedDate, setModalSelectedDate] = useState(
-        `${new Date().getFullYear()}-${monthNum[new Date().getMonth()]}-${new Date().getDate()}`
-    );
-    const [modalCurrentYear, setModalCurrentYear] = useState(new Date().getFullYear());
-    const [modalCurrentMonth, setModalCurrentMonth] = useState(new Date().getMonth() + 1);
-    const [modalWeekStartDate, setModalWeekStartDate] = useState(new Date());
+    const [selectedLocation, setSelectedLocation] = useState('');
 
     useEffect(() => {
         if (plusModalVisible) {
@@ -64,11 +60,6 @@ export default function AssignmentsScreen({ navigation }) {
     const handleDateSelection = (date) => {
         setSelectedDate(date);
         setWeekSelectedDate(date);
-    };
-
-    const handleModalDateSelection = (date) => {
-        setModalSelectedDate(date);
-        setModalWeekStartDate(date);
     };
 
     const handleTabChange = (tab) => {
@@ -170,13 +161,10 @@ export default function AssignmentsScreen({ navigation }) {
                 setTaskName={setTaskName}
                 isOtherTask={isOtherTask}
                 setIsOtherTask={setIsOtherTask}
-                setDate={handleModalDateSelection}
-                selectedDate={modalSelectedDate}
-                currentYearProp={modalCurrentYear}
-                currentMonthProp={modalCurrentMonth}
-                setCurrentYear={setModalCurrentYear}
-                setCurrentMonth={setModalCurrentMonth}
-                setWeekStartDate={setModalWeekStartDate}
+                description={description}
+                setDescription={setDescription}
+                selectedLocation={selectedLocation}
+                setSelectedLocation={setSelectedLocation}
             />
         </>
     );

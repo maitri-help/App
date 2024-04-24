@@ -1,15 +1,97 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
+import { Calendar } from 'react-native-calendars';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
-import GridCalendar from '../calendar/GridCalendar';
 
-export default function DateTime({ currentStep, setCurrentStep, taskName, setTaskName, onSubmit, onBack, setDate, selectedDate, currentYearProp, currentMonthProp, setCurrentYear, setCurrentMonth, setWeekStartDate, }) {
+export default function DateTime({ currentStep, setCurrentStep, taskName, setTaskName, onBack, onDateTimeSelect }) {
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
+    const [isStartTimePickerVisible, setStartTimePickerVisible] = useState(false);
+    const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
 
     const handleBack = () => {
         if (currentStep > 1) {
             onBack();
+        }
+    };
+
+    const handleStartDateSelect = (date) => {
+        setStartDate(date);
+    };
+
+    const handleEndDateSelect = (date) => {
+        setEndDate(date);
+    };
+
+    const handleStartTimeConfirm = (time) => {
+        setStartTime(time);
+        setStartTimePickerVisible(false);
+    };
+
+    const handleEndTimeConfirm = (time) => {
+        setEndTime(time);
+        setEndTimePickerVisible(false);
+    };
+
+    const showStartTimePicker = () => {
+        setStartTimePickerVisible(true);
+    };
+
+    const showEndTimePicker = () => {
+        setEndTimePickerVisible(true);
+    };
+
+    const hideStartTimePicker = () => {
+        setStartTimePickerVisible(false);
+    };
+
+    const hideEndTimePicker = () => {
+        setEndTimePickerVisible(false);
+    };
+
+    useEffect(() => {
+        setStartDate(new Date().setHours(0, 0, 0, 0));
+        setEndDate(new Date().setHours(0, 0, 0, 0));
+    }, []);
+
+    const getDaysBetween = (start, end) => {
+        let currentDate = new Date(start);
+        const endDate = new Date(end);
+        let markedDates = {};
+        currentDate.setDate(currentDate.getDate() + 1);
+        while (currentDate < endDate) {
+            const dateString = currentDate.toISOString().split('T')[0];
+            markedDates[dateString] = { color: '#1C4837', textColor: '#fff' };
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return markedDates;
+    };
+
+    const handleDayPress = (day) => {
+        if (startDate && !endDate) {
+            handleEndDateSelect(day.dateString);
+        } else {
+            handleStartDateSelect(day.dateString);
+            setEndDate(null);
+        }
+    };
+
+    const handleDateTimeSelect = () => {
+        if (startDate && endDate && startTime && endTime) {
+            const startDateTime = new Date(startDate);
+            startDateTime.setHours(new Date(startTime).getHours(), new Date(startTime).getMinutes());
+            const endDateTime = new Date(endDate);
+            endDateTime.setHours(new Date(endTime).getHours(), new Date(endTime).getMinutes());
+
+            onDateTimeSelect({ startDateTime, endDateTime });
+            setCurrentStep(currentStep - 1);
+        } else {
+            console.log('Please select both start and end date and time');
         }
     };
 
@@ -30,15 +112,42 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
                             Date
                         </Text>
                     </View>
-                    <View style={stylesDate.calendar}>
-                        <GridCalendar
-                            setDate={setDate}
-                            selectedDate={selectedDate}
-                            currentYearProp={currentYearProp}
-                            currentMonthProp={currentMonthProp}
-                            setCurrentYear={setCurrentYear}
-                            setCurrentMonth={setCurrentMonth}
-                            setWeekStartDate={setWeekStartDate}
+                    <View style={stylesDate.calendarWrapper}>
+                        <Calendar
+                            style={stylesDate.calendar}
+                            firstDay={1}
+                            onDayPress={handleDayPress}
+                            markedDates={{
+                                [startDate]: { startingDay: true, color: '#1C4837', textColor: '#fff', ...(startDate === endDate && { endingDay: true, }) },
+                                [endDate]: { endingDay: true, color: '#1C4837', textColor: '#fff', ...(startDate === endDate && { startingDay: true, }) },
+                                ...getDaysBetween(startDate, endDate)
+                            }}
+                            markingType={'period'}
+                            theme={{
+                                textDayFontFamily: 'poppins-regular',
+                                textMonthFontFamily: 'poppins-medium',
+                                textDayHeaderFontFamily: 'poppins-regular',
+                                textDayFontSize: 14,
+                                textMonthFontSize: 18,
+                                textDayHeaderFontSize: 12,
+                                textDayFontColor: '#000',
+                                textMonthFontColor: '#000',
+                                textSectionTitleColor: '#A4A4A4',
+                                arrowColor: '#000',
+                                todayTextColor: '#000',
+                                selectedDayTextColor: '#fff',
+                                selectedDayBackgroundColor: '#1C4837',
+                                textDisabledColor: '#A4A4A4',
+                                weekVerticalMargin: 1,
+                                'stylesheet.calendar.header': {
+                                    header: {
+                                        flexDirection: 'row',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        marginBottom: -5,
+                                    },
+                                },
+                            }}
                         />
                     </View>
                     <View style={stylesDate.fieldGroup}>
@@ -46,11 +155,16 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
                             <Text style={stylesDate.fieldLabel} numberOfLines={1}>
                                 Starts
                             </Text>
-                            <TextInput
-                                style={stylesDate.field}
-                                multiline
-                                placeholder="Start time"
-                                placeholderTextColor="#787878"
+                            <TouchableOpacity onPress={showStartTimePicker}>
+                                <Text style={stylesDate.field}>
+                                    {startTime ? new Date(startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Select Start Time'}
+                                </Text>
+                            </TouchableOpacity>
+                            <DateTimePickerModal
+                                mode="time"
+                                isVisible={isStartTimePickerVisible}
+                                onConfirm={handleStartTimeConfirm}
+                                onCancel={hideStartTimePicker}
                             />
                         </View>
                     </View>
@@ -59,16 +173,21 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
                             <Text style={stylesDate.fieldLabel} numberOfLines={1}>
                                 Ends
                             </Text>
-                            <TextInput
-                                style={stylesDate.field}
-                                multiline
-                                placeholder="End time"
-                                placeholderTextColor="#787878"
+                            <TouchableOpacity onPress={showEndTimePicker}>
+                                <Text style={stylesDate.field}>
+                                    {endTime ? new Date(endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Select End Time'}
+                                </Text>
+                            </TouchableOpacity>
+                            <DateTimePickerModal
+                                mode="time"
+                                isVisible={isEndTimePickerVisible}
+                                onConfirm={handleEndTimeConfirm}
+                                onCancel={hideEndTimePicker}
                             />
                         </View>
                     </View>
                     <View style={[styles.submitButtonContainer, stylesDate.submitButtonContainer]}>
-                        <TouchableOpacity onPress={onSubmit} style={styles.submitButton} >
+                        <TouchableOpacity onPress={handleDateTimeSelect} style={styles.submitButton} >
                             <ArrowIcon width={18} height={18} color={'#fff'} />
                         </TouchableOpacity>
                     </View>
@@ -93,8 +212,22 @@ const stylesDate = StyleSheet.create({
         fontFamily: 'poppins-medium',
         color: '#787878',
     },
+    calendarWrapper: {
+        marginBottom: 15,
+    },
     calendar: {
-        marginBottom: -10,
+        minWidth: '100%',
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.09,
+        shadowRadius: 8.00,
+        elevation: 14,
+        paddingBottom: 8,
     },
     fieldGroup: {
         paddingVertical: 15,

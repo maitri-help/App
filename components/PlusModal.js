@@ -11,8 +11,13 @@ import TaskSelection from './plusModalSteps/TaskSelection';
 import FormFields from './plusModalSteps/FormFields';
 import DateTime from './plusModalSteps/DateTime';
 
-export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, navigation, taskName, setTaskName, isOtherTask, setIsOtherTask, setDate, selectedDate, currentYearProp, currentMonthProp, setCurrentYear, setCurrentMonth, setWeekStartDate, }) {
+export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, navigation, taskName, setTaskName, isOtherTask, setIsOtherTask, description, setDescription, selectedLocation, setSelectedLocation }) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [dateTimeData, setDateTimeData] = useState(null);
+
+  const handleDateTimeSelect = (data) => {
+    setDateTimeData(data);
+  };
 
   return (
     <Modal
@@ -61,6 +66,11 @@ export default function PlusModal({ visible, onClose, selectedService, setSelect
               selectedCircle={selectedCircle}
               setSelectedCircle={setSelectedCircle}
               isOtherTask={isOtherTask}
+              description={description}
+              setDescription={setDescription}
+              selectedLocation={selectedLocation}
+              setSelectedLocation={setSelectedLocation}
+              dateTimeData={dateTimeData}
             />
           )}
           {currentStep === 4 && (
@@ -69,13 +79,7 @@ export default function PlusModal({ visible, onClose, selectedService, setSelect
               currentStep={currentStep}
               onBack={() => setCurrentStep(currentStep - 1)}
               setCurrentStep={setCurrentStep}
-              setDate={setDate}
-              selectedDate={selectedDate}
-              currentYearProp={currentYearProp}
-              currentMonthProp={currentMonthProp}
-              setCurrentYear={setCurrentYear}
-              setCurrentMonth={setCurrentMonth}
-              setWeekStartDate={setWeekStartDate}
+              onDateTimeSelect={handleDateTimeSelect}
             />
           )}
         </>

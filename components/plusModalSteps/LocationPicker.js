@@ -5,8 +5,7 @@ import Geocoder from 'react-native-geocoding';
 
 Geocoder.init("AIzaSyAWwo2zm6v7Jwam7QGxAFGkCH1DhsgGB_Y");
 
-export default function LocationPicker({ onSelect }) {
-    const [selectedLocation, setSelectedLocation] = useState(null);
+export default function LocationPicker({ onSelect, selectedLocation }) {
     const [showMap, setShowMap] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
 
@@ -22,7 +21,6 @@ export default function LocationPicker({ onSelect }) {
     }, [selectedLocation]);
 
     const handleLocationSelect = (location) => {
-        setSelectedLocation(location);
         onSelect(location);
         setShowMap(false);
     };

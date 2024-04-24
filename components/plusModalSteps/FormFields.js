@@ -5,18 +5,23 @@ import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import LocationPicker from './LocationPicker';
 
-export default function FormFields({ selectedService, modalServiceTasks, currentStep, setCurrentStep, taskName, setTaskName, onSubmit, onBack, selectedCircle, setSelectedCircle, isOtherTask }) {
-    const [selectedLocation, setSelectedLocation] = useState(null);
+export default function FormFields({ selectedService, modalServiceTasks, currentStep, setCurrentStep, taskName, setTaskName, onSubmit, onBack, selectedCircle, setSelectedCircle, isOtherTask, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData }) {
 
-    useEffect(() => {
-        console.log("Task Name in FormFields:", taskName);
-        console.log("Selected service:", selectedService);
-        if (selectedService && modalServiceTasks[selectedService.id]) {
-            console.log("Setting tasks:", modalServiceTasks[selectedService.id]);
+    const [dateTimeText, setDateTimeText] = useState('Fill time and date');
+
+    const handleSelectOption = (option) => {
+        if (option === 'Personal') {
+            setSelectedCircle([option]);
+        } else if (selectedCircle.includes('Personal')) {
+            setSelectedCircle([option]);
         } else {
-            console.log("No tasks found");
+            if (selectedCircle.includes(option)) {
+                setSelectedCircle(selectedCircle.filter(item => item !== option));
+            } else {
+                setSelectedCircle([...selectedCircle, option]);
+            }
         }
-    }, [selectedService, modalServiceTasks, taskName]);
+    };
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -24,16 +29,26 @@ export default function FormFields({ selectedService, modalServiceTasks, current
         }
     };
 
-    const handleSelectCircle = (option) => {
-        setSelectedCircle(option);
-    };
-
     const handleDateTime = () => {
         setCurrentStep(4);
     };
 
-    const handleLocationSelect = (location) => {
-        setSelectedLocation(location);
+    useEffect(() => {
+        if (dateTimeData) {
+            setDateTimeText(formatDateTime(dateTimeData));
+        }
+    }, [dateTimeData]);
+
+    const formatDateTime = (dateTimeData) => {
+        const { startDateTime, endDateTime } = dateTimeData;
+        const formattedStartDateTime = formatDate(startDateTime);
+        const formattedEndDateTime = formatDate(endDateTime);
+        return `${formattedStartDateTime} - ${formattedEndDateTime}`;
+    };
+
+    const formatDate = (date) => {
+        const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+        return new Date(date).toLocaleDateString('en-US', options);
     };
 
     return (
@@ -50,17 +65,13 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                 <View style={[styles.contentContainer, stylesFields.fieldsList]}>
                     <View style={stylesFields.fieldsListInner}>
                         <View style={[stylesFields.fieldGroup, stylesFields.fieldGroupFirst]}>
-                            {isOtherTask ? (
-                                <TextInput
-                                    style={[stylesFields.field, stylesFields.fieldTask]}
-                                    placeholder="Task name"
-                                    placeholderTextColor="#737373"
-                                    onChangeText={setTaskName}
-                                    value={taskName}
-                                />
-                            ) : (
-                                <Text style={[stylesFields.field, stylesFields.fieldTask]}>{taskName}</Text>
-                            )}
+                            <TextInput
+                                style={[stylesFields.field, stylesFields.fieldTask]}
+                                placeholder="Task name"
+                                placeholderTextColor="#737373"
+                                onChangeText={setTaskName}
+                                value={taskName}
+                            />
                         </View>
                         <View style={stylesFields.fieldGroup}>
                             <TextInput
@@ -68,6 +79,8 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                                 multiline
                                 placeholder="Description"
                                 placeholderTextColor="#737373"
+                                onChangeText={setDescription}
+                                value={description}
                             />
                         </View>
                         <View style={stylesFields.fieldGroup}>
@@ -77,18 +90,16 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                                 </Text>
 
                                 <View style={stylesFields.circleItems}>
-                                    <TouchableOpacity
-                                        style={[stylesFields.circleItem, stylesFields.circleItemSelected]}
-                                    >
-                                        <Text style={[stylesFields.circleItemText, stylesFields.circleItemTextSelected]}>Personal</Text>
-                                    </TouchableOpacity>
-                                    {['First', 'Second', 'Third'].map((option) => (
+                                    {['Personal', 'First', 'Second', 'Third'].map((option) => (
                                         <TouchableOpacity
                                             key={option}
-                                            style={[stylesFields.circleItem, selectedCircle === option && stylesFields.circleItemSelected]}
-                                            onPress={() => handleSelectCircle(option)}
+                                            style={[
+                                                stylesFields.circleItem,
+                                                selectedCircle.includes(option) && stylesFields.circleItemSelected
+                                            ]}
+                                            onPress={() => handleSelectOption(option)}
                                         >
-                                            <Text style={[stylesFields.circleItemText, selectedCircle === option && stylesFields.circleItemTextSelected]}>{option}</Text>
+                                            <Text style={[stylesFields.circleItemText, selectedCircle.includes(option) && stylesFields.circleItemTextSelected]}>{option}</Text>
                                         </TouchableOpacity>
                                     ))}
                                 </View>
@@ -103,7 +114,9 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                                     Date & Time
                                 </Text>
                                 <TouchableOpacity onPress={handleDateTime} style={stylesFields.fieldLink}>
-                                    <Text style={stylesFields.fieldLinkText}>Fill time and date</Text>
+                                    <Text style={stylesFields.fieldLinkText}>
+                                        {dateTimeText}
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -112,7 +125,7 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                                 <Text style={stylesFields.fieldLabel} numberOfLines={1}>
                                     Location
                                 </Text>
-                                <LocationPicker onSelect={handleLocationSelect} />
+                                <LocationPicker onSelect={setSelectedLocation} selectedLocation={selectedLocation} />
                             </View>
                         </View>
                     </View>
@@ -173,9 +186,14 @@ const stylesFields = StyleSheet.create({
         lineHeight: 20,
         fontFamily: 'poppins-medium',
     },
+    fieldLink: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        flexShrink: 1,
+    },
     fieldLinkText: {
         fontSize: 13,
-        lineHeight: 16,
+        lineHeight: 18,
         fontFamily: 'poppins-regular',
         color: '#737373',
         textDecorationLine: 'underline',
