@@ -4,23 +4,35 @@ import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import LocationPicker from './LocationPicker';
+import { createTask } from '../../hooks/api';
+import { getAccessToken } from '../../authStorage';
 
-export default function FormFields({ selectedService, modalServiceTasks, currentStep, setCurrentStep, taskName, setTaskName, onSubmit, onBack, selectedCircle, setSelectedCircle, isOtherTask, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData }) {
+export default function FormFields({ selectedService, currentStep, setCurrentStep, taskName, setTaskName, onBack, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData }) {
 
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
 
+    useEffect(() => {
+        if (!Array.isArray(selectedCircle)) {
+            setSelectedCircle(['Personal']);
+        }
+    }, []);
+
     const handleSelectOption = (option) => {
+        let updatedCircles;
+
         if (option === 'Personal') {
-            setSelectedCircle([option]);
+            updatedCircles = [option];
         } else if (selectedCircle.includes('Personal')) {
-            setSelectedCircle([option]);
+            updatedCircles = [option];
         } else {
             if (selectedCircle.includes(option)) {
-                setSelectedCircle(selectedCircle.filter(item => item !== option));
+                updatedCircles = selectedCircle.filter(item => item !== option);
             } else {
-                setSelectedCircle([...selectedCircle, option]);
+                updatedCircles = [...selectedCircle, option];
             }
         }
+
+        setSelectedCircle(updatedCircles);
     };
 
     const handleBack = () => {
@@ -51,6 +63,43 @@ export default function FormFields({ selectedService, modalServiceTasks, current
         return new Date(date).toLocaleDateString('en-US', options);
     };
 
+    const handleSubmit = async () => {
+        try {
+            const accessToken = await getAccessToken();
+
+            if (!accessToken) {
+                console.error('Access token not found. Please log in.');
+                return;
+            }
+
+            const locationString = `${selectedLocation.latitude},${selectedLocation.longitude}`;
+
+            const startDateTimeString = dateTimeData.startDateTime.toISOString();
+            const endDateTimeString = dateTimeData.endDateTime.toISOString();
+
+            const taskData = {
+                title: taskName,
+                description: description,
+                circles: selectedCircle,
+                location: locationString,
+                startDateTime: startDateTimeString,
+                endDateTime: endDateTimeString,
+                assigneeId: null
+            };
+
+            console.log("Task data:", taskData);
+
+            const response = await createTask(taskData, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            });
+            
+            console.log("Task created successfully:", response.data);
+        } catch (error) {
+            console.error("Error creating task:", error);
+        }
+    };
     return (
         <>
             <View style={[styles.modalTopNav, stylesFields.modalTopNav]}>
@@ -90,7 +139,7 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                                 </Text>
 
                                 <View style={stylesFields.circleItems}>
-                                    {['Personal', 'First', 'Second', 'Third'].map((option) => (
+                                    {circles.map((option) => (
                                         <TouchableOpacity
                                             key={option}
                                             style={[
@@ -130,7 +179,7 @@ export default function FormFields({ selectedService, modalServiceTasks, current
                         </View>
                     </View>
                     <View style={[styles.submitButtonContainer, stylesFields.submitButtonContainer]}>
-                        <TouchableOpacity onPress={onSubmit} style={styles.submitButton} >
+                        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                             <ArrowIcon width={18} height={18} color={'#fff'} />
                         </TouchableOpacity>
                     </View>

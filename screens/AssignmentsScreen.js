@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform } from 'react-native';
 import styles from '../Styles';
-import { AppointmentList } from '../data/appointments';
-import AppointmentItem from '../components/AppointmentItem';
+import { TasksList } from '../data/Tasks';
+import TaskItem from '../components/TaskItem';
 import PlusModal from '../components/PlusModal';
+import TaskModal from '../components/TaskModal';
 import GridCalendar, { monthNum } from '../components/calendar/GridCalendar';
 import WeekCalendar from '../components/calendar/WeekCalendar';
 import PlusIcon from '../assets/icons/plus-icon.svg';
@@ -11,6 +12,7 @@ import PlusIcon from '../assets/icons/plus-icon.svg';
 export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
     const [plusModalVisible, setPlusModalVisible] = useState(false);
+    const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
     const [selectedDate, setSelectedDate] = useState(
@@ -27,10 +29,49 @@ export default function AssignmentsScreen({ navigation }) {
     const [taskName, setTaskName] = useState('');
     const [description, setDescription] = useState('');
     const [isOtherTask, setIsOtherTask] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    const [dateTimeData, setDateTimeData] = useState(null);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
+
+    const handleDateTimeSelect = (data) => {
+        setDateTimeData(data);
+    };
+
+    const handleStartDateSelect = (date) => {
+        setStartDate(date);
+    };
+
+    const handleEndDateSelect = (date) => {
+        setEndDate(date);
+    };
+
+    const handleDayPress = (day) => {
+        if (startDate && !endDate) {
+            handleEndDateSelect(day.dateString);
+        } else {
+            handleStartDateSelect(day.dateString);
+            setEndDate(null);
+        }
+    };
+
+    const getDaysBetween = (start, end) => {
+        let currentDate = new Date(start);
+        const endDate = new Date(end);
+        let markedDates = {};
+        currentDate.setDate(currentDate.getDate() + 1);
+        while (currentDate < endDate) {
+            const dateString = currentDate.toISOString().split('T')[0];
+            markedDates[dateString] = { color: '#1C4837', textColor: '#fff' };
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return markedDates;
+    };
 
     useEffect(() => {
-        if (plusModalVisible) {
+        if (plusModalVisible || taskModalVisible) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
@@ -43,7 +84,7 @@ export default function AssignmentsScreen({ navigation }) {
                 useNativeDriver: true,
             }).start();
         }
-    }, [plusModalVisible]);
+    }, [plusModalVisible, taskModalVisible]);
 
     const handleTodayPress = () => {
         const today = new Date();
@@ -72,6 +113,10 @@ export default function AssignmentsScreen({ navigation }) {
 
     const handlePlusModalClose = () => {
         setPlusModalVisible(false);
+    };
+
+    const handleTaskModalClose = () => {
+        setTaskModalVisible(false);
     };
 
     return (
@@ -125,9 +170,9 @@ export default function AssignmentsScreen({ navigation }) {
 
                 <ScrollView contentContainerStyle={stylesCal.calendarScroll}>
 
-                    <View style={[styles.contentContainer, stylesCal.appointmentWrapper]}>
-                        {AppointmentList.map((appointment, index) => (
-                            <AppointmentItem key={index} appointment={appointment} />
+                    <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
+                        {TasksList.map((task, index) => (
+                            <TaskItem key={index} task={task} taskModal={() => setTaskModalVisible(true)} />
                         ))}
                     </View>
 
@@ -145,7 +190,7 @@ export default function AssignmentsScreen({ navigation }) {
 
             </SafeAreaView>
 
-            {(plusModalVisible) && (
+            {(plusModalVisible || taskModalVisible) && (
                 <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
             )}
 
@@ -156,7 +201,6 @@ export default function AssignmentsScreen({ navigation }) {
                 setSelectedService={setSelectedService}
                 selectedCircle={selectedCircle}
                 setSelectedCircle={setSelectedCircle}
-                navigation={navigation}
                 taskName={taskName}
                 setTaskName={setTaskName}
                 isOtherTask={isOtherTask}
@@ -165,6 +209,43 @@ export default function AssignmentsScreen({ navigation }) {
                 setDescription={setDescription}
                 selectedLocation={selectedLocation}
                 setSelectedLocation={setSelectedLocation}
+                dateTimeData={dateTimeData}
+                handleDateTimeSelect={handleDateTimeSelect}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+                startTime={startTime}
+                setStartTime={setStartTime}
+                endTime={endTime}
+                setEndTime={setEndTime}
+                handleDayPress={handleDayPress}
+                getDaysBetween={getDaysBetween}
+            />
+
+            <TaskModal
+                visible={taskModalVisible}
+                onClose={handleTaskModalClose}
+                selectedCircle={selectedCircle}
+                setSelectedCircle={setSelectedCircle}
+                taskName={taskName}
+                setTaskName={setTaskName}
+                description={description}
+                setDescription={setDescription}
+                selectedLocation={selectedLocation}
+                setSelectedLocation={setSelectedLocation}
+                dateTimeData={dateTimeData}
+                handleDateTimeSelect={handleDateTimeSelect}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+                startTime={startTime}
+                setStartTime={setStartTime}
+                endTime={endTime}
+                setEndTime={setEndTime}
+                handleDayPress={handleDayPress}
+                getDaysBetween={getDaysBetween}
             />
         </>
     );
@@ -243,7 +324,7 @@ const stylesCal = StyleSheet.create({
         lineHeight: 18,
         textDecorationLine: 'underline',
     },
-    appointmentWrapper: {
+    tasksWrapper: {
         paddingTop: 20,
         paddingBottom: 30,
         gap: 15,

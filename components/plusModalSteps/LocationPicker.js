@@ -5,7 +5,7 @@ import Geocoder from 'react-native-geocoding';
 
 Geocoder.init("AIzaSyAWwo2zm6v7Jwam7QGxAFGkCH1DhsgGB_Y");
 
-export default function LocationPicker({ onSelect, selectedLocation }) {
+export default function LocationPicker({ onSelect, selectedLocation, disabled }) {
     const [showMap, setShowMap] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
 
@@ -35,8 +35,8 @@ export default function LocationPicker({ onSelect, selectedLocation }) {
                     {selectedLocation && <Marker coordinate={selectedLocation} />}
                 </MapView>
             ) : (
-                <TouchableOpacity onPress={() => setShowMap(true)} style={stylesLocation.fieldLink}>
-                    <Text style={stylesLocation.fieldLinkText}>{selectedAddress ? selectedAddress : "Fill the location"}</Text>
+                <TouchableOpacity onPress={() => setShowMap(true)} style={stylesLocation.fieldLink} disabled={disabled}>
+                    <Text style={[stylesLocation.fielText, !disabled && stylesLocation.fieldLinkText]}>{selectedAddress ? selectedAddress : "Fill the location"}</Text>
                 </TouchableOpacity>
             )}
         </>
@@ -56,5 +56,11 @@ const stylesLocation = StyleSheet.create({
         color: '#737373',
         textDecorationLine: 'underline',
         flexShrink: 1,
+    },
+    fielText: {
+        fontSize: 13,
+        lineHeight: 18,
+        fontFamily: 'poppins-regular',
+        color: '#000',
     },
 });

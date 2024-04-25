@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, Keyboard, StyleSheet, ScrollView, Modal, Platform } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Platform } from 'react-native';
 import ModalCustom from '../components/Modal';
 import styles from '../Styles';
 import EditIcon from '../assets/icons/edit-icon.svg';
@@ -61,106 +61,100 @@ export default function SupporterCardScreen({ visible, onClose, image, color, fi
         >
             <ScrollView contentContainerStyle={stylesSupporter.scrollContainer} automaticallyAdjustKeyboardInsets={true}>
                 <View style={[styles.contentContainer, stylesSupporter.container]}>
-                    <TouchableOpacity
-                        style={{ flex: 1 }}
-                        onPress={() => Keyboard.dismiss()}
-                        activeOpacity={1}
-                    >
-                        <View style={stylesSupporter.supporterNickCircles}>
-                            <View style={stylesSupporter.supporterNickname}>
-                                {isEditable ? (
-                                    <TextInput
-                                        style={[stylesSupporter.input, stylesSupporter.inputNickname]}
-                                        maxLength={16}
-                                        placeholder='Nickname'
-                                        placeholderTextColor="#787878"
-                                        defaultValue={nickname ? nickname : ''}
-                                    />
-                                ) : (
-                                    <Text style={stylesSupporter.nickname}>
-                                        {nickname ? nickname : 'Nickname'}
-                                    </Text>
-                                )}
-                            </View>
-                            <View style={stylesSupporter.supporterCircles}>
-                                {['First', 'Second', 'Third'].map((option) => (
-                                    <TouchableOpacity
-                                        key={option}
-                                        style={[stylesSupporter.supporterCircle, !isEditable && selectedCircle !== option ? stylesSupporter.supporterCircleHidden : '', selectedCircle === option && stylesSupporter.supporterCircleSelected]}
-                                        onPress={() => handleSelectCircle(option)}
-                                        disabled={!isEditable}
-                                    >
-                                        <Text style={[stylesSupporter.supporterCircleText, selectedCircle === option && stylesSupporter.supporterCircleTextSelected]}>{option} circle</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                    <View style={stylesSupporter.supporterNickCircles}>
+                        <View style={stylesSupporter.supporterNickname}>
+                            {isEditable ? (
+                                <TextInput
+                                    style={[stylesSupporter.input, stylesSupporter.inputNickname]}
+                                    maxLength={16}
+                                    placeholder='Nickname'
+                                    placeholderTextColor="#787878"
+                                    defaultValue={nickname ? nickname : ''}
+                                />
+                            ) : (
+                                <Text style={stylesSupporter.nickname}>
+                                    {nickname ? nickname : 'Nickname'}
+                                </Text>
+                            )}
                         </View>
-                        <View style={stylesSupporter.supporterTasks}>
-                            <View style={stylesSupporter.supporterTasksTitle}>
-                                <Text style={stylesSupporter.supporterTasksTitleText}>Recently assigned tasks</Text>
-                            </View>
-                            <View style={stylesSupporter.supporterTasksList}>
-                                {tasks.map((task, taskIndex) => (
-                                    <View key={taskIndex} style={stylesSupporter.supporterTasksListItem}>
-                                        <View style={[stylesSupporter.supporterTasksListItemHalf, stylesSupporter.supporterTasksListItemLeft]}>
-                                            <Text style={stylesSupporter.supporterTasksListItemTask}>{task.task}</Text>
-                                        </View>
-                                        <View style={[stylesSupporter.supporterTasksListItemHalf, stylesSupporter.supporterTasksListItemRight]}>
-                                            <ClockIcon width={14} height={14} color={'#000'} style={stylesSupporter.clockIcon} />
-                                            <Text style={stylesSupporter.supporterTasksListItemTime}>{task.time}</Text>
-                                        </View>
-                                    </View>
-                                ))}
-                            </View>
-                        </View>
-                        <View style={stylesSupporter.supporterContact}>
-                            <View style={stylesSupporter.supporterContactInfo}>
-                                <View style={stylesSupporter.supporterContactInfoIconCircle}>
-                                    <PhoneIcon width={14} height={14} color={'#1C4837'} />
-                                </View>
-                                {isEditable ? (
-                                    <TextInput
-                                        style={[stylesSupporter.input, stylesSupporter.inputContact]}
-                                        maxLength={16}
-                                        keyboardType="numeric"
-                                        defaultValue={phone ? phone : ''}
-                                        placeholder={'Phone number'}
-                                        placeholderTextColor="#787878"
-                                    />
-                                ) : (
-                                    <Text style={stylesSupporter.supporterContactInfoText}>
-                                        {phone ? phone : 'Phone number'}
-                                    </Text>
-                                )}
-                            </View>
-                            <View style={stylesSupporter.supporterContactInfo}>
-                                <View style={stylesSupporter.supporterContactInfoIconCircle}>
-                                    <EmailIcon width={14} height={14} color={'#1C4837'} />
-                                </View>
-                                {isEditable ? (
-                                    <TextInput
-                                        style={[stylesSupporter.input, stylesSupporter.inputContact]}
-                                        maxLength={320}
-                                        keyboardType="email-address"
-                                        defaultValue={email ? email : ''}
-                                        placeholder={'Email address'}
-                                        placeholderTextColor="#787878"
-                                    />
-                                ) : (
-                                    <Text style={stylesSupporter.supporterContactInfoText}>
-                                        {email ? email : 'Email address'}
-                                    </Text>
-                                )}
-                            </View>
-                        </View>
-                        {isEditable && (
-                            <View style={stylesSupporter.supporterDelete}>
-                                <TouchableOpacity style={stylesSupporter.supporterDeleteLink} onPress={openInnerModal}>
-                                    <Text style={stylesSupporter.supporterDeleteLinkText}>Delete Supporter</Text>
+                        <View style={stylesSupporter.supporterCircles}>
+                            {['First', 'Second', 'Third'].map((option) => (
+                                <TouchableOpacity
+                                    key={option}
+                                    style={[stylesSupporter.supporterCircle, !isEditable && selectedCircle !== option ? stylesSupporter.supporterCircleHidden : '', selectedCircle === option && stylesSupporter.supporterCircleSelected]}
+                                    onPress={() => handleSelectCircle(option)}
+                                    disabled={!isEditable}
+                                >
+                                    <Text style={[stylesSupporter.supporterCircleText, selectedCircle === option && stylesSupporter.supporterCircleTextSelected]}>{option} circle</Text>
                                 </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+                    <View style={stylesSupporter.supporterTasks}>
+                        <View style={stylesSupporter.supporterTasksTitle}>
+                            <Text style={stylesSupporter.supporterTasksTitleText}>Recently assigned tasks</Text>
+                        </View>
+                        <View style={stylesSupporter.supporterTasksList}>
+                            {tasks.map((task, taskIndex) => (
+                                <View key={taskIndex} style={stylesSupporter.supporterTasksListItem}>
+                                    <View style={[stylesSupporter.supporterTasksListItemHalf, stylesSupporter.supporterTasksListItemLeft]}>
+                                        <Text style={stylesSupporter.supporterTasksListItemTask}>{task.task}</Text>
+                                    </View>
+                                    <View style={[stylesSupporter.supporterTasksListItemHalf, stylesSupporter.supporterTasksListItemRight]}>
+                                        <ClockIcon width={14} height={14} color={'#000'} style={stylesSupporter.clockIcon} />
+                                        <Text style={stylesSupporter.supporterTasksListItemTime}>{task.time}</Text>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                    <View style={stylesSupporter.supporterContact}>
+                        <View style={stylesSupporter.supporterContactInfo}>
+                            <View style={stylesSupporter.supporterContactInfoIconCircle}>
+                                <PhoneIcon width={14} height={14} color={'#1C4837'} />
                             </View>
-                        )}
-                    </TouchableOpacity>
+                            {isEditable ? (
+                                <TextInput
+                                    style={[stylesSupporter.input, stylesSupporter.inputContact]}
+                                    maxLength={16}
+                                    keyboardType="numeric"
+                                    defaultValue={phone ? phone : ''}
+                                    placeholder={'Phone number'}
+                                    placeholderTextColor="#787878"
+                                />
+                            ) : (
+                                <Text style={stylesSupporter.supporterContactInfoText}>
+                                    {phone ? phone : 'Phone number'}
+                                </Text>
+                            )}
+                        </View>
+                        <View style={stylesSupporter.supporterContactInfo}>
+                            <View style={stylesSupporter.supporterContactInfoIconCircle}>
+                                <EmailIcon width={14} height={14} color={'#1C4837'} />
+                            </View>
+                            {isEditable ? (
+                                <TextInput
+                                    style={[stylesSupporter.input, stylesSupporter.inputContact]}
+                                    maxLength={320}
+                                    keyboardType="email-address"
+                                    defaultValue={email ? email : ''}
+                                    placeholder={'Email address'}
+                                    placeholderTextColor="#787878"
+                                />
+                            ) : (
+                                <Text style={stylesSupporter.supporterContactInfoText}>
+                                    {email ? email : 'Email address'}
+                                </Text>
+                            )}
+                        </View>
+                    </View>
+                    {isEditable && (
+                        <View style={stylesSupporter.supporterDelete}>
+                            <TouchableOpacity style={stylesSupporter.supporterDeleteLink} onPress={openInnerModal}>
+                                <Text style={stylesSupporter.supporterDeleteLinkText}>Delete Supporter</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
                 </View>
             </ScrollView>
 

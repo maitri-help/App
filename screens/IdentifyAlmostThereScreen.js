@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Keyboard, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useToast } from 'react-native-toast-notifications';
@@ -28,74 +28,68 @@ export default function IdentifyAlmostThereScreen({ visible, onClose, navigation
             <TouchableOpacity onPress={onClose} style={styles.backLink}>
                 <ArrowLeftIcon style={styles.backLinkIcon} />
             </TouchableOpacity>
-            <TouchableOpacity
-                style={{ flex: 1 }}
-                onPress={() => Keyboard.dismiss()}
-                activeOpacity={1}
+            <Formik
+                initialValues={{ otp: '' }}
+                validationSchema={validationSchema}
             >
-                <Formik
-                    initialValues={{ otp: '' }}
-                    validationSchema={validationSchema}
-                >
-                    {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
-                        <View style={[styles.container, styles.authContainer]}>
-                            <View style={styles.topTextsContainer}>
-                                <Text style={[styles.title, stylesVerify.title]}>Almost there!</Text>
-                                <Text style={[styles.text, stylesVerify.text]}>Use the 6 digit code from your invite to join and start spreading the love!</Text>
-                            </View>
-                            <View style={stylesVerify.otpInputContainer}>
-                                {[...Array(OTP_LENGTH)].map((_, index) => (
-                                    <TextInput
-                                        key={index}
-                                        style={[
-                                            stylesVerify.otpInput,
-                                            errors.otp && touched.otp && touched.otp[index] && values.otp.length !== OTP_LENGTH ? stylesVerify.errorInput : null,
-                                        ]}
-                                        onChangeText={(text) => {
-                                            const newOtpValues = [...otpValues];
-                                            newOtpValues[index] = text;
-                                            setOtpValues(newOtpValues);
-                                            const enteredOtp = newOtpValues.join('');
-                                            const isAllFieldsFilled = newOtpValues.every(value => value !== '');
-                                            if (isAllFieldsFilled) {
-                                                if (enteredOtp === '000000') {
-                                                    toast.show('Welcome to Maitri!', { type: 'success' });
-                                                    navigation.navigate('Main');
-                                                    onClose();
-                                                } else {
-                                                    toast.show('Invalid Code. Please try again.', { type: 'error' });
-                                                }
-                                            } else {
-                                                if (text.length === 1 && index < OTP_LENGTH - 1) {
-                                                    otpInputs.current[index + 1].focus();
-                                                }
-                                            }
-                                        }}
-                                        value={otpValues[index]}
-                                        keyboardType="numeric"
-                                        maxLength={1}
-                                        ref={(ref) => (otpInputs.current[index] = ref)}
-                                    />
-                                ))}
-                            </View>
-                            {touched.otp && errors.otp && values.otp.length !== OTP_LENGTH && (
-                                <Text style={styles.errorText}>{errors.otp}</Text>
-                            )}
-
-                            <View style={stylesVerify.bottomTextsContainer}>
-                                <TouchableOpacity onPress={() => {
-                                    onClose();
-                                    setThankYouModalVisible(true);
-                                }}>
-                                    <Text style={stylesVerify.bottomText}>
-                                        I don't have a code
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
+                {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
+                    <View style={[styles.container, styles.authContainer]}>
+                        <View style={styles.topTextsContainer}>
+                            <Text style={[styles.title, stylesVerify.title]}>Almost there!</Text>
+                            <Text style={[styles.text, stylesVerify.text]}>Use the 6 digit code from your invite to join and start spreading the love!</Text>
                         </View>
-                    )}
-                </Formik>
-            </TouchableOpacity>
+                        <View style={stylesVerify.otpInputContainer}>
+                            {[...Array(OTP_LENGTH)].map((_, index) => (
+                                <TextInput
+                                    key={index}
+                                    style={[
+                                        stylesVerify.otpInput,
+                                        errors.otp && touched.otp && touched.otp[index] && values.otp.length !== OTP_LENGTH ? stylesVerify.errorInput : null,
+                                    ]}
+                                    onChangeText={(text) => {
+                                        const newOtpValues = [...otpValues];
+                                        newOtpValues[index] = text;
+                                        setOtpValues(newOtpValues);
+                                        const enteredOtp = newOtpValues.join('');
+                                        const isAllFieldsFilled = newOtpValues.every(value => value !== '');
+                                        if (isAllFieldsFilled) {
+                                            if (enteredOtp === '000000') {
+                                                toast.show('Welcome to Maitri!', { type: 'success' });
+                                                navigation.navigate('Main');
+                                                onClose();
+                                            } else {
+                                                toast.show('Invalid Code. Please try again.', { type: 'error' });
+                                            }
+                                        } else {
+                                            if (text.length === 1 && index < OTP_LENGTH - 1) {
+                                                otpInputs.current[index + 1].focus();
+                                            }
+                                        }
+                                    }}
+                                    value={otpValues[index]}
+                                    keyboardType="numeric"
+                                    maxLength={1}
+                                    ref={(ref) => (otpInputs.current[index] = ref)}
+                                />
+                            ))}
+                        </View>
+                        {touched.otp && errors.otp && values.otp.length !== OTP_LENGTH && (
+                            <Text style={styles.errorText}>{errors.otp}</Text>
+                        )}
+
+                        <View style={stylesVerify.bottomTextsContainer}>
+                            <TouchableOpacity onPress={() => {
+                                onClose();
+                                setThankYouModalVisible(true);
+                            }}>
+                                <Text style={stylesVerify.bottomText}>
+                                    I don't have a code
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                )}
+            </Formik>
         </Modal >
     );
 }

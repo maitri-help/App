@@ -6,11 +6,7 @@ import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 
-export default function DateTime({ currentStep, setCurrentStep, taskName, setTaskName, onBack, onDateTimeSelect }) {
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [startTime, setStartTime] = useState(null);
-    const [endTime, setEndTime] = useState(null);
+export default function DateTime({ currentStep, setCurrentStep, taskName, setTaskName, onBack, onDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, reviewFormCurrentStep }) {
     const [isStartTimePickerVisible, setStartTimePickerVisible] = useState(false);
     const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
 
@@ -18,14 +14,6 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
         if (currentStep > 1) {
             onBack();
         }
-    };
-
-    const handleStartDateSelect = (date) => {
-        setStartDate(date);
-    };
-
-    const handleEndDateSelect = (date) => {
-        setEndDate(date);
     };
 
     const handleStartTimeConfirm = (time) => {
@@ -52,34 +40,12 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
 
     const hideEndTimePicker = () => {
         setEndTimePickerVisible(false);
-    };
+    }
 
     useEffect(() => {
         setStartDate(new Date().setHours(0, 0, 0, 0));
         setEndDate(new Date().setHours(0, 0, 0, 0));
     }, []);
-
-    const getDaysBetween = (start, end) => {
-        let currentDate = new Date(start);
-        const endDate = new Date(end);
-        let markedDates = {};
-        currentDate.setDate(currentDate.getDate() + 1);
-        while (currentDate < endDate) {
-            const dateString = currentDate.toISOString().split('T')[0];
-            markedDates[dateString] = { color: '#1C4837', textColor: '#fff' };
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return markedDates;
-    };
-
-    const handleDayPress = (day) => {
-        if (startDate && !endDate) {
-            handleEndDateSelect(day.dateString);
-        } else {
-            handleStartDateSelect(day.dateString);
-            setEndDate(null);
-        }
-    };
 
     const handleDateTimeSelect = () => {
         if (startDate && endDate && startTime && endTime) {
@@ -89,7 +55,9 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
             endDateTime.setHours(new Date(endTime).getHours(), new Date(endTime).getMinutes());
 
             onDateTimeSelect({ startDateTime, endDateTime });
-            setCurrentStep(currentStep - 1);
+
+            { reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1) }
+
         } else {
             console.log('Please select both start and end date and time');
         }

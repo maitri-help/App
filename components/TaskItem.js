@@ -1,35 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Image, StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
 
-export default function AppointmentItem({ appointment }) {
+export default function TaskItem({ task, taskModal }) {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleToggleCheckbox = () => {
     setIsChecked(prevState => !prevState);
   };
 
+  const formatDateTime = (task) => {
+    const formattedStartDateTime = formatDate(task.startDateTime);
+    const formattedEndDateTime = formatDate(task.endDateTime);
+    return `${formattedStartDateTime} - ${formattedEndDateTime}`;
+  };
+
+  const formatDate = (date) => {
+    const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+    return new Date(date).toLocaleDateString('en-US', options);
+  };
+
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={handleToggleCheckbox}>
+    <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={taskModal}>
       <View style={styles.wrapper}>
         <View style={styles.imageWrapper}>
-          <Image source={appointment.image} style={styles.image} />
+          {task.image &&
+            <Image source={task.image} style={styles.image} />
+          }
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={[styles.title, isChecked ? styles.textStriked : '']}>{appointment.title}</Text>
-          {appointment.assignee && <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>{appointment.assignee}</Text>}
-          <Text style={[styles.time, isChecked ? styles.textStriked : '']}>{appointment.time}</Text>
+          <Text style={[styles.title, isChecked ? styles.textStriked : '']}>{task.title}</Text>
+          {task.assignee && <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>{task.assignee}</Text>}
+          {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '']}>
+            {formatDateTime(task)}
+          </Text>}
         </View>
       </View>
 
-      <View style={[isChecked ? styles.checkboxChecked : styles.checkbox]}>
-        {isChecked &&
-          <View style={styles.checkboxInner}>
-            <CheckIcon style={styles.checkboxIcon} />
-          </View>
-        }
-      </View>
+      <TouchableOpacity style={styles.checkboxWrapper} onPress={handleToggleCheckbox}>
+        <View style={[isChecked ? styles.checkboxChecked : styles.checkbox]}>
+          {isChecked &&
+            <View style={styles.checkboxInner}>
+              <CheckIcon style={styles.checkboxIcon} />
+            </View>
+          }
+        </View>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
@@ -39,7 +56,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 15,
     gap: 15,
     backgroundColor: '#fff',
     borderRadius: 20,
@@ -56,6 +72,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,
+    padding: 15,
+    flexShrink: 1,
   },
   imageWrapper: {
     width: 50,
@@ -93,9 +111,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'poppins-light',
     lineHeight: 14,
+    flexShrink: 1,
   },
   textStriked: {
     textDecorationLine: 'line-through',
+  },
+  checkboxWrapper: {
+    height: '100%',
+    padding: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
   },
   checkbox: {
     borderWidth: 1,
