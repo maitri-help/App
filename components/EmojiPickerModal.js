@@ -6,7 +6,7 @@ import styles from '../Styles';
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
 
 
-export default function EmojiPickerModal({ visible, onClose, onEmojiSelect, selectedEmoji }) {
+export default function EmojiPickerModal({ visible, onClose, onEmojiSelect, selectedEmoji, selectedColor  }) {
 
   const [pressedItem, setPressedItem] = useState(null);
 
@@ -31,13 +31,24 @@ export default function EmojiPickerModal({ visible, onClose, onEmojiSelect, sele
         </Text>
       </View>
       <View style={stylesEP.selectedEmojiWrapper}>
-        <View style={stylesEP.selectedEmojiItem}>
+        <View style={{ 
+        borderRadius: 100,
+        shadowColor: selectedColor,
+        backgroundColor: '#ffffff',
+        elevation:10, // TODO: IOS KORARNYEK
+        
+      }}>
+        <View style={[
+          stylesEP.selectedEmojiItem, {borderColor: selectedColor}
+        ]}>
             <Text style={stylesEP.selectedEmojiText}>{pressedItem}</Text>
+        </View>
         </View>
       </View>
       <EmojiSelector
         category={Categories.symbols}
         onEmojiSelected={emoji => handlePress(emoji)}
+        columns={8}
       />
     </Modal>
   )
@@ -72,13 +83,15 @@ const stylesEP = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 100,
-    borderWidth: 2,
+    borderWidth: 1, // vagy 2, körvastagsag
     borderColor: '#000',
+    justifyContent: 'center', // center children vertically
+    alignItems: 'center',
   },
   selectedEmojiText: {
-    fontSize: 50, // adjust the size as needed
+    fontSize: 55, // adjust the size as needed
     textAlign: 'center', // center the text horizontally
-    lineHeight: 120, // center the text vertically. This should be approximately the same as the height of the container (selectedEmojiItem)
+    lineHeight: 70, // center the text vertically. This should be approximately the same as the height of the container (selectedEmojiItem)
   },
   colorItem: {
     justifyContent: 'center',

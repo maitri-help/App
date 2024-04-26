@@ -85,6 +85,7 @@ const SuppIDScreen = () => {
               onClose={() => setEmojiModalVisible(false)}
               onEmojiSelect={handleEmojiSelect}
               selectedEmoji={selectedEmoji}
+              selectedColor={selectedColor}
               />
           </View>
 
