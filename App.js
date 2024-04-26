@@ -117,7 +117,7 @@ export default function App() {
       }}
     >
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={!isLoggedIn ? (hasCompletedOnboarding ? 'SuppID' : 'Onboarding') : 'Main'} screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName={!isLoggedIn ? (hasCompletedOnboarding ? 'Login' : 'Onboarding') : 'Main'} screenOptions={{ headerShown: false }}>
           {!isLoggedIn || !hasCompletedOnboarding ? (
             <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ gestureEnabled: false }} />
           ) : null}
