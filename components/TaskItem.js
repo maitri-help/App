@@ -23,10 +23,10 @@ export default function TaskItem({ task, taskModal }) {
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={taskModal}>
       <View style={styles.wrapper}>
-        <View style={styles.imageWrapper}>
-          {task.image &&
-            <Image source={task.image} style={styles.image} />
-          }
+        <View style={styles.emojiWrapper}>
+          {task.emoji && <Text style={styles.circleItemEmoji}>
+            {task.emoji}
+          </Text>}
         </View>
 
         <View style={styles.textContainer}>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     padding: 15,
     flexShrink: 1,
   },
-  imageWrapper: {
+  emojiWrapper: {
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -84,10 +84,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  image: {
-    height: 30,
-    width: 30,
-    resizeMode: 'contain'
+  emoji: {
+    fontSize: (Platform.OS === 'android') ? 24 : 28,
+    textAlign: 'center',
   },
   textContainer: {
     flexShrink: 1,

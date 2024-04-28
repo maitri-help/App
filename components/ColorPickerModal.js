@@ -57,7 +57,7 @@ export default function ColorPickerModal({ visible, onClose, onColorSelect, sele
 
 const stylesColor = StyleSheet.create({
   modalContainer: {
-    height: '80%',
+    height: '85%',
   },
   topBarTitle: {
     paddingLeft: 40,

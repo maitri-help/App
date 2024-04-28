@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
@@ -7,7 +7,7 @@ import EditIcon from '../../assets/icons/edit-icon.svg';
 import CheckIcon from '../../assets/icons/check-icon.svg';
 import LocationPicker from './LocationPicker';
 
-export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData, onBack, setReviewFormCurrentStep, assignees, onClose }) {
+export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData, onBack, setReviewFormCurrentStep, assignee, onClose }) {
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
     const [isEditable, setIsEditable] = useState(false);
 
@@ -149,22 +149,18 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
             <View style={stylesReview.group}>
                 <View style={[styles.contentContainer, stylesReview.groupInner]}>
                     <Text style={stylesReview.groupTitle}>Assignee</Text>
-                    <View style={stylesReview.assigneesWrapper}>
-                        <ScrollView contentContainerStyle={stylesReview.assignees}>
-                            {assignees.map((assignee, index) => (
-                                <TouchableOpacity style={stylesReview.assignee} key={index}>
-                                    <View style={[stylesReview.imageWrapper, { borderColor: assignee.color }]}>
-                                        <Image source={assignee.image} style={stylesReview.image} />
-                                    </View>
+                    <View style={stylesReview.assignee}>
+                        <View style={[stylesReview.emojiWrapper, { borderColor: assignee.color }]}>
+                            <Text style={stylesReview.emoji}>
+                                {assignee.emoji}
+                            </Text>
+                        </View>
 
-                                    <View style={stylesReview.nameWrapper}>
-                                        <Text style={stylesReview.name}>
-                                            {assignee.name}
-                                        </Text>
-                                    </View>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
+                        <View style={stylesReview.nameWrapper}>
+                            <Text style={stylesReview.name}>
+                                {assignee.name}
+                            </Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -228,10 +224,13 @@ const stylesReview = StyleSheet.create({
     },
     circles: {
         flexDirection: 'row',
-        gap: 8,
+        justifyContent: 'flex-end',
+        flexWrap: 'wrap',
+        flexShrink: 1,
+        gap: 6,
     },
     circle: {
-        paddingHorizontal: 12,
+        paddingHorizontal: 11,
         paddingVertical: 5,
         borderColor: '#1C4837',
         borderWidth: 1,
@@ -253,20 +252,12 @@ const stylesReview = StyleSheet.create({
     circleTextSelected: {
         color: '#fff',
     },
-    assigneesWrapper: {
-        height: 66,
-        marginRight: -10,
-    },
-    assignees: {
-        paddingHorizontal: 10,
-    },
     assignee: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 12,
-        paddingVertical: 8,
     },
-    imageWrapper: {
+    emojiWrapper: {
         width: 50,
         height: 50,
         borderRadius: 25,
@@ -275,10 +266,9 @@ const stylesReview = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    image: {
-        height: 30,
-        width: 30,
-        resizeMode: 'contain'
+    emoji: {
+        fontSize: (Platform.OS === 'android') ? 24 : 28,
+        textAlign: 'center',
     },
     name: {
         color: '#000',
@@ -300,7 +290,8 @@ const stylesReview = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         flexShrink: 1,
-        gap: 15,
+        flexWrap: 'wrap',
+        gap: 10,
     },
     groupTitle: {
         color: '#9F9F9F',

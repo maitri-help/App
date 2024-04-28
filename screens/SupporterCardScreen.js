@@ -8,7 +8,7 @@ import ClockIcon from '../assets/icons/clock-icon.svg';
 import PhoneIcon from '../assets/icons/phone-classic-icon.svg';
 import EmailIcon from '../assets/icons/mail-icon.svg';
 
-export default function SupporterCardScreen({ visible, onClose, image, color, firstName, lastName, circle, tasks = [], phone, email, nickname, navigation }) {
+export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, circle, tasks = [], phone, email, nickname, navigation }) {
     const [selectedCircle, setSelectedCircle] = useState('Third');
     const [showInnerModal, setShowInnerModal] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
@@ -42,8 +42,10 @@ export default function SupporterCardScreen({ visible, onClose, image, color, fi
             modalTopNavChildren={
                 <View style={stylesSupporter.supporterTop}>
                     <View style={stylesSupporter.supporterTopLeft}>
-                        <View style={[stylesSupporter.circleItemImageWrapper, color ? { borderColor: color } : null]}>
-                            {image && <Image source={image} style={stylesSupporter.circleItemImage} />}
+                        <View style={[stylesSupporter.circleItemEmojiWrapper, color ? { borderColor: color } : null]}>
+                            {emoji && <Text style={stylesSupporter.circleItemEmoji}>
+                                {emoji}
+                            </Text>}
                         </View>
                         <View style={stylesSupporter.circleItemTextWrapper}>
                             <Text style={stylesSupporter.circleItemName}>{firstName} {lastName}</Text>
@@ -267,7 +269,7 @@ const stylesSupporter = StyleSheet.create({
         gap: 15,
         paddingLeft: 5,
     },
-    circleItemImageWrapper: {
+    circleItemEmojiWrapper: {
         width: 50,
         height: 50,
         borderRadius: 25,
@@ -276,10 +278,9 @@ const stylesSupporter = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    circleItemImage: {
-        height: 30,
-        width: 30,
-        resizeMode: 'contain'
+    circleItemEmoji: {
+        fontSize: (Platform.OS === 'android') ? 24 : 28,
+        textAlign: 'center',
     },
     circleItemTextWrapper: {
         flexShrink: 1,

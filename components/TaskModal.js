@@ -11,11 +11,7 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
   const circles = ['Personal', 'First', 'Second', 'Third'];
   const [reviewFormCurrentStep, setReviewFormCurrentStep] = useState(null);
 
-  const assignees = [
-    { image: require('../assets/emojis/unicorn-icon.png'), color: '#A571F9', name: 'Monica Geller' },
-    { image: require('../assets/emojis/dog-icon.png'), color: '#FF8A35', name: 'Chandler Bing' },
-    { image: require('../assets/emojis/car-icon.png'), color: '#7FCC72', name: 'Joey Tribbiani' },
-  ]
+  const assignee = { emoji: '🦄', color: '#A571F9', name: 'Monica Geller' }
 
   return (
     <Modal
@@ -60,7 +56,7 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
           setSelectedLocation={setSelectedLocation}
           reviewFormCurrentStep={reviewFormCurrentStep}
           setReviewFormCurrentStep={setReviewFormCurrentStep}
-          assignees={assignees}
+          assignee={assignee}
         />
       )}
     </Modal >

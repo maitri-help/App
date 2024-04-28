@@ -2,10 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 
 export default function CircleItem({ item, onPress }) {
+    console.log('This emoji:', item.emoji);
+
     return (
         <TouchableOpacity onPress={onPress} style={stylesCircles.circleListItem}>
-            <View style={[stylesCircles.circleListItemImageWrapper, item.color ? { borderColor: item.color } : null]}>
-                {item.image && <Image source={item.image} style={stylesCircles.circleListItemImage} />}
+            <View style={[stylesCircles.circleListItemEmojiWrapper, item.color ? { borderColor: item.color } : null]}>
+                {item.emoji && <Text style={stylesCircles.circleListItemEmoji}>
+                    {item.emoji}
+                </Text>}
             </View>
             <View style={stylesCircles.circleListItemTextWrapper}>
                 <Text style={stylesCircles.circleListItemName}>{item.firstName} {item.lastName}</Text>
@@ -32,7 +36,7 @@ const stylesCircles = StyleSheet.create({
         shadowRadius: 8.00,
         elevation: 12,
     },
-    circleListItemImageWrapper: {
+    circleListItemEmojiWrapper: {
         width: 50,
         height: 50,
         borderRadius: 25,
@@ -41,10 +45,9 @@ const stylesCircles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    circleListItemImage: {
-        height: 30,
-        width: 30,
-        resizeMode: 'contain'
+    circleListItemEmoji: {
+        fontSize: (Platform.OS === 'android') ? 24 : 28,
+        textAlign: 'center',
     },
     circleListItemTextWrapper: {
         flexShrink: 1,

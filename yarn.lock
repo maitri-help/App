@@ -1718,7 +1718,15 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
-"@react-native-async-storage/async-storage@^1.23.1":
+"@raasz/customisable-react-native-emoji-selector@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/@raasz/customisable-react-native-emoji-selector/-/customisable-react-native-emoji-selector-1.0.5.tgz"
+  integrity sha512-UnDRuhuo66HMdFGgHPU/rS9kSnfp1xvpzynrTqbsiJBcvSWb0Pzi/T56o7wE0JWkYsuZ7U6md1iyQa4lBAfBOg==
+  dependencies:
+    "@react-native-async-storage/async-storage" "^1.15.17"
+    emoji-datasource "^7.0.2"
+
+"@react-native-async-storage/async-storage@^1.15.17", "@react-native-async-storage/async-storage@^1.23.1":
   version "1.23.1"
   resolved "https://registry.npmjs.org/@react-native-async-storage/async-storage/-/async-storage-1.23.1.tgz"
   integrity sha512-Qd2kQ3yi6Y3+AcUlrHxSLlnBvpdCEMVGFlVBneVOjaFaPU61g1huc38g339ysXspwY1QZA2aNhrk/KlHGO+ewA==
@@ -3619,10 +3627,10 @@ electron-to-chromium@^1.4.668:
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.708.tgz"
   integrity sha512-iWgEEvREL4GTXXHKohhh33+6Y8XkPI5eHihDmm8zUk5Zo7HICEW+wI/j5kJ2tbuNUCXJ/sNXa03ajW635DiJXA==
 
-emoji-datasource@^6.0.0:
-  version "6.1.1"
-  resolved "https://registry.npmjs.org/emoji-datasource/-/emoji-datasource-6.1.1.tgz"
-  integrity sha512-fbS3QJpzGHhujvBULSKXcvsYmVg+1ldfI3VVXG3jnFuniZtkp7rz/OcTcQjbp3m43BYxmiJgKmaoOUPxXQupRQ==
+emoji-datasource@^7.0.2:
+  version "7.0.2"
+  resolved "https://registry.npmjs.org/emoji-datasource/-/emoji-datasource-7.0.2.tgz"
+  integrity sha512-F5TTUSktTIfbjHIlaz8tjsQ8EAD0UpJtj1i5O13jQARWTddtFgam3nE1W5WgSQoqU/cuTnF1H9tK/wlCOyzfiA==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -6028,13 +6036,6 @@ react-native-calendars@^1.1304.1:
     xdate "^0.8.0"
   optionalDependencies:
     moment "^2.29.4"
-
-react-native-emoji-selector@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/react-native-emoji-selector/-/react-native-emoji-selector-0.2.0.tgz"
-  integrity sha512-+rPPWG5vl5AexdH8udEwtzdq9QUGD6kp+dQ8C/459d3ScM0S3UnT/qAvhmpsTgCbgjpdwiJIcrKNxKmGEDb15g==
-  dependencies:
-    emoji-datasource "^6.0.0"
 
 react-native-geocoding@^0.5.0:
   version "0.5.0"

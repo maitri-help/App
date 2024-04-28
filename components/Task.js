@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Platform } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
 
-export default function Task({ title, assignee, time, image }) {
+export default function Task({ title, assignee, time, emoji }) {
     const formattedAssignee = Array.isArray(assignee) ? assignee.join(', ') : assignee;
 
     return (
         <TouchableOpacity style={stylesTask.taskContainer}>
-            <View style={stylesTask.taskImageWrapper}>
-                <Image source={image} style={stylesTask.taskImage} />
+            <View style={stylesTask.taskEmojiWrapper}>
+                <Text style={stylesTask.taskEmoji}>
+                    {emoji}
+                </Text>
             </View>
             <View style={stylesTask.taskInfoContainer}>
                 <Text style={stylesTask.taskTitle}>{title}</Text>
@@ -35,7 +37,7 @@ const stylesTask = StyleSheet.create({
         shadowRadius: 8.00,
         elevation: 12,
     },
-    taskImageWrapper: {
+    taskEmojiWrapper: {
         width: 50,
         height: 50,
         borderRadius: 25,
@@ -44,10 +46,9 @@ const stylesTask = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    taskImage: {
-        height: 30,
-        width: 30,
-        resizeMode: 'contain'
+    taskEmoji: {
+        fontSize: (Platform.OS === 'android') ? 24 : 28,
+        textAlign: 'center',
     },
     taskInfoContainer: {
         flexShrink: 1,

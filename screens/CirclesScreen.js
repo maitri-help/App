@@ -22,9 +22,9 @@ export default function CirclesScreen({ navigation }) {
 
     const generateRandomCircleItems = () => {
         const circleItemsContent = [
-            getRandomItem(tabContents.Third) || { firstName: 'Peer', image: null },
-            getRandomItem(tabContents.Second) || { firstName: 'Friend', image: null },
-            getRandomItem(tabContents.First) || { firstName: 'Parent', image: null },
+            getRandomItem(tabContents.Third) || { firstName: 'Peer', emoji: null },
+            getRandomItem(tabContents.Second) || { firstName: 'Friend', emoji: null },
+            getRandomItem(tabContents.First) || { firstName: 'Parent', emoji: null },
         ];
         setCircleItemsContent(circleItemsContent);
     };
@@ -65,7 +65,7 @@ export default function CirclesScreen({ navigation }) {
                 lastName: 'Geller',
                 nickname: 'Monica',
                 color: '#A571F9',
-                image: require('../assets/emojis/unicorn-icon.png'),
+                emoji: '🦄',
                 circle: 'First',
                 tasks: [
                     { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
@@ -78,7 +78,7 @@ export default function CirclesScreen({ navigation }) {
             {
                 firstName: 'Richard',
                 lastName: 'Burke',
-                image: require('../assets/emojis/male-icon.png'),
+                emoji: '🙋‍♂️',
                 circle: 'First',
                 tasks: [
                     { task: 'Call the National Insurance', time: 'Wednesday, 1 pm' },
@@ -91,7 +91,7 @@ export default function CirclesScreen({ navigation }) {
             {
                 firstName: 'Emily',
                 lastName: 'Waltham',
-                image: require('../assets/emojis/female-icon.png'),
+                emoji: '🙋‍♀️',
                 circle: 'First',
                 tasks: [
                     { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
@@ -108,7 +108,7 @@ export default function CirclesScreen({ navigation }) {
                 lastName: 'Bing',
                 nickname: 'Chandler',
                 color: '#FF8A35',
-                image: require('../assets/emojis/hedgehog-icon.png'),
+                emoji: '🦔',
                 circle: 'Second',
                 tasks: [
                     { task: 'Take out biggie', time: 'Today, 6 pm' },
@@ -123,7 +123,7 @@ export default function CirclesScreen({ navigation }) {
                 lastName: 'Geller',
                 nickname: 'Ross',
                 color: '#A571F9',
-                image: require('../assets/emojis/waving-icon.png'),
+                emoji: '👋',
                 circle: 'Second',
                 tasks: [
                     { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
@@ -137,7 +137,7 @@ export default function CirclesScreen({ navigation }) {
                 firstName: 'Ben',
                 lastName: 'Geller',
                 color: '#7FCC72',
-                image: require('../assets/emojis/victory-icon.png'),
+                emoji: '✌️',
                 circle: 'Second',
                 tasks: [
                     { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
@@ -151,7 +151,7 @@ export default function CirclesScreen({ navigation }) {
                 firstName: 'Janice',
                 lastName: 'Hosenstein',
                 color: '#FF8A35',
-                image: require('../assets/emojis/smiling-face-icon.png'),
+                emoji: '😊',
                 circle: 'Second',
                 tasks: [
                     { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
@@ -168,7 +168,7 @@ export default function CirclesScreen({ navigation }) {
                 lastName: 'Green',
                 nickname: 'Rach',
                 color: '#26847B',
-                image: require('../assets/emojis/rock-icon.png'),
+                emoji: '🤘',
                 circle: 'Third',
                 tasks: [
                     { task: 'Water the plants', time: 'Tommorow, 1 pm' },
@@ -183,7 +183,7 @@ export default function CirclesScreen({ navigation }) {
                 lastName: 'Buffay',
                 nickname: 'Phoebes',
                 color: '#E5D9B6',
-                image: require('../assets/emojis/cat-icon.png'),
+                emoji: '🐱',
                 circle: 'Third',
                 tasks: [
                     { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
@@ -198,7 +198,7 @@ export default function CirclesScreen({ navigation }) {
                 lastName: 'Tribbiani',
                 nickname: 'Joe',
                 color: '#7FCC72',
-                image: require('../assets/emojis/cupid-icon.png'),
+                emoji: '💘',
                 circle: 'Third',
                 tasks: [
                     { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
@@ -212,7 +212,7 @@ export default function CirclesScreen({ navigation }) {
                 firstName: 'Gunther',
                 lastName: '',
                 color: '#26847B',
-                image: require('../assets/emojis/heart-icon.png'),
+                emoji: '🧡',
                 circle: 'Third',
                 tasks: [
                     { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
@@ -225,7 +225,7 @@ export default function CirclesScreen({ navigation }) {
             {
                 firstName: 'Mike',
                 lastName: 'Hannigan',
-                image: require('../assets/emojis/lion-icon.png'),
+                emoji: '🦁',
                 circle: 'Third',
                 tasks: [
                     { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
@@ -404,7 +404,7 @@ export default function CirclesScreen({ navigation }) {
                     setSelectedCircleItem(null);
                 }}
                 navigation={navigation}
-                image={selectedCircleItem ? selectedCircleItem.image : ''}
+                emoji={selectedCircleItem ? selectedCircleItem.emoji : ''}
                 color={selectedCircleItem ? selectedCircleItem.color : ''}
                 firstName={selectedCircleItem ? selectedCircleItem.firstName : ''}
                 lastName={selectedCircleItem ? selectedCircleItem.lastName : ''}

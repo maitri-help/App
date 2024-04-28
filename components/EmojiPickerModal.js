@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, FlatList, Platform } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
 import Modal from '../components/Modal';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import styles from '../Styles';
-import EmojiSelector, { Categories } from "react-native-emoji-selector";
+import EmojiSelector from '@raasz/customisable-react-native-emoji-selector';
 
 
-export default function EmojiPickerModal({ visible, onClose, onEmojiSelect, selectedEmoji, selectedColor  }) {
+export default function EmojiPickerModal({ visible, onClose, onEmojiSelect, selectedEmoji, selectedColor }) {
 
   const [pressedItem, setPressedItem] = useState(null);
 
@@ -31,22 +31,15 @@ export default function EmojiPickerModal({ visible, onClose, onEmojiSelect, sele
         </Text>
       </View>
       <View style={stylesEP.selectedEmojiWrapper}>
-        <View style={{ 
-        borderRadius: 100,
-        shadowColor: selectedColor,
-        backgroundColor: '#ffffff',
-        elevation:10, // TODO: IOS KORARNYEK
-        
-      }}>
-        <View style={[
-          stylesEP.selectedEmojiItem, {borderColor: selectedColor}
-        ]}>
+        <View style={stylesEP.selectedEmojiItemWrapper}>
+          <View style={[
+            stylesEP.selectedEmojiItem, { borderColor: selectedColor }
+          ]}>
             <Text style={stylesEP.selectedEmojiText}>{pressedItem}</Text>
-        </View>
+          </View>
         </View>
       </View>
       <EmojiSelector
-        category={Categories.symbols}
         onEmojiSelected={emoji => handlePress(emoji)}
         columns={8}
       />
@@ -56,7 +49,7 @@ export default function EmojiPickerModal({ visible, onClose, onEmojiSelect, sele
 
 const stylesEP = StyleSheet.create({
   modalContainer: {
-    height: '90%',
+    height: '85%',
   },
   topBarTitle: {
     paddingLeft: 40,
@@ -75,37 +68,34 @@ const stylesEP = StyleSheet.create({
     alignItems: 'center',
   },
   selectedEmojiWrapper: {
-    marginTop: 30,
+    paddingTop: 30,
     alignItems: 'center',
-    paddingBottom: 90,
+    paddingBottom: 60,
+  },
+  selectedEmojiItemWrapper: {
+    borderRadius: 100,
+    backgroundColor: '#fff',
+    shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.4)' : '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 10,
   },
   selectedEmojiItem: {
     width: 120,
     height: 120,
     borderRadius: 100,
-    borderWidth: 1, // vagy 2, körvastagsag
+    borderWidth: 2,
     borderColor: '#000',
-    justifyContent: 'center', // center children vertically
+    justifyContent: 'center',
     alignItems: 'center',
   },
   selectedEmojiText: {
-    fontSize: 55, // adjust the size as needed
-    textAlign: 'center', // center the text horizontally
-    lineHeight: 70, // center the text vertically. This should be approximately the same as the height of the container (selectedEmojiItem)
-  },
-  colorItem: {
-    justifyContent: 'center',
-    alignSelf: 'center',
-    width: 85,
-    height: 85,
-    borderRadius: 50,
-    shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.6)' : '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 8,
+    fontSize: (Platform.OS === 'android') ? 60 : 70,
+    textAlign: 'center',
+    lineHeight: (Platform.OS === 'android') ? 75 : 85,
   },
 });

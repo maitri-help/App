@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 import Circles from '../assets/img/circles.svg';
 
 export default function CirclesView({ circleItemsContent, additionalItemCountFirst, additionalItemCountSecond, additionalItemCountThird, onPressCircleItemCount, onPressCircleItem }) {
@@ -11,15 +11,17 @@ export default function CirclesView({ circleItemsContent, additionalItemCountFir
                 {circleItemsContent.map((item, index) => (
                     <React.Fragment key={index}>
                         <View style={[stylesCircles.circleItemWrapper, index === 0 ? stylesCircles.circleItemOuterWrapper : index === 1 ? stylesCircles.circleItemMiddleWrapper : stylesCircles.circleItemInnerWrapper]}>
-                            {item.image && (
+                            {item.emoji && (
                                 <React.Fragment>
                                     <TouchableOpacity activeOpacity={1} onPress={() => onPressCircleItem(item)} style={[stylesCircles.circleItem, index === 0 ? stylesCircles.circleItemOuter : index === 1 ? stylesCircles.circleItemMiddle : stylesCircles.circleItemInner]}>
-                                        <Image source={item.image} style={[stylesCircles.emoji, index === 0 ? stylesCircles.emojiOuter : index === 1 ? stylesCircles.emojiMiddle : stylesCircles.emojiInner]} />
+                                        <Text style={[stylesCircles.emoji, index === 0 ? stylesCircles.emojiOuter : index === 1 ? stylesCircles.emojiMiddle : stylesCircles.emojiInner]}>
+                                            {item.emoji}
+                                        </Text>
                                     </TouchableOpacity>
                                     <Text style={[stylesCircles.circleItemText, stylesCircles.circleItemTextOutside]}>{item.firstName}</Text>
                                 </React.Fragment>
                             )}
-                            {!item.image && (
+                            {!item.emoji && (
                                 <View style={[stylesCircles.circleItem, index === 0 ? stylesCircles.circleItemOuter : index === 1 ? stylesCircles.circleItemMiddle : stylesCircles.circleItemInner]}>
                                     <Text style={stylesCircles.circleItemText}>{item.firstName}</Text>
                                 </View>
@@ -133,19 +135,16 @@ const stylesCircles = StyleSheet.create({
         borderRadius: 50,
     },
     emoji: {
-        resizeMode: 'contain',
+        textAlign: 'center',
     },
     emojiOuter: {
-        width: 30,
-        height: 30,
+        fontSize: (Platform.OS === 'android') ? 22 : 24,
     },
     emojiMiddle: {
-        width: 40,
-        height: 40,
+        fontSize: (Platform.OS === 'android') ? 28 : 32,
     },
     emojiInner: {
-        width: 50,
-        height: 50,
+        fontSize: (Platform.OS === 'android') ? 35 : 38,
     },
     circleItemCount: {
         borderColor: '#D1D1D1',
