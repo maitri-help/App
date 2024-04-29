@@ -7,7 +7,7 @@ if (Platform.OS === 'android') {
     }
 }
 
-export default function Notification({ title, assignee, time, image, buttons }) {
+export default function Notification({ title, assignee, time, emoji, buttons }) {
     const [infoVisible, setInfoVisible] = useState(false);
 
     const toggleInfoVisibility = () => {
@@ -25,8 +25,10 @@ export default function Notification({ title, assignee, time, image, buttons }) 
         <View style={stylesNotification.NotificationContainer}>
             <View style={stylesNotification.NotificationContainerInner}>
                 <View style={stylesNotification.NotificationContent}>
-                    <View style={stylesNotification.NotificationImageWrapper}>
-                        <Image source={image} style={stylesNotification.NotificationImage} />
+                    <View style={stylesNotification.NotificationEmojiWrapper}>
+                        <Text style={stylesNotification.NotificationEmoji}>
+                            {emoji}
+                        </Text>
                     </View>
                     <View style={stylesNotification.NotificationInfoContainer}>
                         {assignee &&
@@ -86,7 +88,7 @@ const stylesNotification = StyleSheet.create({
         gap: 10,
         flexShrink: 1,
     },
-    NotificationImageWrapper: {
+    NotificationEmojiWrapper: {
         width: 45,
         height: 45,
         borderRadius: 25,
@@ -95,10 +97,9 @@ const stylesNotification = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    NotificationImage: {
-        height: 26,
-        width: 26,
-        resizeMode: 'contain'
+    NotificationEmoji: {
+        fontSize: (Platform.OS === 'android') ? 22 : 26,
+        textAlign: 'center',
     },
     NotificationInfoContainer: {
         flexShrink: 1,

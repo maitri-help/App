@@ -12,23 +12,23 @@ if (Platform.OS === 'android') {
 
 export default function NotificationsScreen({ navigation }) {
     const notificationsNew = [
-        { id: 1, assignee: 'Monica Geller', title: `assigned to take out the dog`, time: '2 min ago', image: require('../assets/emojis/dog-icon.png') },
-        { id: 2, assignee: 'Chandler Bing', title: `can't take out the dog`, time: '4 hours ago', image: require('../assets/emojis/dog-icon.png') },
-        { id: 3, assignee: 'Joey Tribbiani', title: 'assigned to ride to the hospital', time: '3 days ago', image: require('../assets/emojis/car-icon.png') },
+        { id: 1, assignee: 'Monica Geller', title: `assigned to take out the dog`, time: '2 min ago', emoji: '🐶' },
+        { id: 2, assignee: 'Chandler Bing', title: `can't take out the dog`, time: '4 hours ago', emoji: '🐶' },
+        { id: 3, assignee: 'Joey Tribbiani', title: 'assigned to ride to the hospital', time: '3 days ago', emoji: '🚙' },
     ];
 
     const notificationsPending = [
-        { id: 1, assignee: 'Rachel Green', title: `wants to join your circle`, time: '2 min ago', image: require('../assets/emojis/victory-icon.png') },
-        { id: 2, assignee: 'Phoebe Buffay', title: `wants to join your circle`, time: '4 hours ago', image: require('../assets/emojis/victory-icon.png') },
-        { id: 2, assignee: 'Gunther', title: `wants to join your circle`, time: '5 hours ago', image: require('../assets/emojis/victory-icon.png') },
+        { id: 1, assignee: 'Rachel Green', title: `wants to join your circle`, time: '2 min ago', emoji: '✌️' },
+        { id: 2, assignee: 'Phoebe Buffay', title: `wants to join your circle`, time: '4 hours ago', emoji: '✌️' },
+        { id: 2, assignee: 'Gunther', title: `wants to join your circle`, time: '5 hours ago', emoji: '✌️' },
     ];
 
     const notificationsEarlier = [
-        { id: 1, assignee: 'Ross Geller', title: `completed hospital Ride`, time: '4 days ago', image: require('../assets/emojis/car-icon.png') },
-        { id: 2, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '5 days ago', image: require('../assets/emojis/dog-icon.png') },
-        { id: 3, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '6 days ago', image: require('../assets/emojis/dog-icon.png') },
-        { id: 4, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '7 days ago', image: require('../assets/emojis/dog-icon.png') },
-        { id: 5, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '8 days ago', image: require('../assets/emojis/dog-icon.png') },
+        { id: 1, assignee: 'Ross Geller', title: `completed hospital Ride`, time: '4 days ago', emoji: '🚙' },
+        { id: 2, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '5 days ago', emoji: '🐶' },
+        { id: 3, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '6 days ago', emoji: '🐶' },
+        { id: 4, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '7 days ago', emoji: '🐶' },
+        { id: 5, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '8 days ago', emoji: '🐶' },
     ];
 
     const [showAllEarlier, setShowAllEarlier] = useState(false);
@@ -61,7 +61,7 @@ export default function NotificationsScreen({ navigation }) {
                     </View>
                     <View style={stylesNotifications.notificationsGroupList}>
                         {notificationsNew.map(notification => (
-                            <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} image={notification.image} />
+                            <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
                         ))}
                     </View>
                 </View>
@@ -73,7 +73,7 @@ export default function NotificationsScreen({ navigation }) {
                         <View style={stylesNotifications.notificationsGroupList}>
                             {notificationsPending.map((notification, index) => (
                                 index < 2 ?
-                                    <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} image={notification.image} buttons />
+                                    <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} buttons />
                                     : null
                             ))}
                         </View>
@@ -92,7 +92,7 @@ export default function NotificationsScreen({ navigation }) {
                         <View onLayout={handleListLayout} style={stylesNotifications.notificationsGroupList}>
                             {notificationsEarlier.map((notification, index) => (
                                 index < 2 || showAllEarlier ?
-                                    <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} image={notification.image} />
+                                    <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
                                     : null
                             ))}
                         </View>
