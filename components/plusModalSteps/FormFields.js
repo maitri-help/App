@@ -212,7 +212,8 @@ const stylesFields = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         flexShrink: 1,
-        gap: 15,
+        flexWrap: 'wrap',
+        gap: 10,
     },
     field: {
         borderWidth: 0,

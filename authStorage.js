@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const baseUrl = 'http://34.253.29.107:3000';
+const baseUrl = 'http://18.203.135.214:3000';
 
 export const storeUserData = async (userData) => {
     try {
@@ -32,6 +32,7 @@ export const getUserData = async () => {
 export const clearUserData = async () => {
     try {
         await AsyncStorage.removeItem('userData');
+        await clearAccessToken();
         console.log('User data cleared successfully');
     } catch (error) {
         console.error('Error clearing user data:', error);
@@ -138,8 +139,8 @@ export const checkAuthentication = async () => {
         }
     } catch (error) {
         if (error.response && error.response.status === 401) {
-            console.error('Authentication failed. Please login again.', error);
             clearUserData();
+            console.error('Authentication failed. Please login again.', error);
         } else {
             clearUserData();
             console.error('Error checking authentication:', error);
