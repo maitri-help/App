@@ -27,6 +27,7 @@ import SuppIDScreen from './screens/SuppIDScreen';
 import styles from './Styles';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { checkAuthentication, getOnboardingCompleted } from './authStorage';
+import { useToast } from 'react-native-toast-notifications';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -68,6 +69,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
     async function loadAppResources() {
@@ -85,11 +87,20 @@ export default function App() {
 
   useEffect(() => {
     const checkAuthAndOnboarding = async () => {
-      const authStatus = await checkAuthentication();
-      setIsLoggedIn(authStatus !== null);
-      const onboardingCompleted = await getOnboardingCompleted();
-      setHasCompletedOnboarding(onboardingCompleted);
-      setLoading(false);
+      try {
+        const authStatus = await checkAuthentication();
+        setIsLoggedIn(authStatus !== null);
+        const onboardingCompleted = await getOnboardingCompleted();
+        setHasCompletedOnboarding(onboardingCompleted);
+        setLoading(false);
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          toast.show('Authentication failed. Please login again.', { type: 'error' });
+        } else {
+          console.error('Error checking authentication:', error);
+        }
+        setLoading(false);
+      }
     };
 
     checkAuthAndOnboarding();
@@ -130,8 +141,8 @@ export default function App() {
           <Stack.Screen name="Identify" component={IdentifyScreen} options={{ gestureEnabled: false }} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
           <Stack.Screen name="PendingRequest" component={PendingRequestScreen} />
-          <Stack.Screen name="SuppGreatNews" component={SuppGreatNewsScreen}/>
-          <Stack.Screen name="SuppID" component={SuppIDScreen}/>
+          <Stack.Screen name="SuppGreatNews" component={SuppGreatNewsScreen} />
+          <Stack.Screen name="SuppID" component={SuppIDScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>

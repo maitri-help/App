@@ -23,15 +23,17 @@ export default function TaskItem({ task, taskModal }) {
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={taskModal}>
       <View style={styles.wrapper}>
-        <View style={styles.emojiWrapper}>
-          {task.emoji && <Text style={styles.circleItemEmoji}>
+        <View style={[styles.emojiWrapper, task.color ? {borderColor: task.color} : '']}>
+          {task.emoji && <Text style={styles.emoji}>
             {task.emoji}
           </Text>}
         </View>
 
         <View style={styles.textContainer}>
           <Text style={[styles.title, isChecked ? styles.textStriked : '']}>{task.title}</Text>
-          {task.assignee && <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>{task.assignee}</Text>}
+          {task.firstName && task.lastName && <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>
+            {task.firstName} {task.lastName}
+          </Text>}
           {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '']}>
             {formatDateTime(task)}
           </Text>}
