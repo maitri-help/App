@@ -7,9 +7,18 @@ import LocationPicker from './LocationPicker';
 import { createTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 
-export default function FormFields({ selectedService, currentStep, setCurrentStep, taskName, setTaskName, onBack, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData }) {
+export default function FormFields({ selectedService, currentStep, setCurrentStep, taskName, setTaskName, onBack, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, startDateTime, endDateTime }) {
 
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
+
+    useEffect(() => {
+        if (startDateTime && endDateTime) {
+            const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            const start = new Date(startDateTime).toLocaleString('en-US', options);
+            const end = new Date(endDateTime).toLocaleString('en-US', options);
+            setDateTimeText(`${start} - ${end}`);
+        }
+    }, [startDateTime, endDateTime]);
 
     useEffect(() => {
         if (!Array.isArray(selectedCircle)) {
@@ -45,24 +54,6 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
         setCurrentStep(4);
     };
 
-    useEffect(() => {
-        if (dateTimeData) {
-            setDateTimeText(formatDateTime(dateTimeData));
-        }
-    }, [dateTimeData]);
-
-    const formatDateTime = (dateTimeData) => {
-        const { startDateTime, endDateTime } = dateTimeData;
-        const formattedStartDateTime = formatDate(startDateTime);
-        const formattedEndDateTime = formatDate(endDateTime);
-        return `${formattedStartDateTime} - ${formattedEndDateTime}`;
-    };
-
-    const formatDate = (date) => {
-        const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-        return new Date(date).toLocaleDateString('en-US', options);
-    };
-
     const handleSubmit = async () => {
         try {
             const accessToken = await getAccessToken();
@@ -94,12 +85,13 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
                     Authorization: `Bearer ${accessToken}`
                 }
             });
-            
+
             console.log("Task created successfully:", response.data);
         } catch (error) {
             console.error("Error creating task:", error);
         }
     };
+
     return (
         <>
             <View style={[styles.modalTopNav, stylesFields.modalTopNav]}>
@@ -240,6 +232,7 @@ const stylesFields = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         flexShrink: 1,
+        flexGrow: 1,
     },
     fieldLinkText: {
         fontSize: 13,
@@ -261,7 +254,7 @@ const stylesFields = StyleSheet.create({
     },
     circleItems: {
         flexDirection: 'row',
-        gap: 7,
+        gap: 6,
     },
     circleItem: {
         paddingHorizontal: 10,

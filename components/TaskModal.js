@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
 } from 'react-native';
@@ -6,12 +6,46 @@ import Modal from '../components/Modal';
 import DateTime from './plusModalSteps/DateTime';
 import EditForm from './plusModalSteps/EditForm';
 
-export default function TaskModal({ visible, onClose, selectedCircle, setSelectedCircle, taskName, setTaskName, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween }) {
+export default function TaskModal({ visible, onClose, selectedCircle, setSelectedCircle, taskName, setTaskName, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, firstName, setFirstName, lastName, setLastName, color, setColor, emoji, setEmoji, selectedTask }) {
   const [currentStep, setCurrentStep] = useState(5);
   const circles = ['Personal', 'First', 'Second', 'Third'];
   const [reviewFormCurrentStep, setReviewFormCurrentStep] = useState(null);
 
-  const assignee = { emoji: '🦄', color: '#A571F9', name: 'Monica Geller' }
+  useEffect(() => {
+    if (selectedTask) {
+      setTaskName(selectedTask.title);
+      setDescription(selectedTask.description);
+      setSelectedCircle(selectedTask.circles);
+      setSelectedLocation(selectedTask.location);
+
+      const dateTimeObj = {
+        startDateTime: selectedTask.startDateTime,
+        endDateTime: selectedTask.endDateTime
+      };
+      handleDateTimeSelect(dateTimeObj);
+      const startDateTime = new Date(selectedTask.startDateTime);
+      const endDateTime = new Date(selectedTask.endDateTime);
+
+      const startDate = startDateTime.toISOString().split('T')[0];
+      const endDate = endDateTime.toISOString().split('T')[0];
+
+      const startTime = `${startDateTime.getHours()}:${startDateTime.getMinutes()}`;
+      const endTime = `${endDateTime.getHours()}:${endDateTime.getMinutes()}`;
+
+      console.log('Start Time:', startTime);
+      console.log('End Time:', endTime);
+
+      setStartDate(startDate);
+      setEndDate(endDate);
+      setStartTime(startTime);
+      setEndTime(endTime);
+
+      setFirstName(selectedTask.firstName);
+      setLastName(selectedTask.lastName);
+      setColor(selectedTask.color);
+      setEmoji(selectedTask.emoji);
+    }
+  }, [selectedTask]);
 
   return (
     <Modal
@@ -56,7 +90,10 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
           setSelectedLocation={setSelectedLocation}
           reviewFormCurrentStep={reviewFormCurrentStep}
           setReviewFormCurrentStep={setReviewFormCurrentStep}
-          assignee={assignee}
+          firstName={firstName}
+          lastName={lastName}
+          color={color}
+          emoji={emoji}
         />
       )}
     </Modal >

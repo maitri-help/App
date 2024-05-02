@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUrl = 'http://18.203.135.214:3000';
+const baseUrl = 'http://3.249.69.183:3000';
 
 export function resendOtp(phoneNumber) {
     return axios.post(`${baseUrl}/auth/otp/resend`, { phoneNumber });

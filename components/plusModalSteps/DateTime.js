@@ -6,9 +6,29 @@ import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 
-export default function DateTime({ currentStep, setCurrentStep, taskName, setTaskName, onBack, onDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, reviewFormCurrentStep }) {
+export default function DateTime({ currentStep, setCurrentStep, taskName, setTaskName, onBack, onDateTimeSelect, startDate: propStartDate, setStartDate, endDate: propEndDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, reviewFormCurrentStep }) {
+    const [startDate, setStartDateLocal] = useState(propStartDate !== null ? propStartDate : null);
+    const [endDate, setEndDateLocal] = useState(propEndDate !== null ? propEndDate : null);
     const [isStartTimePickerVisible, setStartTimePickerVisible] = useState(false);
     const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
+    const [markedDates, setMarkedDates] = useState({});
+
+    useEffect(() => {
+        if (propStartDate) {
+            setStartDateLocal(propStartDate);
+        }
+        if (propEndDate) {
+            setEndDateLocal(propEndDate);
+        }
+    }, [propStartDate, propEndDate]);
+
+    useEffect(() => {
+        setMarkedDates({
+            [startDate]: { startingDay: true, color: '#1C4837', textColor: '#fff', ...(startDate === endDate && { endingDay: true, }) },
+            [endDate]: { endingDay: true, color: '#1C4837', textColor: '#fff', ...(startDate === endDate && { startingDay: true, }) },
+            ...getDaysBetween(startDate, endDate)
+        });
+    }, [startDate, endDate]);
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -43,9 +63,13 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
     }
 
     useEffect(() => {
-        setStartDate(new Date().setHours(0, 0, 0, 0));
-        setEndDate(new Date().setHours(0, 0, 0, 0));
-    }, []);
+        if (propStartDate) {
+            setStartDateLocal(propStartDate);
+        }
+        if (propEndDate) {
+            setEndDateLocal(propEndDate);
+        }
+    }, [propStartDate, propEndDate]);
 
     const handleDateTimeSelect = () => {
         if (startDate && endDate && startTime && endTime) {
@@ -54,10 +78,12 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
             const endDateTime = new Date(endDate);
             endDateTime.setHours(new Date(endTime).getHours(), new Date(endTime).getMinutes());
 
-            onDateTimeSelect({ startDateTime, endDateTime });
+            const formattedStartDateTime = startDateTime.toISOString();
+            const formattedEndDateTime = endDateTime.toISOString();
 
-            { reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1) }
+            onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
 
+            reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1);
         } else {
             console.log('Please select both start and end date and time');
         }
@@ -85,11 +111,7 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
                             style={stylesDate.calendar}
                             firstDay={1}
                             onDayPress={handleDayPress}
-                            markedDates={{
-                                [startDate]: { startingDay: true, color: '#1C4837', textColor: '#fff', ...(startDate === endDate && { endingDay: true, }) },
-                                [endDate]: { endingDay: true, color: '#1C4837', textColor: '#fff', ...(startDate === endDate && { startingDay: true, }) },
-                                ...getDaysBetween(startDate, endDate)
-                            }}
+                            markedDates={markedDates}
                             markingType={'period'}
                             theme={{
                                 textDayFontFamily: 'poppins-regular',

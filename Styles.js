@@ -130,10 +130,10 @@ export default styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginHorizontal: -8,
-        marginVertical: -8,
+        marginVertical: -6,
     },
     backLinkCustom: {
-        top: 'auto',
+        top: 22,
         left: 20,
     },
     toast: {
@@ -182,7 +182,7 @@ export default styles = StyleSheet.create({
         paddingVertical: 25,
         paddingHorizontal: 25,
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         gap: 12,
         width: '100%',
     },

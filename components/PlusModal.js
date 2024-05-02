@@ -9,7 +9,7 @@ import TaskSelection from './plusModalSteps/TaskSelection';
 import FormFields from './plusModalSteps/FormFields';
 import DateTime from './plusModalSteps/DateTime';
 
-export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, taskName, setTaskName, isOtherTask, setIsOtherTask, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween }) {
+export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, taskName, setTaskName, isOtherTask, setIsOtherTask, description, setDescription, selectedLocation, setSelectedLocation, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween }) {
   const [currentStep, setCurrentStep] = useState(1);
   const circles = ['Personal', 'First', 'Second', 'Third'];
 
@@ -59,7 +59,8 @@ export default function PlusModal({ visible, onClose, selectedService, setSelect
           setDescription={setDescription}
           selectedLocation={selectedLocation}
           setSelectedLocation={setSelectedLocation}
-          dateTimeData={dateTimeData}
+          startDateTime={startDate}
+          endDateTime={endDate}
         />
       )}
       {currentStep === 4 && (

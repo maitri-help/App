@@ -25,35 +25,63 @@ export default function AssignmentsScreen({ navigation }) {
     const [weekSelectedDate, setWeekSelectedDate] = useState(selectedDate);
 
     const [selectedService, setSelectedService] = useState({ id: null, title: '', icon: null });
-    const [selectedCircle, setSelectedCircle] = useState('Personal');
-    const [taskName, setTaskName] = useState('');
-    const [description, setDescription] = useState('');
+    const [plusModalSelectedCircle, setPlusModalSelectedCircle] = useState('Personal');
+    const [taskModalSelectedCircle, setTaskModalSelectedCircle] = useState('Personal');
+    const [plusModalTaskName, setPlusModalTaskName] = useState('');
+    const [taskModalTaskName, setTaskModalTaskName] = useState('');
+    const [taskModaldescription, setTaskModalDescription] = useState('');
+    const [plusModaldescription, setPlusModalDescription] = useState('');
     const [isOtherTask, setIsOtherTask] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [dateTimeData, setDateTimeData] = useState(null);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [startTime, setStartTime] = useState(null);
-    const [endTime, setEndTime] = useState(null);
+    const [taskModalSelectedLocation, setTaskModalSelectedLocation] = useState('');
+    const [plusModalSelectedLocation, setPlusModalSelectedLocation] = useState('');
+    const [taskModalStartDate, setTaskModalStartDate] = useState(null);
+    const [taskModalEndDate, setTaskModalEndDate] = useState(null);
+    const [taskModalStartTime, setTaskModalStartTime] = useState(null);
+    const [taskModalEndTime, setTaskModalEndTime] = useState(null);
+    const [plusModalStartDate, setPlusModalStartDate] = useState(null);
+    const [plusModalEndDate, setPlusModalEndDate] = useState(null);
+    const [plusModalStartTime, setPlusModalStartTime] = useState(null);
+    const [plusModalEndTime, setPlusModalEndTime] = useState(null);
 
-    const handleDateTimeSelect = (data) => {
-        setDateTimeData(data);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [color, setColor] = useState('');
+    const [emoji, setEmoji] = useState('');
+    const [selectedTask, setSelectedTask] = useState(null);
+
+    const handleTaskItemClick = (task) => {
+        setSelectedTask(task);
     };
 
-    const handleStartDateSelect = (date) => {
-        setStartDate(date);
-    };
-
-    const handleEndDateSelect = (date) => {
-        setEndDate(date);
+    const handleDateTimeSelect = ({ startDateTime, endDateTime }) => {
+        setTaskModalStartDate(startDateTime);
+        setTaskModalEndDate(endDateTime);
+        setPlusModalStartDate(startDateTime);
+        setPlusModalEndDate(endDateTime);
     };
 
     const handleDayPress = (day) => {
-        if (startDate && !endDate) {
-            handleEndDateSelect(day.dateString);
+        if (taskModalStartDate && taskModalEndDate) {
+            setTaskModalStartDate(day.dateString);
+            setTaskModalEndDate(null);
+            setPlusModalStartDate(day.dateString);
+            setPlusModalEndDate(null);
+        } else if (taskModalStartDate && !taskModalEndDate) {
+            const startDate = new Date(taskModalStartDate);
+            const endDate = new Date(day.dateString);
+
+            if (startDate <= endDate) {
+                setTaskModalEndDate(day.dateString);
+                setPlusModalEndDate(day.dateString);
+            } else {
+                setTaskModalStartDate(day.dateString);
+                setTaskModalEndDate(null);
+                setPlusModalStartDate(day.dateString);
+                setPlusModalEndDate(null);
+            }
         } else {
-            handleStartDateSelect(day.dateString);
-            setEndDate(null);
+            setTaskModalStartDate(day.dateString);
+            setPlusModalStartDate(day.dateString);
         }
     };
 
@@ -172,7 +200,7 @@ export default function AssignmentsScreen({ navigation }) {
 
                     <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
                         {TasksList.map((task, index) => (
-                            <TaskItem key={index} task={task} taskModal={() => setTaskModalVisible(true)} />
+                            <TaskItem key={index} task={task} taskModal={() => setTaskModalVisible(true)} onTaskItemClick={handleTaskItemClick} />
                         ))}
                     </View>
 
@@ -199,53 +227,59 @@ export default function AssignmentsScreen({ navigation }) {
                 onClose={handlePlusModalClose}
                 selectedService={selectedService}
                 setSelectedService={setSelectedService}
-                selectedCircle={selectedCircle}
-                setSelectedCircle={setSelectedCircle}
-                taskName={taskName}
-                setTaskName={setTaskName}
+                selectedCircle={plusModalSelectedCircle}
+                setSelectedCircle={setPlusModalSelectedCircle}
+                taskName={plusModalTaskName}
+                setTaskName={setPlusModalTaskName}
                 isOtherTask={isOtherTask}
                 setIsOtherTask={setIsOtherTask}
-                description={description}
-                setDescription={setDescription}
-                selectedLocation={selectedLocation}
-                setSelectedLocation={setSelectedLocation}
-                dateTimeData={dateTimeData}
-                handleDateTimeSelect={handleDateTimeSelect}
-                startDate={startDate}
-                setStartDate={setStartDate}
-                endDate={endDate}
-                setEndDate={setEndDate}
-                startTime={startTime}
-                setStartTime={setStartTime}
-                endTime={endTime}
-                setEndTime={setEndTime}
+                description={plusModaldescription}
+                setDescription={setPlusModalDescription}
+                selectedLocation={plusModalSelectedLocation}
+                setSelectedLocation={setPlusModalSelectedLocation}
+                startDate={plusModalStartDate}
+                setStartDate={setPlusModalStartDate}
+                endDate={plusModalEndDate}
+                setEndDate={setPlusModalEndDate}
+                startTime={plusModalStartTime}
+                setStartTime={setPlusModalStartTime}
+                endTime={plusModalEndTime}
+                setEndTime={setPlusModalEndTime}
                 handleDayPress={handleDayPress}
                 getDaysBetween={getDaysBetween}
+                handleDateTimeSelect={handleDateTimeSelect}
             />
 
             <TaskModal
                 visible={taskModalVisible}
                 onClose={handleTaskModalClose}
-                selectedCircle={selectedCircle}
-                setSelectedCircle={setSelectedCircle}
-                taskName={taskName}
-                setTaskName={setTaskName}
-                description={description}
-                setDescription={setDescription}
-                selectedLocation={selectedLocation}
-                setSelectedLocation={setSelectedLocation}
-                dateTimeData={dateTimeData}
-                handleDateTimeSelect={handleDateTimeSelect}
-                startDate={startDate}
-                setStartDate={setStartDate}
-                endDate={endDate}
-                setEndDate={setEndDate}
-                startTime={startTime}
-                setStartTime={setStartTime}
-                endTime={endTime}
-                setEndTime={setEndTime}
+                selectedCircle={taskModalSelectedCircle}
+                setSelectedCircle={setTaskModalSelectedCircle}
+                taskName={taskModalTaskName}
+                setTaskName={setTaskModalTaskName}
+                description={taskModaldescription}
+                setDescription={setTaskModalDescription}
+                selectedLocation={taskModalSelectedLocation}
+                setSelectedLocation={setTaskModalSelectedLocation}
+                startDate={taskModalStartDate}
+                setStartDate={setTaskModalStartDate}
+                endDate={taskModalEndDate}
+                setEndDate={setTaskModalEndDate}
+                startTime={taskModalStartTime}
+                setStartTime={setTaskModalStartTime}
+                endTime={taskModalEndTime}
+                setEndTime={setTaskModalEndTime}
                 handleDayPress={handleDayPress}
                 getDaysBetween={getDaysBetween}
+                selectedTask={selectedTask}
+                firstName={firstName}
+                setFirstName={setFirstName}
+                lastName={lastName}
+                setLastName={setLastName}
+                color={color}
+                setColor={setColor}
+                emoji={emoji}
+                setEmoji={setEmoji}
             />
         </>
     );

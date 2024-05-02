@@ -7,7 +7,7 @@ import EditIcon from '../../assets/icons/edit-icon.svg';
 import CheckIcon from '../../assets/icons/check-icon.svg';
 import LocationPicker from './LocationPicker';
 
-export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData, onBack, setReviewFormCurrentStep, assignee, onClose }) {
+export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData, onBack, setReviewFormCurrentStep, firstName, lastName, color, emoji, onClose }) {
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
     const [isEditable, setIsEditable] = useState(false);
 
@@ -149,19 +149,21 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
             <View style={stylesReview.group}>
                 <View style={[styles.contentContainer, stylesReview.groupInner]}>
                     <Text style={stylesReview.groupTitle}>Assignee</Text>
-                    <View style={stylesReview.assignee}>
-                        <View style={[stylesReview.emojiWrapper, { borderColor: assignee.color }]}>
-                            <Text style={stylesReview.emoji}>
-                                {assignee.emoji}
-                            </Text>
-                        </View>
+                    {firstName && lastName &&
+                        <View style={stylesReview.assignee}>
+                            <View style={[stylesReview.emojiWrapper, { borderColor: color }]}>
+                                <Text style={stylesReview.emoji}>
+                                    {emoji}
+                                </Text>
+                            </View>
 
-                        <View style={stylesReview.nameWrapper}>
-                            <Text style={stylesReview.name}>
-                                {assignee.name}
-                            </Text>
+                            <View style={stylesReview.nameWrapper}>
+                                <Text style={stylesReview.name}>
+                                    {firstName} {lastName}
+                                </Text>
+                            </View>
                         </View>
-                    </View>
+                    }
                 </View>
             </View>
             {isEditable &&
@@ -208,6 +210,7 @@ const stylesReview = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         flexShrink: 1,
+        flexGrow: 1,
     },
     fielText: {
         fontSize: 13,
@@ -227,7 +230,8 @@ const stylesReview = StyleSheet.create({
         justifyContent: 'flex-end',
         flexWrap: 'wrap',
         flexShrink: 1,
-        gap: 6,
+        flexGrow: 1,
+        margin: -3,
     },
     circle: {
         paddingHorizontal: 11,
@@ -236,6 +240,7 @@ const stylesReview = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 20,
         alignItems: 'center',
+        margin: 3,
     },
     circleSelected: {
         backgroundColor: '#1C4837',

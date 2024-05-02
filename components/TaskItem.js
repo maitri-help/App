@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Image, StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
 
-export default function TaskItem({ task, taskModal }) {
+export default function TaskItem({ task, taskModal, onTaskItemClick }) {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleToggleCheckbox = () => {
@@ -20,8 +20,13 @@ export default function TaskItem({ task, taskModal }) {
     return new Date(date).toLocaleDateString('en-US', options);
   };
 
+  const handleClick = () => {
+    onTaskItemClick(task);
+    taskModal();
+  };
+
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={taskModal}>
+    <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={handleClick}>
       <View style={styles.wrapper}>
         <View style={[styles.emojiWrapper, task.color ? {borderColor: task.color} : '']}>
           {task.emoji && <Text style={styles.emoji}>

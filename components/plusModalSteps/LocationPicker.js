@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
 import CloseIcon from '../../assets/icons/close-icon.svg';
@@ -21,7 +21,8 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled })
     useEffect(() => {
         const getAddressFromCoordinates = () => {
             if (selectedLocation) {
-                Geocoder.from(selectedLocation)
+                const [latitude, longitude] = selectedLocation.split(',').map(parseFloat);
+                Geocoder.from({ latitude, longitude })
                     .then((json) => {
                         const address = json.results[0].formatted_address;
                         setSelectedAddress(address);
@@ -33,10 +34,11 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled })
         getAddressFromCoordinates();
 
         if (selectedLocation) {
+            const [latitude, longitude] = selectedLocation.split(',').map(parseFloat);
             setMapRegion(prevRegion => ({
                 ...prevRegion,
-                latitude: selectedLocation.latitude,
-                longitude: selectedLocation.longitude,
+                latitude,
+                longitude,
                 latitudeDelta: 0.002,
                 longitudeDelta: 0.002,
             }));
@@ -58,14 +60,15 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled })
                     <MapView
                         style={{ width: '100%', height: 200 }}
                         region={mapRegion}
-                        onPress={(e) => handleLocationSelect(e.nativeEvent.coordinate)}
+                        onPress={(e) => handleLocationSelect(`${e.nativeEvent.coordinate.latitude},${e.nativeEvent.coordinate.longitude}`)}
                     >
-                        {selectedLocation && <Marker coordinate={selectedLocation} />}
+                        {selectedLocation && <Marker coordinate={{ latitude: parseFloat(selectedLocation.split(',')[0]), longitude: parseFloat(selectedLocation.split(',')[1]) }} />}
                     </MapView>
                 </>
             ) : (
-                <TouchableOpacity onPress={() => setShowMap(true)} style={[stylesLocation.fieldLink, { maxWidth: 250 }]} disabled={disabled}>
-                    <Text style={[stylesLocation.fielText, !disabled && stylesLocation.fieldLinkText]}>{selectedAddress ? selectedAddress : "Fill the location"}</Text>
+                <TouchableOpacity onPress={() => setShowMap(true)} style={stylesLocation.fieldLink} disabled={disabled}>
+                    <Text style={[stylesLocation.fielText, !disabled && stylesLocation.fieldLinkText]}>{selectedAddress ? selectedAddress : "Fill the location"}
+                    </Text>
                 </TouchableOpacity>
             )}
         </>
@@ -75,6 +78,7 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled })
 const stylesLocation = StyleSheet.create({
     fieldLink: {
         flexShrink: 1,
+        flexGrow: 1,
         justifyContent: 'flex-end',
         flexDirection: 'row',
     },

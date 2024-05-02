@@ -1,13 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Image } from 'react-native';
 import styles from '../Styles';
-import Logo from '../assets/img/maitri-logo.svg';
 import { getAccessToken, getUserData, clearUserData, clearAccessToken } from '../authStorage';
+import LogoutModal from '../components/profileModals/LogoutModal';
+import DeleteModal from '../components/profileModals/DeleteModal';
 
 export default function ProfileScreen({ navigation }) {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [userRole, setUserRole] = useState('');
+    const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const overlayOpacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         async function fetchUserData() {
@@ -18,6 +24,8 @@ export default function ProfileScreen({ navigation }) {
                     const userData = await getUserData();
                     setFirstName(userData.firstName);
                     setLastName(userData.lastName);
+                    setEmail(userData.email);
+                    setPhoneNumber(userData.phoneNumber);
                     setUserRole(userData.userType);
                 }
             } catch (error) {
@@ -38,44 +46,157 @@ export default function ProfileScreen({ navigation }) {
         }
     };
 
+    useEffect(() => {
+        if (logoutModalVisible || deleteModalVisible) {
+            Animated.timing(overlayOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(overlayOpacity, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [logoutModalVisible || deleteModalVisible]);
+
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={[styles.topBar, stylesProfile.topBar]}>
-                <Text style={stylesProfile.topBarText}>{firstName} {lastName} ({userRole})</Text>
-                <TouchableOpacity style={stylesProfile.logoutButton} onPress={handleLogout}>
-                    <Text style={stylesProfile.logoutButtonText}>Logout</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.container}>
-                <View style={stylesProfile.profileContainer}>
-                    <Logo width={90} height={90} />
+        <>
+            <SafeAreaView style={styles.safeArea}>
+                <View style={[styles.container, stylesProfile.container]}>
+                    <View style={stylesProfile.topContent}>
+                        <Text style={stylesProfile.topContentName}>{firstName} {lastName} ({userRole})</Text>
+                        <Text style={stylesProfile.topContentText}>{email}</Text>
+                        <Text style={stylesProfile.topContentText}>{phoneNumber}</Text>
+                    </View>
+                    <View style={stylesProfile.contentContainer}>
+                        <View style={stylesProfile.buttons}>
+                            <View style={stylesProfile.buttonWrapper}>
+                                <TouchableOpacity style={stylesProfile.button} onPress={() => { }}>
+                                    <Text style={stylesProfile.buttonText}>Contact support</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={stylesProfile.buttonWrapper}>
+                                <TouchableOpacity style={[stylesProfile.button, stylesProfile.logoutButton]} onPress={() => setLogoutModalVisible(true)}>
+                                    <Text style={[stylesProfile.buttonText, stylesProfile.logoutButtonText]}>Log Out</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={stylesProfile.buttonWrapper}>
+                                <TouchableOpacity style={[stylesProfile.button, stylesProfile.logoutButton]} onPress={() => setDeleteModalVisible(true)}>
+                                    <Text style={[stylesProfile.buttonText, stylesProfile.logoutButtonText]}>Delete Account</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={stylesProfile.linksWrapper}>
+                                <TouchableOpacity style={stylesProfile.link}>
+                                    <Text style={stylesProfile.linkText}>Privacy Policy</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={stylesProfile.link}>
+                                    <Text style={stylesProfile.linkText}>Terms & Conditions</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        <View style={stylesProfile.illustrationWrapper}>
+                            <Image source={require('../assets/img/mimi-flower-illustration.png')} style={stylesProfile.illustration} />
+                        </View>
+                    </View>
                 </View>
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+
+            {(logoutModalVisible || deleteModalVisible) && (
+                <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+            )}
+
+            <LogoutModal
+                visible={logoutModalVisible}
+                onClose={() => setLogoutModalVisible(false)}
+                logout={handleLogout}
+            />
+
+            <DeleteModal
+                visible={deleteModalVisible}
+                onClose={() => setDeleteModalVisible(false)}
+                deleteAccount={handleLogout}
+            />
+        </>
     );
 }
 
 const stylesProfile = StyleSheet.create({
-    profileContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 20,
-        fontSize: 14,
+    container: {
+        justifyContent: 'space-between',
     },
-    topBar: {
+    contentContainer: {
+        flex: 1,
+        width: '100%',
+        justifyContent: 'space-between',
+    },
+    topContent: {
         justifyContent: 'center',
         alignItems: 'center',
+        paddingVertical: 30,
+        gap: 3,
     },
-    topBarText: {
+    topContentName: {
         fontSize: 18,
         fontFamily: 'poppins-medium',
         lineHeight: 20,
+        color: '#000'
+    },
+    topContentText: {
+        fontSize: 13,
+        fontFamily: 'poppins-medium',
+        lineHeight: 18,
+        color: '#747474',
+    },
+    buttons: {
+        width: '100%',
+        paddingTop: 10,
+    },
+    buttonWrapper: {
+        paddingHorizontal: 25,
+        borderBottomColor: '#E5E5E5',
+        borderBottomWidth: 1,
+    },
+    button: {
+        width: '100%',
+        flexDirection: 'row',
+        paddingVertical: 20,
+    },
+    buttonText: {
+        color: '#000',
+        fontSize: 15,
+        fontFamily: 'poppins-regular',
+        lineHeight: 18,
     },
     logoutButtonText: {
         color: '#FF7070',
-        fontSize: 16,
-        fontFamily: 'poppins-medium',
-        lineHeight: 18,
+    },
+    linksWrapper: {
+        paddingHorizontal: 25,
+        paddingVertical: 15,
+    },
+    link: {
+        paddingVertical: 5,
+    },
+    linkText: {
+        color: '#000',
+        fontSize: 13,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textDecorationLine: 'underline'
+    },
+    illustrationWrapper: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        width: '100%',
+        paddingVertical: 20,
+        paddingHorizontal: 25,
+    },
+    illustration: {
+        width: 130,
+        height: 130,
+        resizeMode: 'contain'
     }
 });
