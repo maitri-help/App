@@ -28,6 +28,8 @@ import styles from './Styles';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { checkAuthentication, getOnboardingCompleted } from './authStorage';
 import { useToast } from 'react-native-toast-notifications';
+import HomeSupporterScreen from './screens/HomeSupporterScreen';
+import OpenIcon from './assets/icons/open-icon.svg';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -60,6 +62,38 @@ function MainNavigator({ setIsLoggedIn }) {
       <Tab.Screen name="Assignments" component={AssignmentsScreen} />
       <Tab.Screen name="Circles" component={CirclesScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
+}
+
+function SuppNavigator({ setIsLoggedIn }) {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color }) => {
+          if (route.name === 'Home') {
+            return <HomeIcon color={color} width={19} height={19} />;
+          } else if (route.name === 'Assignments') {
+            return <AssignmentsCheckIcon color={color} width={19} height={19} />;
+          } else if (route.name === 'OpenTasks') {
+            return <OpenIcon color={color} width={21} height={21} />;
+          } else if (route.name === 'Profile') {
+            return <ProfileIcon color={color} width={19} height={19} />;
+          }
+        },
+        tabBarActiveTintColor: '#1C4837',
+        tabBarInactiveTintColor: '#C7C7C7',
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: '#F5F5F5',
+        },
+        headerShown: false,
+      })}
+    >
+      <Tab.Screen name="Home" component={HomeSupporterScreen} />
+      <Tab.Screen name="Assignments" component={HomeSupporterScreen} />
+      <Tab.Screen name="OpenTasks" component={HomeSupporterScreen} />
+      <Tab.Screen name="Profile" component={HomeSupporterScreen} />
     </Tab.Navigator>
   );
 }
@@ -133,6 +167,7 @@ export default function App() {
             <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ gestureEnabled: false }} />
           ) : null}
           <Stack.Screen name="Main" component={MainNavigator} options={{ gestureEnabled: false }} />
+          <Stack.Screen name="Supp" component={SuppNavigator} options={{ gestureEnabled: false }} />
           <Stack.Screen name="Login" component={LoginScreen} options={{ gestureEnabled: !isLoggedIn }} />
           <Stack.Screen name="Register" component={RegisterScreen} options={{ gestureEnabled: !isLoggedIn }} />
           <Stack.Screen name="VerifyNumber" component={VerifyNumberScreen} options={{ gestureEnabled: !isLoggedIn }} />
