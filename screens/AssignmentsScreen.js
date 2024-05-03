@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform } from 'react-native';
 import styles from '../Styles';
-import { TasksList } from '../data/Tasks';
 import TaskItem from '../components/TaskItem';
 import PlusModal from '../components/PlusModal';
 import TaskModal from '../components/TaskModal';
 import GridCalendar, { monthNum } from '../components/calendar/GridCalendar';
 import WeekCalendar from '../components/calendar/WeekCalendar';
 import PlusIcon from '../assets/icons/plus-icon.svg';
+import { getTasksForUser } from '../hooks/api';
+import { getAccessToken, getUserData } from '../authStorage';
 
 export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
@@ -23,6 +24,9 @@ export default function AssignmentsScreen({ navigation }) {
     const [defaultWeekDate, setDefaultWeekDate] = useState(new Date());
     const [weekStartDate, setWeekStartDate] = useState(new Date());
     const [weekSelectedDate, setWeekSelectedDate] = useState(selectedDate);
+
+    const [tasks, setTasks] = useState([]);
+    const [userId, setUserId] = useState(null);
 
     const [selectedService, setSelectedService] = useState({ id: null, title: '', icon: null });
     const [plusModalSelectedCircle, setPlusModalSelectedCircle] = useState('Personal');
@@ -147,6 +151,28 @@ export default function AssignmentsScreen({ navigation }) {
         setTaskModalVisible(false);
     };
 
+    async function fetchTasks() {
+        try {
+            const accessToken = await getAccessToken();
+            if (accessToken) {
+                const userData = await getUserData();
+                setUserId(userData.userId);
+                const tasksResponse = await getTasksForUser(userData.userId, accessToken);
+                setTasks(tasksResponse.data);
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                console.error('Unauthorized request. Refreshing token...');
+            } else {
+                console.error('Error fetching tasks:', error);
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchTasks();
+    }, []);
+
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
@@ -199,8 +225,15 @@ export default function AssignmentsScreen({ navigation }) {
                 <ScrollView contentContainerStyle={stylesCal.calendarScroll}>
 
                     <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
-                        {TasksList.map((task, index) => (
-                            <TaskItem key={index} task={task} taskModal={() => setTaskModalVisible(true)} onTaskItemClick={handleTaskItemClick} />
+
+                        {console.log("Tasks:", tasks)}
+                        {tasks.map((task, index) => (
+                            <TaskItem
+                                key={index}
+                                task={task}
+                                taskModal={() => setTaskModalVisible(true)}
+                                onTaskItemClick={handleTaskItemClick}
+                            />
                         ))}
                     </View>
 
@@ -271,6 +304,7 @@ export default function AssignmentsScreen({ navigation }) {
                 setEndTime={setTaskModalEndTime}
                 handleDayPress={handleDayPress}
                 getDaysBetween={getDaysBetween}
+                handleDateTimeSelect={handleDateTimeSelect}
                 selectedTask={selectedTask}
                 firstName={firstName}
                 setFirstName={setFirstName}

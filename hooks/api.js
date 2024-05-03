@@ -29,3 +29,11 @@ export function updateUserType(userId, userType) {
 export function createTask(data, header) {
     return axios.post(`${baseUrl}/task`, data, header);
 }
+
+export function getTasksForUser(userId, accessToken) {
+    return axios.get(`${baseUrl}/task/user/${userId}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}

@@ -6,10 +6,12 @@ import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import LocationPicker from './LocationPicker';
 import { createTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
+import { useToast } from 'react-native-toast-notifications';
 
-export default function FormFields({ selectedService, currentStep, setCurrentStep, taskName, setTaskName, onBack, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, startDateTime, endDateTime }) {
+export default function FormFields({ selectedService, currentStep, setCurrentStep, taskName, setTaskName, onBack, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, startDateTime, endDateTime, onClose }) {
 
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
+    const toast = useToast();
 
     useEffect(() => {
         if (startDateTime && endDateTime) {
@@ -84,8 +86,15 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
             const response = await createTask(taskData, header);
 
             console.log("Task created successfully:", response.data);
+
+            toast.show('Task created successfully', { type: 'success' });
+
+            onClose();
+
         } catch (error) {
             console.error("Error creating task:", error);
+
+            toast.show('Unsuccessfull task creation', { type: 'error' });
         }
     };
 

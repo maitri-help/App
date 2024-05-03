@@ -61,6 +61,7 @@ export default function PlusModal({ visible, onClose, selectedService, setSelect
           setSelectedLocation={setSelectedLocation}
           startDateTime={startDate}
           endDateTime={endDate}
+          onClose={onClose}
         />
       )}
       {currentStep === 4 && (
