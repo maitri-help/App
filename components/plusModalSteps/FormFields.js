@@ -63,13 +63,11 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
                 return;
             }
 
-            const locationString = `${selectedLocation.latitude},${selectedLocation.longitude}`;
-
             const taskData = {
                 title: taskName,
                 description: description,
                 circles: selectedCircle,
-                location: locationString,
+                location: selectedLocation,
                 startDateTime: startDateTime,
                 endDateTime: endDateTime,
                 assigneeId: null
