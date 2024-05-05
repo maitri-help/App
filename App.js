@@ -30,6 +30,8 @@ import { checkAuthentication, getOnboardingCompleted } from './authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import HomeSupporterScreen from './screens/HomeSupporterScreen';
 import OpenIcon from './assets/icons/open-icon.svg';
+import MyTasksSupporterScreen from './screens/MyTasksSupporterScreen';
+import OpenTasksSupporterScreen from './screens/OpenTasksSupporterScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -73,7 +75,7 @@ function SuppNavigator({ setIsLoggedIn }) {
         tabBarIcon: ({ color }) => {
           if (route.name === 'Home') {
             return <HomeIcon color={color} width={19} height={19} />;
-          } else if (route.name === 'Assignments') {
+          } else if (route.name === 'MyTasks') {
             return <AssignmentsCheckIcon color={color} width={19} height={19} />;
           } else if (route.name === 'OpenTasks') {
             return <OpenIcon color={color} width={21} height={21} />;
@@ -91,8 +93,8 @@ function SuppNavigator({ setIsLoggedIn }) {
       })}
     >
       <Tab.Screen name="Home" component={HomeSupporterScreen} />
-      <Tab.Screen name="Assignments" component={HomeSupporterScreen} />
-      <Tab.Screen name="OpenTasks" component={HomeSupporterScreen} />
+      <Tab.Screen name="MyTasks" component={MyTasksSupporterScreen} />
+      <Tab.Screen name="OpenTasks" component={OpenTasksSupporterScreen} />
       <Tab.Screen name="Profile" component={HomeSupporterScreen} />
     </Tab.Navigator>
   );

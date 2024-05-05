@@ -5,6 +5,7 @@ import Task from '../components/Task';
 import { getAccessToken, getUserData } from '../authStorage';
 import initalBackground from '../assets/img/welcome-bg.png';
 import CloseIcon from '../assets/icons/close-icon.svg';
+import { Platform } from 'react-native';
 
 
 export default function HomeSupporterScreen({ navigation }) {
@@ -12,6 +13,8 @@ export default function HomeSupporterScreen({ navigation }) {
     const [firstName, setFirstName] = useState('');
     const [greetingText, setGreetingText] = useState('');
     const [isViewActive, setIsViewActive] = useState(true);
+    const selectedColor = '#1616';
+    const pressedItem = "🦄";
 
 
     useEffect(() => {
@@ -47,13 +50,17 @@ export default function HomeSupporterScreen({ navigation }) {
         setIsViewActive(false);
     };
 
-    const OpenTasks = [];
-
-    const unassignedTasks = [
-        { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
+    const OpenTasks = [
+        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', emoji: '🤖' },
+        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', emoji: '🩺' },
+        { id: 3, title: 'Buy groceries', assignee: ['Ross Geller', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', emoji: '💞' },
+        { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
+        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', emoji: '😊' },
     ];
 
-    const MyTasks = [];
+    const MyTasks = [
+        { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
+    ];
 
     const renderTasks = (tasks) => {
         if (tasks.length === 0) {
@@ -108,10 +115,21 @@ export default function HomeSupporterScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={[styles.topBar, { gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }]}>
-                <Text style={stylesSuppHome.greetingsText}>Hey {firstName}!</Text>
-                <Text style={stylesSuppHome.thanksText}>Thanks for being here for <Text style={stylesSuppHome.nameText}>[LEAD full name]!</Text></Text>
+            
+            <View style={[styles.topBar, {gap: 0,flexDirection: 'row',borderBottomWidth: 0}]}>
+                
+                <View style={[
+                        stylesSuppHome.selectedEmojiItem, { borderColor: selectedColor }
+                    ]}>
+                    <Text style={stylesSuppHome.selectedEmojiText}>{pressedItem}</Text>
+                </View>
+                <View style={{ gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }}>
+                    <Text style={stylesSuppHome.greetingsText}>Hey {firstName}</Text>
+                    <Text style={stylesSuppHome.thanksText}>Thanks for being here for <Text style={stylesSuppHome.nameText}>[LEAD full name]!</Text></Text>
+                </View>
             </View>
+            
+            
 
             {isViewActive && (
                 <View style={[styles.contentContainer, { paddingTop: 5, paddingBottom: 15, width: '100%' }]}>
@@ -207,7 +225,7 @@ const stylesSuppHome = StyleSheet.create({
     },
     tabsContainer: {
         flexDirection: 'row',
-        justifyContent: 'left',
+        justifyContent: 'center',
         gap: 15,
         marginVertical: 10,
     },
@@ -302,5 +320,19 @@ const stylesSuppHome = StyleSheet.create({
         width: 120,
         height: 120,
         resizeMode: 'contain',
+    },
+    selectedEmojiItem: {
+      width: 60,
+      height: 60,
+      borderRadius: 100,
+      borderWidth: 2,
+      borderColor: '#000',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    selectedEmojiText: {
+      fontSize: (Platform.OS === 'android') ? 30 : 35,
+      textAlign: 'center',
+      lineHeight: (Platform.OS === 'android') ? 37 : 42,
     },
 });
