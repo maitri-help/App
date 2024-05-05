@@ -7,7 +7,7 @@ import initalBackground from '../assets/img/welcome-bg.png';
 import CloseIcon from '../assets/icons/close-icon.svg';
 
 
-export default function HomeSupporterScreen({ navigation }){
+export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
     const [firstName, setFirstName] = useState('');
     const [greetingText, setGreetingText] = useState('');
@@ -53,7 +53,7 @@ export default function HomeSupporterScreen({ navigation }){
         { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
     ];
 
-    const MyTasks = [ ];
+    const MyTasks = [];
 
     const renderTasks = (tasks) => {
         if (tasks.length === 0) {
@@ -84,7 +84,7 @@ export default function HomeSupporterScreen({ navigation }){
                                         Your task list is currently empty.
                                     </Text>
                                     <Text style={stylesSuppHome.tasksDescription}>
-                                        Check the open tasks to see where you can lend a hand 
+                                        Check the open tasks to see where you can lend a hand
                                     </Text>
                                 </View>
                             </ScrollView>
@@ -106,35 +106,34 @@ export default function HomeSupporterScreen({ navigation }){
         );
     };
 
-    return(
+    return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={[styles.topBar, {gap: 0,flexDirection: 'column',alignItems: 'baseline',borderBottomWidth: 0}]}>
+            <View style={[styles.topBar, { gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }]}>
                 <Text style={stylesSuppHome.greetingsText}>Hey {firstName}!</Text>
-                <Text style={stylesSuppHome.textStyle}>Thanks for being here for [LEAD full name]!</Text>
+                <Text style={stylesSuppHome.thanksText}>Thanks for being here for <Text style={stylesSuppHome.nameText}>[LEAD full name]!</Text></Text>
             </View>
-            
+
             {isViewActive && (
-                <View style={[styles.contentContainer,{paddingBottom: 10, width: '100%'}]}>
-                    <ImageBackground 
-                        source={initalBackground} 
+                <View style={[styles.contentContainer, { paddingTop: 5, paddingBottom: 15, width: '100%' }]}>
+                    <ImageBackground
+                        source={initalBackground}
                         style={stylesSuppHome.roundedRectangleContainer}
                     >
                         <TouchableOpacity onPress={handleClose} style={stylesSuppHome.closeIcon}>
-                            <CloseIcon width={15} height={15} color={'#000'}/>
+                            <CloseIcon width={15} height={15} color={'#000'} />
                         </TouchableOpacity>
-                        <View style={[styles.contentContainer, {alignItems: 'left',flexDirection: 'column', width: '49%'}]}>
-                            <Text style={[stylesSuppHome.textStyle, {color: 'white', fontFamily: 'poppins-bold'}]}>Welcome to your home page</Text>
-                            <Text style={[stylesSuppHome.textStyle, {paddingTop: 10, color: 'white'}]}>Tasks will show up below</Text>
-                            
+                        <View style={{ alignItems: 'left', flexDirection: 'column', flex: 1, paddingRight: 10, }}>
+                            <Text style={stylesSuppHome.welcomeText}>Welcome to your home page</Text>
+                            <Text style={stylesSuppHome.infoText}>Tasks will show up below</Text>
                         </View>
-                        <Image 
-                                source={require('../assets/img/mimi-flower-illustration.png')} 
-                                style={stylesSuppHome.rightImageStyle} 
+                        <Image
+                            source={require('../assets/img/mimi-flower-illustration.png')}
+                            style={stylesSuppHome.rightImageStyle}
                         />
-                    </ImageBackground> 
+                    </ImageBackground>
                 </View>
             )}
-            
+
             <View style={[stylesSuppHome.tabsContainer, styles.contentContainer]}>
                 <TouchableOpacity onPress={() => handleTabPress('Open')} style={[stylesSuppHome.tab, activeTab === 'Open' && stylesSuppHome.activeTab]}>
                     <Text style={[stylesSuppHome.tabText, activeTab === 'Open' && stylesSuppHome.activeTabText]}>Open tasks</Text>
@@ -147,7 +146,7 @@ export default function HomeSupporterScreen({ navigation }){
                 {activeTab === 'Open' ? renderTasks(OpenTasks) : activeTab === 'My' ? renderTasks(MyTasks) : null}
             </View>
         </SafeAreaView>
-        
+
     );
 }
 
@@ -155,29 +154,50 @@ const stylesSuppHome = StyleSheet.create({
     greetingsText: {
         fontSize: 18,
         fontFamily: 'poppins-medium',
+        lineHeight: 22,
+        marginBottom: 5,
     },
     roundedRectangleContainer: {
-        borderRadius: 10, 
+        borderRadius: 15,
         overflow: 'hidden',
         flexDirection: 'row',
-        paddingTop: 20,
+        paddingTop: 30,
+        paddingHorizontal: 20,
         paddingBottom: 10,
         maxWidth: "100%",
     },
-    textStyle: {
+    thanksText: {
         fontFamily: 'poppins-regular',
-        fontSize: 13,
+        fontSize: 12,
+        lineHeight: 16,
+        color: '#737373',
+    },
+    nameText: {
+        fontFamily: 'poppins-bold',
+    },
+    welcomeText: {
+        fontFamily: 'poppins-bold',
+        fontSize: 14,
+        lineHeight: 18,
+        color: '#fff',
+        marginBottom: 10,
+    },
+    infoText: {
+        fontFamily: 'poppins-regular',
+        fontSize: 14,
+        lineHeight: 18,
+        color: '#fff',
     },
     rightImageStyle: {
         marginLeft: 20,
-        width: 120, 
-        height: 120, 
-        resizeMode: 'contain', 
+        width: 120,
+        height: 120,
+        resizeMode: 'contain',
     },
     closeIcon: {
         position: 'absolute',
-        top: 10,
-        left: 310,
+        top: 15,
+        right: 20,
     },
     boxesScroll: {
         paddingVertical: 20,
