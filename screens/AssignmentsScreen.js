@@ -173,6 +173,8 @@ export default function AssignmentsScreen({ navigation }) {
         fetchTasks();
     }, []);
 
+    console.log(tasks);
+
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
@@ -226,7 +228,6 @@ export default function AssignmentsScreen({ navigation }) {
 
                     <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
 
-                        {console.log("Tasks:", tasks)}
                         {tasks.map((task, index) => (
                             <TaskItem
                                 key={index}
@@ -235,6 +236,7 @@ export default function AssignmentsScreen({ navigation }) {
                                 onTaskItemClick={handleTaskItemClick}
                             />
                         ))}
+
                     </View>
 
                 </ScrollView>
@@ -281,6 +283,7 @@ export default function AssignmentsScreen({ navigation }) {
                 handleDayPress={handleDayPress}
                 getDaysBetween={getDaysBetween}
                 handleDateTimeSelect={handleDateTimeSelect}
+                onTaskCreated={() => fetchTasks()}
             />
 
             <TaskModal

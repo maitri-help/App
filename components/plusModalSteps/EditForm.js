@@ -7,7 +7,7 @@ import EditIcon from '../../assets/icons/edit-icon.svg';
 import CheckIcon from '../../assets/icons/check-icon.svg';
 import LocationPicker from './LocationPicker';
 
-export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, dateTimeData, onBack, setReviewFormCurrentStep, firstName, lastName, color, emoji, onClose }) {
+export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, firstName, lastName, color, emoji, onClose }) {
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
     const [isEditable, setIsEditable] = useState(false);
 
@@ -41,22 +41,13 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
     };
 
     useEffect(() => {
-        if (dateTimeData) {
-            setDateTimeText(formatDateTime(dateTimeData));
+        if (startDateTime && endDateTime) {
+            const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            const start = new Date(startDateTime).toLocaleString('en-US', options);
+            const end = new Date(endDateTime).toLocaleString('en-US', options);
+            setDateTimeText(`${start} - ${end}`);
         }
-    }, [dateTimeData]);
-
-    const formatDateTime = (dateTimeData) => {
-        const { startDateTime, endDateTime } = dateTimeData;
-        const formattedStartDateTime = formatDate(startDateTime);
-        const formattedEndDateTime = formatDate(endDateTime);
-        return `${formattedStartDateTime} - ${formattedEndDateTime}`;
-    };
-
-    const formatDate = (date) => {
-        const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-        return new Date(date).toLocaleDateString('en-US', options);
-    };
+    }, [startDateTime, endDateTime]);
 
     const handleSubmit = () => {
         console.log("Task Name:", taskName);
@@ -109,7 +100,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
             <View style={[stylesReview.group, stylesReview.groupFirst]}>
                 <View style={[styles.contentContainer, stylesReview.groupInner]}>
                     <Text style={stylesReview.groupTitle}>Circles</Text>
-                    <View style={stylesReview.circles}>
+                    {/* <View style={stylesReview.circles}>
                         {circles.map((option) => (
                             <TouchableOpacity
                                 key={option}
@@ -127,7 +118,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                                 ]}>{option}</Text>
                             </TouchableOpacity>
                         ))}
-                    </View>
+                    </View> */}
                 </View>
             </View>
             <View style={stylesReview.group}>

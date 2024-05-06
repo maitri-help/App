@@ -8,7 +8,7 @@ import { createTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 
-export default function FormFields({ selectedService, currentStep, setCurrentStep, taskName, setTaskName, onBack, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, startDateTime, endDateTime, onClose }) {
+export default function FormFields({ selectedService, currentStep, setCurrentStep, taskName, setTaskName, onBack, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, startDateTime, endDateTime, onClose, onTaskCreated }) {
 
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
     const toast = useToast();
@@ -72,7 +72,6 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
                 location: selectedLocation,
                 startDateTime: startDateTime,
                 endDateTime: endDateTime,
-                assigneeId: null
             };
 
             console.log("Task data:", taskData);
@@ -90,6 +89,8 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
             toast.show('Task created successfully', { type: 'success' });
 
             onClose();
+
+            onTaskCreated();
 
         } catch (error) {
             console.error("Error creating task:", error);

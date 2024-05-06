@@ -1,4 +1,4 @@
-import React, { cloneElement, useState } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -9,6 +9,11 @@ import Modal from '../../components/Modal';
 import styles from '../../Styles';
 
 export default function LogoutModal({ visible, onClose, logout }) {
+
+  const handleLogout = () => {
+    logout();
+    onClose();
+  };
 
   return (
     <Modal
@@ -24,7 +29,7 @@ export default function LogoutModal({ visible, onClose, logout }) {
     >
       <View style={[styles.contentContainer, stylesProfile.container]}>
         <View style={stylesProfile.buttons}>
-          <TouchableOpacity style={[stylesProfile.button, stylesProfile.logoutButton]} onPress={logout}>
+          <TouchableOpacity style={[stylesProfile.button, stylesProfile.logoutButton]} onPress={handleLogout}>
             <Text style={[stylesProfile.buttonText, stylesProfile.logoutButtonText]}>Log Out</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[stylesProfile.button, stylesProfile.cancelButton]} onPress={onClose}>

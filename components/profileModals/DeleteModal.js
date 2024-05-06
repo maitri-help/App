@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -9,6 +9,11 @@ import Modal from '../../components/Modal';
 import styles from '../../Styles';
 
 export default function DeleteModal({ visible, onClose, deleteAccount }) {
+
+  const handleDelete = () => {
+    deleteAccount();
+    onClose();
+  };
 
   return (
     <Modal
@@ -28,7 +33,7 @@ export default function DeleteModal({ visible, onClose, deleteAccount }) {
           <Text style={stylesProfile.noticeText}>This action can't be undone.</Text>
         </View>
         <View style={stylesProfile.buttons}>
-          <TouchableOpacity style={[stylesProfile.button, stylesProfile.logoutButton]} onPress={deleteAccount}>
+          <TouchableOpacity style={[stylesProfile.button, stylesProfile.logoutButton]} onPress={handleDelete}>
             <Text style={[stylesProfile.buttonText, stylesProfile.logoutButtonText]}>Delete Account</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[stylesProfile.button, stylesProfile.cancelButton]} onPress={onClose}>

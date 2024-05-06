@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import PhoneIcon from '../assets/icons/phone-icon.svg';
@@ -58,45 +58,47 @@ export default function LoginScreen({ navigation }) {
                 }}
             >
                 {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched, isValid }) => (
-                    <View style={[styles.container, styles.authContainer]}>
-                        <View style={styles.topTextsContainer}>
-                            <Text style={[styles.title, stylesLogin.title]}>Welcome Back!</Text>
-                            <Text style={[styles.text, stylesLogin.text]}>Login to your Maitri account</Text>
-                        </View>
-                        <View style={[styles.formContainer, stylesLogin.formContainer]}>
-                            <View style={styles.inputWrapper}>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="+1 Phone Number"
-                                    value={values.phoneNumber}
-                                    onChangeText={(text) => {
-                                        const newValue = text.replace(/\s/g, '');
-                                        setFieldValue('phoneNumber', newValue);
-                                    }}
-                                    keyboardType="phone-pad"
-                                    onBlur={() => setFieldTouched('phoneNumber')}
-                                />
-                                {touched.phoneNumber && errors.phoneNumber ?
-                                    <ExclamationIcon style={styles.inputErrorIcon} width={20} height={20} />
-                                    :
-                                    <PhoneIcon style={styles.inputIcon} width={20} height={20} />
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                        <View style={[styles.container, styles.authContainer]}>
+                            <View style={styles.topTextsContainer}>
+                                <Text style={[styles.title, stylesLogin.title]}>Welcome Back!</Text>
+                                <Text style={[styles.text, stylesLogin.text]}>Login to your Maitri account</Text>
+                            </View>
+                            <View style={[styles.formContainer, stylesLogin.formContainer]}>
+                                <View style={styles.inputWrapper}>
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="+1 Phone Number"
+                                        value={values.phoneNumber}
+                                        onChangeText={(text) => {
+                                            const newValue = text.replace(/\s/g, '');
+                                            setFieldValue('phoneNumber', newValue);
+                                        }}
+                                        keyboardType="phone-pad"
+                                        onBlur={() => setFieldTouched('phoneNumber')}
+                                    />
+                                    {touched.phoneNumber && errors.phoneNumber ?
+                                        <ExclamationIcon style={styles.inputErrorIcon} width={20} height={20} />
+                                        :
+                                        <PhoneIcon style={styles.inputIcon} width={20} height={20} />
+                                    }
+                                </View>
+                                {touched.phoneNumber && errors.phoneNumber &&
+                                    <Text style={styles.errorText}>{errors.phoneNumber}</Text>
                                 }
                             </View>
-                            {touched.phoneNumber && errors.phoneNumber &&
-                                <Text style={styles.errorText}>{errors.phoneNumber}</Text>
-                            }
+                            <View style={styles.submitButtonContainer}>
+                                <TouchableOpacity onPress={handleSubmit} style={[styles.submitButton, !isFormValid && { opacity: 0.5 }]} disabled={!isFormValid}>
+                                    <ArrowIcon width={18} height={18} color={'#fff'} />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={stylesLogin.bottomContainer}>
+                                <TouchableOpacity onPress={() => navigation.navigate('Register')} style={stylesLogin.registerTextLink}>
+                                    <Text style={stylesLogin.newHereText}>New Here? <Text style={stylesLogin.registerText}>Sign Up</Text></Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View style={styles.submitButtonContainer}>
-                            <TouchableOpacity onPress={handleSubmit} style={[styles.submitButton, !isFormValid && { opacity: 0.5 }]} disabled={!isFormValid}>
-                                <ArrowIcon width={18} height={18} color={'#fff'} />
-                            </TouchableOpacity>
-                        </View>
-                        <View style={stylesLogin.bottomContainer}>
-                            <TouchableOpacity onPress={() => navigation.navigate('Register')} style={stylesLogin.registerTextLink}>
-                                <Text style={stylesLogin.newHereText}>New Here? <Text style={stylesLogin.registerText}>Sign Up</Text></Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    </TouchableWithoutFeedback>
                 )}
             </Formik>
         </SafeAreaView>

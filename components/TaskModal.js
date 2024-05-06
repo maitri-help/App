@@ -11,16 +11,19 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
   const circles = ['Personal', 'First', 'Second', 'Third'];
   const [reviewFormCurrentStep, setReviewFormCurrentStep] = useState(null);
 
+  const startDateTime = selectedTask.startDateTime;
+  const endDateTime = selectedTask.endDateTime;
+
   useEffect(() => {
     if (selectedTask) {
       setTaskName(selectedTask.title);
       setDescription(selectedTask.description);
-      setSelectedCircle(selectedTask.circles);
+      // setSelectedCircle(selectedTask.circles);
       setSelectedLocation(selectedTask.location);
 
       const dateTimeObj = {
-        startDateTime: selectedTask.startDateTime,
-        endDateTime: selectedTask.endDateTime
+        startDateTime,
+        endDateTime
       };
       handleDateTimeSelect(dateTimeObj);
       const startDateTime = new Date(selectedTask.startDateTime);
@@ -29,8 +32,8 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
       const startDate = startDateTime.toISOString().split('T')[0];
       const endDate = endDateTime.toISOString().split('T')[0];
 
-      const startTime = `${startDateTime.getHours()}:${startDateTime.getMinutes()}`;
-      const endTime = `${endDateTime.getHours()}:${endDateTime.getMinutes()}`;
+      const startTime = startDateTime.toISOString().split('T')[1].split('.')[0];
+      const endTime = endDateTime.toISOString().split('T')[1].split('.')[0];
 
       console.log('Start Time:', startTime);
       console.log('End Time:', endTime);
@@ -85,7 +88,8 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
           circles={circles}
           selectedCircle={selectedCircle}
           setSelectedCircle={setSelectedCircle}
-          dateTimeData={dateTimeData}
+          startDateTime={startDateTime}
+          endDateTime={endDateTime}
           selectedLocation={selectedLocation}
           setSelectedLocation={setSelectedLocation}
           reviewFormCurrentStep={reviewFormCurrentStep}
