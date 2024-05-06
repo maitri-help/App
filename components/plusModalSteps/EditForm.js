@@ -40,14 +40,14 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
         }
     };
 
-    useEffect(() => {
-        if (startDateTime && endDateTime) {
-            const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-            const start = new Date(startDateTime).toLocaleString('en-US', options);
-            const end = new Date(endDateTime).toLocaleString('en-US', options);
-            setDateTimeText(`${start} - ${end}`);
-        }
-    }, [startDateTime, endDateTime]);
+    // useEffect(() => {
+    //     if (startDateTime && endDateTime) {
+    //         const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+    //         const start = new Date(startDateTime).toLocaleString('en-US', options);
+    //         const end = new Date(endDateTime).toLocaleString('en-US', options);
+    //         setDateTimeText(`${start} - ${end}`);
+    //     }
+    // }, [startDateTime, endDateTime]);
 
     const handleSubmit = () => {
         console.log("Task Name:", taskName);

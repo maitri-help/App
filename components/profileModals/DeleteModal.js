@@ -79,7 +79,7 @@ const stylesProfile = StyleSheet.create({
   notice: {
     paddingVertical: 30,
     gap: 20,
-    maxWidth: 250,
+    maxWidth: 260,
     alignSelf: 'center'
   },
   noticeText: {
