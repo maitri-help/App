@@ -173,8 +173,6 @@ export default function AssignmentsScreen({ navigation }) {
         fetchTasks();
     }, []);
 
-    console.log(tasks);
-
     return (
         <>
             <SafeAreaView style={styles.safeArea}>

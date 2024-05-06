@@ -11,9 +11,6 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
   const circles = ['Personal', 'First', 'Second', 'Third'];
   const [reviewFormCurrentStep, setReviewFormCurrentStep] = useState(null);
 
-  const startDateTime = selectedTask.startDateTime;
-  const endDateTime = selectedTask.endDateTime;
-
   useEffect(() => {
     if (selectedTask) {
       setTaskName(selectedTask.title);
@@ -22,8 +19,8 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
       setSelectedLocation(selectedTask.location);
 
       const dateTimeObj = {
-        startDateTime,
-        endDateTime
+        startDateTime: selectedTask.startDateTime,
+        endDateTime: selectedTask.endDateTime
       };
       handleDateTimeSelect(dateTimeObj);
       const startDateTime = new Date(selectedTask.startDateTime);
@@ -88,8 +85,7 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
           circles={circles}
           selectedCircle={selectedCircle}
           setSelectedCircle={setSelectedCircle}
-          startDateTime={startDateTime}
-          endDateTime={endDateTime}
+
           selectedLocation={selectedLocation}
           setSelectedLocation={setSelectedLocation}
           reviewFormCurrentStep={reviewFormCurrentStep}
