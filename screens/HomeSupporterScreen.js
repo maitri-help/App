@@ -217,9 +217,6 @@ const stylesSuppHome = StyleSheet.create({
         top: 15,
         right: 20,
     },
-    boxesScroll: {
-        paddingVertical: 20,
-    },
     tabsContentContainer: {
         flex: 1,
     },
@@ -276,45 +273,12 @@ const stylesSuppHome = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
     },
-    tasksWelcome: {
-        textAlign: 'center',
-        fontSize: 20,
-        fontFamily: 'poppins-regular',
-        marginBottom: 15,
-    },
-    tasksImgWrapper: {
-        alignItems: 'center',
-        marginBottom: 15,
-    },
-    tasksImg: {
-        width: 150,
-        height: 110,
-        resizeMode: 'contain',
-    },
     tasksDescription: {
         textAlign: 'center',
         fontSize: 16,
         fontFamily: 'poppins-regular',
         lineHeight: 20,
         marginBottom: 10,
-    },
-    tasksArrowImgWrapper: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    tasksArrowImg: {
-        width: 35,
-        height: 90,
-        resizeMode: 'contain',
-        marginLeft: -120,
-    },
-    unassignedContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        gap: 25,
-    },
-    illustrationWrapper: {
-        alignItems: 'center',
     },
     illustration: {
         width: 120,

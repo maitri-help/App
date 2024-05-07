@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Ima
 import styles from '../Styles';
 import Task from '../components/Task';
 import { getAccessToken, getUserData } from '../authStorage';
-import initalBackground from '../assets/img/welcome-bg.png';
-import CloseIcon from '../assets/icons/close-icon.svg';
 import { Platform } from 'react-native';
 
 
@@ -90,36 +88,11 @@ const stylesSuppMT = StyleSheet.create({
         lineHeight: 22,
         marginBottom: 5,
     },
-    roundedRectangleContainer: {
-        borderRadius: 15,
-        overflow: 'hidden',
-        flexDirection: 'row',
-        paddingTop: 30,
-        paddingHorizontal: 20,
-        paddingBottom: 10,
-        maxWidth: "100%",
-    },
     thanksText: {
         fontFamily: 'poppins-regular',
         fontSize: 12,
         lineHeight: 16,
         color: '#737373',
-    },
-    nameText: {
-        fontFamily: 'poppins-bold',
-    },
-    welcomeText: {
-        fontFamily: 'poppins-bold',
-        fontSize: 14,
-        lineHeight: 18,
-        color: '#fff',
-        marginBottom: 10,
-    },
-    infoText: {
-        fontFamily: 'poppins-regular',
-        fontSize: 14,
-        lineHeight: 18,
-        color: '#fff',
     },
     rightImageStyle: {
         alignSelf: 'center',
@@ -127,22 +100,8 @@ const stylesSuppMT = StyleSheet.create({
         height: 150,
         resizeMode: 'contain',
     },
-    closeIcon: {
-        position: 'absolute',
-        top: 15,
-        right: 20,
-    },
-    boxesScroll: {
-        paddingVertical: 20,
-    },
     tabsContentContainer: {
         flex: 1,
-    },
-    tabsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 15,
-        marginVertical: 10,
     },
     tab: {
         paddingHorizontal: 10,
@@ -151,18 +110,6 @@ const stylesSuppMT = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 20,
         alignItems: 'center',
-    },
-    activeTab: {
-        backgroundColor: '#1C4837',
-    },
-    tabText: {
-        color: '#000',
-        fontFamily: 'poppins-regular',
-        fontSize: 13,
-        lineHeight: 17,
-    },
-    activeTabText: {
-        color: '#fff',
     },
     tabsContentContainer: {
         flex: 1,
@@ -191,21 +138,6 @@ const stylesSuppMT = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
     },
-    tasksWelcome: {
-        textAlign: 'center',
-        fontSize: 20,
-        fontFamily: 'poppins-regular',
-        marginBottom: 15,
-    },
-    tasksImgWrapper: {
-        alignItems: 'center',
-        marginBottom: 15,
-    },
-    tasksImg: {
-        width: 150,
-        height: 110,
-        resizeMode: 'contain',
-    },
     tasksDescription: {
         textAlign: 'center',
         fontSize: 16,
@@ -213,41 +145,9 @@ const stylesSuppMT = StyleSheet.create({
         lineHeight: 20,
         marginBottom: 10,
     },
-    tasksArrowImgWrapper: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    tasksArrowImg: {
-        width: 35,
-        height: 90,
-        resizeMode: 'contain',
-        marginLeft: -120,
-    },
-    unassignedContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        gap: 25,
-    },
-    illustrationWrapper: {
-        alignItems: 'center',
-    },
     illustration: {
         width: 120,
         height: 120,
         resizeMode: 'contain',
-    },
-    selectedEmojiItem: {
-      width: 60,
-      height: 60,
-      borderRadius: 100,
-      borderWidth: 2,
-      borderColor: '#000',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    selectedEmojiText: {
-      fontSize: (Platform.OS === 'android') ? 30 : 35,
-      textAlign: 'center',
-      lineHeight: (Platform.OS === 'android') ? 37 : 42,
     },
 });

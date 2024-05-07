@@ -32,6 +32,7 @@ import HomeSupporterScreen from './screens/HomeSupporterScreen';
 import OpenIcon from './assets/icons/open-icon.svg';
 import MyTasksSupporterScreen from './screens/MyTasksSupporterScreen';
 import OpenTasksSupporterScreen from './screens/OpenTasksSupporterScreen';
+import ProfileSupporterScreen from './screens/ProfileSupporterScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -95,7 +96,7 @@ function SuppNavigator({ setIsLoggedIn }) {
       <Tab.Screen name="Home" component={HomeSupporterScreen} />
       <Tab.Screen name="MyTasks" component={MyTasksSupporterScreen} />
       <Tab.Screen name="OpenTasks" component={OpenTasksSupporterScreen} />
-      <Tab.Screen name="Profile" component={HomeSupporterScreen} />
+      <Tab.Screen name="Profile" component={ProfileSupporterScreen} />
     </Tab.Navigator>
   );
 }
