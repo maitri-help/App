@@ -59,8 +59,8 @@ export default function PlusModal({ visible, onClose, selectedService, setSelect
           setDescription={setDescription}
           selectedLocation={selectedLocation}
           setSelectedLocation={setSelectedLocation}
-          startDateTime={startDate}
-          endDateTime={endDate}
+          startDateTime={startTime}
+          endDateTime={endTime}
           onClose={onClose}
           onTaskCreated={onTaskCreated}
         />

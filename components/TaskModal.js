@@ -10,11 +10,12 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
   const [currentStep, setCurrentStep] = useState(5);
   const circles = ['Personal', 'First', 'Second', 'Third'];
   const [reviewFormCurrentStep, setReviewFormCurrentStep] = useState(null);
-  const [dateTimeText, setDateTimeText] = useState('Fill time and date');
 
   useEffect(() => {
     if (selectedTask) {
       const circleLevels = selectedTask.circles.map(circle => circle.circleLevel);
+
+      console.log("Selected Task:", selectedTask);
 
       setTaskName(selectedTask.title);
       setDescription(selectedTask.description);
@@ -47,7 +48,6 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
           setCurrentStep={setCurrentStep}
           onDateTimeSelect={(dateTimeData) => {
             handleDateTimeSelect(dateTimeData);
-            setDateTimeText(`${dateTimeData.startDateTime} - ${dateTimeData.endDateTime}`);
           }}
           startDate={startDate}
           endDate={endDate}
@@ -58,8 +58,6 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
           handleDayPress={handleDayPress}
           getDaysBetween={getDaysBetween}
           reviewFormCurrentStep={reviewFormCurrentStep}
-          dateTimeText={dateTimeText}
-          setDateTimeText={setDateTimeText}
         />
       )}
       {currentStep === 5 && (
@@ -74,8 +72,6 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
           circles={circles}
           selectedCircle={selectedCircle}
           setSelectedCircle={setSelectedCircle}
-          dateTimeText={dateTimeText}
-          setDateTimeText={setDateTimeText}
           startDateTime={startTime}
           endDateTime={endTime}
           selectedLocation={selectedLocation}

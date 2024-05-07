@@ -7,7 +7,20 @@ import EditIcon from '../../assets/icons/edit-icon.svg';
 import CheckIcon from '../../assets/icons/check-icon.svg';
 import LocationPicker from './LocationPicker';
 
-export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, startDateTime, endDateTime, dateTimeText, setDateTimeText, firstName, lastName, color, emoji, onClose, isEditable, setIsEditable }) {
+export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, startDateTime, endDateTime, firstName, lastName, color, emoji, onClose, isEditable, setIsEditable }) {
+
+    const [dateTimeText, setDateTimeText] = useState('Fill time and date');
+
+    useEffect(() => {
+        if (startDateTime && endDateTime) {
+            const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            const start = new Date(startDateTime).toLocaleString('en-US', options);
+            const end = new Date(endDateTime).toLocaleString('en-US', options);
+            setDateTimeText(`${start} - ${end}`);
+        }
+    }, [startDateTime, endDateTime]);
+
+    console.log(startDateTime, endDateTime);
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -37,15 +50,6 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
             }
         }
     };
-
-    useEffect(() => {
-        if (startDateTime && endDateTime) {
-            const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-            const start = new Date(startDateTime).toLocaleString('en-US', options);
-            const end = new Date(endDateTime).toLocaleString('en-US', options);
-            setDateTimeText(`${start} - ${end}`);
-        }
-    }, [startDateTime, endDateTime]);
 
     const handleSubmit = () => {
         console.log("Task Name:", taskName);

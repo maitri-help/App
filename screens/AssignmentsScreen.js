@@ -148,8 +148,12 @@ export default function AssignmentsScreen({ navigation }) {
     };
 
     const handleDateSelection = (date) => {
-        setSelectedDate(date);
-        setWeekSelectedDate(date);
+        const formattedDate = new Date(date);
+        const year = formattedDate.getFullYear();
+        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(formattedDate.getDate()).padStart(2, '0');
+        setSelectedDate(`${year}-${month}-${day}`);
+        setWeekSelectedDate(`${year}-${month}-${day}`);
     };
 
     const handleTabChange = (tab) => {
@@ -189,6 +193,11 @@ export default function AssignmentsScreen({ navigation }) {
     useEffect(() => {
         fetchTasks();
     }, []);
+
+    const filteredTasks = tasks.filter(task => {
+        const taskDate = new Date(task.startDateTime).toISOString().split('T')[0];
+        return taskDate === selectedDate;
+    });
 
     return (
         <>
@@ -243,7 +252,7 @@ export default function AssignmentsScreen({ navigation }) {
 
                     <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
 
-                        {tasks.map((task, index) => (
+                        {filteredTasks.map((task, index) => (
                             <TaskItem
                                 key={index}
                                 task={task}

@@ -6,7 +6,7 @@ import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 
-export default function DateTime({ currentStep, setCurrentStep, taskName, onBack, onDateTimeSelect, startDate: propStartDate, startTime: propStartTime, setStartDate, endDate: propEndDate, endTime: propEndTime, setEndDate, setStartTime, setEndTime, handleDayPress, getDaysBetween, reviewFormCurrentStep, setDateTimeText, dateTimeText }) {
+export default function DateTime({ currentStep, setCurrentStep, taskName, onBack, onDateTimeSelect, startDate: propStartDate, startTime: propStartTime, endDate: propEndDate, endTime: propEndTime, setStartTime, setEndTime, handleDayPress, getDaysBetween, reviewFormCurrentStep }) {
     const [startDate, setStartDateLocal] = useState(propStartDate !== null ? propStartDate : null);
     const [endDate, setEndDateLocal] = useState(propEndDate !== null ? propEndDate : null);
     const [startTime, setStartTimeLocal] = useState(propStartTime !== null ? propStartTime : null);
@@ -14,7 +14,6 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
     const [isStartTimePickerVisible, setStartTimePickerVisible] = useState(false);
     const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
     const [markedDates, setMarkedDates] = useState({});
-    const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
 
     useEffect(() => {
         if (propStartDate) {
@@ -49,12 +48,16 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
     };
 
     const handleStartTimeConfirm = (time) => {
-        setStartTime(time);
+        const currentDate = startDate ? new Date(startDate) : new Date();
+        const updatedDateTime = new Date(currentDate.setHours(time.getHours(), time.getMinutes()));
+        setStartTime(updatedDateTime.toISOString());
         setStartTimePickerVisible(false);
     };
 
     const handleEndTimeConfirm = (time) => {
-        setEndTime(time);
+        const currentDate = endDate ? new Date(endDate) : new Date();
+        const updatedDateTime = new Date(currentDate.setHours(time.getHours(), time.getMinutes()));
+        setEndTime(updatedDateTime.toISOString());
         setEndTimePickerVisible(false);
     };
 
@@ -85,30 +88,15 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
 
     const handleDateTimeSelect = () => {
         if (startDate && endDate && startTime && endTime) {
-            const formattedStartDateTime = new Date(startDate).toISOString().split('.')[0];
-            const formattedEndDateTime = new Date(endDate).toISOString().split('.')[0];
+            const formattedStartDateTime = new Date(startDate).toISOString();
+            const formattedEndDateTime = new Date(endDate).toISOString();
+
             onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
             reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1);
         } else {
             console.log('Please select both start and end date and time');
         }
     };
-
-    useEffect(() => {
-        if (startDate && endDate && startTime && endTime) {
-            const formattedStartDate = startDate.split('T')[0];
-            const formattedEndDate = endDate.split('T')[0];
-
-            console.log("Start Date:", formattedStartDate);
-            console.log("End Date:", formattedEndDate);
-            console.log("Start Time:", startTime);
-            console.log("End Time:", endTime);
-
-            const startDateTime = new Date(`${formattedStartDate}T${startTime}`).toLocaleString('en-US', { timeZone: 'local', ...options });
-            const endDateTime = new Date(`${formattedEndDate}T${endTime}`).toLocaleString('en-US', { timeZone: 'local', ...options });
-            setDateTimeText(`${startDateTime} - ${endDateTime}`);
-        }
-    }, [startDate, endDate, startTime, endTime]);
 
     return (
         <>
