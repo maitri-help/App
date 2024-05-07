@@ -52,40 +52,57 @@ export default function AssignmentsScreen({ navigation }) {
     const [color, setColor] = useState('');
     const [emoji, setEmoji] = useState('');
     const [selectedTask, setSelectedTask] = useState(null);
+    const [isEditable, setIsEditable] = useState(false);
 
     const handleTaskItemClick = (task) => {
         setSelectedTask(task);
     };
 
-    const handleDateTimeSelect = ({ startDateTime, endDateTime }) => {
-        setTaskModalStartDate(startDateTime);
-        setTaskModalEndDate(endDateTime);
+    const handleDateTimeSelectPlus = ({ startDateTime, endDateTime }) => {
         setPlusModalStartDate(startDateTime);
         setPlusModalEndDate(endDateTime);
     };
 
-    const handleDayPress = (day) => {
+    const handleDateTimeSelectTask = ({ startDateTime, endDateTime }) => {
+        setTaskModalStartDate(startDateTime);
+        setTaskModalEndDate(endDateTime);
+    };
+
+    const handleDayPressPlus = (day) => {
+        if (plusModalStartDate && plusModalEndDate) {
+            setPlusModalStartDate(day.dateString);
+            setPlusModalEndDate(null);
+        } else if (plusModalStartDate && !plusModalEndDate) {
+            const startDate = new Date(plusModalStartDate);
+            const endDate = new Date(day.dateString);
+
+            if (startDate <= endDate) {
+                setPlusModalEndDate(day.dateString);
+            } else {
+                setPlusModalStartDate(day.dateString);
+                setPlusModalEndDate(null);
+            }
+        } else {
+            setPlusModalStartDate(day.dateString);
+        }
+    };
+
+    const handleDayPressTask = (day) => {
         if (taskModalStartDate && taskModalEndDate) {
             setTaskModalStartDate(day.dateString);
             setTaskModalEndDate(null);
-            setPlusModalStartDate(day.dateString);
-            setPlusModalEndDate(null);
         } else if (taskModalStartDate && !taskModalEndDate) {
             const startDate = new Date(taskModalStartDate);
             const endDate = new Date(day.dateString);
 
             if (startDate <= endDate) {
                 setTaskModalEndDate(day.dateString);
-                setPlusModalEndDate(day.dateString);
             } else {
                 setTaskModalStartDate(day.dateString);
                 setTaskModalEndDate(null);
-                setPlusModalStartDate(day.dateString);
-                setPlusModalEndDate(null);
             }
         } else {
             setTaskModalStartDate(day.dateString);
-            setPlusModalStartDate(day.dateString);
         }
     };
 
@@ -278,9 +295,9 @@ export default function AssignmentsScreen({ navigation }) {
                 setStartTime={setPlusModalStartTime}
                 endTime={plusModalEndTime}
                 setEndTime={setPlusModalEndTime}
-                handleDayPress={handleDayPress}
+                handleDayPress={handleDayPressPlus}
                 getDaysBetween={getDaysBetween}
-                handleDateTimeSelect={handleDateTimeSelect}
+                handleDateTimeSelect={handleDateTimeSelectPlus}
                 onTaskCreated={() => fetchTasks()}
             />
 
@@ -303,9 +320,9 @@ export default function AssignmentsScreen({ navigation }) {
                 setStartTime={setTaskModalStartTime}
                 endTime={taskModalEndTime}
                 setEndTime={setTaskModalEndTime}
-                handleDayPress={handleDayPress}
+                handleDayPress={handleDayPressTask}
                 getDaysBetween={getDaysBetween}
-                handleDateTimeSelect={handleDateTimeSelect}
+                handleDateTimeSelect={handleDateTimeSelectTask}
                 selectedTask={selectedTask}
                 firstName={firstName}
                 setFirstName={setFirstName}
@@ -315,6 +332,8 @@ export default function AssignmentsScreen({ navigation }) {
                 setColor={setColor}
                 emoji={emoji}
                 setEmoji={setEmoji}
+                isEditable={isEditable}
+                setIsEditable={setIsEditable}
             />
         </>
     );

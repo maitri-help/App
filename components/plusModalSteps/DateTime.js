@@ -6,12 +6,15 @@ import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 
-export default function DateTime({ currentStep, setCurrentStep, taskName, setTaskName, onBack, onDateTimeSelect, startDate: propStartDate, setStartDate, endDate: propEndDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, reviewFormCurrentStep }) {
+export default function DateTime({ currentStep, setCurrentStep, taskName, onBack, onDateTimeSelect, startDate: propStartDate, startTime: propStartTime, setStartDate, endDate: propEndDate, endTime: propEndTime, setEndDate, setStartTime, setEndTime, handleDayPress, getDaysBetween, reviewFormCurrentStep, setDateTimeText, dateTimeText }) {
     const [startDate, setStartDateLocal] = useState(propStartDate !== null ? propStartDate : null);
     const [endDate, setEndDateLocal] = useState(propEndDate !== null ? propEndDate : null);
+    const [startTime, setStartTimeLocal] = useState(propStartTime !== null ? propStartTime : null);
+    const [endTime, setEndTimeLocal] = useState(propEndTime !== null ? propEndTime : null);
     const [isStartTimePickerVisible, setStartTimePickerVisible] = useState(false);
     const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
     const [markedDates, setMarkedDates] = useState({});
+    const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
 
     useEffect(() => {
         if (propStartDate) {
@@ -20,13 +23,22 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
         if (propEndDate) {
             setEndDateLocal(propEndDate);
         }
-    }, [propStartDate, propEndDate]);
+        if (propStartTime) {
+            setStartTimeLocal(propStartTime);
+        }
+        if (propEndTime) {
+            setEndTimeLocal(propEndTime);
+        }
+    }, [propStartDate, propEndDate, propStartTime, propEndTime]);
+
+    const formattedStartDate = startDate ? startDate.split('T')[0] : null;
+    const formattedEndDate = endDate ? endDate.split('T')[0] : null;
 
     useEffect(() => {
         setMarkedDates({
-            [startDate]: { startingDay: true, color: '#1C4837', textColor: '#fff', ...(startDate === endDate && { endingDay: true, }) },
-            [endDate]: { endingDay: true, color: '#1C4837', textColor: '#fff', ...(startDate === endDate && { startingDay: true, }) },
-            ...getDaysBetween(startDate, endDate)
+            [formattedStartDate]: { startingDay: true, color: '#1C4837', textColor: '#fff', ...(formattedStartDate === formattedEndDate && { endingDay: true, }) },
+            [formattedEndDate]: { endingDay: true, color: '#1C4837', textColor: '#fff', ...(formattedStartDate === formattedEndDate && { startingDay: true, }) },
+            ...getDaysBetween(formattedStartDate, formattedEndDate)
         });
     }, [startDate, endDate]);
 
@@ -73,21 +85,30 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, setTas
 
     const handleDateTimeSelect = () => {
         if (startDate && endDate && startTime && endTime) {
-            const startDateTime = new Date(startDate);
-            startDateTime.setHours(new Date(startTime).getHours(), new Date(startTime).getMinutes());
-            const endDateTime = new Date(endDate);
-            endDateTime.setHours(new Date(endTime).getHours(), new Date(endTime).getMinutes());
-
-            const formattedStartDateTime = startDateTime.toISOString();
-            const formattedEndDateTime = endDateTime.toISOString();
-
+            const formattedStartDateTime = new Date(startDate).toISOString().split('.')[0];
+            const formattedEndDateTime = new Date(endDate).toISOString().split('.')[0];
             onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
-
             reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1);
         } else {
             console.log('Please select both start and end date and time');
         }
     };
+
+    useEffect(() => {
+        if (startDate && endDate && startTime && endTime) {
+            const formattedStartDate = startDate.split('T')[0];
+            const formattedEndDate = endDate.split('T')[0];
+
+            console.log("Start Date:", formattedStartDate);
+            console.log("End Date:", formattedEndDate);
+            console.log("Start Time:", startTime);
+            console.log("End Time:", endTime);
+
+            const startDateTime = new Date(`${formattedStartDate}T${startTime}`).toLocaleString('en-US', { timeZone: 'local', ...options });
+            const endDateTime = new Date(`${formattedEndDate}T${endTime}`).toLocaleString('en-US', { timeZone: 'local', ...options });
+            setDateTimeText(`${startDateTime} - ${endDateTime}`);
+        }
+    }, [startDate, endDate, startTime, endTime]);
 
     return (
         <>
