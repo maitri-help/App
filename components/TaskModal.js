@@ -6,7 +6,7 @@ import Modal from '../components/Modal';
 import DateTime from './plusModalSteps/DateTime';
 import EditForm from './plusModalSteps/EditForm';
 
-export default function TaskModal({ visible, onClose, selectedCircle, setSelectedCircle, taskName, setTaskName, description, setDescription, selectedLocation, setSelectedLocation, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, firstName, setFirstName, lastName, setLastName, color, setColor, emoji, setEmoji, selectedTask, isEditable, setIsEditable }) {
+export default function TaskModal({ visible, onClose, selectedCircle, setSelectedCircle, taskName, setTaskName, description, setDescription, selectedLocation, setSelectedLocation, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, firstName, setFirstName, lastName, setLastName, color, setColor, emoji, setEmoji, selectedTask, isEditable, setIsEditable, taskId, setTaskId, onTaskCreated }) {
   const [currentStep, setCurrentStep] = useState(5);
   const circles = ['Personal', 'First', 'Second', 'Third'];
   const [reviewFormCurrentStep, setReviewFormCurrentStep] = useState(null);
@@ -17,6 +17,7 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
 
       console.log("Selected Task:", selectedTask);
 
+      setTaskId(selectedTask.taskId);
       setTaskName(selectedTask.title);
       setDescription(selectedTask.description);
       setSelectedCircle(circleLevels);
@@ -62,6 +63,8 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
       )}
       {currentStep === 5 && (
         <EditForm
+          taskId={taskId}
+          setTaskId={setTaskId}
           taskName={taskName}
           setTaskName={setTaskName}
           description={description}
@@ -84,6 +87,7 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
           emoji={emoji}
           isEditable={isEditable}
           setIsEditable={setIsEditable}
+          onTaskCreated={onTaskCreated}
         />
       )}
     </Modal >

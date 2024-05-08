@@ -6,10 +6,14 @@ import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import EditIcon from '../../assets/icons/edit-icon.svg';
 import CheckIcon from '../../assets/icons/check-icon.svg';
 import LocationPicker from './LocationPicker';
+import { updateTask } from '../../hooks/api';
+import { getAccessToken } from '../../authStorage';
+import { useToast } from 'react-native-toast-notifications';
 
-export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, startDateTime, endDateTime, firstName, lastName, color, emoji, onClose, isEditable, setIsEditable }) {
+export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, startDateTime, endDateTime, firstName, lastName, color, emoji, onClose, isEditable, setIsEditable, taskId, onTaskCreated }) {
 
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
+    const toast = useToast();
 
     useEffect(() => {
         if (startDateTime && endDateTime) {
@@ -19,8 +23,6 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
             setDateTimeText(`${start} - ${end}`);
         }
     }, [startDateTime, endDateTime]);
-
-    console.log(startDateTime, endDateTime);
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -51,14 +53,50 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
         }
     };
 
-    const handleSubmit = () => {
-        console.log("Task Name:", taskName);
-        console.log("Description:", description);
-        console.log("Selected Circles:", selectedCircle);
-        console.log("Date & Time:", dateTimeData);
-        console.log("Selected Location:", selectedLocation);
-    };
+    const handleSubmit = async () => {
+        try {
+            const accessToken = await getAccessToken();
 
+            if (!accessToken) {
+                console.error('Access token not found. Please log in.');
+                return;
+            }
+
+            console.log(selectedCircle);
+
+            const taskData = {
+                title: taskName,
+                description: description,
+                circles: selectedCircle,
+                location: selectedLocation,
+                startDateTime: startDateTime,
+                endDateTime: endDateTime,
+            };
+
+            console.log("Task update data:", taskData);
+
+            const header = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            }
+
+            const response = await updateTask(taskData, header, taskId);
+
+            console.log("Task updated successfully:", response.data);
+
+            toast.show('Task updated successfully', { type: 'success' });
+
+            onClose();
+
+            onTaskCreated();
+
+        } catch (error) {
+            console.error("Error updating task:", error);
+
+            toast.show('Unsuccessful task update', { type: 'error' });
+        }
+    };
     return (
         <>
             <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>

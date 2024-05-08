@@ -16,9 +16,13 @@ export default function AssignmentsScreen({ navigation }) {
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
-    const [selectedDate, setSelectedDate] = useState(
-        `${new Date().getFullYear()}-${monthNum[new Date().getMonth()]}-${new Date().getDate()}`
-    );
+    const currentDate = new Date();
+    const formattedDay = String(currentDate.getDate()).padStart(2, '0');
+    const formattedMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const formattedYear = currentDate.getFullYear();
+
+    const defaultSelectedDate = `${formattedYear}-${formattedMonth}-${formattedDay}`;
+    const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
     const [defaultWeekDate, setDefaultWeekDate] = useState(new Date());
@@ -33,6 +37,7 @@ export default function AssignmentsScreen({ navigation }) {
     const [taskModalSelectedCircle, setTaskModalSelectedCircle] = useState('Personal');
     const [plusModalTaskName, setPlusModalTaskName] = useState('');
     const [taskModalTaskName, setTaskModalTaskName] = useState('');
+    const [taskModalTaskId, setTaskModalTaskId] = useState('');
     const [taskModaldescription, setTaskModalDescription] = useState('');
     const [plusModaldescription, setPlusModalDescription] = useState('');
     const [isOtherTask, setIsOtherTask] = useState(false);
@@ -137,13 +142,14 @@ export default function AssignmentsScreen({ navigation }) {
 
     const handleTodayPress = () => {
         const today = new Date();
-        const currentMonth = today.getMonth() + 1;
-        const currentYear = today.getFullYear();
-        setSelectedDate(
-            `${currentYear}-${monthNum[currentMonth - 1]}-${today.getDate()}`
-        );
-        setCurrentMonth(currentMonth);
-        setCurrentYear(currentYear);
+        const formattedDay = String(today.getDate()).padStart(2, '0');
+        const formattedMonth = String(today.getMonth() + 1).padStart(2, '0');
+        const formattedYear = today.getFullYear();
+        const todayFormatted = `${formattedYear}-${formattedMonth}-${formattedDay}`;
+
+        setSelectedDate(todayFormatted);
+        setCurrentMonth(today.getMonth() + 1);
+        setCurrentYear(today.getFullYear());
         setDefaultWeekDate(today);
     };
 
@@ -196,6 +202,7 @@ export default function AssignmentsScreen({ navigation }) {
 
     const filteredTasks = tasks.filter(task => {
         const taskDate = new Date(task.startDateTime).toISOString().split('T')[0];
+
         return taskDate === selectedDate;
     });
 
@@ -315,6 +322,8 @@ export default function AssignmentsScreen({ navigation }) {
                 onClose={handleTaskModalClose}
                 selectedCircle={taskModalSelectedCircle}
                 setSelectedCircle={setTaskModalSelectedCircle}
+                taskId={taskModalTaskId}
+                setTaskId={setTaskModalTaskId}
                 taskName={taskModalTaskName}
                 setTaskName={setTaskModalTaskName}
                 description={taskModaldescription}
@@ -343,6 +352,7 @@ export default function AssignmentsScreen({ navigation }) {
                 setEmoji={setEmoji}
                 isEditable={isEditable}
                 setIsEditable={setIsEditable}
+                onTaskCreated={() => fetchTasks()}
             />
         </>
     );

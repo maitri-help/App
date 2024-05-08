@@ -30,6 +30,10 @@ export function createTask(data, header) {
     return axios.post(`${baseUrl}/task`, data, header);
 }
 
+export function updateTask(data, header, taskId) {
+    return axios.patch(`${baseUrl}/task/${taskId}`, data, header);
+}
+
 export function getTasksForUser(userId, accessToken) {
     return axios.get(`${baseUrl}/task/user/${userId}`, {
         headers: {
