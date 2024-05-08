@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform, Image } from 'react-native';
 import styles from '../Styles';
 import TaskItem from '../components/TaskItem';
 import PlusModal from '../components/PlusModal';
 import TaskModal from '../components/TaskModal';
-import GridCalendar, { monthNum } from '../components/calendar/GridCalendar';
+import GridCalendar from '../components/calendar/GridCalendar';
 import WeekCalendar from '../components/calendar/WeekCalendar';
 import PlusIcon from '../assets/icons/plus-icon.svg';
 import { getTasksForUser } from '../hooks/api';
@@ -241,6 +241,7 @@ export default function AssignmentsScreen({ navigation }) {
                                 setCurrentYear={setCurrentYear}
                                 setCurrentMonth={setCurrentMonth}
                                 setWeekStartDate={setWeekStartDate}
+                                tasks={tasks}
                             />
                         ) : (
                             <WeekCalendar
@@ -255,22 +256,50 @@ export default function AssignmentsScreen({ navigation }) {
                     </View>
                 </View>
 
-                <ScrollView contentContainerStyle={stylesCal.calendarScroll}>
 
-                    <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
-
-                        {filteredTasks.map((task, index) => (
-                            <TaskItem
-                                key={index}
-                                task={task}
-                                taskModal={() => setTaskModalVisible(true)}
-                                onTaskItemClick={handleTaskItemClick}
-                            />
-                        ))}
-
-                    </View>
-
-                </ScrollView>
+                {filteredTasks.length === 0 ? (
+                    tasks.length === 0 ? (
+                        <>
+                            <View style={stylesCal.calendarEmpty}>
+                                <View style={stylesCal.calendarEmptyImgWrapper}>
+                                    <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesCal.calendarEmptyImg} />
+                                </View>
+                                <Text style={stylesCal.calendarEmptyText}>
+                                    Your list is empty
+                                </Text>
+                                <Text style={stylesCal.calendarEmptyTitle}>
+                                    Click here to add your first task
+                                </Text>
+                                <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
+                            </View>
+                        </>
+                    ) : (
+                        <>
+                            <View style={stylesCal.calendarEmpty}>
+                                <Text style={stylesCal.calendarEmptyText}>
+                                    No tasks for this day
+                                </Text>
+                                <Text style={stylesCal.calendarEmptyTitle}>
+                                    Click here to add a new task
+                                </Text>
+                                <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
+                            </View>
+                        </>
+                    )
+                ) : (
+                    <ScrollView contentContainerStyle={stylesCal.calendarScroll}>
+                        <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
+                            {filteredTasks.map((task, index) => (
+                                <TaskItem
+                                    key={index}
+                                    task={task}
+                                    taskModal={() => setTaskModalVisible(true)}
+                                    onTaskItemClick={handleTaskItemClick}
+                                />
+                            ))}
+                        </View>
+                    </ScrollView>
+                )}
 
                 <View style={stylesCal.floatingButtonWrapper}>
                     <TouchableOpacity
@@ -438,10 +467,48 @@ const stylesCal = StyleSheet.create({
     },
     floatingButtonWrapper: {
         position: 'absolute',
-        bottom: 0,
+        bottom: 10,
         right: 0,
         flexDirection: 'row',
         alignItems: 'flex-end',
         zIndex: 5,
+    },
+    calendarEmpty: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        position: 'relative',
+        paddingBottom: 35,
+    },
+    calendarEmptyImgWrapper: {
+        marginVertical: 20,
+    },
+    calendarEmptyImg: {
+        width: 180,
+        height: 150,
+        resizeMode: 'contain',
+        alignSelf: 'center',
+    },
+    calendarEmptyText: {
+        textAlign: 'center',
+        color: '#000',
+        fontFamily: 'poppins-regular',
+        fontSize: 14,
+        lineHeight: 18,
+        marginBottom: 5,
+    },
+    calendarEmptyTitle: {
+        textAlign: 'center',
+        color: '#000',
+        fontFamily: 'poppins-medium',
+        fontSize: 14,
+        lineHeight: 18,
+    },
+    calendarEmptyArrow: {
+        position: 'absolute',
+        bottom: 15,
+        right: 70,
+        width: 60,
+        height: 20,
+        resizeMode: 'contain'
     },
 });

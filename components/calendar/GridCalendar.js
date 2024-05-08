@@ -41,7 +41,7 @@ export const monthNum = [
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-export default function GridCalendar({ setDate, selectedDate, currentYearProp, currentMonthProp, setCurrentYear, setCurrentMonth, setWeekStartDate }) {
+export default function GridCalendar({ setDate, selectedDate, currentYearProp, currentMonthProp, setCurrentYear, setCurrentMonth, setWeekStartDate, tasks }) {
   const [monthDates, setMonthDates] = useState([]);
 
   useEffect(() => {
@@ -91,10 +91,18 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
 
     const currentMonthDays = [];
     for (let i = 1; i <= totalDaysInMonth; i++) {
+      const currentDate = new Date(currentYearProp, currentMonthProp - 1, i);
+      const isToday = currentDate.toDateString() === new Date().toDateString();
+
       currentMonthDays.push({
         date: i,
         selected: isSameDate && i === currentDay,
         disabled: false,
+        hasTask: tasks.some(task => {
+          const taskDate = new Date(task.startDateTime).getDate();
+          return taskDate === i;
+        }),
+        isToday: isToday
       });
     }
 
@@ -107,7 +115,7 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
     setMonthDates([...prevMonthDays, ...currentMonthDays, ...nextMonthDays]);
 
     setWeekStartDate(weekStartDate);
-  }, [currentYearProp, currentMonthProp, selectedDate]);
+  }, [currentYearProp, currentMonthProp, selectedDate, tasks]);
 
   const nextMonth = () => {
     if (currentMonthProp === 12) {
@@ -129,7 +137,7 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
 
   const selectDate = (selectedDate) => {
     setDate(selectedDate);
-};
+  };
 
   const renderDays = ({ item }) => (
     <View style={styles.dayWrapper}>
@@ -147,6 +155,8 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
         <Text style={[styles.date(item), item.disabled && styles.disabledDate]}>
           {item.date}
         </Text>
+        {item.hasTask && !item.isToday && <View style={styles.dot} />}
+        {item.isToday && <View style={[styles.dot, styles.dotToday]} />}
       </TouchableOpacity>
     </View>
   );
@@ -273,5 +283,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#8A8A8E',
   },
+  dot: {
+    width: 4,
+    height: 4,
+    backgroundColor: '#D5D5D5',
+    borderRadius: 2,
+    position: 'absolute',
+    bottom: 4,
+    right: 14,
+  },
+  dotToday: {
+    backgroundColor: '#B22525',
+  }
 });
 
