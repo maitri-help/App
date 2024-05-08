@@ -15,7 +15,8 @@ export default function HomeSupporterScreen({ navigation }) {
     const [isViewActive, setIsViewActive] = useState(true);
     const selectedColor = '#1616';
     const pressedItem = "🦄";
-
+    const [showAllOpenTasks, setShowAllOpenTasks] = useState(false);
+    const [showAllMyTasks, setShowAllMyTasks] = useState(false);
 
     useEffect(() => {
         async function fetchUserData() {
@@ -59,10 +60,15 @@ export default function HomeSupporterScreen({ navigation }) {
     ];
 
     const MyTasks = [
-        { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
+        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', emoji: '🤖' },
+        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', emoji: '🩺' },
+        { id: 3, title: 'Buy groceries', assignee: ['Ross Geller', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', emoji: '💞' },
+        { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
+        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', emoji: '😊' },
     ];
 
-    const renderTasks = (tasks) => {
+    const renderTasks = (tasks, isMyTasks) => {
+        let tasksToRender = tasks;
         if (tasks.length === 0) {
             switch (activeTab) {
                 case 'Open':
@@ -100,16 +106,29 @@ export default function HomeSupporterScreen({ navigation }) {
                 default:
                     return null;
             }
+        } else {
+            if (!isMyTasks && !showAllOpenTasks && tasks.length > 3) {
+                tasksToRender = tasks.slice(0, 3);
+            } else if (isMyTasks && !showAllMyTasks && tasks.length > 4) {
+                tasksToRender = tasks.slice(0, 4);
+            }
         }
+
+        
 
         return (
             <View style={stylesSuppHome.tasksContainer}>
-                <ScrollView contentContainerStyle={stylesSuppHome.tasksScroll}>
-                    {tasks.map(task => (
-                        <Task key={task.id} title={task.title} assignee={task.assignee} time={task.time} emoji={task.emoji} />
-                    ))}
-                </ScrollView>
-            </View>
+            <ScrollView contentContainerStyle={stylesSuppHome.tasksScroll}>
+                {tasksToRender.map(task => (
+                    <Task key={task.id} title={task.title} assignee={task.assignee} time={task.time} emoji={task.emoji} />
+                ))}
+                {(!isMyTasks && !showAllOpenTasks && tasks.length > 3) || (isMyTasks && !showAllMyTasks && tasks.length > 4) ? (
+                    <TouchableOpacity onPress={() => isMyTasks ? setShowAllMyTasks(true) : setShowAllOpenTasks(true)}>
+                        <Text style={stylesSuppHome.seeAllText}>See All</Text>
+                    </TouchableOpacity>
+                ) : null}
+            </ScrollView>
+        </View>
         );
     };
 
@@ -161,7 +180,7 @@ export default function HomeSupporterScreen({ navigation }) {
                 </TouchableOpacity>
             </View>
             <View style={stylesSuppHome.tabsContentContainer}>
-                {activeTab === 'Open' ? renderTasks(OpenTasks) : activeTab === 'My' ? renderTasks(MyTasks) : null}
+            {activeTab === 'Open' ? renderTasks(OpenTasks, false) : activeTab === 'My' ? renderTasks(MyTasks, true) : null}
             </View>
         </SafeAreaView>
 
@@ -298,5 +317,11 @@ const stylesSuppHome = StyleSheet.create({
       fontSize: (Platform.OS === 'android') ? 30 : 35,
       textAlign: 'center',
       lineHeight: (Platform.OS === 'android') ? 37 : 42,
+    },
+    seeAllText: {
+        fontFamily: 'poppins-regular',
+        textAlign: 'center',
+        color: '#737373',
+        textDecorationLine: 'underline',
     },
 });
