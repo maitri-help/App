@@ -1,10 +1,43 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Share } from 'react-native';
 import Modal from '../components/Modal';
 import styles from '../Styles';
 import ShareIcon from '../assets/icons/share-icon.svg';
+import { getAccessToken, getUserData } from '../authStorage';
 
 export default function SendInviteScreen({ visible, onClose, navigation }) {
+    const [userTribeCode, setUserTribeCode] = useState('');
+
+    async function tribeCode() {
+        try {
+            const accessToken = await getAccessToken();
+            if (accessToken) {
+                const userData = await getUserData();
+                setUserTribeCode(userData.tribeCode);
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                console.error('Unauthorized request. Refreshing token...');
+            } else {
+                console.error('Error fetching tribe code:', error);
+            }
+        }
+    }
+
+    useEffect(() => {
+        tribeCode();
+    }, []);
+
+    const shareTribeCode = async () => {
+        try {
+            await Share.share({
+                message: `Join my tribe with this code: ${userTribeCode}`,
+            });
+        } catch (error) {
+            console.error('Error sharing tribe code:', error);
+        }
+    };
+
     return (
         <Modal visible={visible} onClose={onClose} style={stylesInvite} modalTopNav
             modalTopNavChildren={
@@ -24,7 +57,7 @@ export default function SendInviteScreen({ visible, onClose, navigation }) {
                 </View>
                 <View style={stylesInvite.sendInviteWrapper}>
                     <View style={stylesInvite.sendInvite}>
-                        <TouchableOpacity style={stylesInvite.sendInviteLink}>
+                        <TouchableOpacity style={stylesInvite.sendInviteLink} onPress={shareTribeCode}>
                             <Text style={stylesInvite.sendInviteLinkText}>Send Invite</Text>
                         </TouchableOpacity>
                         <ShareIcon color={'#000'} width={16} height={16} style={stylesInvite.sendInviteLinkIcon} />
