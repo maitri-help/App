@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
 import styles from '../Styles';
 import Task from '../components/Task';
-import { getAccessToken, getUserData } from '../authStorage';
+import { getAccessToken, getUserData, clearUserData, clearAccessToken } from '../authStorage';
 import { Platform } from 'react-native';
 
 
@@ -19,6 +19,9 @@ export default function MyTasksSupporterScreen({ navigation }) {
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
+                clearUserData();
+                clearAccessToken();
+                navigation.navigate('Login');
             }
         }
         fetchUserData();
@@ -29,27 +32,27 @@ export default function MyTasksSupporterScreen({ navigation }) {
 
     const renderTasks = (tasks) => {
         if (tasks.length === 0) {
-                    return (
-                        <View style={stylesSuppMT.tasksContainer}>
-                            <ScrollView contentContainerStyle={stylesSuppMT.tasksScrollEmpty}>
-                                <View style={[styles.contentContainer, stylesSuppMT.tasksEmpty]}>
-                                    <View style={stylesSuppMT.tasksTop}>
-                                        <Text style={[styles.text, stylesSuppMT.tasksDescription, {marginBottom: 30}]}>
-                                            Your task list is currently empty.
-                                        </Text>
-                                        <Text style={[styles.text, stylesSuppMT.tasksDescription, {marginBottom: 60, paddingHorizontal: 30}]}>
-                                            Check the open tasks to see where you can lend a hand
-                                        </Text>
-                                        <Image
-                                            source={require('../assets/img/mimi-illustration.png')}
-                                            style={stylesSuppMT.rightImageStyle}
-                                        />
-                                    </View>
-                                </View>
-                            </ScrollView>
+            return (
+                <View style={stylesSuppMT.tasksContainer}>
+                    <ScrollView contentContainerStyle={stylesSuppMT.tasksScrollEmpty}>
+                        <View style={[styles.contentContainer, stylesSuppMT.tasksEmpty]}>
+                            <View style={stylesSuppMT.tasksTop}>
+                                <Text style={[styles.text, stylesSuppMT.tasksDescription, { marginBottom: 30 }]}>
+                                    Your task list is currently empty.
+                                </Text>
+                                <Text style={[styles.text, stylesSuppMT.tasksDescription, { marginBottom: 60, paddingHorizontal: 30 }]}>
+                                    Check the open tasks to see where you can lend a hand
+                                </Text>
+                                <Image
+                                    source={require('../assets/img/mimi-illustration.png')}
+                                    style={stylesSuppMT.rightImageStyle}
+                                />
+                            </View>
                         </View>
-                    );
-            }
+                    </ScrollView>
+                </View>
+            );
+        }
 
         return (
             <View style={stylesSuppMT.tasksContainer}>
@@ -64,10 +67,10 @@ export default function MyTasksSupporterScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            
-            <View style={[styles.topBar, {gap: 0,flexDirection: 'row',borderBottomWidth: 0}]}>
-                
-                
+
+            <View style={[styles.topBar, { gap: 0, flexDirection: 'row', borderBottomWidth: 0 }]}>
+
+
                 <View style={{ gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }}>
                     <Text style={stylesSuppMT.greetingsText}>My Tasks</Text>
                     <Text style={stylesSuppMT.thanksText}>Your help makes a difference.</Text>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
 import styles from '../Styles';
 import Task from '../components/Task';
-import { getAccessToken, getUserData } from '../authStorage';
+import { getAccessToken, getUserData, clearUserData, clearAccessToken } from '../authStorage';
 import initalBackground from '../assets/img/welcome-bg.png';
 import CloseIcon from '../assets/icons/close-icon.svg';
 import { Platform } from 'react-native';
@@ -29,6 +29,9 @@ export default function HomeSupporterScreen({ navigation }) {
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
+                clearUserData();
+                clearAccessToken();
+                navigation.navigate('Login');
             }
         }
         fetchUserData();
@@ -114,32 +117,32 @@ export default function HomeSupporterScreen({ navigation }) {
             }
         }
 
-        
+
 
         return (
             <View style={stylesSuppHome.tasksContainer}>
-            <ScrollView contentContainerStyle={stylesSuppHome.tasksScroll}>
-                {tasksToRender.map(task => (
-                    <Task key={task.id} title={task.title} assignee={task.assignee} time={task.time} emoji={task.emoji} />
-                ))}
-                {(!isMyTasks && !showAllOpenTasks && tasks.length > 3) || (isMyTasks && !showAllMyTasks && tasks.length > 4) ? (
-                    <TouchableOpacity onPress={() => isMyTasks ? setShowAllMyTasks(true) : setShowAllOpenTasks(true)}>
-                        <Text style={stylesSuppHome.seeAllText}>See All</Text>
-                    </TouchableOpacity>
-                ) : null}
-            </ScrollView>
-        </View>
+                <ScrollView contentContainerStyle={stylesSuppHome.tasksScroll}>
+                    {tasksToRender.map(task => (
+                        <Task key={task.id} title={task.title} assignee={task.assignee} time={task.time} emoji={task.emoji} />
+                    ))}
+                    {(!isMyTasks && !showAllOpenTasks && tasks.length > 3) || (isMyTasks && !showAllMyTasks && tasks.length > 4) ? (
+                        <TouchableOpacity onPress={() => isMyTasks ? setShowAllMyTasks(true) : setShowAllOpenTasks(true)}>
+                            <Text style={stylesSuppHome.seeAllText}>See All</Text>
+                        </TouchableOpacity>
+                    ) : null}
+                </ScrollView>
+            </View>
         );
     };
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            
-            <View style={[styles.topBar, {gap: 0,flexDirection: 'row',borderBottomWidth: 0}]}>
-                
+
+            <View style={[styles.topBar, { gap: 0, flexDirection: 'row', borderBottomWidth: 0 }]}>
+
                 <View style={[
-                        stylesSuppHome.selectedEmojiItem, { borderColor: selectedColor }
-                    ]}>
+                    stylesSuppHome.selectedEmojiItem, { borderColor: selectedColor }
+                ]}>
                     <Text style={stylesSuppHome.selectedEmojiText}>{pressedItem}</Text>
                 </View>
                 <View style={{ gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }}>
@@ -147,8 +150,8 @@ export default function HomeSupporterScreen({ navigation }) {
                     <Text style={stylesSuppHome.thanksText}>Thanks for being here for <Text style={stylesSuppHome.nameText}>[LEAD full name]!</Text></Text>
                 </View>
             </View>
-            
-            
+
+
 
             {isViewActive && (
                 <View style={[styles.contentContainer, { paddingTop: 5, paddingBottom: 15, width: '100%' }]}>
@@ -180,7 +183,7 @@ export default function HomeSupporterScreen({ navigation }) {
                 </TouchableOpacity>
             </View>
             <View style={stylesSuppHome.tabsContentContainer}>
-            {activeTab === 'Open' ? renderTasks(OpenTasks, false) : activeTab === 'My' ? renderTasks(MyTasks, true) : null}
+                {activeTab === 'Open' ? renderTasks(OpenTasks, false) : activeTab === 'My' ? renderTasks(MyTasks, true) : null}
             </View>
         </SafeAreaView>
 
@@ -305,18 +308,18 @@ const stylesSuppHome = StyleSheet.create({
         resizeMode: 'contain',
     },
     selectedEmojiItem: {
-      width: 60,
-      height: 60,
-      borderRadius: 100,
-      borderWidth: 2,
-      borderColor: '#000',
-      justifyContent: 'center',
-      alignItems: 'center',
+        width: 60,
+        height: 60,
+        borderRadius: 100,
+        borderWidth: 2,
+        borderColor: '#000',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     selectedEmojiText: {
-      fontSize: (Platform.OS === 'android') ? 30 : 35,
-      textAlign: 'center',
-      lineHeight: (Platform.OS === 'android') ? 37 : 42,
+        fontSize: (Platform.OS === 'android') ? 30 : 35,
+        textAlign: 'center',
+        lineHeight: (Platform.OS === 'android') ? 37 : 42,
     },
     seeAllText: {
         fontFamily: 'poppins-regular',

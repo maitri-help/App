@@ -5,8 +5,8 @@ import styles from '../Styles';
 import { useToast } from 'react-native-toast-notifications';
 import IdentifyAlmostThereScreen from './IdentifyAlmostThereScreen';
 import ThankYouScreen from './ThankYouScreen';
-import { updateUserType } from '../hooks/api';
-import { updateUserTypeInStorage } from '../authStorage'; 
+import { joinTribe, updateUserType } from '../hooks/api';
+import { updateUserTypeInStorage, checkAuthentication } from '../authStorage';
 
 export default function IdentifyScreen({ navigation, route }) {
     const toast = useToast();
@@ -15,6 +15,23 @@ export default function IdentifyScreen({ navigation, route }) {
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
     const { userId } = route.params;
+
+    useEffect(() => {
+        async function fetchUserData() {
+            try {
+                const userData = await checkAuthentication(); 
+                if (userData) {
+                    console.log('User data:', userData);
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                clearUserData();
+                clearAccessToken();
+                navigation.navigate('Login');
+            }
+        }
+        fetchUserData();
+    }, []);
 
     useEffect(() => {
         if (almostThereModalVisible || thankYouModalVisible) {
@@ -125,6 +142,8 @@ export default function IdentifyScreen({ navigation, route }) {
                 onClose={() => setAlmostThereModalVisible(false)}
                 navigation={navigation}
                 setThankYouModalVisible={setThankYouModalVisible}
+                joinTribe={joinTribe}
+                userId={userId}
             />
 
             <ThankYouScreen
@@ -151,10 +170,8 @@ const stylesIdentify = StyleSheet.create({
         paddingHorizontal: 30,
         alignItems: 'center',
         gap: 30,
-        width: '100%',
     },
     optionButton: {
-        maxWidth: '100%',
         width: 310,
         height: 100,
         paddingVertical: 15,
@@ -174,7 +191,7 @@ const stylesIdentify = StyleSheet.create({
         position: 'absolute',
         top: 0,
         left: 0,
-        maxWidth: '100%',
+        minWidth: '100%',
         width: 310,
         height: 100,
         borderColor: '#1C4837',

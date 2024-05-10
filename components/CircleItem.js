@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 
 export default function CircleItem({ item, onPress }) {
-    console.log('This emoji:', item.emoji);
 
     return (
         <TouchableOpacity onPress={onPress} style={stylesCircles.circleListItem}>

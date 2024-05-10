@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Image } from 'react-native';
 import styles from '../Styles';
-import { getAccessToken, getUserData, clearUserData, clearAccessToken } from '../authStorage';
+import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
 import LogoutModal from '../components/profileModals/LogoutModal';
 import DeleteModal from '../components/profileModals/DeleteModal';
 
 export default function ProfileScreen({ navigation }) {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [userRole, setUserRole] = useState('');
+    const [userData, setUserData] = useState(null);
     const [logoutModalVisible, setLogoutModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
@@ -18,18 +14,15 @@ export default function ProfileScreen({ navigation }) {
     useEffect(() => {
         async function fetchUserData() {
             try {
-                const accessToken = await getAccessToken();
-                console.log('Access Token from authStorage:', accessToken);
-                if (accessToken) {
-                    const userData = await getUserData();
-                    setFirstName(userData.firstName);
-                    setLastName(userData.lastName);
-                    setEmail(userData.email);
-                    setPhoneNumber(userData.phoneNumber);
-                    setUserRole(userData.userType);
+                const userData = await checkAuthentication();
+                if (userData) {
+                    setUserData(userData);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
+                clearUserData();
+                clearAccessToken();
+                navigation.navigate('Login');
             }
         }
         fetchUserData();
@@ -66,11 +59,13 @@ export default function ProfileScreen({ navigation }) {
         <>
             <SafeAreaView style={styles.safeArea}>
                 <View style={[styles.container, stylesProfile.container]}>
-                    <View style={stylesProfile.topContent}>
-                        <Text style={stylesProfile.topContentName}>{firstName} {lastName} ({userRole})</Text>
-                        <Text style={stylesProfile.topContentText}>{email}</Text>
-                        <Text style={stylesProfile.topContentText}>{phoneNumber}</Text>
-                    </View>
+                    {userData && (
+                        <View style={stylesProfile.topContent}>
+                            <Text style={stylesProfile.topContentName}>{userData.firstName} {userData.lastName} ({userData.userType})</Text>
+                            <Text style={stylesProfile.topContentText}>{userData.email}</Text>
+                            <Text style={stylesProfile.topContentText}>{userData.phoneNumber}</Text>
+                        </View>
+                    )}
                     <View style={stylesProfile.contentContainer}>
                         <View style={stylesProfile.buttons}>
                             <View style={stylesProfile.buttonWrapper}>

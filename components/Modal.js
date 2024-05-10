@@ -19,7 +19,7 @@ export default function ModalComponent({ visible, onClose, modalTopNav, modalTop
                 <View style={[stylesModal.modalContainer, style && style.modalContainer]}>
                     <View style={[stylesModal.modalContent, style && style.modalContent]}>
                         {modalTopNav &&
-                            <View style={styles.modalTopNav}>
+                            <View style={[styles.modalTopNav, style && style.modalTopNav]}>
                                 <TouchableOpacity onPress={modalTopNavLink || onClose} style={[styles.backLinkInline, style && style.backLinkInline]}>
                                     <ArrowLeftIcon style={styles.backLinkIcon} />
                                 </TouchableOpacity>

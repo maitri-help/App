@@ -185,6 +185,9 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
 }
 
 const stylesSupporter = StyleSheet.create({
+    modalTopNav: {
+        alignItems: 'center',
+    },
     innerModalContainer: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.5)',

@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import { verifyOtp, getUser } from '../hooks/api';
-import { storeUserData, storeAccessToken } from '../authStorage';
+import { storeUserData, storeAccessToken, clearUserData, clearAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { handleResend } from '../hooks/handleResend';
 
@@ -82,6 +82,9 @@ export default function AlmostThereScreen({ route, navigation }) {
                     })
                     .catch(error => {
                         console.error('Error fetching user data:', error);
+                        clearUserData();
+                        clearAccessToken();
+                        navigation.navigate('Login');
                     });
 
                 toast.show('Signed in successfully', { type: 'success' });

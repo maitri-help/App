@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { useToast } from 'react-native-toast-notifications';
@@ -7,21 +7,21 @@ import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import Modal from '../components/Modal';
 
-const OTP_LENGTH = 6;
+const TRIBE_LENGTH = 6;
 
 const validationSchema = yup.object().shape({
-    otp: yup
+    tribe: yup
         .string()
         .required('Code is required')
         .matches(/^\d+$/, 'Code must be numeric')
-        .min(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`)
-        .max(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`),
+        .min(TRIBE_LENGTH, `Code must be exactly ${TRIBE_LENGTH} digits`)
+        .max(TRIBE_LENGTH, `Code must be exactly ${TRIBE_LENGTH} digits`),
 });
 
-export default function IdentifyAlmostThereScreen({ visible, onClose, navigation, setThankYouModalVisible }) {
+export default function IdentifyAlmostThereScreen({ visible, onClose, navigation, setThankYouModalVisible, joinTribe, userId }) {
     const toast = useToast();
-    const [otpValues, setOtpValues] = useState(Array(OTP_LENGTH).fill(''));
-    const otpInputs = useRef([]);
+    const [tribeValues, setTribeValues] = useState(Array(TRIBE_LENGTH).fill(''));
+    const tribeInputs = useRef([]);
 
     return (
         <Modal visible={visible} onClose={onClose}>
@@ -29,65 +29,70 @@ export default function IdentifyAlmostThereScreen({ visible, onClose, navigation
                 <ArrowLeftIcon style={styles.backLinkIcon} />
             </TouchableOpacity>
             <Formik
-                initialValues={{ otp: '' }}
+                initialValues={{ tribe: '' }}
                 validationSchema={validationSchema}
             >
                 {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched }) => (
-                    <View style={[styles.container, styles.authContainer]}>
-                        <View style={styles.topTextsContainer}>
-                            <Text style={[styles.title, stylesVerify.title]}>Almost there!</Text>
-                            <Text style={[styles.text, stylesVerify.text]}>Use the 6 digit code from your invite to join and start spreading the love!</Text>
-                        </View>
-                        <View style={stylesVerify.otpInputContainer}>
-                            {[...Array(OTP_LENGTH)].map((_, index) => (
-                                <TextInput
-                                    key={index}
-                                    style={[
-                                        stylesVerify.otpInput,
-                                        errors.otp && touched.otp && touched.otp[index] && values.otp.length !== OTP_LENGTH ? stylesVerify.errorInput : null,
-                                    ]}
-                                    onChangeText={(text) => {
-                                        const newOtpValues = [...otpValues];
-                                        newOtpValues[index] = text;
-                                        setOtpValues(newOtpValues);
-                                        const enteredOtp = newOtpValues.join('');
-                                        const isAllFieldsFilled = newOtpValues.every(value => value !== '');
-                                        if (isAllFieldsFilled) {
-                                            if (enteredOtp === '000000') {
-                                                toast.show('Welcome to Maitri!', { type: 'success' });
-                                                navigation.navigate('Main');
-                                                onClose();
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                        <View style={[styles.container, styles.authContainer]}>
+                            <View style={styles.topTextsContainer}>
+                                <Text style={[styles.title, stylesVerify.title]}>Almost there!</Text>
+                                <Text style={[styles.text, stylesVerify.text]}>Use the 6 digit code from your invite to join and start spreading the love!</Text>
+                            </View>
+                            <View style={stylesVerify.tribeInputContainer}>
+                                {[...Array(TRIBE_LENGTH)].map((_, index) => (
+                                    <TextInput
+                                        key={index}
+                                        style={[
+                                            stylesVerify.tribeInput,
+                                            errors.tribe && touched.tribe && touched.tribe[index] && values.tribe.length !== TRIBE_LENGTH ? stylesVerify.errorInput : null,
+                                        ]}
+                                        onChangeText={(text) => {
+                                            const newTribeValues = [...tribeValues];
+                                            newTribeValues[index] = text;
+                                            setTribeValues(newTribeValues);
+                                            const enteredTribe = newTribeValues.join('');
+                                            console.log('Entered Tribe:', enteredTribe);
+                                            if (enteredTribe.length === TRIBE_LENGTH) {
+                                                joinTribe(userId, enteredTribe)
+                                                    .then(() => {
+                                                        toast.show('Welcome to Maitri!', { type: 'success' });
+                                                        navigation.navigate('Main');
+                                                        onClose();
+                                                    })
+                                                    .catch((error) => {
+                                                        toast.show('Invalid Code. Please try again.', { type: 'error' });
+                                                        console.error('Error joining tribe:', error);
+                                                    });
                                             } else {
-                                                toast.show('Invalid Code. Please try again.', { type: 'error' });
+                                                if (text.length === 1 && index < TRIBE_LENGTH - 1) {
+                                                    tribeInputs.current[index + 1].focus();
+                                                }
                                             }
-                                        } else {
-                                            if (text.length === 1 && index < OTP_LENGTH - 1) {
-                                                otpInputs.current[index + 1].focus();
-                                            }
-                                        }
-                                    }}
-                                    value={otpValues[index]}
-                                    keyboardType="numeric"
-                                    maxLength={1}
-                                    ref={(ref) => (otpInputs.current[index] = ref)}
-                                />
-                            ))}
-                        </View>
-                        {touched.otp && errors.otp && values.otp.length !== OTP_LENGTH && (
-                            <Text style={styles.errorText}>{errors.otp}</Text>
-                        )}
+                                        }}
+                                        value={tribeValues[index]}
+                                        keyboardType="numeric"
+                                        maxLength={1}
+                                        ref={(ref) => (tribeInputs.current[index] = ref)}
+                                    />
+                                ))}
+                            </View>
+                            {touched.tribe && errors.tribe && values.tribe.length !== TRIBE_LENGTH && (
+                                <Text style={styles.errorText}>{errors.tribe}</Text>
+                            )}
 
-                        <View style={stylesVerify.bottomTextsContainer}>
-                            <TouchableOpacity onPress={() => {
-                                onClose();
-                                setThankYouModalVisible(true);
-                            }}>
-                                <Text style={stylesVerify.bottomText}>
-                                    I don't have a code
-                                </Text>
-                            </TouchableOpacity>
+                            <View style={stylesVerify.bottomTextsContainer}>
+                                <TouchableOpacity onPress={() => {
+                                    onClose();
+                                    setThankYouModalVisible(true);
+                                }}>
+                                    <Text style={stylesVerify.bottomText}>
+                                        I don't have a code
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
+                    </TouchableWithoutFeedback>
                 )}
             </Formik>
         </Modal >
@@ -101,13 +106,13 @@ const stylesVerify = StyleSheet.create({
     text: {
         textAlign: 'center',
     },
-    otpInputContainer: {
+    tribeInputContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         gap: 10,
         marginVertical: 15,
     },
-    otpInput: {
+    tribeInput: {
         width: 40,
         height: 40,
         borderRadius: 8,

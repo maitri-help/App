@@ -26,6 +26,10 @@ export function updateUserType(userId, userType) {
     return axios.patch(`${baseUrl}/users/${userId}/user/type`, { userType });
 }
 
+export function joinTribe(userId, tribeCode) {
+    return axios.post(`${baseUrl}/users/${userId}/join/tribe`, { tribeCode });
+}
+
 export function createTask(data, header) {
     return axios.post(`${baseUrl}/task`, data, header);
 }

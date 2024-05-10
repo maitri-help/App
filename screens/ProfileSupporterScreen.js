@@ -32,6 +32,9 @@ export default function ProfileSupporterScreen({ navigation }) {
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
+                clearUserData();
+                clearAccessToken();
+                navigation.navigate('Login');
             }
         }
         fetchUserData();
