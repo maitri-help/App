@@ -2,12 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
 import styles from '../Styles';
 import Task from '../components/Task';
+import TaskClickable from '../components/TaskClickable';
+import TaskItem from '../components/TaskItem';
 import { getAccessToken, getUserData } from '../authStorage';
 import FilterIcon from '../assets/icons/filter-icon.svg';
-
+import EditForm from '../components/plusModalSteps/EditForm';
+import EditFormNoCircle from '../components/plusModalSteps/EditFormNoCircle';
 
 export default function OpenTasksSupporterScreen({ navigation }) {
+    const [isEditFormOpen, setIsEditFormOpen] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
 
+    const handleTaskClick = (task) => {
+        console.log('Task clicked:', task); // This will log the clicked task
+        setSelectedTask(task);
+        setIsEditFormOpen(true);
+      };
+    
+      const handleClose = () => {
+        setIsEditFormOpen(false);
+      };
+
+    // Fetch user data
     useEffect(() => {
         async function fetchUserData() {
             try {
@@ -24,12 +40,18 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         fetchUserData();
     }, []);
 
-
+    // FilterOnPress
     const handleFilter = () => {
         console.log("filter");
     };
 
-    const OpenTasks = [];
+    const OpenTasks = [
+        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: '2024-05-08T20:55:00.000Z', emoji: '🤖', location: "47.47480786890561,19.176439097637857", description: "Call desc" },
+        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: '2024-05-08T20:55:00.000Z', emoji: '🩺', location: "47.47480786890561,19.176439097637857", description: "Med desc"  },
+        { id: 3, title: 'Buy groceries', assignee: ['Ross Geller', 'Rachel Green'], time: '2024-05-08T20:55:00.000Z', emoji: '💞', location: "47.47480786890561,19.176439097637857", description: "Buy desc"  },
+        { id: 4, title: 'Physiotherapy appointment', time: '2024-05-08T20:55:00.000Z', emoji: '🩺', location: "47.47480786890561,19.176439097637857", description: "Phys desc"  },
+        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: '2024-05-08T20:55:00.000Z', emoji: '😊', location: "47.47480786890561,19.176439097637857", description: "Remember desc"  },
+    ];
 
     const renderTasks = (tasks) => {
         if (tasks.length === 0) {
@@ -55,14 +77,28 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                     );
             }
 
+        
         return (
+
             <View style={stylesSuppOT.tasksContainer}>
-                <ScrollView contentContainerStyle={stylesSuppOT.tasksScroll}>
-                    {tasks.map(task => (
-                        <Task key={task.id} title={task.title} assignee={task.assignee} time={task.time} emoji={task.emoji} />
-                    ))}
-                </ScrollView>
-            </View>
+        <ScrollView contentContainerStyle={stylesSuppOT.tasksScroll}>
+          {tasks.map((task) => (
+            <TouchableOpacity
+              key={task.id}
+              onPress={() => handleTaskClick(task)} // Log when task is clicked
+            >
+              <TaskClickable
+                key={task.id} 
+                title={task.title} 
+                assignee={task.assignee} 
+                time={task.time} 
+                emoji={task.emoji} 
+                onTaskClick={() => handleTaskClick(task)}
+              />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
         );
     };
 
@@ -84,6 +120,18 @@ export default function OpenTasksSupporterScreen({ navigation }) {
             <View style={stylesSuppOT.tabsContentContainer}>
                 {renderTasks(OpenTasks)}
             </View>
+
+            {isEditFormOpen && 
+                <EditFormNoCircle
+                    taskName={selectedTask.title} 
+                    description={selectedTask.description} 
+                    selectedLocation={selectedTask.location}
+                    time={selectedTask.time}
+                    // pass other task properties as needed
+                    onClose={() => setIsEditFormOpen(false)} 
+                />
+            }
+
         </SafeAreaView>
 
     );
