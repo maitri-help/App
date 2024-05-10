@@ -132,8 +132,10 @@ export const checkAuthentication = async () => {
                     Authorization: `Bearer ${accessToken}`
                 }
             });
-            console.log('Authentication response:', response.data);
-            return response.data;
+            const userData = response.data;
+            userData.accessToken = accessToken;
+            console.log('Authentication response:', userData);
+            return userData;
         } else {
             return null;
         }

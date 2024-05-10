@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
 import styles from '../Styles';
 import Task from '../components/Task';
-import { getAccessToken, getUserData, clearUserData, clearAccessToken } from '../authStorage';
+import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
 import initalBackground from '../assets/img/welcome-bg.png';
 import CloseIcon from '../assets/icons/close-icon.svg';
 import { Platform } from 'react-native';
@@ -21,11 +21,19 @@ export default function HomeSupporterScreen({ navigation }) {
     useEffect(() => {
         async function fetchUserData() {
             try {
-                const accessToken = await getAccessToken();
-                console.log('Access Token from authStorage:', accessToken);
-                if (accessToken) {
-                    const userData = await getUserData();
+                const userData = await checkAuthentication();
+                if (userData) {
+                    console.log('User data:', userData);
                     setFirstName(userData.firstName);
+
+                    const currentHour = new Date().getHours();
+                    if (currentHour < 12) {
+                        setGreetingText('Good morning');
+                    } else if (currentHour < 18) {
+                        setGreetingText('Good afternoon');
+                    } else {
+                        setGreetingText('Good evening');
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -35,15 +43,6 @@ export default function HomeSupporterScreen({ navigation }) {
             }
         }
         fetchUserData();
-
-        const currentHour = new Date().getHours();
-        if (currentHour < 12) {
-            setGreetingText('Good morning');
-        } else if (currentHour < 18) {
-            setGreetingText('Good afternoon');
-        } else {
-            setGreetingText('Good evening');
-        }
     }, []);
 
     const handleTabPress = (tab) => {

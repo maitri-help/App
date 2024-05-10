@@ -8,7 +8,7 @@ import GridCalendar from '../components/calendar/GridCalendar';
 import WeekCalendar from '../components/calendar/WeekCalendar';
 import PlusIcon from '../assets/icons/plus-icon.svg';
 import { getTasksForUser } from '../hooks/api';
-import { getAccessToken, getUserData } from '../authStorage';
+import { checkAuthentication } from '../authStorage';
 
 export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
@@ -180,19 +180,19 @@ export default function AssignmentsScreen({ navigation }) {
 
     async function fetchTasks() {
         try {
-            const accessToken = await getAccessToken();
-            if (accessToken) {
-                const userData = await getUserData();
+            const userData = await checkAuthentication();
+            if (userData) {
+                console.log('User Data:', userData);
+                console.log('Access token:', userData.accessToken);
+
+                const tasksResponse = await getTasksForUser(userData.userId, userData.accessToken);
                 setUserId(userData.userId);
-                const tasksResponse = await getTasksForUser(userData.userId, accessToken);
                 setTasks(tasksResponse.data);
+            } else {
+                console.error('No user data found');
             }
         } catch (error) {
-            if (error.response && error.response.status === 401) {
-                console.error('Unauthorized request. Refreshing token...');
-            } else {
-                console.error('Error fetching tasks:', error);
-            }
+            console.error('Error fetching tasks:', error);
         }
     }
 

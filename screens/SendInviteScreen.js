@@ -3,28 +3,26 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Share } from 'react-na
 import Modal from '../components/Modal';
 import styles from '../Styles';
 import ShareIcon from '../assets/icons/share-icon.svg';
-import { getAccessToken, getUserData } from '../authStorage';
+import { checkAuthentication } from '../authStorage';
 
 export default function SendInviteScreen({ visible, onClose, navigation }) {
     const [userTribeCode, setUserTribeCode] = useState('');
 
-    async function tribeCode() {
-        try {
-            const accessToken = await getAccessToken();
-            if (accessToken) {
-                const userData = await getUserData();
-                setUserTribeCode(userData.tribeCode);
-            }
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                console.error('Unauthorized request. Refreshing token...');
-            } else {
-                console.error('Error fetching tribe code:', error);
+    useEffect(() => {
+        async function tribeCode() {
+            try {
+                const userData = await checkAuthentication(); 
+                if (userData) {
+                    console.log('User data:', userData);
+                    setUserTribeCode(userData.tribeCode);
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                clearUserData();
+                clearAccessToken();
+                navigation.navigate('Login');
             }
         }
-    }
-
-    useEffect(() => {
         tribeCode();
     }, []);
 

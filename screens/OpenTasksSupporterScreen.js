@@ -4,7 +4,7 @@ import styles from '../Styles';
 import Task from '../components/Task';
 import TaskClickable from '../components/TaskClickable';
 import TaskItem from '../components/TaskItem';
-import { getAccessToken, getUserData } from '../authStorage';
+import { checkAuthentication } from '../authStorage';
 import FilterIcon from '../assets/icons/filter-icon.svg';
 import EditForm from '../components/plusModalSteps/EditForm';
 import EditFormNoCircle from '../components/plusModalSteps/EditFormNoCircle';
@@ -23,18 +23,18 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         setIsEditFormOpen(false);
       };
 
-    // Fetch user data
-    useEffect(() => {
+      useEffect(() => {
         async function fetchUserData() {
             try {
-                const accessToken = await getAccessToken();
-                console.log('Access Token from authStorage:', accessToken);
-                if (accessToken) {
-                    const userData = await getUserData();
-                    setFirstName(userData.firstName);
+                const userData = await checkAuthentication(); 
+                if (userData) {
+                    console.log('User data:', userData);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
+                clearUserData();
+                clearAccessToken();
+                navigation.navigate('Login');
             }
         }
         fetchUserData();

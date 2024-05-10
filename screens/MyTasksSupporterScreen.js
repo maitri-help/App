@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
 import styles from '../Styles';
 import Task from '../components/Task';
-import { getAccessToken, getUserData, clearUserData, clearAccessToken } from '../authStorage';
+import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
 import { Platform } from 'react-native';
 
 
@@ -11,11 +11,9 @@ export default function MyTasksSupporterScreen({ navigation }) {
     useEffect(() => {
         async function fetchUserData() {
             try {
-                const accessToken = await getAccessToken();
-                console.log('Access Token from authStorage:', accessToken);
-                if (accessToken) {
-                    const userData = await getUserData();
-                    setFirstName(userData.firstName);
+                const userData = await checkAuthentication(); 
+                if (userData) {
+                    console.log('User data:', userData);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
