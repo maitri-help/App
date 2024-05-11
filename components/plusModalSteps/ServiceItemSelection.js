@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet } from 'react-native';
 import { modalServices } from '../../data/ModalServices';
-import { useFormikContext } from 'formik';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 

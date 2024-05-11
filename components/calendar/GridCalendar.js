@@ -94,15 +94,24 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
       const currentDate = new Date(currentYearProp, currentMonthProp - 1, i);
       const isToday = currentDate.toDateString() === new Date().toDateString();
 
+      const taskRange = tasks.filter(task => {
+        const taskStartDate = new Date(task.startDateTime);
+        const taskEndDate = new Date(task.endDateTime);
+        return currentDate >= taskStartDate && currentDate <= taskEndDate;
+      }).map(task => new Date(task.startDateTime).getDate());
+
+      const singleDayTasks = tasks.filter(task => {
+        const taskDate = new Date(task.startDateTime).getDate();
+        return taskDate === i;
+      });
+
       currentMonthDays.push({
         date: i,
         selected: isSameDate && i === currentDay,
         disabled: false,
-        hasTask: tasks.some(task => {
-          const taskDate = new Date(task.startDateTime).getDate();
-          return taskDate === i;
-        }),
-        isToday: isToday
+        hasTask: taskRange.length > 0 || singleDayTasks.length > 0,
+        isToday: isToday,
+        taskRange: taskRange
       });
     }
 
@@ -155,8 +164,13 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
         <Text style={[styles.date(item), item.disabled && styles.disabledDate]}>
           {item.date}
         </Text>
-        {item.hasTask && !item.isToday && <View style={styles.dot} />}
+        {item.hasTask && !item.isToday && (
+          <View style={styles.dot} />
+        )}
         {item.isToday && <View style={[styles.dot, styles.dotToday]} />}
+        {item.hasTask && item.taskRange && item.taskRange.map(taskDate => (
+          <View key={taskDate} style={styles.dot} />
+        ))}
       </TouchableOpacity>
     </View>
   );

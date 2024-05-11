@@ -9,9 +9,15 @@ import TaskSelection from './plusModalSteps/TaskSelection';
 import FormFields from './plusModalSteps/FormFields';
 import DateTime from './plusModalSteps/DateTime';
 
-export default function PlusModal({ visible, onClose, selectedService, setSelectedService, selectedCircle, setSelectedCircle, taskName, setTaskName, isOtherTask, setIsOtherTask, description, setDescription, selectedLocation, setSelectedLocation, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, onTaskCreated }) {
+export default function PlusModal({ visible, onClose, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, onTaskCreated }) {
   const [currentStep, setCurrentStep] = useState(1);
   const circles = ['Personal', 'First', 'Second', 'Third'];
+  const [selectedService, setSelectedService] = useState({ id: null, title: '', icon: null });
+  const [selectedCircle, setSelectedCircle] = useState('Personal');
+  const [taskName, setTaskName] = useState('');
+  const [isOtherTask, setIsOtherTask] = useState(false);
+  const [description, setDescription] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
 
   return (
     <Modal

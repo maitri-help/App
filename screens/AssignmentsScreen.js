@@ -32,17 +32,11 @@ export default function AssignmentsScreen({ navigation }) {
     const [tasks, setTasks] = useState([]);
     const [userId, setUserId] = useState(null);
 
-    const [selectedService, setSelectedService] = useState({ id: null, title: '', icon: null });
-    const [plusModalSelectedCircle, setPlusModalSelectedCircle] = useState('Personal');
     const [taskModalSelectedCircle, setTaskModalSelectedCircle] = useState('Personal');
-    const [plusModalTaskName, setPlusModalTaskName] = useState('');
     const [taskModalTaskName, setTaskModalTaskName] = useState('');
     const [taskModalTaskId, setTaskModalTaskId] = useState('');
     const [taskModaldescription, setTaskModalDescription] = useState('');
-    const [plusModaldescription, setPlusModalDescription] = useState('');
-    const [isOtherTask, setIsOtherTask] = useState(false);
     const [taskModalSelectedLocation, setTaskModalSelectedLocation] = useState('');
-    const [plusModalSelectedLocation, setPlusModalSelectedLocation] = useState('');
     const [taskModalStartDate, setTaskModalStartDate] = useState(null);
     const [taskModalEndDate, setTaskModalEndDate] = useState(null);
     const [taskModalStartTime, setTaskModalStartTime] = useState(null);
@@ -201,9 +195,13 @@ export default function AssignmentsScreen({ navigation }) {
     }, []);
 
     const filteredTasks = tasks.filter(task => {
-        const taskDate = new Date(task.startDateTime).toISOString().split('T')[0];
+        const taskStartDate = new Date(task.startDateTime);
+        const taskEndDate = new Date(task.endDateTime);
 
-        return taskDate === selectedDate;
+        return (
+            selectedDate >= taskStartDate.toISOString().split('T')[0] &&
+            selectedDate <= taskEndDate.toISOString().split('T')[0]
+        );
     });
 
     return (
@@ -320,18 +318,6 @@ export default function AssignmentsScreen({ navigation }) {
             <PlusModal
                 visible={plusModalVisible}
                 onClose={handlePlusModalClose}
-                selectedService={selectedService}
-                setSelectedService={setSelectedService}
-                selectedCircle={plusModalSelectedCircle}
-                setSelectedCircle={setPlusModalSelectedCircle}
-                taskName={plusModalTaskName}
-                setTaskName={setPlusModalTaskName}
-                isOtherTask={isOtherTask}
-                setIsOtherTask={setIsOtherTask}
-                description={plusModaldescription}
-                setDescription={setPlusModalDescription}
-                selectedLocation={plusModalSelectedLocation}
-                setSelectedLocation={setPlusModalSelectedLocation}
                 startDate={plusModalStartDate}
                 setStartDate={setPlusModalStartDate}
                 endDate={plusModalEndDate}
