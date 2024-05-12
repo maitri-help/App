@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Image, StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
+import React, { useState, } from 'react';
+import {StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';

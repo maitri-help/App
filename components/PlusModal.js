@@ -111,7 +111,7 @@ export default function PlusModal({ visible, onClose, handleDateTimeSelect, star
           endDateTime={endTime}
           onClose={onClose}
           onTaskCreated={() => {
-            onTaskCreated;
+            onTaskCreated();
             resetModalState();
           }}
         />
