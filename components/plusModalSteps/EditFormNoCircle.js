@@ -9,30 +9,27 @@ import LocationPicker from './LocationPicker';
 import { updateTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
+import Modal from '../Modal';
+import Button from '../Button';
+import { ScrollView } from 'react-native-gesture-handler';
 
-export default function EditFormNoCircle({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, time ,startDateTime, endDateTime, firstName, lastName, color, emoji, onClose, isEditable, setIsEditable, taskId, onTaskCreated }) {
+export default function EditFormNoCircle({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, time ,startDateTime, endDateTime, notes, lastName, color, emoji, onClose, isEditable, setIsEditable, taskId, onTaskCreated }) {
 
-    const [dateTimeText, setDateTimeText] = useState('Fill time and date');
+    const [dateTimeText, setDateTimeText] = useState(null);
     const toast = useToast();
 
     useEffect(() => {
-        if (startDateTime && endDateTime) {
+        console.log(time);
+        if (time) {
             const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-            const start = new Date(startDateTime).toLocaleString('en-US', options);
-            const end = new Date(endDateTime).toLocaleString('en-US', options);
-            setDateTimeText(`${start} - ${end}`);
+            const Newtime = new Date(time).toLocaleString('en-US', options);
+            setDateTimeText(Newtime);
+            console.log(Newtime);
         }
-    }, [startDateTime, endDateTime]);
-
-    const handleBack = () => {
-        if (currentStep > 1) {
-            onBack();
-        }
-    };
+    }, [time]);
 
     const handleDateTime = () => {
         setReviewFormCurrentStep(currentStep);
-        setCurrentStep(4);
     };
 
     const toggleEditable = () => {
@@ -98,87 +95,76 @@ export default function EditFormNoCircle({ currentStep, setCurrentStep, taskName
         }
     };
     return (
-        <>
-            <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
-                <View style={stylesReview.modalTopNavLeft}>
-                    <TouchableOpacity onPress={onClose} style={[styles.backLinkInline]}>
-                        <ArrowLeftIcon style={styles.backLinkIcon} />
-                    </TouchableOpacity>
-                    <TextInput
-                        style={[stylesReview.field, stylesReview.fieldTask]}
-                        placeholder="Task name"
-                        placeholderTextColor="#737373"
-                        onChangeText={setTaskName}
-                        value={taskName}
-                        editable={isEditable}
-                    />
-                </View>
-
-                <View>
-                    <TouchableOpacity style={stylesReview.editIconWrapper} onPress={toggleEditable}>
-                        {isEditable ? (
-                            <CheckIcon width={22} height={22} color={'#000'} style={stylesReview.checkIcon} />
-                        ) : (
-                            <EditIcon width={22} height={22} color={'#000'} style={stylesReview.editIcon} />
-                        )}
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View style={[styles.contentContainer, stylesReview.topDescription]}>
-                <View style={stylesReview.topDescription}>
-                    <Text>{description}</Text>
-                </View>
-            </View>
-            <View style={stylesReview.group}>
-                <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                    <Text style={stylesReview.groupTitle}>Date & Time</Text>
-                    <TouchableOpacity onPress={handleDateTime} style={stylesReview.fieldLink} disabled={!isEditable}>
-                        <Text style={[stylesReview.fielText, isEditable && stylesReview.fieldLinkText]}>
-                            {time}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View style={stylesReview.group}>
-                <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                    <Text style={stylesReview.groupTitle}>Location </Text>
-                    <LocationPicker selectedLocation={selectedLocation} disabled={!isEditable} />
-                </View>
-            </View>
-            <View style={stylesReview.group}>
-                <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                    <Text style={stylesReview.groupTitle}>Assignee</Text>
-                    {firstName && lastName &&
-                        <View style={stylesReview.assignee}>
-                            <View style={[stylesReview.emojiWrapper, { borderColor: color }]}>
-                                <Text style={stylesReview.emoji}>
-                                    {emoji}
-                                </Text>
-                            </View>
-
-                            <View style={stylesReview.nameWrapper}>
-                                <Text style={stylesReview.name}>
-                                    {firstName} {lastName}
-                                </Text>
-                            </View>
-                        </View>
-                    }
-                </View>
-            </View>
-            {isEditable &&
-                <View style={styles.contentContainer}>
-                    <View style={[styles.submitButtonContainer, stylesReview.submitButtonContainer]}>
-                        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                            <ArrowIcon width={18} height={18} color={'#fff'} />
+        <Modal
+        >
+            <View style={{maxHeight: 400}}>
+                <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
+                    <View style={stylesReview.modalTopNavLeft}>
+                        <TouchableOpacity onPress={onClose} style={[styles.backLinkInline]}>
+                            <ArrowLeftIcon style={styles.backLinkIcon} />
                         </TouchableOpacity>
+                        <Text style={[stylesReview.field, stylesReview.fieldTask]}>
+                            {taskName}
+                        </Text>
+                    </View>
+
+                </View>
+                <View style={[styles.contentContainer, stylesReview.topDescription]}>
+                    <View style={stylesReview.topDescription}>
+                        <Text style={[styles.text]}>{description}</Text>
                     </View>
                 </View>
-            }
-        </>
+                <View style={stylesReview.group}>
+                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
+                        <Text style={stylesReview.groupTitle}>Date & Time</Text>
+                        <View style={stylesReview.fieldLink}>
+                            <Text style={[stylesReview.fielText]}>
+                                {dateTimeText}
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+                <View style={stylesReview.group}>
+                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
+                        <Text style={stylesReview.groupTitle}>Location </Text>
+                        <View style={stylesReview.fieldLink}>
+                            <Text>
+                                <LocationPicker selectedLocation={selectedLocation} disabled={!isEditable}/>
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+                <View style={[stylesReview.group, {borderBottomWidth: 0}]}>
+                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
+                        <Text style={[stylesReview.groupTitle, {alignSelf: 'flex-start'}]}>Notes </Text>
+                        <View style={[stylesReview.fieldLink, stylesReview.taskNotes,{height: 140}]}>
+                            <ScrollView>
+                                <Text style={[stylesReview.fielText, {textAlign: 'justify'}]}>
+                                    {notes}
+                                </Text>
+                            </ScrollView>
+                        </View>
+                    </View>
+                </View>
+            </View>
+            
+            <View style={{width: 300, alignSelf: 'center'}}>
+                <Button 
+                    textStyle={{ fontSize: 20 }}
+                    title="I'm In!" 
+                    onPress={() => console.log("I'm in")} 
+                />
+            </View>
+
+        </Modal>
     )
 }
 
 const stylesReview = StyleSheet.create({
+    taskNotes:{
+        textAlignVertical: 'top',
+        flexShrink: 1,
+    },
     modalTopNav: {
         justifyContent: 'space-between',
     },
@@ -207,8 +193,7 @@ const stylesReview = StyleSheet.create({
     },
     fieldLink: {
         flexDirection: 'row',
-        justifyContent: 'flex-end',
-        flexShrink: 1,
+        justifyContent: 'flex-start',
         flexGrow: 1,
     },
     fielText: {
@@ -298,6 +283,7 @@ const stylesReview = StyleSheet.create({
         gap: 10,
     },
     groupTitle: {
+        width: 100,
         color: '#9F9F9F',
         fontSize: 14,
         fontFamily: 'poppins-regular',
