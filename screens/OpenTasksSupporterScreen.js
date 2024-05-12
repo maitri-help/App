@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, Animated} from 'react-native';
 import styles from '../Styles';
 import Task from '../components/Task';
 import TaskClickable from '../components/TaskClickable';
@@ -13,8 +13,35 @@ export default function OpenTasksSupporterScreen({ navigation }) {
     const [isEditFormOpen, setIsEditFormOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
 
+    const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+    function formatTime(time) {
+        if (time) {
+            const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+            const formattedTime = new Date(time).toLocaleString('en-US', options);
+            return formattedTime;
+        }
+        return time;
+    }
+
+    useEffect(() => {
+        if (isEditFormOpen) {
+          Animated.timing(overlayOpacity, {
+            toValue: 1,
+            duration: 300,
+            useNativeDriver: true,
+          }).start();
+        } else {
+          Animated.timing(overlayOpacity, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }).start();
+        }
+      }, [{isEditFormOpen}]);
+
     const handleTaskClick = (task) => {
-        console.log('Task clicked:', task); // This will log the clicked task
+        console.log('Task clicked:', task);
         setSelectedTask(task);
         setIsEditFormOpen(true);
       };
@@ -45,13 +72,26 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         console.log("filter");
     };
 
-    const OpenTasks = [
-        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: '2024-05-08T20:55:00.000Z', emoji: '🤖', location: "47.47480786890561,19.176439097637857", description: "Call desc" },
-        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: '2024-05-08T20:55:00.000Z', emoji: '🩺', location: "47.47480786890561,19.176439097637857", description: "Med desc"  },
-        { id: 3, title: 'Buy groceries', assignee: ['Ross Geller', 'Rachel Green'], time: '2024-05-08T20:55:00.000Z', emoji: '💞', location: "47.47480786890561,19.176439097637857", description: "Buy desc"  },
-        { id: 4, title: 'Physiotherapy appointment', time: '2024-05-08T20:55:00.000Z', emoji: '🩺', location: "47.47480786890561,19.176439097637857", description: "Phys desc"  },
-        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: '2024-05-08T20:55:00.000Z', emoji: '😊', location: "47.47480786890561,19.176439097637857", description: "Remember desc"  },
+    var OpenTasks = [
+        { id: 1, title: 'Buy groceries', time: '2024-05-12T15:00:00.000Z', emoji: '🛒', location: "47.47480786890561,19.176439097637857", description: "Milk, eggs, bread, and fruits", assignee: "Alice", note: "Don't forget to check for any ongoing discounts at the store.Don't forget to check for any ongoing discounts at the store.Don't forget to check for any ongoing discounts at the store.Don't forget to check for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store." },
+        { id: 3, title: 'Workout session', time: '2024-05-13T18:00:00.000Z', emoji: '💪', location: "47.4925, 19.0513", description: "Cardio and strength training", assignee: "Charlie", note: "Remember to hydrate well before and after the workout." },
+        { id: 4, title: 'Read book', time: '2024-05-12T20:00:00.000Z', emoji: '📖', location: "47.4979, 19.0402", description: "Chapter 5-8 of 'Sapiens' by Yuval Noah Harari", assignee: "David", note: "Find a quiet spot to fully immerse yourself in the reading." },
+        { id: 5, title: 'Write report', time: '2024-05-15T12:00:00.000Z', emoji: '📝', location: "47.4818, 19.0790", description: "Data analysis findings", assignee: "Emma", note: "Organize your findings logically before starting to write." },
+        { id: 6, title: 'Call mom', time: '2024-05-12T17:30:00.000Z', emoji: '📞', location: "47.4940, 19.0488", description: "Discuss weekend plans", assignee: "Frank", note: "Ask about her recent doctor's appointment." },
+        { id: 7, title: 'Pay bills', time: '2024-05-14T11:00:00.000Z', emoji: '💸', location: "47.4893, 19.0650", description: "Electricity, water, and internet bills", assignee: "Grace", note: "Make sure all bills are paid before their due dates." },
+        { id: 8, title: 'Visit dentist', time: '2024-05-17T14:45:00.000Z', emoji: '😬', location: "47.4966, 19.0521", description: "Biannual check-up and cleaning", assignee: "Hannah", note: "Arrive 15 minutes early for the appointment." },
+        { id: 2, title: 'Attend meeting', time: '2024-05-14T09:30:00.000Z', emoji: '📅', location: "47.512174, 19.058934", description: "Discuss project updates", assignee: "Bob", note: "Prepare " },
+        
     ];
+      
+    // Ha mindenképp jon a task-al assignee, eltávolítjuk az assignee-t.
+    const removeAssigneeAttribute = (tasks) => {
+        return tasks.map(task => {
+            const { assignee, ...rest } = task;
+            return rest;
+        });
+    };
+    OpenTasks = removeAssigneeAttribute(OpenTasks);
 
     const renderTasks = (tasks) => {
         if (tasks.length === 0) {
@@ -77,28 +117,38 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                     );
             }
 
-        
         return (
-
             <View style={stylesSuppOT.tasksContainer}>
-        <ScrollView contentContainerStyle={stylesSuppOT.tasksScroll}>
-          {tasks.map((task) => (
-            <TouchableOpacity
-              key={task.id}
-              onPress={() => handleTaskClick(task)} // Log when task is clicked
-            >
-              <TaskClickable
-                key={task.id} 
-                title={task.title} 
-                assignee={task.assignee} 
-                time={task.time} 
-                emoji={task.emoji} 
-                onTaskClick={() => handleTaskClick(task)}
-              />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+                <ScrollView contentContainerStyle={stylesSuppOT.tasksScroll}>
+                {tasks.map((task) => (
+                    <TouchableOpacity
+                    key={task.id}
+                    onPress={() => handleTaskClick(task)}
+                    >
+                        <TaskClickable
+                            key={task.id} 
+                            title={task.title} 
+                            assignee={task.assignee} 
+                            time={formatTime(task.time)} 
+                            emoji={task.emoji} 
+                            onTaskClick={() => handleTaskClick(task)}
+                        />
+                    </TouchableOpacity>
+                ))}
+                </ScrollView>
+
+                {isEditFormOpen && 
+                    <EditFormNoCircle 
+                        taskName={selectedTask.title} 
+                        description={selectedTask.description} 
+                        selectedLocation={selectedTask.location}
+                        time={selectedTask.time}
+                        onClose={handleClose} 
+                        notes={selectedTask.note}
+                    />
+                }
+            </View>
+      
         );
     };
 
@@ -120,20 +170,12 @@ export default function OpenTasksSupporterScreen({ navigation }) {
             <View style={stylesSuppOT.tabsContentContainer}>
                 {renderTasks(OpenTasks)}
             </View>
-
-            {isEditFormOpen && 
-                <EditFormNoCircle
-                    taskName={selectedTask.title} 
-                    description={selectedTask.description} 
-                    selectedLocation={selectedTask.location}
-                    time={selectedTask.time}
-                    // pass other task properties as needed
-                    onClose={() => setIsEditFormOpen(false)} 
-                />
-            }
-
+            
+            {(isEditFormOpen) && (
+    <Animated.View style={[styles.overlay, { opacity: overlayOpacity}]} />  // Add zIndex: 0 here
+)}
         </SafeAreaView>
-
+        
     );
 }
 
