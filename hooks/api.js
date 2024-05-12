@@ -61,6 +61,10 @@ export function updateTask(data, header, taskId) {
     });
 }
 
+export function deleteTask(header, taskId) {
+    return axios.delete(`${baseUrl}/task/${taskId}`, header);
+}
+
 export function getTasksForUser(userId, accessToken) {
     return axios.get(`${baseUrl}/task/user/${userId}`, {
         headers: {

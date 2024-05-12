@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import EditIcon from '../../assets/icons/edit-icon.svg';
 import CheckIcon from '../../assets/icons/check-icon.svg';
+import CloseIcon from '../../assets/icons/close-icon.svg';
 import LocationPicker from './LocationPicker';
-import { updateTask } from '../../hooks/api';
+import { updateTask, deleteTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 
@@ -14,6 +15,12 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
 
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
     const toast = useToast();
+
+    const [confirmationVisible, setConfirmationVisible] = useState(false);
+
+    const handleCancel = () => {
+        setConfirmationVisible(false);
+    };
 
     useEffect(() => {
         if (startDateTime && endDateTime) {
@@ -88,7 +95,6 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
             toast.show('Task updated successfully', { type: 'success' });
 
             onClose();
-
             onTaskCreated();
 
         } catch (error) {
@@ -97,6 +103,40 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
             toast.show('Unsuccessful task update', { type: 'error' });
         }
     };
+
+    const handleDelete = async () => {
+        try {
+            const accessToken = await getAccessToken();
+
+            if (!accessToken) {
+                console.error('Access token not found. Please log in.');
+                return;
+            }
+
+            const header = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            }
+
+            const response = await deleteTask(header, taskId);
+
+            console.log("Task deleted successfully:", response.data);
+
+            toast.show('Task deleted successfully', { type: 'success' });
+
+            handleCancel();
+            onClose();
+            onTaskCreated();
+
+        } catch (error) {
+            console.error("Error deleting task:", error);
+
+            toast.show('Unsuccessful task deletion', { type: 'error' });
+        }
+    };
+
+
     return (
         <>
             <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
@@ -114,7 +154,11 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                     />
                 </View>
 
-                <View>
+                <View style={stylesReview.icons}>
+                    <TouchableOpacity style={stylesReview.deleteIconWrapper} onPress={() => setConfirmationVisible(true)}>
+                        <CloseIcon width={20} height={20} color={'#FF7070'} style={stylesReview.deleteIcon} />
+                    </TouchableOpacity>
+
                     <TouchableOpacity style={stylesReview.editIconWrapper} onPress={toggleEditable}>
                         {isEditable ? (
                             <CheckIcon width={22} height={22} color={'#000'} style={stylesReview.checkIcon} />
@@ -206,6 +250,25 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                     </View>
                 </View>
             }
+            {confirmationVisible && (
+                <Modal visible={confirmationVisible} animationType='fade' onRequestClose={handleCancel} transparent>
+                    <TouchableOpacity onPress={handleCancel} style={stylesReview.innerModalContainer}>
+                        <View style={stylesReview.innerModalContent}>
+                            <View style={stylesReview.innerModalTexts}>
+                                <Text style={stylesReview.innerModalTitle}>Are you sure you want to delete this task?</Text>
+                            </View>
+                            <View style={stylesReview.innerModalButtons}>
+                                <TouchableOpacity style={[stylesReview.innerModalButton, stylesReview.innerModalButtonRed]} onPress={handleDelete}>
+                                    <Text style={[stylesReview.innerModalButtonText, stylesReview.innerModalButtonRedText]}>Delete</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[stylesReview.innerModalButton, stylesReview.innerModalButtonWhite]} onPress={handleCancel}>
+                                    <Text style={[stylesReview.innerModalButtonText, stylesReview.innerModalButtonWhiteText]}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+            )}
         </>
     )
 }
@@ -334,5 +397,79 @@ const stylesReview = StyleSheet.create({
         fontSize: 14,
         fontFamily: 'poppins-regular',
         lineHeight: 18,
+    },
+    icons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 20,
+    },
+    innerModalContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    innerModalContent: {
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        maxWidth: 350,
+        paddingHorizontal: 20,
+        paddingVertical: 30,
+    },
+    innerModalTexts: {
+        marginBottom: 20,
+    },
+    innerModalTitle: {
+        color: '#000',
+        fontSize: 14,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+        marginBottom: 5
+    },
+    innerModalSubtitle: {
+        color: '#000',
+        fontSize: 12,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+    },
+    innerModalButtons: {
+        flexDirection: 'row',
+        gap: 10,
+        justifyContent: 'center',
+    },
+    innerModalButton: {
+        alignItems: 'center',
+        minWidth: 125,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 16,
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 8,
+    },
+    innerModalButtonRed: {
+        backgroundColor: '#FF7070',
+    },
+    innerModalButtonWhite: {
+        backgroundColor: '#fff',
+    },
+    innerModalButtonText: {
+        fontSize: 14,
+        fontFamily: 'poppins-medium',
+        lineHeight: 18,
+    },
+    innerModalButtonRedText: {
+        color: '#fff',
+    },
+    innerModalButtonWhiteText: {
+        color: '#000',
     },
 });
