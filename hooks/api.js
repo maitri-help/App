@@ -40,25 +40,25 @@ export function updateTask(data, header, taskId) {
         console.log('Task updated successfully:', response.data);
         return response.data;  // Return the data part of the response object
     })
-    .catch(error => {
-        // Handle errors here
-        if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            console.error('Error response:', error.response.data);
-            console.error('Error status:', error.response.status);
-            console.error('Error headers:', error.response.headers);
-            throw new Error(`Server responded with status code ${error.response.status}: ${error.response.data.message}`);
-        } else if (error.request) {
-            // The request was made but no response was received
-            console.error('Error request:', error.request);
-            throw new Error('No response was received from the server');
-        } else {
-            // Something happened in setting up the request that triggered an Error
-            console.error('Error message:', error.message);
-            throw new Error('Error in setting up the request: ' + error.message);
-        }
-    });
+        .catch(error => {
+            // Handle errors here
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.error('Error response:', error.response.data);
+                console.error('Error status:', error.response.status);
+                console.error('Error headers:', error.response.headers);
+                throw new Error(`Server responded with status code ${error.response.status}: ${error.response.data.message}`);
+            } else if (error.request) {
+                // The request was made but no response was received
+                console.error('Error request:', error.request);
+                throw new Error('No response was received from the server');
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.error('Error message:', error.message);
+                throw new Error('Error in setting up the request: ' + error.message);
+            }
+        });
 }
 
 export function deleteTask(header, taskId) {
@@ -70,5 +70,11 @@ export function getTasksForUser(userId, accessToken) {
         headers: {
             Authorization: `Bearer ${accessToken}`
         }
+    });
+}
+
+export function circlesUsers(header) {
+    return axios.get(`${baseUrl}/users/circles-users`, {
+        headers: header
     });
 }

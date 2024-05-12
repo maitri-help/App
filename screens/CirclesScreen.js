@@ -6,6 +6,8 @@ import CircleItem from '../components/CircleItem';
 import PlusIcon from '../assets/icons/plus-icon.svg';
 import SendInviteScreen from './SendInviteScreen';
 import SupporterCardScreen from './SupporterCardScreen';
+import { circlesUsers } from '../hooks/api';
+import { checkAuthentication } from '../authStorage';
 
 export default function CirclesScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Circles');
@@ -17,14 +19,38 @@ export default function CirclesScreen({ navigation }) {
     const [circleItemsContent, setCircleItemsContent] = useState([]);
 
     useEffect(() => {
+        fetchCircleUsers();
+    }, []);
+
+    const fetchCircleUsers = async () => {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const response = await circlesUsers({
+                    Authorization: `Bearer ${userData.accessToken}`
+                });
+                console.log('Circle users response:', response); // Log response for debugging
+                const circleData = response.data;
+    
+                // Now you can set the circle data in state
+                setCircleItemsContent(circleData);
+            } else {
+                console.error('No user data found');
+            }
+        } catch (error) {
+            console.error('Error fetching circle users:', error);
+        }
+    };
+
+    useEffect(() => {
         generateRandomCircleItems();
     }, []);
 
     const generateRandomCircleItems = () => {
         const circleItemsContent = [
-            getRandomItem(tabContents.Third) || { firstName: 'Peer', emoji: null },
-            getRandomItem(tabContents.Second) || { firstName: 'Friend', emoji: null },
-            getRandomItem(tabContents.First) || { firstName: 'Parent', emoji: null },
+            getRandomItem(circleItemsContent?.Third) || { firstName: 'Peer', emoji: null },
+            getRandomItem(circleItemsContent?.Second) || { firstName: 'Friend', emoji: null },
+            getRandomItem(circleItemsContent?.First) || { firstName: 'Parent', emoji: null },
         ];
         setCircleItemsContent(circleItemsContent);
     };
@@ -58,216 +84,46 @@ export default function CirclesScreen({ navigation }) {
         setActiveTab(tab);
     };
 
-    const tabContents = {
-        First: [
-            {
-                firstName: 'Monica',
-                lastName: 'Geller',
-                nickname: 'Monica',
-                color: '#A571F9',
-                emoji: '🦄',
-                circle: 'First',
-                tasks: [
-                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
-                    { task: 'Help with burea', time: '-' },
-                    { task: 'Tidy up and clean the house', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'monica.geller@example.com'
-            },
-            {
-                firstName: 'Richard',
-                lastName: 'Burke',
-                emoji: '🙋‍♂️',
-                circle: 'First',
-                tasks: [
-                    { task: 'Call the National Insurance', time: 'Wednesday, 1 pm' },
-                    { task: 'Take medication', time: 'Friday, 9 am' },
-                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'richard.burke@example.com'
-            },
-            {
-                firstName: 'Emily',
-                lastName: 'Waltham',
-                emoji: '🙋‍♀️',
-                circle: 'First',
-                tasks: [
-                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
-                    { task: 'Help with burea', time: '-' },
-                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'emily.waltham@example.com'
-            },
-        ],
-        Second: [
-            {
-                firstName: 'Chandler',
-                lastName: 'Bing',
-                nickname: 'Chandler',
-                color: '#FF8A35',
-                emoji: '🦔',
-                circle: 'Second',
-                tasks: [
-                    { task: 'Take out biggie', time: 'Today, 6 pm' },
-                    { task: 'Transportation to Sheba Hospital', time: 'Tomorrow, 8 am' },
-                    { task: 'Tidy up and clean the house', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'chandler.bing@example.com'
-            },
-            {
-                firstName: 'Ross',
-                lastName: 'Geller',
-                nickname: 'Ross',
-                color: '#A571F9',
-                emoji: '👋',
-                circle: 'Second',
-                tasks: [
-                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
-                    { task: 'Help with burea', time: '-' },
-                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'ross.geller@example.com'
-            },
-            {
-                firstName: 'Ben',
-                lastName: 'Geller',
-                color: '#7FCC72',
-                emoji: '✌️',
-                circle: 'Second',
-                tasks: [
-                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
-                    { task: 'Help with burea', time: '-' },
-                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'ben.geller@example.com'
-            },
-            {
-                firstName: 'Janice',
-                lastName: 'Hosenstein',
-                color: '#FF8A35',
-                emoji: '😊',
-                circle: 'Second',
-                tasks: [
-                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
-                    { task: 'Help with burea', time: '-' },
-                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'janice.hosenstein@example.com'
-            },
-        ],
-        Third: [
-            {
-                firstName: 'Rachel',
-                lastName: 'Green',
-                nickname: 'Rach',
-                color: '#26847B',
-                emoji: '🤘',
-                circle: 'Third',
-                tasks: [
-                    { task: 'Water the plants', time: 'Tommorow, 1 pm' },
-                    { task: 'Buy groceries', time: 'Wednesday, 6 pm' },
-                    { task: 'Physiotherapy appointment', time: 'Monday, 3 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'rachel.green@example.com'
-            },
-            {
-                firstName: 'Phoebe',
-                lastName: 'Buffay',
-                nickname: 'Phoebes',
-                color: '#E5D9B6',
-                emoji: '🐱',
-                circle: 'Third',
-                tasks: [
-                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
-                    { task: 'Help with burea', time: '-' },
-                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'phoebe.buffay@example.com'
-            },
-            {
-                firstName: 'Joey',
-                lastName: 'Tribbiani',
-                nickname: 'Joe',
-                color: '#7FCC72',
-                emoji: '💘',
-                circle: 'Third',
-                tasks: [
-                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
-                    { task: 'Help with burea', time: '-' },
-                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'joey.tribbiani@example.com'
-            },
-            {
-                firstName: 'Gunther',
-                lastName: '',
-                color: '#26847B',
-                emoji: '🧡',
-                circle: 'Third',
-                tasks: [
-                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
-                    { task: 'Help with burea', time: '-' },
-                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'gunther@example.com'
-            },
-            {
-                firstName: 'Mike',
-                lastName: 'Hannigan',
-                emoji: '🦁',
-                circle: 'Third',
-                tasks: [
-                    { task: 'Ride to the doctor', time: 'Tommorow, 2 pm' },
-                    { task: 'Help with burea', time: '-' },
-                    { task: 'Ride to the doctor', time: 'Monday, 2 pm' },
-                ],
-                phone: '050-555-555',
-                email: 'mike.hannigan@example.com'
-            },
-        ],
-    };
-
     const hasEmptyContent = () => {
         if (activeTab === 'All') {
             const allContent = generateAllTabContent();
             return allContent.length === 0;
         } else if (activeTab === 'Circles') {
-            return tabContents.First.length === 0 && tabContents.Second.length === 0 && tabContents.Third.length === 0;
+            return (
+                (circleItemsContent.First ? circleItemsContent.First.length === 0 : true) &&
+                (circleItemsContent.Second ? circleItemsContent.Second.length === 0 : true) &&
+                (circleItemsContent.Third ? circleItemsContent.Third.length === 0 : true)
+            );
         } else {
-            return tabContents[activeTab].length === 0;
+            return circleItemsContent[activeTab] ? circleItemsContent[activeTab].length === 0 : true;
         }
     };
 
     const generateAllTabContent = () => {
         const allContent = [];
         ['First', 'Second', 'Third'].forEach((tab) => {
-            tabContents[tab].forEach((item) => {
-                allContent.push({ ...item, circle: `${tab}` });
-            });
+            if (Array.isArray(circleItemsContent[tab])) {
+                circleItemsContent[tab].forEach((item) => {
+                    allContent.push({ ...item, circle: `${tab}` });
+                });
+            }
         });
         return allContent;
     };
 
     const getRandomItem = (array) => {
-        return array[Math.floor(Math.random() * array.length)];
+        if (Array.isArray(array) && array.length > 0) {
+            return array[Math.floor(Math.random() * array.length)];
+        } else {
+            return null;
+        }
     };
 
     const circlesContent = (tab) => {
         if (tab === 'Circles') {
-            const additionalItemCountThird = Math.max(0, tabContents.Third.length - 1);
-            const additionalItemCountSecond = Math.max(0, tabContents.Second.length - 1);
-            const additionalItemCountFirst = Math.max(0, tabContents.First.length - 1);
+            const additionalItemCountThird = Math.max(0, (circleItemsContent.Third?.length || 0) - 1);
+            const additionalItemCountSecond = Math.max(0, (circleItemsContent.Second?.length || 0) - 1);
+            const additionalItemCountFirst = Math.max(0, (circleItemsContent.First?.length || 0) - 1);
 
             return (
                 <>
@@ -314,7 +170,7 @@ export default function CirclesScreen({ navigation }) {
                 </View>
             );
         } else {
-            const tabContent = tabContents[tab] || [];
+            const tabContent = circleItemsContent[tab] || [];
             if (tabContent.length === 0) {
                 return (
                     <View style={[styles.contentContainer, stylesCircles.circleListEmptyContainer]}>
@@ -410,9 +266,8 @@ export default function CirclesScreen({ navigation }) {
                 lastName={selectedCircleItem ? selectedCircleItem.lastName : ''}
                 circle={selectedCircleItem ? selectedCircleItem.circle : ''}
                 tasks={selectedCircleItem ? selectedCircleItem.tasks : []}
-                phone={selectedCircleItem ? selectedCircleItem.phone : ''}
+                phone={selectedCircleItem ? selectedCircleItem.phoneNumber : ''}
                 email={selectedCircleItem ? selectedCircleItem.email : ''}
-                nickname={selectedCircleItem ? selectedCircleItem.nickname : ''}
             />
         </>
     );
@@ -469,7 +324,7 @@ const stylesCircles = StyleSheet.create({
     },
     floatingButtonWrapper: {
         position: 'absolute',
-        bottom: 10,
+        bottom: 0,
         right: 0,
         flexDirection: 'row',
         alignItems: 'flex-end',
@@ -489,14 +344,14 @@ const stylesCircles = StyleSheet.create({
     floatingButtonEmptyImg: {
         width: 60,
         height: 15,
-        resizeMode: 'contain'
+        resizeMode: 'contain',
     },
     floatingButtonEmptyText: {
         color: '#000',
         fontSize: 14,
         fontFamily: 'poppins-regular',
         lineHeight: 18,
-        marginBottom: 9,
+        marginBottom: 10,
     },
     circleListEmptyContainer: {
         flex: 1,

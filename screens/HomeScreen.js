@@ -4,12 +4,14 @@ import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import CustomBox from '../components/CustomBox';
 import Task from '../components/Task';
+import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
     const [firstName, setFirstName] = useState('');
     const [greetingText, setGreetingText] = useState('');
+    const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
         async function fetchUserData() {
@@ -38,26 +40,29 @@ export default function HomeScreen({ navigation }) {
         fetchUserData();
     }, []);
 
+    useEffect(() => {
+        async function fetchTasks() {
+            try {
+                const userData = await checkAuthentication();
+                if (userData) {
+                    console.log('User Data:', userData);
+                    console.log('Access token:', userData.accessToken);
+
+                    const tasksResponse = await getTasksForUser(userData.userId, userData.accessToken);
+                    setTasks(tasksResponse.data);
+                } else {
+                    console.error('No user data found');
+                }
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            }
+        }
+        fetchTasks();
+    }, []);
+
     const handleTabPress = (tab) => {
         setActiveTab(tab);
     };
-
-    const allTasks = [
-        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', emoji: '🤖' },
-        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', emoji: '🩺' },
-        { id: 3, title: 'Buy groceries', assignee: ['Ross Geller', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', emoji: '💞' },
-        { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
-        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', emoji: '😊' },
-    ];
-
-    const unassignedTasks = [
-        { id: 3, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
-    ];
-
-    const personalTasks = [
-        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', emoji: '🤖' },
-        { id: 4, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', emoji: '😊' },
-    ];
 
     const renderTasks = (tasks) => {
         if (tasks.length === 0) {
@@ -133,11 +138,23 @@ export default function HomeScreen({ navigation }) {
             }
         }
 
+        let filteredTasks = tasks;
+        switch (activeTab) {
+            case 'Unassigned':
+                filteredTasks = tasks.filter(task => !task.assignee);
+                break;
+            case 'Personal':
+                filteredTasks = tasks.filter(task => task.circles.some(circle => circle.circleLevel === 'Personal'));
+                break;
+            default:
+                break;
+        }
+
         return (
             <View style={stylesHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesHome.tasksScroll}>
-                    {tasks.map(task => (
-                        <Task key={task.id} title={task.title} assignee={task.assignee} time={task.time} emoji={task.emoji} />
+                    {filteredTasks.map(task => (
+                        <Task key={task.taskId} title={task.title} assignee={task.assignee} startTime={task.startDateTime} endTime={task.endDateTime} emoji={task.creator.emoji} />
                     ))}
                 </ScrollView>
             </View>
@@ -150,13 +167,13 @@ export default function HomeScreen({ navigation }) {
                 <Text style={stylesHome.greetingsText}>{greetingText} {firstName}!</Text>
                 <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={stylesHome.bellWrapper}>
                     <BellIcon style={stylesHome.bellIcon} />
-                    <View style={stylesHome.indicator}></View>
+                    {/* <View style={stylesHome.indicator}></View> */}
                 </TouchableOpacity>
             </View>
             <View style={stylesHome.boxesContainer}>
                 <ScrollView horizontal={true} style={stylesHome.boxesScroll}>
                     <View style={{ marginLeft: 15 }} />
-                    <CustomBox
+                    {/* <CustomBox
                         title="Rachel Green"
                         subtitle="Has completed"
                         largerText="Do the Laundry"
@@ -175,10 +192,10 @@ export default function HomeScreen({ navigation }) {
                         bgColor="#E1D0FD"
                         bgImg={3}
                         bgImgColor="#EDE3FE"
-                    />
+                    /> */}
                     <CustomBox
                         title="Nothing to do?"
-                        buttons={[{ title: 'Add a new task' }]}
+                        buttons={[{ title: 'Add a new task', onPress: (() => navigation.navigate('Assignments')) }]}
                         bgColor="#E5F5E3"
                         bgImgColor="#D6EFD2"
                         bgImg={4}
@@ -190,7 +207,7 @@ export default function HomeScreen({ navigation }) {
                     />
                     <CustomBox
                         title="Come add family & friends to your circles"
-                        buttons={[{ title: 'Add a new person', bgColor: '#fff', textColor: '#000' }]}
+                        buttons={[{ title: 'Add a new person', bgColor: '#fff', textColor: '#000', onPress: (() => navigation.navigate('Circles')) }]}
                         bgColor="#FFE8D7"
                         bgImgColor="#FFD8BC"
                         bgImg={2}
@@ -212,7 +229,7 @@ export default function HomeScreen({ navigation }) {
             </View>
 
             <View style={stylesHome.tabsContentContainer}>
-                {activeTab === 'All' ? renderTasks(allTasks) : activeTab === 'Unassigned' ? renderTasks(unassignedTasks) : activeTab === 'Personal' ? renderTasks(personalTasks) : null}
+                {renderTasks(tasks)}
             </View>
         </SafeAreaView>
     );

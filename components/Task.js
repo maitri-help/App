@@ -1,8 +1,19 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
 
-export default function Task({ title, assignee, time, emoji }) {
+export default function Task({ title, assignee, startTime, endTime, emoji }) {
     const formattedAssignee = Array.isArray(assignee) ? assignee.join(', ') : assignee;
+
+    const formatDateTime = () => {
+        const formattedStartDateTime = formatDate(startTime);
+        const formattedEndDateTime = formatDate(endTime);
+        return `${formattedStartDateTime} - ${formattedEndDateTime}`;
+      };
+    
+      const formatDate = (date) => {
+        const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+        return new Date(date).toLocaleDateString('en-US', options);
+      };
 
     return (
         <TouchableOpacity style={stylesTask.taskContainer}>
@@ -14,7 +25,7 @@ export default function Task({ title, assignee, time, emoji }) {
             <View style={stylesTask.taskInfoContainer}>
                 <Text style={stylesTask.taskTitle}>{title}</Text>
                 {assignee && <Text style={stylesTask.taskAssignee}>{formattedAssignee}</Text>}
-                <Text style={stylesTask.taskTime}>{time}</Text>
+                <Text style={stylesTask.taskTime}>{formatDateTime()}</Text>
             </View>
         </TouchableOpacity>
     );

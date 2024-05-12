@@ -454,7 +454,7 @@ const stylesCal = StyleSheet.create({
     },
     floatingButtonWrapper: {
         position: 'absolute',
-        bottom: 10,
+        bottom: 0,
         right: 0,
         flexDirection: 'row',
         alignItems: 'flex-end',
@@ -492,10 +492,10 @@ const stylesCal = StyleSheet.create({
     },
     calendarEmptyArrow: {
         position: 'absolute',
-        bottom: 15,
-        right: 70,
+        bottom: 11,
+        right: 71,
         width: 60,
-        height: 20,
+        height: 15,
         resizeMode: 'contain'
     },
 });

@@ -55,6 +55,7 @@ export default function CustomBox({ title, subtitle, largerText, secondSubtitle,
                                     buttonStyle={button.bgColor ? { backgroundColor: button.bgColor } : null}
                                     textStyle={button.textColor ? { color: button.textColor } : null}
                                     title={button.title}
+                                    onPress={button.onPress}
                                 />
                             ))}
                         </View>

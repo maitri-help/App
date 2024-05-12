@@ -205,7 +205,7 @@ export default styles = StyleSheet.create({
         borderRadius: 25,
         marginLeft: 1,
         marginRight: 15,
-        marginBottom: 20,
+        marginBottom: 30,
         position: 'relative',
         zIndex: 2,
         shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.7)' : '#000',

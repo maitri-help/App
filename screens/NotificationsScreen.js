@@ -12,23 +12,23 @@ if (Platform.OS === 'android') {
 
 export default function NotificationsScreen({ navigation }) {
     const notificationsNew = [
-        { id: 1, assignee: 'Monica Geller', title: `assigned to take out the dog`, time: '2 min ago', emoji: '🐶' },
-        { id: 2, assignee: 'Chandler Bing', title: `can't take out the dog`, time: '4 hours ago', emoji: '🐶' },
-        { id: 3, assignee: 'Joey Tribbiani', title: 'assigned to ride to the hospital', time: '3 days ago', emoji: '🚙' },
+        // { id: 1, assignee: 'Monica Geller', title: `assigned to take out the dog`, time: '2 min ago', emoji: '🐶' },
+        // { id: 2, assignee: 'Chandler Bing', title: `can't take out the dog`, time: '4 hours ago', emoji: '🐶' },
+        // { id: 3, assignee: 'Joey Tribbiani', title: 'assigned to ride to the hospital', time: '3 days ago', emoji: '🚙' },
     ];
 
     const notificationsPending = [
-        { id: 1, assignee: 'Rachel Green', title: `wants to join your circle`, time: '2 min ago', emoji: '✌️' },
-        { id: 2, assignee: 'Phoebe Buffay', title: `wants to join your circle`, time: '4 hours ago', emoji: '✌️' },
-        { id: 2, assignee: 'Gunther', title: `wants to join your circle`, time: '5 hours ago', emoji: '✌️' },
+        // { id: 1, assignee: 'Rachel Green', title: `wants to join your circle`, time: '2 min ago', emoji: '✌️' },
+        // { id: 2, assignee: 'Phoebe Buffay', title: `wants to join your circle`, time: '4 hours ago', emoji: '✌️' },
+        // { id: 2, assignee: 'Gunther', title: `wants to join your circle`, time: '5 hours ago', emoji: '✌️' },
     ];
 
     const notificationsEarlier = [
-        { id: 1, assignee: 'Ross Geller', title: `completed hospital Ride`, time: '4 days ago', emoji: '🚙' },
-        { id: 2, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '5 days ago', emoji: '🐶' },
-        { id: 3, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '6 days ago', emoji: '🐶' },
-        { id: 4, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '7 days ago', emoji: '🐶' },
-        { id: 5, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '8 days ago', emoji: '🐶' },
+        // { id: 1, assignee: 'Ross Geller', title: `completed hospital Ride`, time: '4 days ago', emoji: '🚙' },
+        // { id: 2, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '5 days ago', emoji: '🐶' },
+        // { id: 3, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '6 days ago', emoji: '🐶' },
+        // { id: 4, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '7 days ago', emoji: '🐶' },
+        // { id: 5, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '8 days ago', emoji: '🐶' },
     ];
 
     const [showAllEarlier, setShowAllEarlier] = useState(false);
@@ -60,9 +60,15 @@ export default function NotificationsScreen({ navigation }) {
                         <Text style={stylesNotifications.notificationsGroupTitleText}>New</Text>
                     </View>
                     <View style={stylesNotifications.notificationsGroupList}>
-                        {notificationsNew.map(notification => (
-                            <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
-                        ))}
+                        {notificationsNew.length > 0 ?
+                            notificationsNew.map(notification => (
+                                <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
+                            ))
+                            : (
+                                <View style={stylesNotifications.notificationsGroupEmpty}>
+                                    <Text style={stylesNotifications.notificationsGroupEmptyText}>No new notifications</Text>
+                                </View>
+                            )}
                     </View>
                 </View>
                 <View style={[stylesNotifications.notificationsGroup, styles.contentContainer]}>
@@ -71,11 +77,17 @@ export default function NotificationsScreen({ navigation }) {
                     </View>
                     <View style={{ overflow: 'hidden', marginBottom: 10 }}>
                         <View style={stylesNotifications.notificationsGroupList}>
-                            {notificationsPending.map((notification, index) => (
-                                index < 2 ?
-                                    <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} buttons />
-                                    : null
-                            ))}
+                            {notificationsPending.length > 0 ?
+                                notificationsPending.map((notification, index) => (
+                                    index < 2 ?
+                                        <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} buttons />
+                                        : null
+                                ))
+                                : (
+                                    <View style={stylesNotifications.notificationsGroupEmpty}>
+                                        <Text style={stylesNotifications.notificationsGroupEmptyText}>No pending requests</Text>
+                                    </View>
+                                )}
                         </View>
                     </View>
                     {notificationsPending.length > 2 && (
@@ -90,11 +102,17 @@ export default function NotificationsScreen({ navigation }) {
                     </View>
                     <View style={{ overflow: 'hidden', marginBottom: 10, height: showAllEarlier ? 'auto' : listHeight }}>
                         <View onLayout={handleListLayout} style={stylesNotifications.notificationsGroupList}>
-                            {notificationsEarlier.map((notification, index) => (
-                                index < 2 || showAllEarlier ?
-                                    <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
-                                    : null
-                            ))}
+                            {notificationsEarlier.length > 0 ?
+                                notificationsEarlier.map((notification, index) => (
+                                    index < 2 || showAllEarlier ?
+                                        <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
+                                        : null
+                                ))
+                                : (
+                                    <View style={stylesNotifications.notificationsGroupEmpty}>
+                                        <Text style={stylesNotifications.notificationsGroupEmptyText}>No older notifications</Text>
+                                    </View>
+                                )}
                         </View>
                     </View>
                     {notificationsEarlier.length > 2 && (
@@ -145,6 +163,16 @@ const stylesNotifications = StyleSheet.create({
         color: '#000',
         fontSize: 15,
         fontFamily: 'poppins-semibold',
+        lineHeight: 18,
+    },
+    notificationsGroupEmpty: {
+        paddingHorizontal: 5,
+        paddingVertical: 10
+    },
+    notificationsGroupEmptyText: {
+        color: '#000',
+        fontSize: 14,
+        fontFamily: 'poppins-regular',
         lineHeight: 18,
     }
 });

@@ -1,14 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import Circles from '../assets/img/circles.svg';
 
 export default function CirclesView({ circleItemsContent, additionalItemCountFirst, additionalItemCountSecond, additionalItemCountThird, onPressCircleItemCount, onPressCircleItem }) {
+
+    const allCircleItems = Object.values(circleItemsContent).flat();
+
+    console.log('Circles content:', allCircleItems);
 
     return (
         <View style={stylesCircles.circlesContainerInner}>
             <Circles style={stylesCircles.circles} />
             <View style={stylesCircles.circleItems}>
-                {circleItemsContent.map((item, index) => (
+                {allCircleItems.map((item, index) => (
                     <React.Fragment key={index}>
                         <View style={[stylesCircles.circleItemWrapper, index === 0 ? stylesCircles.circleItemOuterWrapper : index === 1 ? stylesCircles.circleItemMiddleWrapper : stylesCircles.circleItemInnerWrapper]}>
                             {item.emoji && (

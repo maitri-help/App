@@ -8,7 +8,7 @@ import ClockIcon from '../assets/icons/clock-icon.svg';
 import PhoneIcon from '../assets/icons/phone-classic-icon.svg';
 import EmailIcon from '../assets/icons/mail-icon.svg';
 
-export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, circle, tasks = [], phone, email, nickname, navigation }) {
+export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, circle, tasks = [], phoneNumber, email, navigation }) {
     const [selectedCircle, setSelectedCircle] = useState('Third');
     const [showInnerModal, setShowInnerModal] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
@@ -71,11 +71,11 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                                     maxLength={16}
                                     placeholder='Nickname'
                                     placeholderTextColor="#787878"
-                                    defaultValue={nickname ? nickname : ''}
+                                    defaultValue={firstName ? firstName : ''}
                                 />
                             ) : (
-                                <Text style={stylesSupporter.nickname}>
-                                    {nickname ? nickname : 'Nickname'}
+                                <Text style={stylesSupporter.firstName}>
+                                    {firstName ? firstName : 'Nickname'}
                                 </Text>
                             )}
                         </View>
@@ -120,13 +120,13 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                                     style={[stylesSupporter.input, stylesSupporter.inputContact]}
                                     maxLength={16}
                                     keyboardType="numeric"
-                                    defaultValue={phone ? phone : ''}
+                                    defaultValue={phoneNumber ? phoneNumber : ''}
                                     placeholder={'Phone number'}
                                     placeholderTextColor="#787878"
                                 />
                             ) : (
                                 <Text style={stylesSupporter.supporterContactInfoText}>
-                                    {phone ? phone : 'Phone number'}
+                                    {phoneNumber ? phoneNumber : 'Phone number'}
                                 </Text>
                             )}
                         </View>
