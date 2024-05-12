@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet,
-} from 'react-native';
-import Modal from '../components/Modal';
+import React, { useState, useEffect } from 'react';
+import { Modal, StyleSheet, TouchableOpacity, View, Text, Platform } from 'react-native';
+import ModalCustom from '../components/Modal';
 import { modalServiceTasks } from '../data/ModalServiceTasks';
 import ServiceItemSelection from './plusModalSteps/ServiceItemSelection';
 import TaskSelection from './plusModalSteps/TaskSelection';
@@ -19,17 +17,61 @@ export default function PlusModal({ visible, onClose, handleDateTimeSelect, star
   const [description, setDescription] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
 
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      resetModalState();
+    }
+  }, [visible]);
+
+  const resetModalState = () => {
+    setConfirmationVisible(false);
+    setCurrentStep(1);
+    setSelectedService({ id: null, title: '', icon: null });
+    setSelectedCircle('Personal');
+    setTaskName('');
+    setIsOtherTask(false);
+    setDescription('');
+    setSelectedLocation('');
+    setStartDate(null);
+    setEndDate(null);
+    setStartTime(null);
+    setEndTime(null);
+  };
+
+  const handleCancel = () => {
+    setConfirmationVisible(false);
+  };
+
+  const handleClose = () => {
+    resetModalState();
+    onClose();
+  };
+
   return (
-    <Modal
+    <ModalCustom
       visible={visible}
-      onClose={onClose}
+      onClose={() => {
+        if (confirmationVisible) {
+          setConfirmationVisible(false);
+        } else {
+          setConfirmationVisible(true);
+        }
+      }}
       style={stylesPlus}
     >
       {currentStep === 1 && (
         <ServiceItemSelection
           selectedService={selectedService}
           setSelectedService={setSelectedService}
-          onClose={onClose}
+          onClose={() => {
+            if (confirmationVisible) {
+              setConfirmationVisible(false);
+            } else {
+              setConfirmationVisible(true);
+            }
+          }}
           onPress={() => setCurrentStep(2)}
           setCurrentStep={setCurrentStep}
         />
@@ -90,12 +132,101 @@ export default function PlusModal({ visible, onClose, handleDateTimeSelect, star
           getDaysBetween={getDaysBetween}
         />
       )}
-    </Modal >
+      {confirmationVisible && (
+        <Modal visible={confirmationVisible} animationType='fade' onRequestClose={handleCancel} transparent>
+          <TouchableOpacity onPress={handleCancel} style={stylesPlus.innerModalContainer}>
+            <View style={stylesPlus.innerModalContent}>
+              <View style={stylesPlus.innerModalTexts}>
+                <Text style={stylesPlus.innerModalTitle}>Are you sure you want to close the task creator?</Text>
+                <Text style={stylesPlus.innerModalSubtitle}>Your current settings inside the task creator will be lost.</Text>
+              </View>
+              <View style={stylesPlus.innerModalButtons}>
+                <TouchableOpacity style={[stylesPlus.innerModalButton, stylesPlus.innerModalButtonRed]} onPress={handleClose}>
+                  <Text style={[stylesPlus.innerModalButtonText, stylesPlus.innerModalButtonRedText]}>Yes</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[stylesPlus.innerModalButton, stylesPlus.innerModalButtonWhite]} onPress={handleCancel}>
+                  <Text style={[stylesPlus.innerModalButtonText, stylesPlus.innerModalButtonWhiteText]}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
+    </ModalCustom>
   );
 };
 
 const stylesPlus = StyleSheet.create({
   modalContainer: {
     height: '80%'
+  },
+  innerModalContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerModalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    maxWidth: 350,
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+  },
+  innerModalTexts: {
+    marginBottom: 20,
+  },
+  innerModalTitle: {
+    color: '#000',
+    fontSize: 14,
+    fontFamily: 'poppins-regular',
+    lineHeight: 16,
+    textAlign: 'center',
+    marginBottom: 5
+  },
+  innerModalSubtitle: {
+    color: '#000',
+    fontSize: 12,
+    fontFamily: 'poppins-regular',
+    lineHeight: 16,
+    textAlign: 'center',
+  },
+  innerModalButtons: {
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'center',
+  },
+  innerModalButton: {
+    alignItems: 'center',
+    minWidth: 125,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 16,
+    shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  innerModalButtonRed: {
+    backgroundColor: '#FF7070',
+  },
+  innerModalButtonWhite: {
+    backgroundColor: '#fff',
+  },
+  innerModalButtonText: {
+    fontSize: 14,
+    fontFamily: 'poppins-medium',
+    lineHeight: 18,
+  },
+  innerModalButtonRedText: {
+    color: '#fff',
+  },
+  innerModalButtonWhiteText: {
+    color: '#000',
   },
 })
