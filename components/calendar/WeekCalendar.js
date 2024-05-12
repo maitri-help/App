@@ -8,7 +8,7 @@ import {
 
 const days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
-export default function WeekCalendar({ defaultDate, setDate, setWeekStartDate, weekSelectedDate }) {
+export default function WeekCalendar({ defaultDate, setDate, setWeekStartDate, weekSelectedDate, tasks }) {
   const [weekDates, setWeekDates] = useState([]);
 
   useEffect(() => {
@@ -19,13 +19,27 @@ export default function WeekCalendar({ defaultDate, setDate, setWeekStartDate, w
     const formattedDates = [];
     const weekStartDate = new Date(currentDate);
     weekStartDate.setDate(currentDate.getDate() - currentDate.getDay());
+    const weekEndDate = new Date(weekStartDate);
+    weekEndDate.setDate(weekEndDate.getDate() + 6);
+
     for (let i = 0; i < 7; i++) {
       const day = new Date(weekStartDate);
       day.setDate(weekStartDate.getDate() + i);
+      const hasTask = tasks.some(task => {
+        const taskStartDate = new Date(task.startDateTime);
+        const taskEndDate = new Date(task.endDateTime);
+        return day >= taskStartDate && day <= taskEndDate;
+      });
+      const hasStartTask = tasks.some(task => {
+        const taskStartDate = new Date(task.startDateTime);
+        return day.toDateString() === taskStartDate.toDateString();
+      });
       formattedDates.push({
         date: day.getDate(),
         dayOfWeek: days[i],
         selected: day.getTime() === currentDate.getTime(),
+        hasTask: hasTask,
+        hasStartTask: hasStartTask,
       });
     }
     setWeekStartDate(weekStartDate);
@@ -59,6 +73,7 @@ export default function WeekCalendar({ defaultDate, setDate, setWeekStartDate, w
         >
           <Text style={styles.dayOfWeek(day.selected)}>{day.dayOfWeek}</Text>
           <Text style={styles.date(day.selected)}>{day.date}</Text>
+          {(day.hasTask || day.hasStartTask) && <View style={styles.dot} />}
         </TouchableOpacity>
       ))}
     </View>
@@ -95,4 +110,13 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: selected ? '#fff' : '#000',
   }),
+  dot: {
+    width: 4,
+    height: 4,
+    backgroundColor: '#D5D5D5',
+    borderRadius: 2,
+    position: 'absolute',
+    bottom: 7,
+    right: 23,
+  },
 });

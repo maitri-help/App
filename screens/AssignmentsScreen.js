@@ -249,6 +249,7 @@ export default function AssignmentsScreen({ navigation }) {
                                 setWeekStartDate={setWeekStartDate}
                                 weekSelectedDate={weekSelectedDate}
                                 setWeekSelectedDate={setWeekSelectedDate}
+                                tasks={tasks}
                             />
                         )}
                     </View>
