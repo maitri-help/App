@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Image, Linking } from 'react-native';
 import styles from '../Styles';
 import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
 import LogoutModal from '../components/profileModals/LogoutModal';
@@ -55,6 +55,10 @@ export default function ProfileScreen({ navigation }) {
         }
     }, [logoutModalVisible || deleteModalVisible]);
 
+    const handleContactSupport = () => {
+        Linking.openURL('mailto:contact@maitrihelp.com');
+    };
+
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
@@ -69,7 +73,7 @@ export default function ProfileScreen({ navigation }) {
                     <View style={stylesProfile.contentContainer}>
                         <View style={stylesProfile.buttons}>
                             <View style={stylesProfile.buttonWrapper}>
-                                <TouchableOpacity style={stylesProfile.button} onPress={() => { }}>
+                                <TouchableOpacity style={stylesProfile.button} onPress={handleContactSupport}>
                                     <Text style={stylesProfile.buttonText}>Contact support</Text>
                                 </TouchableOpacity>
                             </View>
