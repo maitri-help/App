@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Image, StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
+import { getAccessToken } from '../authStorage';
+import { updateTask } from '../hooks/api';
 
 export default function TaskItem({ task, taskModal, onTaskItemClick }) {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(task.status === 'done');
 
-  const handleToggleCheckbox = () => {
+  const handleToggleCheckbox = async () => {
+    const status = (task.status == 'done') ? 'undone' : 'done'
+    const updatedTask = {
+        status: status,
+    };
+    let token = await getAccessToken();
+    const header = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
+    await updateTask(updatedTask, header, task.taskId)
     setIsChecked(prevState => !prevState);
   };
 
@@ -46,7 +59,7 @@ export default function TaskItem({ task, taskModal, onTaskItemClick }) {
       </View>
 
       <TouchableOpacity style={styles.checkboxWrapper} onPress={handleToggleCheckbox}>
-        <View style={[isChecked ? styles.checkboxChecked : styles.checkbox]}>
+        <View style={[(isChecked) ? styles.checkboxChecked : styles.checkbox]}>
           {isChecked &&
             <View style={styles.checkboxInner}>
               <CheckIcon style={styles.checkboxIcon} />
