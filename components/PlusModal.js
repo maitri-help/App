@@ -110,7 +110,10 @@ export default function PlusModal({ visible, onClose, handleDateTimeSelect, star
           startDateTime={startTime}
           endDateTime={endTime}
           onClose={onClose}
-          onTaskCreated={onTaskCreated}
+          onTaskCreated={() => {
+            onTaskCreated;
+            resetModalState();
+          }}
         />
       )}
       {currentStep === 4 && (
