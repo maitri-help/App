@@ -16,6 +16,12 @@ export default function CirclesScreen({ navigation }) {
     const [selectedCircleItem, setSelectedCircleItem] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
+    const [tabContents, setTabContents] = useState({
+        First: [],
+        Second: [],
+        Third: []
+    });
+
     const [circleItemsContent, setCircleItemsContent] = useState([]);
 
     async function fetchCircleUsers() {
@@ -28,7 +34,14 @@ export default function CirclesScreen({ navigation }) {
 
                 console.log('Circles user data:', circlesResponse.data);
 
-                setCircleItemsContent(circlesResponse.data);
+                const filteredData = Object.keys(circlesResponse.data)
+                    .filter(key => key !== "New" && key !== "Personal")
+                    .reduce((obj, key) => {
+                        obj[key] = circlesResponse.data[key];
+                        return obj;
+                    }, {});
+
+                setTabContents(filteredData);
             } else {
                 console.error('No user data found');
             }
@@ -41,20 +54,19 @@ export default function CirclesScreen({ navigation }) {
         fetchCircleUsers();
     }, []);
 
-    const generateRandomCircleItems = () => {
-        const circleItemsContent = [
-            getRandomItem(circleItemsContent?.Third) || { firstName: 'Peer', emoji: null },
-            getRandomItem(circleItemsContent?.Second) || { firstName: 'Friend', emoji: null },
-            getRandomItem(circleItemsContent?.New) || { firstName: 'Parent', emoji: null },
-        ];
-        setCircleItemsContent(circleItemsContent);
-    };
 
     useEffect(() => {
         generateRandomCircleItems();
-    }, []);
+    }, [tabContents]);
 
-    console.log(circleItemsContent.New);
+    const generateRandomCircleItems = () => {
+        const circleItemsContent = [
+            getRandomItem(tabContents.Third) || { firstName: 'Peer', emoji: null },
+            getRandomItem(tabContents.Second) || { firstName: 'Friend', emoji: null },
+            getRandomItem(tabContents.First) || { firstName: 'Parent', emoji: null },
+        ];
+        setCircleItemsContent(circleItemsContent);
+    };
 
     const handleCircleItemPress = (item) => {
         setSelectedCircleItem(item);
@@ -90,41 +102,33 @@ export default function CirclesScreen({ navigation }) {
             const allContent = generateAllTabContent();
             return allContent.length === 0;
         } else if (activeTab === 'Circles') {
-            return (
-                (circleItemsContent.New ? circleItemsContent.New.length === 0 : true) &&
-                (circleItemsContent.Second ? circleItemsContent.Second.length === 0 : true) &&
-                (circleItemsContent.Third ? circleItemsContent.Third.length === 0 : true)
-            );
+            return tabContents.First.length === 0 && tabContents.Second.length === 0 && tabContents.Third.length === 0;
         } else {
-            return circleItemsContent[activeTab] ? circleItemsContent[activeTab].length === 0 : true;
+            return tabContents[activeTab].length === 0;
         }
     };
 
     const generateAllTabContent = () => {
         const allContent = [];
-        ['New', 'Second', 'Third'].forEach((tab) => {
-            if (Array.isArray(circleItemsContent[tab])) {
-                circleItemsContent[tab].forEach((item) => {
-                    allContent.push({ ...item, circle: `${tab}` });
-                });
-            }
+        ['First', 'Second', 'Third'].forEach((tab) => {
+            tabContents[tab].forEach((item) => {
+                allContent.push({ ...item, circle: `${tab}` });
+            });
         });
         return allContent;
     };
 
     const getRandomItem = (array) => {
-        if (Array.isArray(array) && array.length > 0) {
-            return array[Math.floor(Math.random() * array.length)];
-        } else {
-            return null;
-        }
+        return array[Math.floor(Math.random() * array.length)];
     };
 
     const circlesContent = (tab) => {
         if (tab === 'Circles') {
-            const additionalItemCountThird = Math.max(0, (circleItemsContent.Third?.length || 0) - 1);
-            const additionalItemCountSecond = Math.max(0, (circleItemsContent.Second?.length || 0) - 1);
-            const additionalItemCountFirst = Math.max(0, (circleItemsContent.New?.length || 0) - 1);
+            const additionalItemCountThird = Math.max(0, tabContents.Third.length - 1);
+            const additionalItemCountSecond = Math.max(0, tabContents.Second.length - 1);
+            const additionalItemCountFirst = Math.max(0, tabContents.First.length - 1);
+
+            console.log('Circle items', circleItemsContent);
 
             return (
                 <>
@@ -171,7 +175,7 @@ export default function CirclesScreen({ navigation }) {
                 </View>
             );
         } else {
-            const tabContent = circleItemsContent[tab] || [];
+            const tabContent = tabContents[tab] || [];
             if (tabContent.length === 0) {
                 return (
                     <View style={[styles.contentContainer, stylesCircles.circleListEmptyContainer]}>
@@ -215,8 +219,8 @@ export default function CirclesScreen({ navigation }) {
                         <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesCircles.tab, activeTab === 'All' && stylesCircles.activeTab]}>
                             <Text style={[stylesCircles.tabText, activeTab === 'All' && stylesCircles.activeTabText]}>All</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => handleTabPress('New')} style={[stylesCircles.tab, activeTab === 'New' && stylesCircles.activeTab]}>
-                            <Text style={[stylesCircles.tabText, activeTab === 'New' && stylesCircles.activeTabText]}>First</Text>
+                        <TouchableOpacity onPress={() => handleTabPress('First')} style={[stylesCircles.tab, activeTab === 'First' && stylesCircles.activeTab]}>
+                            <Text style={[stylesCircles.tabText, activeTab === 'First' && stylesCircles.activeTabText]}>First</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => handleTabPress('Second')} style={[stylesCircles.tab, activeTab === 'Second' && stylesCircles.activeTab]}>
                             <Text style={[stylesCircles.tabText, activeTab === 'Second' && stylesCircles.activeTabText]}>Second</Text>
@@ -267,8 +271,9 @@ export default function CirclesScreen({ navigation }) {
                 lastName={selectedCircleItem ? selectedCircleItem.lastName : ''}
                 circle={selectedCircleItem ? selectedCircleItem.circle : ''}
                 tasks={selectedCircleItem ? selectedCircleItem.tasks : []}
-                phone={selectedCircleItem ? selectedCircleItem.phoneNumber : ''}
+                phone={selectedCircleItem ? selectedCircleItem.phone : ''}
                 email={selectedCircleItem ? selectedCircleItem.email : ''}
+                nickname={selectedCircleItem ? selectedCircleItem.nickname : ''}
             />
         </>
     );

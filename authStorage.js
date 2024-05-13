@@ -141,10 +141,12 @@ export const checkAuthentication = async () => {
         }
     } catch (error) {
         if (error.response && error.response.status === 401) {
-            clearUserData();
-            clearAccessToken();
+            await clearUserData();
+            await clearAccessToken();
             console.error('Authentication failed. Please login again.', error);
         } else {
+            await clearUserData();
+            await clearAccessToken();
             console.error('Error checking authentication:', error);
         }
         return null;

@@ -4,15 +4,11 @@ import Circles from '../assets/img/circles.svg';
 
 export default function CirclesView({ circleItemsContent, additionalItemCountFirst, additionalItemCountSecond, additionalItemCountThird, onPressCircleItemCount, onPressCircleItem }) {
 
-    const allCircleItems = Object.values(circleItemsContent).flat();
-
-    console.log('Circles content:', allCircleItems);
-
     return (
         <View style={stylesCircles.circlesContainerInner}>
             <Circles style={stylesCircles.circles} />
             <View style={stylesCircles.circleItems}>
-                {allCircleItems.map((item, index) => (
+                {circleItemsContent.map((item, index) => (
                     <React.Fragment key={index}>
                         <View style={[stylesCircles.circleItemWrapper, index === 0 ? stylesCircles.circleItemOuterWrapper : index === 1 ? stylesCircles.circleItemMiddleWrapper : stylesCircles.circleItemInnerWrapper]}>
                             {item.emoji && (
@@ -25,8 +21,28 @@ export default function CirclesView({ circleItemsContent, additionalItemCountFir
                                     <Text style={[stylesCircles.circleItemText, stylesCircles.circleItemTextOutside]}>{item.firstName}</Text>
                                 </React.Fragment>
                             )}
-                            {!item.emoji && (
-                                <View style={[stylesCircles.circleItem, index === 0 ? stylesCircles.circleItemOuter : index === 1 ? stylesCircles.circleItemMiddle : stylesCircles.circleItemInner]}>
+                            {!item.emoji && !['Peer', 'Friend', 'Parent'].includes(item.firstName) ? (
+                                <TouchableOpacity
+                                    activeOpacity={1}
+                                    onPress={() => onPressCircleItem(item)}
+                                    style={[
+                                        stylesCircles.circleItem,
+                                        index === 0 ? stylesCircles.circleItemOuter :
+                                            index === 1 ? stylesCircles.circleItemMiddle :
+                                                stylesCircles.circleItemInner
+                                    ]}
+                                >
+                                    <Text style={stylesCircles.circleItemText}>{item.firstName}</Text>
+                                </TouchableOpacity>
+                            ) : (
+                                <View
+                                    style={[
+                                        stylesCircles.circleItem,
+                                        index === 0 ? stylesCircles.circleItemOuter :
+                                            index === 1 ? stylesCircles.circleItemMiddle :
+                                                stylesCircles.circleItemInner
+                                    ]}
+                                >
                                     <Text style={stylesCircles.circleItemText}>{item.firstName}</Text>
                                 </View>
                             )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
@@ -8,6 +8,7 @@ import ArrowIcon from '../assets/icons/arrow-icon.svg';
 import styles from '../Styles';
 import handleSignIn from '../hooks/handleSignIn';
 import { useToast } from 'react-native-toast-notifications';
+import { checkAuthentication } from '../authStorage';
 
 const validationSchema = yup.object().shape({
     phoneNumber: yup.string().matches(
@@ -19,6 +20,22 @@ const validationSchema = yup.object().shape({
 export default function LoginScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const toast = useToast();
+
+    useEffect(() => {
+        async function fetchUserData() {
+            try {
+                const userData = await checkAuthentication();
+                if (userData) {
+                    console.log('User data:', userData);
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                clearUserData();
+                clearAccessToken();
+            }
+        }
+        fetchUserData();
+    }, []);
 
     const handleFormSubmit = async (values) => {
         console.log('Form values in handleFormSubmit:', values);

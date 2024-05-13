@@ -95,7 +95,11 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
         } catch (error) {
             console.error("Error creating task:", error);
 
-            toast.show('Unsuccessfull task creation', { type: 'error' });
+            if (error.response && error.response.status === 400) {
+                toast.show('All details must be set.', { type: 'error' });
+            } else {
+                toast.show('Unsuccessful task creation', { type: 'error' });
+            }
         }
     };
 
