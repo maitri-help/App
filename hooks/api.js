@@ -73,8 +73,10 @@ export function getTasksForUser(userId, accessToken) {
     });
 }
 
-export function circlesUsers(header) {
+export function circlesUsers(accessToken) {
     return axios.get(`${baseUrl}/users/circles-users`, {
-        headers: header
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
     });
 }
