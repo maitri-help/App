@@ -7,11 +7,20 @@ import TaskItem from '../components/TaskItem';
 import { checkAuthentication } from '../authStorage';
 import FilterIcon from '../assets/icons/filter-icon.svg';
 import EditForm from '../components/plusModalSteps/EditForm';
-import EditFormNoCircle from '../components/plusModalSteps/EditFormNoCircle';
+import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
+import TaskFilterModal from '../components/plusModalSteps/TaskFilterModal';
+import Button from '../components/Button';
 
 export default function OpenTasksSupporterScreen({ navigation }) {
     const [isEditFormOpen, setIsEditFormOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [TimeFilterList, setTimeFilterList] = useState([]);
+    const [TypeFilterList, setTypeFilterList] = useState([]);
+
+    const handleRemoveFilter = (filter, setSelectedFilters) => {
+        setSelectedFilters(selectedFilters => selectedFilters.filter(f => f !== filter));
+    };
 
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -25,7 +34,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
     }
 
     useEffect(() => {
-        if (isEditFormOpen) {
+        if (isEditFormOpen || isFilterOpen) {
           Animated.timing(overlayOpacity, {
             toValue: 1,
             duration: 300,
@@ -38,7 +47,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
             useNativeDriver: true,
           }).start();
         }
-      }, [{isEditFormOpen}]);
+      }, [{isEditFormOpen, isFilterOpen}]);
 
     const handleTaskClick = (task) => {
         console.log('Task clicked:', task);
@@ -46,11 +55,11 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         setIsEditFormOpen(true);
       };
     
-      const handleClose = () => {
+    const handleDetailClose = () => {
         setIsEditFormOpen(false);
-      };
+    };
 
-      useEffect(() => {
+    useEffect(() => {
         async function fetchUserData() {
             try {
                 const userData = await checkAuthentication(); 
@@ -70,6 +79,13 @@ export default function OpenTasksSupporterScreen({ navigation }) {
     // FilterOnPress
     const handleFilter = () => {
         console.log("filter");
+        console.log(TimeFilterList);
+        console.log(TypeFilterList);
+        setIsFilterOpen(true);
+    };
+
+    const handleFilterClose = () => {
+        setIsFilterOpen(false);
     };
 
     var OpenTasks = [
@@ -118,7 +134,45 @@ export default function OpenTasksSupporterScreen({ navigation }) {
             }
 
         return (
-            <View style={stylesSuppOT.tasksContainer}>
+            <>
+            <View style={{paddingHorizontal: 20, paddingVertical: 5, flexDirection: "row", justifyContent: "left", gap: 5, flexWrap: "wrap"}}>
+                    {TimeFilterList.map(filter => (
+                        <Button
+                            key={filter}
+                            buttonStyle={{
+                                paddingVertical: 0,
+                                width: "500",
+                                height: 30,
+                            }}
+                            textStyle={{
+                                lineHeight: 30,
+                            }}
+                            buttonSmall={true}
+                            title={filter}
+                            onPress={() => handleRemoveFilter(filter, setTimeFilterList)}
+                        />
+                    ))}
+                    {TypeFilterList.map(filter => (
+                        <Button
+                            key={filter}
+                            buttonStyle={{
+                                paddingVertical: 0,
+                                width: "500",
+                                height: 30,
+                            }}
+                            textStyle={{
+                                lineHeight: 30,
+                            }}
+                            buttonSmall={true}
+                            title={filter}
+                            onPress={() => handleRemoveFilter(filter, setTypeFilterList)}
+                        />
+                    ))}
+                </View>
+            
+            <View style={{flex: 5}}>
+                
+                <View>
                 <ScrollView contentContainerStyle={stylesSuppOT.tasksScroll}>
                 {tasks.map((task) => (
                     <TouchableOpacity
@@ -136,19 +190,32 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                     </TouchableOpacity>
                 ))}
                 </ScrollView>
+                </View>
+                
+
+                {isFilterOpen && 
+                    <TaskFilterModal 
+                        taskName={"Filters"}
+                        onClose={handleFilterClose}
+                        TimeFilterList={TimeFilterList} 
+                        setTimeFilterList={setTimeFilterList}
+                        TypeFilterList={TypeFilterList} 
+                        setTypeFilterList={setTypeFilterList} 
+                    />
+                }
 
                 {isEditFormOpen && 
-                    <EditFormNoCircle 
+                    <TaskDetailsModal 
                         taskName={selectedTask.title} 
                         description={selectedTask.description} 
                         selectedLocation={selectedTask.location}
                         time={selectedTask.time}
-                        onClose={handleClose} 
+                        onClose={handleDetailClose} 
                         notes={selectedTask.note}
                     />
                 }
             </View>
-      
+            </>
         );
     };
 
@@ -156,8 +223,6 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         <SafeAreaView style={styles.safeArea}>
             
             <View style={[styles.topBar, {gap: 0,flexDirection: 'row',borderBottomWidth: 0}]}>
-                
-                
                 <View style={{ gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }}>
                     <Text style={stylesSuppOT.greetingsText}>Open Tasks</Text>
                     <Text style={stylesSuppOT.thanksText}>Pick a task. Spread the love</Text>
@@ -165,15 +230,18 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                 <TouchableOpacity onPress={handleFilter}>
                     <FilterIcon color={"#1c4837"} width={19} height={19}></FilterIcon>
                 </TouchableOpacity>
-                
             </View>
-            <View style={stylesSuppOT.tabsContentContainer}>
-                {renderTasks(OpenTasks)}
-            </View>
-            
+                <View style={stylesSuppOT.tabsContentContainer}>
+                    {renderTasks(OpenTasks)}
+                </View>
+
+            {(isFilterOpen) && (
+                <Animated.View style={[styles.overlay, { opacity: overlayOpacity}]} /> 
+            )}
             {(isEditFormOpen) && (
-    <Animated.View style={[styles.overlay, { opacity: overlayOpacity}]} />  // Add zIndex: 0 here
-)}
+                <Animated.View style={[styles.overlay, { opacity: overlayOpacity}]} /> 
+            )}
+            
         </SafeAreaView>
         
     );
@@ -207,7 +275,7 @@ const stylesSuppOT = StyleSheet.create({
     tasksScroll: {
         gap: 15,
         paddingHorizontal: 25,
-        paddingTop: 10,
+        paddingTop: "auto",
         paddingBottom: 30,
     },
     tasksScrollEmpty: {
