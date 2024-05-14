@@ -53,7 +53,7 @@ export default function AssignmentsScreen({ navigation }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
 
-    const handleTaskItemClick = async(task) =>  {
+    const handleTaskItemClick = async (task) => {
         setSelectedTask(task);
     };
 

@@ -98,11 +98,13 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
         const taskStartDate = new Date(task.startDateTime);
         const taskEndDate = new Date(task.endDateTime);
         return currentDate >= taskStartDate && currentDate <= taskEndDate;
-      }).map(task => new Date(task.startDateTime).getDate());
+      }).map(task => new Date(task.startDateTime));
 
       const singleDayTasks = tasks.filter(task => {
-        const taskDate = new Date(task.startDateTime).getDate();
-        return taskDate === i;
+        const monthForI = currentMonthProp.toString().padStart(2, '0');
+        const dateStringForI = `${currentYearProp}-${monthForI}-${i.toString().padStart(2, '0')}`;
+
+        return task.startDateTime.startsWith(dateStringForI);
       });
 
       currentMonthDays.push({
