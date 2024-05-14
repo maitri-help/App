@@ -28,12 +28,14 @@ export default function ProfileScreen({ navigation }) {
         fetchUserData();
     }, []);
 
-
     const handleLogout = async () => {
         try {
             await clearUserData();
             await clearAccessToken();
-            navigation.navigate('Login');
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }]
+            })
         } catch (error) {
             console.error('Error logging out:', error);
         }
