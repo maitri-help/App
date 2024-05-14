@@ -57,7 +57,7 @@ export default function IdentifyAlmostThereScreen({ visible, onClose, navigation
                                                 joinTribe(userId, enteredTribe)
                                                     .then(() => {
                                                         toast.show('Welcome to Maitri!', { type: 'success' });
-                                                        navigation.navigate('Main');
+                                                        navigation.navigate('SuppGreatNews');
                                                         onClose();
                                                     })
                                                     .catch((error) => {

@@ -4,7 +4,7 @@ import styles from '../Styles';
 import AppButton from '../components/Button';
 import CloseIcon from '../assets/icons/close-icon.svg';
 
-const SuppExistingScreen = () => {
+export default function SuppGreatNewsScreen() {
 
   const firstName = 'FIRSTNAME';
   const lastName = 'LASTNAME';
@@ -12,40 +12,40 @@ const SuppExistingScreen = () => {
   return (
     <SafeAreaView style={[styles.safeArea, stylesSuppGN.safeArea]}>
       <View style={styles.contentContainer}>
-          <View style={stylesSuppGN.topBar}>
-            <TouchableOpacity onPress={() => console.log('Close')}>
-              <CloseIcon width={19} height={19} color={'#000'} />
-            </TouchableOpacity>
-          </View>
-          <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star1} />
-          <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star2} />
-          <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star3} />
-          <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star4} />
-          <View style={stylesSuppGN.headerWrapper}>
-            <Text style={stylesSuppGN.title}>Great News!</Text>
-          </View>
-          <View style={stylesSuppGN.bodyWrapper}>
-            <Text style={stylesSuppGN.text}>
-              <Text style={stylesSuppGN.boldText}>{`${firstName} ${lastName}`}</Text>
-              {" added you to their support circle\n\n"}
-              {"Let's get you set up and start spreading the love"}
-            </Text>
-          </View>
-          <View style={stylesSuppGN.illustrationWrapper}>
-            <Image source={require('../assets/img/mimi-and-friend-illustration-min.png')}
-              style={stylesSuppGN.illustration}
-            />
-          </View>
-          <View style={stylesSuppGN.buttonContainer}>
-            <AppButton
-              title="I'm Ready!"
-              onPress={() => console.log('Button pressed!')}
-            />
-          </View>
+        <View style={stylesSuppGN.topBar}>
+          <TouchableOpacity onPress={() => console.log('Close')}>
+            <CloseIcon width={19} height={19} color={'#000'} />
+          </TouchableOpacity>
         </View>
+        <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star1} />
+        <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star2} />
+        <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star3} />
+        <Image source={require('../assets/img/star-illustration.png')} style={stylesSuppGN.star4} />
+        <View style={stylesSuppGN.headerWrapper}>
+          <Text style={stylesSuppGN.title}>Great News!</Text>
+        </View>
+        <View style={stylesSuppGN.bodyWrapper}>
+          <Text style={stylesSuppGN.text}>
+            <Text style={stylesSuppGN.boldText}>{`${firstName} ${lastName}`}</Text>
+            {" added you to their support circle\n\n"}
+            {"Let's get you set up and start spreading the love"}
+          </Text>
+        </View>
+        <View style={stylesSuppGN.illustrationWrapper}>
+          <Image source={require('../assets/img/mimi-and-friend-illustration-min.png')}
+            style={stylesSuppGN.illustration}
+          />
+        </View>
+        <View style={stylesSuppGN.buttonContainer}>
+          <AppButton
+            title="I'm Ready!"
+            onPress={() => console.log('Button pressed!')}
+          />
+        </View>
+      </View>
     </SafeAreaView>
   );
-};
+}
 
 const stylesSuppGN = StyleSheet.create({
   safeArea: {
@@ -81,13 +81,13 @@ const stylesSuppGN = StyleSheet.create({
     color: '#000000',
     fontSize: 14,
     fontFamily: 'poppins-regular',
-    paddingHorizontal: 60, 
-    textAlign: 'center', 
+    paddingHorizontal: 60,
+    textAlign: 'center',
   },
   boldText: {
     fontFamily: 'poppins-bold',
   },
-  buttonContainer:{
+  buttonContainer: {
     paddingTop: 80,
     width: '100%',
     paddingHorizontal: 15,
@@ -104,8 +104,8 @@ const stylesSuppGN = StyleSheet.create({
     position: 'absolute',
     left: 11,
     top: 136,
-    width: 28, 
-    height: 28, 
+    width: 28,
+    height: 28,
     transform: [{ rotate: '-21deg' }],
   },
   star3: {
@@ -125,5 +125,3 @@ const stylesSuppGN = StyleSheet.create({
     transform: [{ rotate: '85deg' }],
   }
 });
-
-export default SuppExistingScreen;

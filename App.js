@@ -106,6 +106,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+  const [userData, setUserData] = useState(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -125,10 +126,12 @@ export default function App() {
   useEffect(() => {
     const checkAuthAndOnboarding = async () => {
       try {
-        const authStatus = await checkAuthentication();
-        setIsLoggedIn(authStatus !== null);
-        const onboardingCompleted = await getOnboardingCompleted();
-        setHasCompletedOnboarding(onboardingCompleted);
+        const userData = await checkAuthentication();
+        setUserData(userData);
+        setIsLoggedIn(userData !== null);
+        if (userData) {
+          setHasCompletedOnboarding(await getOnboardingCompleted());
+        }
         setLoading(false);
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -165,12 +168,15 @@ export default function App() {
       }}
     >
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={!isLoggedIn ? (hasCompletedOnboarding ? 'Login' : 'Onboarding') : 'Main'} screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+          initialRouteName={!isLoggedIn ? (hasCompletedOnboarding ? 'Login' : 'Onboarding') : (userData && userData.userType === 'Supporter' ? 'MainSupporter' : 'Main')}
+          screenOptions={{ headerShown: false }}
+        >
           {!isLoggedIn || !hasCompletedOnboarding ? (
             <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ gestureEnabled: false }} />
           ) : null}
           <Stack.Screen name="Main" component={MainNavigator} options={{ gestureEnabled: false }} />
-          <Stack.Screen name="Supp" component={SuppNavigator} options={{ gestureEnabled: false }} />
+          <Stack.Screen name="MainSupporter" component={SuppNavigator} options={{ gestureEnabled: false }} />
           <Stack.Screen name="Login" component={LoginScreen} options={{ gestureEnabled: !isLoggedIn }} />
           <Stack.Screen name="Register" component={RegisterScreen} options={{ gestureEnabled: !isLoggedIn }} />
           <Stack.Screen name="VerifyNumber" component={VerifyNumberScreen} options={{ gestureEnabled: !isLoggedIn }} />

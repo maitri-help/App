@@ -36,7 +36,10 @@ export default function ProfileSupporterScreen({ navigation }) {
         try {
             await clearUserData();
             await clearAccessToken();
-            navigation.navigate('Login');
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }]
+            })
         } catch (error) {
             console.error('Error logging out:', error);
         }
