@@ -35,7 +35,7 @@ export default function CirclesScreen({ navigation }) {
                 console.log('Circles user data:', circlesResponse.data);
 
                 const filteredData = Object.keys(circlesResponse.data)
-                    .filter(key => key !== "New" && key !== "Personal")
+                    .filter(key => key !== "New" && key !== "Personal" && key !== "Frist")
                     .reduce((obj, key) => {
                         obj[key] = circlesResponse.data[key];
                         return obj;
@@ -170,7 +170,7 @@ export default function CirclesScreen({ navigation }) {
             return (
                 <View style={stylesCircles.circleListItems}>
                     {allContent.map((item, index) => (
-                        <CircleItem key={index} item={item} onPress={() => handleCircleItemPress(item)} />
+                        <CircleItem key={index} item={{ ...item, circle: item.circle }} onPress={() => handleCircleItemPress(item)} />
                     ))}
                 </View>
             );
@@ -190,7 +190,7 @@ export default function CirclesScreen({ navigation }) {
             return (
                 <View style={stylesCircles.circleListItems}>
                     {tabContent.map((item, index) => (
-                        <CircleItem key={index} item={item} onPress={() => handleCircleItemPress(item)} />
+                        <CircleItem key={index} item={{ ...item, circle: tab }} onPress={() => handleCircleItemPress(item)} />
                     ))}
                 </View>
             );
@@ -271,7 +271,7 @@ export default function CirclesScreen({ navigation }) {
                 lastName={selectedCircleItem ? selectedCircleItem.lastName : ''}
                 circle={selectedCircleItem ? selectedCircleItem.circle : ''}
                 tasks={selectedCircleItem ? selectedCircleItem.tasks : []}
-                phone={selectedCircleItem ? selectedCircleItem.phone : ''}
+                phoneNumber={selectedCircleItem ? selectedCircleItem.phoneNumber : ''}
                 email={selectedCircleItem ? selectedCircleItem.email : ''}
                 nickname={selectedCircleItem ? selectedCircleItem.nickname : ''}
             />

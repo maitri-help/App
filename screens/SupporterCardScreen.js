@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Platform } from 'react-native';
 import ModalCustom from '../components/Modal';
 import styles from '../Styles';
 import EditIcon from '../assets/icons/edit-icon.svg';
@@ -7,9 +7,11 @@ import CheckIcon from '../assets/icons/check-icon.svg';
 import ClockIcon from '../assets/icons/clock-icon.svg';
 import PhoneIcon from '../assets/icons/phone-classic-icon.svg';
 import EmailIcon from '../assets/icons/mail-icon.svg';
+import { deleteSupporterFromCircle } from '../hooks/api';
+import { getAccessToken } from '../authStorage';
 
 export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, circle, tasks = [], phoneNumber, email, navigation }) {
-    const [selectedCircle, setSelectedCircle] = useState('Third');
+    const [selectedCircle, setSelectedCircle] = useState('First');
     const [showInnerModal, setShowInnerModal] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
 
@@ -17,7 +19,7 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
         if (circle && ['First', 'Second', 'Third'].includes(circle)) {
             setSelectedCircle(circle);
         } else {
-            setSelectedCircle('Third');
+            setSelectedCircle('First');
         }
     }, [circle]);
 
@@ -35,6 +37,38 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
 
     const closeInnerModal = () => {
         setShowInnerModal(false);
+    };
+
+    const handleDelete = async () => {
+        try {
+            const accessToken = await getAccessToken();
+
+            if (!accessToken) {
+                console.error('Access token not found. Please log in.');
+                return;
+            }
+
+            const header = {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+            }
+
+            const response = await deleteSupporterFromCircle(header, circleId, supporterUserId);
+
+            console.log("Supporter deleted from circle:", response.data);
+
+            toast.show('Supporter deleted from circle', { type: 'success' });
+
+            handleCancel();
+            onClose();
+            onTaskCreated();
+
+        } catch (error) {
+            console.error("Error deleting supporter:", error);
+
+            toast.show('Unsuccessful supporter deletion', { type: 'error' });
+        }
     };
 
     return (
@@ -74,7 +108,7 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                                     defaultValue={firstName ? firstName : ''}
                                 />
                             ) : (
-                                <Text style={stylesSupporter.firstName}>
+                                <Text style={stylesSupporter.nickname}>
                                     {firstName ? firstName : 'Nickname'}
                                 </Text>
                             )}
@@ -169,7 +203,7 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                                 <Text style={stylesSupporter.innerModalSubtitle}>This will not be visible to the supporter</Text>
                             </View>
                             <View style={stylesSupporter.innerModalButtons}>
-                                <TouchableOpacity style={[stylesSupporter.innerModalButton, stylesSupporter.innerModalButtonRed]} onPress={() => { }}>
+                                <TouchableOpacity style={[stylesSupporter.innerModalButton, stylesSupporter.innerModalButtonRed]} onPress={handleDelete}>
                                     <Text style={[stylesSupporter.innerModalButtonText, stylesSupporter.innerModalButtonRedText]}>Remove</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[stylesSupporter.innerModalButton, stylesSupporter.innerModalButtonWhite]} onPress={closeInnerModal}>
@@ -321,6 +355,8 @@ const stylesSupporter = StyleSheet.create({
         margin: 0
     },
     inputNickname: {
+        color: '#000',
+        fontFamily: 'poppins-regular',
         fontSize: 14,
         lineHeight: 18,
         marginBottom: -2,
