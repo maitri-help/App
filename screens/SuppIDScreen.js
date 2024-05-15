@@ -4,13 +4,14 @@ import AppButton from '../components/Button';
 import ArrowBackIcon from '../assets/icons/arrow-left-icon.svg';
 import ColorPickerModal from '../components/ColorPickerModal';
 import EmojiPickerModal from '../components/EmojiPickerModal';
-import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
+import { checkAuthentication, clearUserData, clearAccessToken, getLeadUserData } from '../authStorage';
 
 export default function SuppIDScreen({ navigation }) {
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [leadName, setLeadName] = useState('Lead');
+  const [leadFirstName, setLeadFirstName] = useState('Lead');
+  const [leadLastName, setLeadLastName] = useState('name');
 
   const [emojiModalVisible, setEmojiModalVisible] = useState(false);
   const [colorModalVisible, setColorModalVisible] = useState(false);
@@ -36,6 +37,20 @@ export default function SuppIDScreen({ navigation }) {
       }
     }
     fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    const fetchLeadUserData = async () => {
+      try {
+        const userData = await getLeadUserData();
+        setLeadFirstName(userData[0].firstName);
+        setLeadLastName(userData[0].lastName);
+      } catch (error) {
+        console.error('Error fetching lead user data:', error);
+      }
+    };
+
+    fetchLeadUserData();
   }, []);
 
   const handleColorSelect = (color) => {
@@ -76,7 +91,7 @@ export default function SuppIDScreen({ navigation }) {
           <View style={stylesSuppID.textContainer}>
             <Text style={[styles.title, stylesSuppID.headerText]}>Hey <Text>{firstName}</Text></Text>
             <Text style={[styles.text, { paddingBottom: 20, fontSize: 16, }, stylesSuppID.paragraph]}>Welcome to Maitri!</Text>
-            <Text style={[styles.text, stylesSuppID.paragraph]}>Let's start by customizing your persona. This is how you'll show up on <Text style={{ fontWeight: '700' }}>{leadName}</Text>'s support circle.</Text>
+            <Text style={[styles.text, stylesSuppID.paragraph]}>Let's start by customizing your persona. This is how you'll show up on <Text style={{ fontFamily: 'poppins-bold' }}>{leadFirstName} {leadLastName}</Text>'s support circle.</Text>
             <Text style={[styles.text, stylesSuppID.paragraph]}>Choose a color and emoji that best represent you.</Text>
           </View>
           <View style={[styles.buttonContainer, stylesSuppID.buttonContainer]}>
@@ -112,7 +127,7 @@ export default function SuppIDScreen({ navigation }) {
           <View style={stylesSuppID.nextButtonContainer}>
             <AppButton
               title="Next"
-              onPress={() => console.log('Next button pressed!')}
+              onPress={() => navigation.navigate('MainSupporter')}
               buttonStyle={[styles.buttonContainer]}
             />
 

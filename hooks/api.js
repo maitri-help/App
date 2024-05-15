@@ -18,6 +18,14 @@ export function getUser(phoneNumber) {
     return axios.get(`${baseUrl}/users/${phoneNumber}`);
 }
 
+export function getLeadUser(accessToken) {
+    return axios.get(`${baseUrl}/users/supporter/lead-user`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
+
 export function createUser(data) {
     return axios.post(`${baseUrl}/users`, data);
 }
@@ -73,6 +81,14 @@ export function getTasksForUser(userId, accessToken) {
 
 export function circlesUsers(accessToken) {
     return axios.get(`${baseUrl}/users/circles-users`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
+
+export function updateUser(userId, data, accessToken) {
+    return axios.patch(`${baseUrl}/users/${userId}`, data, {
         headers: {
             Authorization: `Bearer ${accessToken}`
         }

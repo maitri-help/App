@@ -1,17 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, FlatList, Platform } from 'react-native';
 import Modal from '../components/Modal';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import styles from '../Styles';
+import { updateUser } from '../hooks/api';
+import { checkAuthentication, getAccessToken } from '../authStorage';
+import { useToast } from 'react-native-toast-notifications';
 
 export default function ColorPickerModal({ visible, onClose, onColorSelect, selectedColor }) {
   const colors = ['#A3C0FC', '#AC7AFC', '#9EDE73', '#6CD3CE', '#FF9A00', '#FF4E92'];
+  const [userId, setUserId] = useState(null);
+  const toast = useToast();
 
-  const [pressedItem, setPressedItem] = useState(null);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await checkAuthentication();
+        if (userData) {
+          setUserId(userData.userId);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
 
-  const handlePress = (color) => {
-    setPressedItem(color);
+    fetchUserData();
+  }, []);
+
+  const handlePress = async (color) => {
     onColorSelect(color);
+
+    try {
+      const accessToken = await getAccessToken();
+      const userDataToUpdate = {
+        color: color
+      };
+      await updateUser(userId, userDataToUpdate, accessToken);
+      toast.show('Color changed successfully', { type: 'success' });
+      console.log('User color updated successfully');
+    } catch (error) {
+      toast.show('Unsuccessful color change', { type: 'error' });
+      console.error('Error updating user color:', error);
+    }
   };
 
   return (

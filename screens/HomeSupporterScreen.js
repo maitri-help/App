@@ -2,19 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
 import styles from '../Styles';
 import Task from '../components/Task';
-import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
+import { checkAuthentication, clearUserData, clearAccessToken, getLeadUserData } from '../authStorage';
 import initalBackground from '../assets/img/welcome-bg.png';
 import CloseIcon from '../assets/icons/close-icon.svg';
 import { Platform } from 'react-native';
 
-
 export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
     const [firstName, setFirstName] = useState('');
-    const [greetingText, setGreetingText] = useState('');
+    const [color, setColor] = useState('');
+    const [emoji, setEmoji] = useState('');
+    const [leadFirstName, setLeadFirstName] = useState('Lead');
+    const [leadLastName, setLeadLastName] = useState('name');
     const [isViewActive, setIsViewActive] = useState(true);
-    const selectedColor = '#1616';
-    const pressedItem = "🦄";
     const [showAllOpenTasks, setShowAllOpenTasks] = useState(false);
     const [showAllMyTasks, setShowAllMyTasks] = useState(false);
 
@@ -25,15 +25,8 @@ export default function HomeSupporterScreen({ navigation }) {
                 if (userData) {
                     console.log('User data:', userData);
                     setFirstName(userData.firstName);
-
-                    const currentHour = new Date().getHours();
-                    if (currentHour < 12) {
-                        setGreetingText('Good morning');
-                    } else if (currentHour < 18) {
-                        setGreetingText('Good afternoon');
-                    } else {
-                        setGreetingText('Good evening');
-                    }
+                    setColor(userData.color);
+                    setEmoji(userData.emoji);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -43,6 +36,20 @@ export default function HomeSupporterScreen({ navigation }) {
             }
         }
         fetchUserData();
+    }, []);
+
+    useEffect(() => {
+        const fetchLeadUserData = async () => {
+            try {
+                const userData = await getLeadUserData();
+                setLeadFirstName(userData[0].firstName);
+                setLeadLastName(userData[0].lastName);
+            } catch (error) {
+                console.error('Error fetching lead user data:', error);
+            }
+        };
+
+        fetchLeadUserData();
     }, []);
 
     const handleTabPress = (tab) => {
@@ -116,8 +123,6 @@ export default function HomeSupporterScreen({ navigation }) {
             }
         }
 
-
-
         return (
             <View style={stylesSuppHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesSuppHome.tasksScroll}>
@@ -137,20 +142,19 @@ export default function HomeSupporterScreen({ navigation }) {
     return (
         <SafeAreaView style={styles.safeArea}>
 
-            <View style={[styles.topBar, { gap: 0, flexDirection: 'row', borderBottomWidth: 0 }]}>
+            <View style={stylesSuppHome.topBar}>
 
                 <View style={[
-                    stylesSuppHome.selectedEmojiItem, { borderColor: selectedColor }
+                    stylesSuppHome.selectedEmojiItem, { borderColor: color }
                 ]}>
-                    <Text style={stylesSuppHome.selectedEmojiText}>{pressedItem}</Text>
+                    <Text style={stylesSuppHome.selectedEmojiText}>{emoji}</Text>
                 </View>
-                <View style={{ gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }}>
+                <View style={{ flexShrink: 1 }}>
                     <Text style={stylesSuppHome.greetingsText}>Hey {firstName}</Text>
-                    <Text style={stylesSuppHome.thanksText}>Thanks for being here for <Text style={stylesSuppHome.nameText}>[LEAD full name]!</Text></Text>
+                    <Text style={stylesSuppHome.thanksText}>Thanks for being here for <Text style={stylesSuppHome.nameText}>
+                        {leadFirstName} {leadLastName}!</Text></Text>
                 </View>
             </View>
-
-
 
             {isViewActive && (
                 <View style={[styles.contentContainer, { paddingTop: 5, paddingBottom: 15, width: '100%' }]}>
@@ -190,6 +194,13 @@ export default function HomeSupporterScreen({ navigation }) {
 }
 
 const stylesSuppHome = StyleSheet.create({
+    topBar: {
+        paddingVertical: 18,
+        paddingHorizontal: 25,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+    },
     greetingsText: {
         fontSize: 18,
         fontFamily: 'poppins-medium',
@@ -307,16 +318,25 @@ const stylesSuppHome = StyleSheet.create({
         resizeMode: 'contain',
     },
     selectedEmojiItem: {
-        width: 60,
-        height: 60,
+        width: 50,
+        height: 50,
         borderRadius: 100,
         borderWidth: 2,
+        backgroundColor: '#fff',
         borderColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+        elevation: 8,
     },
     selectedEmojiText: {
-        fontSize: (Platform.OS === 'android') ? 30 : 35,
+        fontSize: (Platform.OS === 'android') ? 30 : 32,
         textAlign: 'center',
         lineHeight: (Platform.OS === 'android') ? 37 : 42,
     },

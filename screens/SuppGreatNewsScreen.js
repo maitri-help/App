@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Image, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
 import AppButton from '../components/Button';
 import CloseIcon from '../assets/icons/close-icon.svg';
+import { getLeadUser } from '../hooks/api';
+import { storeLeadUserData, getAccessToken } from '../authStorage';
 
-export default function SuppGreatNewsScreen({navigation}) {
+export default function SuppGreatNewsScreen({ navigation }) {
 
-  const firstName = 'FIRSTNAME';
-  const lastName = 'LASTNAME';
+  const [leadUserData, setLeadUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const accessToken = await getAccessToken();
+        const response = await getLeadUser(accessToken);
+        const userData = response.data;
+        await storeLeadUserData(userData);
+        setLeadUserData(userData);
+      } catch (error) {
+        console.error('Error fetching lead user data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const firstName = leadUserData ? leadUserData[0].firstName : 'Lead';
+  const lastName = leadUserData ? leadUserData[0].lastName : 'Name';
 
   return (
     <SafeAreaView style={[styles.safeArea, stylesSuppGN.safeArea]}>
