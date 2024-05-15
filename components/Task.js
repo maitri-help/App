@@ -1,30 +1,33 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
 
-export default function Task({ title, assignee, startTime, endTime, emoji }) {
-    const formattedAssignee = Array.isArray(assignee) ? assignee.join(', ') : assignee;
+export default function Task({ title, firstName, lastName, startTime, endTime, emoji, color }) {
 
     const formatDateTime = () => {
         const formattedStartDateTime = formatDate(startTime);
         const formattedEndDateTime = formatDate(endTime);
         return `${formattedStartDateTime} - ${formattedEndDateTime}`;
-      };
-    
-      const formatDate = (date) => {
+    };
+
+    const formatDate = (date) => {
         const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
         return new Date(date).toLocaleDateString('en-US', options);
-      };
+    };
 
     return (
         <TouchableOpacity style={stylesTask.taskContainer}>
-            <View style={stylesTask.taskEmojiWrapper}>
-                <Text style={stylesTask.taskEmoji}>
-                    {emoji}
-                </Text>
+            <View style={[stylesTask.taskEmojiWrapper, {borderColor: color}]}>
+                {emoji &&
+                    <Text style={stylesTask.taskEmoji}>
+                        {emoji}
+                    </Text>
+                }
             </View>
             <View style={stylesTask.taskInfoContainer}>
                 <Text style={stylesTask.taskTitle}>{title}</Text>
-                {assignee && <Text style={stylesTask.taskAssignee}>{formattedAssignee}</Text>}
+                {firstName && lastName && (
+                    <Text style={stylesTask.taskAssignee}>{firstName} {lastName}</Text>
+                )}
                 <Text style={stylesTask.taskTime}>{formatDateTime()}</Text>
             </View>
         </TouchableOpacity>

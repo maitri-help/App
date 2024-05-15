@@ -28,10 +28,10 @@ export default function TaskModal({ visible, onClose, selectedCircle, setSelecte
       setStartTime(selectedTask.startDateTime);
       setEndTime(selectedTask.endDateTime);
 
-      setFirstName(selectedTask.firstName);
-      setLastName(selectedTask.lastName);
-      setColor(selectedTask.color);
-      setEmoji(selectedTask.emoji);
+      setFirstName(selectedTask.assignee ? selectedTask.assignee.firstName : '');
+      setLastName(selectedTask.assignee ? selectedTask.assignee.lastName : '');
+      setColor(selectedTask.assignee ? selectedTask.assignee.color : '');
+      setEmoji(selectedTask.assignee ? selectedTask.assignee.emoji : '');
     }
   }, [selectedTask, setStartDate, setEndDate, setStartTime, setEndTime]);
 

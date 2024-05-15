@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
 import styles from '../Styles';
 import Task from '../components/Task';
+import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication, clearUserData, clearAccessToken, getLeadUserData } from '../authStorage';
 import initalBackground from '../assets/img/welcome-bg.png';
 import CloseIcon from '../assets/icons/close-icon.svg';
@@ -10,13 +11,16 @@ import { Platform } from 'react-native';
 export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
     const [firstName, setFirstName] = useState('');
+    const [userId, setUserId] = useState('');
     const [color, setColor] = useState('');
     const [emoji, setEmoji] = useState('');
+    const [leadId, setLeadId] = useState('');
     const [leadFirstName, setLeadFirstName] = useState('Lead');
     const [leadLastName, setLeadLastName] = useState('name');
     const [isViewActive, setIsViewActive] = useState(true);
     const [showAllOpenTasks, setShowAllOpenTasks] = useState(false);
     const [showAllMyTasks, setShowAllMyTasks] = useState(false);
+    const [tasks, setTasks] = useState([]);
 
     useEffect(() => {
         async function fetchUserData() {
@@ -24,6 +28,8 @@ export default function HomeSupporterScreen({ navigation }) {
                 const userData = await checkAuthentication();
                 if (userData) {
                     console.log('User data:', userData);
+
+                    setUserId(userData.userId);
                     setFirstName(userData.firstName);
                     setColor(userData.color);
                     setEmoji(userData.emoji);
@@ -44,6 +50,7 @@ export default function HomeSupporterScreen({ navigation }) {
                 const userData = await getLeadUserData();
                 setLeadFirstName(userData[0].firstName);
                 setLeadLastName(userData[0].lastName);
+                setLeadId(userData[0].userId);
             } catch (error) {
                 console.error('Error fetching lead user data:', error);
             }
@@ -51,6 +58,32 @@ export default function HomeSupporterScreen({ navigation }) {
 
         fetchLeadUserData();
     }, []);
+
+    useEffect(() => {
+        async function fetchTasks() {
+            try {
+                const userData = await checkAuthentication();
+                if (userData && leadId) {
+                    console.log('User Data:', userData);
+                    console.log('Access token:', userData.accessToken);
+
+                    const tasksResponse = await getTasksForUser(leadId, userData.accessToken);
+                    setTasks(tasksResponse.data);
+                } else {
+                    console.error('No user data found or leadId not available');
+                }
+            } catch (error) {
+                console.error('Error fetching tasks:', error);
+            }
+        }
+
+        if (leadId) {
+            fetchTasks();
+        }
+    }, [leadId]);
+
+
+    console.log(tasks);
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
@@ -60,77 +93,58 @@ export default function HomeSupporterScreen({ navigation }) {
         setIsViewActive(false);
     };
 
-    const OpenTasks = [
-        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', emoji: '🤖' },
-        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', emoji: '🩺' },
-        { id: 3, title: 'Buy groceries', assignee: ['Ross Geller', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', emoji: '💞' },
-        { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
-        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', emoji: '😊' },
-    ];
-
-    const MyTasks = [
-        { id: 1, title: 'Call the National Insurance', assignee: 'Just me', time: 'Today, 1:00-2:00 pm', emoji: '🤖' },
-        { id: 2, title: 'Take medication', assignee: 'Chandler Bing', time: 'Tomorrow, 10:00-11:00 am', emoji: '🩺' },
-        { id: 3, title: 'Buy groceries', assignee: ['Ross Geller', 'Rachel Green'], time: 'Wednesday, 12:00-2:00 pm', emoji: '💞' },
-        { id: 4, title: 'Physiotherapy appointment', time: 'Thursday, 8:00-10:00 am', emoji: '🩺' },
-        { id: 5, title: 'Remember to write down how I felt today', assignee: 'Just me', time: 'April 5, 5:00-6:00 pm', emoji: '😊' },
-    ];
-
-    const renderTasks = (tasks, isMyTasks) => {
-        let tasksToRender = tasks;
-        if (tasks.length === 0) {
-            switch (activeTab) {
-                case 'Open':
-                    return (
-                        <View style={stylesSuppHome.tasksContainer}>
-                            <ScrollView contentContainerStyle={stylesSuppHome.tasksScrollEmpty}>
-                                <View style={[styles.contentContainer, stylesSuppHome.tasksEmpty]}>
-                                    <View style={stylesSuppHome.tasksTop}>
-                                        <Text style={stylesSuppHome.tasksDescription}>
-                                            No open tasks yet.
-                                        </Text>
-                                        <Text style={stylesSuppHome.tasksDescription}>
-                                            Check back in later!
-                                        </Text>
-                                    </View>
-                                </View>
-                            </ScrollView>
-                        </View>
-                    );
-                case 'My':
-                    return (
-                        <View style={stylesSuppHome.tasksContainer}>
-                            <ScrollView contentContainerStyle={stylesSuppHome.tasksScrollEmpty}>
-                                <View style={[styles.contentContainer, stylesSuppHome.tasksEmpty]}>
-                                    <Text style={stylesSuppHome.tasksDescription}>
-                                        Your task list is currently empty.
-                                    </Text>
-                                    <Text style={stylesSuppHome.tasksDescription}>
-                                        Check the open tasks to see where you can lend a hand
-                                    </Text>
-                                </View>
-                            </ScrollView>
-                        </View>
-                    );
-                default:
-                    return null;
-            }
-        } else {
-            if (!isMyTasks && !showAllOpenTasks && tasks.length > 3) {
-                tasksToRender = tasks.slice(0, 3);
-            } else if (isMyTasks && !showAllMyTasks && tasks.length > 4) {
-                tasksToRender = tasks.slice(0, 4);
-            }
+    const renderTasks = (tasks = []) => {
+        let filteredTasks = tasks;
+        if (activeTab === 'Open') {
+            filteredTasks = tasks.filter(task => task.status === 'undone' && !task.assignedUserId);
+        } else if (activeTab === 'My') {
+            filteredTasks = tasks.filter(task => task.assignedUserId && task.assignedUserId === userId);
         }
+
+        if (filteredTasks.length === 0) {
+            return (
+                <View style={stylesSuppHome.tasksContainer}>
+                    <ScrollView contentContainerStyle={stylesSuppHome.tasksScrollEmpty}>
+                        <View style={[styles.contentContainer, stylesSuppHome.tasksEmpty]}>
+                            <View style={stylesSuppHome.tasksTop}>
+                                <Text style={stylesSuppHome.tasksWelcome}>
+                                    {activeTab === 'Open' ? 'No open tasks yet.' : 'Your task list is currently empty.'}
+                                </Text>
+                                <View style={stylesSuppHome.tasksImgWrapper}>
+                                    <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesSuppHome.tasksImg} />
+                                </View>
+                            </View>
+                            <View style={stylesSuppHome.tasksBottom}>
+                                <Text style={stylesSuppHome.tasksDescription}>
+                                    {activeTab === 'Open' ? 'Check back in later!' : 'Check the Open tasks to see where you can lend a hand.'}
+                                </Text>
+                            </View>
+                        </View>
+                    </ScrollView>
+                </View>
+            );
+        }
+
+        const displayedTasks = filteredTasks.slice(0, showAllOpenTasks || showAllMyTasks ? filteredTasks.length : 3);
 
         return (
             <View style={stylesSuppHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesSuppHome.tasksScroll}>
-                    {tasksToRender.map(task => (
-                        <Task key={task.id} title={task.title} assignee={task.assignee} time={task.time} emoji={task.emoji} />
+                    {displayedTasks.map(task => (
+                        <Task
+                            key={task.taskId}
+                            title={task.title}
+                            firstName={task.assignee ? task.assignee.firstName : ''}
+                            lastName={task.assignee ? task.assignee.lastName : ''}
+                            startTime={task.startDateTime}
+                            endTime={task.endDateTime}
+                            emoji={task.assignee ? task.assignee.emoji : ''}
+                            color={task.assignee ? task.assignee.color : ''}
+                        />
                     ))}
-                    {(!isMyTasks && !showAllOpenTasks && tasks.length > 3) || (isMyTasks && !showAllMyTasks && tasks.length > 4) ? (
-                        <TouchableOpacity onPress={() => isMyTasks ? setShowAllMyTasks(true) : setShowAllOpenTasks(true)}>
+                    {(filteredTasks.length > 3 && !showAllOpenTasks && activeTab === 'Open') ||
+                        (filteredTasks.length > 3 && !showAllMyTasks && activeTab === 'My') ? (
+                        <TouchableOpacity onPress={() => activeTab === 'Open' ? setShowAllOpenTasks(true) : setShowAllMyTasks(true)}>
                             <Text style={stylesSuppHome.seeAllText}>See All</Text>
                         </TouchableOpacity>
                     ) : null}
@@ -185,9 +199,11 @@ export default function HomeSupporterScreen({ navigation }) {
                     <Text style={[stylesSuppHome.tabText, activeTab === 'My' && stylesSuppHome.activeTabText]}>My tasks</Text>
                 </TouchableOpacity>
             </View>
-            <View style={stylesSuppHome.tabsContentContainer}>
-                {activeTab === 'Open' ? renderTasks(OpenTasks, false) : activeTab === 'My' ? renderTasks(MyTasks, true) : null}
-            </View>
+            {tasks.length > 0 && (
+                <View style={stylesSuppHome.tabsContentContainer}>
+                    {renderTasks(tasks)}
+                </View>
+            )}
         </SafeAreaView>
 
     );
@@ -298,12 +314,20 @@ const stylesSuppHome = StyleSheet.create({
     tasksEmpty: {
         flex: 1,
         flexDirection: 'column',
-        paddingTop: 120,
+        justifyContent: 'center',
+        paddingVertical: 30,
     },
     tasks: {
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'flex-start',
+    },
+    tasksWelcome: {
+        textAlign: 'center',
+        fontSize: 20,
+        fontFamily: 'poppins-bold',
+        lineHeight: 24,
+        marginBottom: 15,
     },
     tasksDescription: {
         textAlign: 'center',
@@ -311,6 +335,15 @@ const stylesSuppHome = StyleSheet.create({
         fontFamily: 'poppins-regular',
         lineHeight: 20,
         marginBottom: 10,
+    },
+    tasksImgWrapper: {
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    tasksImg: {
+        width: 150,
+        height: 110,
+        resizeMode: 'contain',
     },
     illustration: {
         width: 120,

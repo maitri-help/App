@@ -75,6 +75,9 @@ export default function AlmostThereScreen({ route, navigation }) {
 
                         if (userType === "default") {
                             navigation.navigate('Identify', { userId });
+                        } else if (userType === "Supporter") {
+                            storeUserData(userData);
+                            navigation.navigate('MainSupporter');
                         } else {
                             storeUserData(userData);
                             navigation.navigate('Main');

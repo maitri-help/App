@@ -154,7 +154,16 @@ export default function HomeScreen({ navigation }) {
             <View style={stylesHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesHome.tasksScroll}>
                     {filteredTasks.map(task => (
-                        <Task key={task.taskId} title={task.title} assignee={task.assignee} startTime={task.startDateTime} endTime={task.endDateTime} emoji={task.creator.emoji} />
+                        <Task
+                            key={task.taskId}
+                            title={task.title}
+                            firstName={task.assignee ? task.assignee.firstName : ''}
+                            lastName={task.assignee ? task.assignee.lastName : ''}
+                            startTime={task.startDateTime}
+                            endTime={task.endDateTime}
+                            emoji={task.assignee ? task.assignee.emoji : ''}
+                            color={task.assignee ? task.assignee.color : ''}
+                        />
                     ))}
                 </ScrollView>
             </View>
