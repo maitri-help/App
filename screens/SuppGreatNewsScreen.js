@@ -4,7 +4,7 @@ import styles from '../Styles';
 import AppButton from '../components/Button';
 import CloseIcon from '../assets/icons/close-icon.svg';
 
-export default function SuppGreatNewsScreen() {
+export default function SuppGreatNewsScreen({navigation}) {
 
   const firstName = 'FIRSTNAME';
   const lastName = 'LASTNAME';
@@ -13,7 +13,7 @@ export default function SuppGreatNewsScreen() {
     <SafeAreaView style={[styles.safeArea, stylesSuppGN.safeArea]}>
       <View style={styles.contentContainer}>
         <View style={stylesSuppGN.topBar}>
-          <TouchableOpacity onPress={() => console.log('Close')}>
+          <TouchableOpacity onPress={() => navigation.navigate('MainSupporter')}>
             <CloseIcon width={19} height={19} color={'#000'} />
           </TouchableOpacity>
         </View>
@@ -39,7 +39,7 @@ export default function SuppGreatNewsScreen() {
         <View style={stylesSuppGN.buttonContainer}>
           <AppButton
             title="I'm Ready!"
-            onPress={() => console.log('Button pressed!')}
+            onPress={() => navigation.navigate('SuppID')}
           />
         </View>
       </View>

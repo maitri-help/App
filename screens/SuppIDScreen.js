@@ -4,11 +4,13 @@ import AppButton from '../components/Button';
 import ArrowBackIcon from '../assets/icons/arrow-left-icon.svg';
 import ColorPickerModal from '../components/ColorPickerModal';
 import EmojiPickerModal from '../components/EmojiPickerModal';
+import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
 
-const SuppIDScreen = () => {
+export default function SuppIDScreen({ navigation }) {
 
-  const firstName = '[FIRSTNAME]';
-  const leadName = '[LEADNAME]';
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [leadName, setLeadName] = useState('Lead');
 
   const [emojiModalVisible, setEmojiModalVisible] = useState(false);
   const [colorModalVisible, setColorModalVisible] = useState(false);
@@ -17,6 +19,24 @@ const SuppIDScreen = () => {
 
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        const userData = await checkAuthentication();
+        if (userData) {
+          console.log('User data:', userData);
+          setFirstName(userData.firstName);
+          setLastName(userData.lastName);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        clearUserData();
+        clearAccessToken();
+        navigation.navigate('Login');
+      }
+    }
+    fetchUserData();
+  }, []);
 
   const handleColorSelect = (color) => {
     console.log('Color selected:', color);
@@ -42,21 +62,21 @@ const SuppIDScreen = () => {
         useNativeDriver: true,
       }).start();
     }
-  }, [{colorModalVisible, emojiModalVisible}]);
+  }, [{ colorModalVisible, emojiModalVisible }]);
 
   return (
     <>
       <SafeAreaView style={[styles.safeArea]}>
         <View style={styles.contentContainer}>
           <View style={stylesSuppID.topBar}>
-            <TouchableOpacity onPress={() => console.log('Back')}>
+            <TouchableOpacity onPress={() => navigation.navigate('SuppGreatNews')}>
               <ArrowBackIcon width={19} height={19} color={'#000'} />
             </TouchableOpacity>
           </View>
           <View style={stylesSuppID.textContainer}>
-            <Text style={[styles.title, stylesSuppID.headerText]}>Hey <Text style={{ fontWeight: 'bold' }}>{firstName}</Text></Text>
-            <Text style={[styles.text, { paddingBottom: 20 }, stylesSuppID.paragraph]}>Welcome to Maitri!</Text>
-            <Text style={[styles.text, stylesSuppID.paragraph]}>Let's start by customizing your persona. This is how you'll show up on <Text style={{ fontWeight: 'bold' }}>{leadName}</Text>'s support circle.</Text>
+            <Text style={[styles.title, stylesSuppID.headerText]}>Hey <Text>{firstName}</Text></Text>
+            <Text style={[styles.text, { paddingBottom: 20, fontSize: 16, }, stylesSuppID.paragraph]}>Welcome to Maitri!</Text>
+            <Text style={[styles.text, stylesSuppID.paragraph]}>Let's start by customizing your persona. This is how you'll show up on <Text style={{ fontWeight: '700' }}>{leadName}</Text>'s support circle.</Text>
             <Text style={[styles.text, stylesSuppID.paragraph]}>Choose a color and emoji that best represent you.</Text>
           </View>
           <View style={[styles.buttonContainer, stylesSuppID.buttonContainer]}>
@@ -86,7 +106,7 @@ const SuppIDScreen = () => {
               onEmojiSelect={handleEmojiSelect}
               selectedEmoji={selectedEmoji}
               selectedColor={selectedColor}
-              />
+            />
           </View>
 
           <View style={stylesSuppID.nextButtonContainer}>
@@ -109,7 +129,7 @@ const SuppIDScreen = () => {
     </>
 
   );
-};
+}
 
 const stylesSuppID = StyleSheet.create({
   topBar: {
@@ -140,8 +160,8 @@ const stylesSuppID = StyleSheet.create({
     backgroundColor: '#fff',
     shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
     shadowOffset: {
-        width: 0,
-        height: 4,
+      width: 0,
+      height: 4,
     },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -153,5 +173,3 @@ const stylesSuppID = StyleSheet.create({
     color: '#000',
   },
 });
-
-export default SuppIDScreen;
