@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Linking } from 'react-native';
 import styles from '../Styles';
 import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
 import LogoutModal from '../components/profileModals/LogoutModal';
@@ -11,8 +11,6 @@ export default function ProfileSupporterScreen({ navigation }) {
     const [logoutModalVisible, setLogoutModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-    const selectedColor = '#1616';
-    const pressedItem = "🦄";
 
     useEffect(() => {
         async function fetchUserData() {
@@ -31,6 +29,9 @@ export default function ProfileSupporterScreen({ navigation }) {
         fetchUserData();
     }, []);
 
+    const handleContactSupport = () => {
+        Linking.openURL('mailto:contact@maitrihelp.com');
+    };
 
     const handleLogout = async () => {
         try {
@@ -72,9 +73,9 @@ export default function ProfileSupporterScreen({ navigation }) {
                         <View style={stylesProfile.topContent}>
                             <View style={{ paddingBottom: 20 }}>
                                 <View style={[
-                                    stylesProfile.selectedEmojiItem, { borderColor: selectedColor, }
+                                    stylesProfile.selectedEmojiItem, { borderColor: userData.color, }
                                 ]}>
-                                    <Text style={stylesProfile.selectedEmojiText}>{pressedItem}</Text>
+                                    <Text style={stylesProfile.selectedEmojiText}>{userData.emoji}</Text>
                                 </View>
                             </View>
 
@@ -86,7 +87,7 @@ export default function ProfileSupporterScreen({ navigation }) {
                     <View style={stylesProfile.contentContainer}>
                         <View style={stylesProfile.buttons}>
                             <View style={stylesProfile.buttonWrapper}>
-                                <TouchableOpacity style={stylesProfile.button} onPress={() => { }}>
+                                <TouchableOpacity style={stylesProfile.button} onPress={handleContactSupport}>
                                     <Text style={stylesProfile.buttonText}>Contact support</Text>
                                 </TouchableOpacity>
                             </View>
