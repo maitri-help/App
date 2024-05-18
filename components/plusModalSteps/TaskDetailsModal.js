@@ -1,54 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
-import ArrowIcon from '../../assets/icons/arrow-icon.svg';
-import EditIcon from '../../assets/icons/edit-icon.svg';
-import CheckIcon from '../../assets/icons/check-icon.svg';
 import LocationPicker from './LocationPicker';
-import { updateTask } from '../../hooks/api';
+import { assingUserToTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import Modal from '../Modal';
 import Button from '../Button';
 import { ScrollView } from 'react-native-gesture-handler';
 
-export default function EditFormNoCircle({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, time ,startDateTime, endDateTime, notes, lastName, color, emoji, onClose, isEditable, setIsEditable, taskId, onTaskCreated }) {
-
+export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
     const [dateTimeText, setDateTimeText] = useState(null);
     const toast = useToast();
 
+    const [taskId, setTaskId] = useState(null);
+    const [taskName, setTaskName] = useState(null);
+    const [description, setDescription] = useState(null);
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    const [startDateTime, setStartDateTime] = useState(null);
+    const [endDateTime, setEndDateTime] = useState(null);
+
     useEffect(() => {
-        console.log(time);
-        if (time) {
+        if (selectedTask) {
+
+            console.log("Selected Task:", selectedTask);
+
+            setTaskId(selectedTask.taskId);
+            setTaskName(selectedTask.title);
+            setDescription(selectedTask.description);
+            setSelectedLocation(selectedTask.location);
+
+            setStartDateTime(selectedTask.startDateTime);
+            setEndDateTime(selectedTask.endDateTime);
+        }
+    }, [selectedTask, setStartDateTime, setEndDateTime]);
+
+    useEffect(() => {
+        if (startDateTime && endDateTime) {
             const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
-            const Newtime = new Date(time).toLocaleString('en-US', options);
-            setDateTimeText(Newtime);
-            console.log(Newtime);
+            const start = new Date(startDateTime).toLocaleString('en-US', options);
+            const end = new Date(endDateTime).toLocaleString('en-US', options);
+            setDateTimeText(`${start} - ${end}`);
         }
-    }, [time]);
-
-    const handleDateTime = () => {
-        setReviewFormCurrentStep(currentStep);
-    };
-
-    const toggleEditable = () => {
-        setIsEditable(!isEditable);
-    };
-
-    const handleSelectOption = (option) => {
-        if (option === 'Personal') {
-            setSelectedCircle([option]);
-        } else if (selectedCircle.includes('Personal')) {
-            setSelectedCircle([option]);
-        } else {
-            if (selectedCircle.includes(option)) {
-                setSelectedCircle(selectedCircle.filter(item => item !== option));
-            } else {
-                setSelectedCircle([...selectedCircle, option]);
-            }
-        }
-    };
+    }, [startDateTime, endDateTime]);
 
     const handleSubmit = async () => {
         try {
@@ -56,103 +51,78 @@ export default function EditFormNoCircle({ currentStep, setCurrentStep, taskName
 
             if (!accessToken) {
                 console.error('Access token not found. Please log in.');
+                toast.show('Access token not found. Please log in.', { type: 'error' });
                 return;
             }
 
-            console.log(selectedCircle);
-
-            const taskData = {
-                title: taskName,
-                description: description,
-                circles: selectedCircle,
-                location: selectedLocation,
-                startDateTime: startDateTime,
-                endDateTime: endDateTime,
-            };
-
-            console.log("Task update data:", taskData);
-
-            const header = {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            }
-
-            const response = await updateTask(taskData, header, taskId);
+            const response = await assingUserToTask(taskId, accessToken);
 
             console.log("Task updated successfully:", response.data);
 
-            toast.show('Task updated successfully', { type: 'success' });
+            toast.show('Assigned to task successfully', { type: 'success' });
 
             onClose();
-
-            onTaskCreated();
 
         } catch (error) {
             console.error("Error updating task:", error);
 
-            toast.show('Unsuccessful task update', { type: 'error' });
+            toast.show('Unsuccessful task assign', { type: 'error' });
         }
     };
+
     return (
         <Modal
+            visible={visible}
+            onClose={onClose}
+            style={stylesModal}
         >
-            <View style={{maxHeight: 400}}>
-                <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
-                    <View style={stylesReview.modalTopNavLeft}>
-                        <TouchableOpacity onPress={onClose} style={[styles.backLinkInline]}>
-                            <ArrowLeftIcon style={styles.backLinkIcon} />
-                        </TouchableOpacity>
-                        <Text style={[stylesReview.field, stylesReview.fieldTask]}>
-                            {taskName}
-                        </Text>
-                    </View>
-
+            <View style={[styles.modalTopNav, stylesModal.modalTopNav]}>
+                <View style={stylesModal.modalTopNavLeft}>
+                    <TouchableOpacity onPress={onClose} style={[styles.backLinkInline]}>
+                        <ArrowLeftIcon style={styles.backLinkIcon} />
+                    </TouchableOpacity>
+                    <Text style={[stylesModal.field, stylesModal.fieldTask]}>
+                        {taskName}
+                    </Text>
                 </View>
-                <View style={[styles.contentContainer, stylesReview.topDescription]}>
-                    <View style={stylesReview.topDescription}>
-                        <Text style={[styles.text]}>{description}</Text>
-                    </View>
+            </View>
+            <View style={[styles.contentContainer, stylesModal.topDescription]}>
+                <View style={stylesModal.topDescription}>
+                    <Text style={[styles.text]}>{description}
+                    </Text>
                 </View>
-                <View style={stylesReview.group}>
-                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                        <Text style={stylesReview.groupTitle}>Date & Time</Text>
-                        <View style={stylesReview.fieldLink}>
-                            <Text style={[stylesReview.fielText]}>
+            </View>
+            <View style={{flex: 1}}>
+                <ScrollView>
+                    <View style={[stylesModal.group, stylesModal.groupFirst]}>
+                        <View style={[styles.contentContainer, stylesModal.groupInner]}>
+                            <Text style={stylesModal.groupTitle}>Date & Time</Text>
+                            <Text style={stylesModal.fieldText}>
                                 {dateTimeText}
                             </Text>
                         </View>
                     </View>
-                </View>
-                <View style={stylesReview.group}>
-                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                        <Text style={stylesReview.groupTitle}>Location </Text>
-                        <View style={stylesReview.fieldLink}>
-                            <Text>
-                                <LocationPicker selectedLocation={selectedLocation} disabled={!isEditable}/>
+                    <View style={stylesModal.group}>
+                        <View style={[styles.contentContainer, stylesModal.groupInner]}>
+                            <Text style={stylesModal.groupTitle}>Location</Text>
+                            <LocationPicker selectedLocation={selectedLocation} disabled />
+                        </View>
+                    </View>
+                    {/* <View style={[stylesModal.group, { borderBottomWidth: 0 }]}>
+                        <View style={[styles.contentContainer, stylesModal.groupInner]}>
+                            <Text style={[stylesModal.groupTitle]}>Notes</Text>
+                            <Text style={stylesModal.fieldText}>
+                                {description}
                             </Text>
                         </View>
-                    </View>
-                </View>
-                <View style={[stylesReview.group, {borderBottomWidth: 0}]}>
-                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                        <Text style={[stylesReview.groupTitle, {alignSelf: 'flex-start'}]}>Notes </Text>
-                        <View style={[stylesReview.fieldLink, stylesReview.taskNotes,{height: 140}]}>
-                            <ScrollView>
-                                <Text style={[stylesReview.fielText, {textAlign: 'justify'}]}>
-                                    {notes}
-                                </Text>
-                            </ScrollView>
-                        </View>
-                    </View>
-                </View>
+                    </View> */}
+                </ScrollView>
             </View>
-            
-            <View style={{width: 300, alignSelf: 'center'}}>
-                <Button 
-                    textStyle={{ fontSize: 20 }}
-                    title="I'm In!" 
-                    onPress={() => console.log("I'm in")} 
+
+            <View style={[styles.contentContainer, { marginTop: 40, marginBottom: 60, }]}>
+                <Button
+                    title="I'm In!"
+                    onPress={handleSubmit}
                 />
             </View>
 
@@ -160,8 +130,8 @@ export default function EditFormNoCircle({ currentStep, setCurrentStep, taskName
     )
 }
 
-const stylesReview = StyleSheet.create({
-    taskNotes:{
+const stylesModal = StyleSheet.create({
+    taskNotes: {
         textAlignVertical: 'top',
         flexShrink: 1,
     },
@@ -191,73 +161,12 @@ const stylesReview = StyleSheet.create({
         lineHeight: 22,
         fontFamily: 'poppins-medium',
     },
-    fieldLink: {
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        flexGrow: 1,
-    },
-    fielText: {
+    fieldText: {
         fontSize: 13,
         lineHeight: 18,
         fontFamily: 'poppins-regular',
         color: '#000',
-    },
-    fieldLinkText: {
-        fontSize: 13,
-        lineHeight: 18,
-        fontFamily: 'poppins-regular',
-        color: '#737373',
-        textDecorationLine: 'underline',
-    },
-    circles: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        flexWrap: 'wrap',
         flexShrink: 1,
-        flexGrow: 1,
-        margin: -3,
-    },
-    circle: {
-        paddingHorizontal: 11,
-        paddingVertical: 5,
-        borderColor: '#1C4837',
-        borderWidth: 1,
-        borderRadius: 20,
-        alignItems: 'center',
-        margin: 3,
-    },
-    circleSelected: {
-        backgroundColor: '#1C4837',
-    },
-    circleHidden: {
-        display: 'none',
-    },
-    circleText: {
-        color: '#1C4837',
-        fontFamily: 'poppins-regular',
-        fontSize: 12,
-        lineHeight: 16,
-    },
-    circleTextSelected: {
-        color: '#fff',
-    },
-    assignee: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-    },
-    emojiWrapper: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        borderWidth: 2,
-        borderColor: '#1C4837',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    emoji: {
-        fontSize: (Platform.OS === 'android') ? 24 : 28,
-        textAlign: 'center',
     },
     name: {
         color: '#000',
@@ -277,10 +186,7 @@ const stylesReview = StyleSheet.create({
     groupInner: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        flexShrink: 1,
-        flexWrap: 'wrap',
-        gap: 10,
+        gap: 15,
     },
     groupTitle: {
         width: 100,

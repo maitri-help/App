@@ -94,3 +94,11 @@ export function updateUser(userId, data, accessToken) {
         }
     });
 }
+
+export function assingUserToTask(taskId, accessToken) {
+    return axios.patch(`${baseUrl}/task/${taskId}/assign`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}

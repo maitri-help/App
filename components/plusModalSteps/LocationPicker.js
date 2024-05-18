@@ -57,13 +57,15 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled })
                     <TouchableOpacity onPress={() => setShowMap(false)}>
                         <CloseIcon width={15} height={15} color={'#000'} />
                     </TouchableOpacity>
-                    <MapView
-                        style={{ width: '100%', height: 200 }}
-                        region={mapRegion}
-                        onPress={(e) => handleLocationSelect(`${e.nativeEvent.coordinate.latitude},${e.nativeEvent.coordinate.longitude}`)}
-                    >
-                        {selectedLocation && <Marker coordinate={{ latitude: parseFloat(selectedLocation.split(',')[0]), longitude: parseFloat(selectedLocation.split(',')[1]) }} />}
-                    </MapView>
+                    {!disabled &&
+                        <MapView
+                            style={{ width: '100%', height: 200 }}
+                            region={mapRegion}
+                            onPress={(e) => handleLocationSelect(`${e.nativeEvent.coordinate.latitude},${e.nativeEvent.coordinate.longitude}`)}
+                        >
+                            {selectedLocation && <Marker coordinate={{ latitude: parseFloat(selectedLocation.split(',')[0]), longitude: parseFloat(selectedLocation.split(',')[1]) }} />}
+                        </MapView>
+                    }
                 </>
             ) : (
                 <TouchableOpacity onPress={() => setShowMap(true)} style={stylesLocation.fieldLink} disabled={disabled}>
@@ -79,7 +81,6 @@ const stylesLocation = StyleSheet.create({
     fieldLink: {
         flexShrink: 1,
         flexGrow: 1,
-        justifyContent: 'flex-end',
         flexDirection: 'row',
     },
     fieldLinkText: {

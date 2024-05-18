@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, Animated} from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Animated} from 'react-native';
 import styles from '../Styles';
-import Task from '../components/Task';
 import TaskClickable from '../components/TaskClickable';
-import TaskItem from '../components/TaskItem';
 import { checkAuthentication } from '../authStorage';
 import FilterIcon from '../assets/icons/filter-icon.svg';
-import EditForm from '../components/plusModalSteps/EditForm';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import TaskFilterModal from '../components/plusModalSteps/TaskFilterModal';
 import Button from '../components/Button';
@@ -76,7 +73,6 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         fetchUserData();
     }, []);
 
-    // FilterOnPress
     const handleFilter = () => {
         console.log("filter");
         console.log(TimeFilterList);
@@ -89,18 +85,17 @@ export default function OpenTasksSupporterScreen({ navigation }) {
     };
 
     var OpenTasks = [
-        // { id: 1, title: 'Buy groceries', time: '2024-05-12T15:00:00.000Z', emoji: '🛒', location: "47.47480786890561,19.176439097637857", description: "Milk, eggs, bread, and fruits", assignee: "Alice", note: "Don't forget to check for any ongoing discounts at the store.Don't forget to check for any ongoing discounts at the store.Don't forget to check for any ongoing discounts at the store.Don't forget to check for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store." },
-        // { id: 3, title: 'Workout session', time: '2024-05-13T18:00:00.000Z', emoji: '💪', location: "47.4925, 19.0513", description: "Cardio and strength training", assignee: "Charlie", note: "Remember to hydrate well before and after the workout." },
-        // { id: 4, title: 'Read book', time: '2024-05-12T20:00:00.000Z', emoji: '📖', location: "47.4979, 19.0402", description: "Chapter 5-8 of 'Sapiens' by Yuval Noah Harari", assignee: "David", note: "Find a quiet spot to fully immerse yourself in the reading." },
-        // { id: 5, title: 'Write report', time: '2024-05-15T12:00:00.000Z', emoji: '📝', location: "47.4818, 19.0790", description: "Data analysis findings", assignee: "Emma", note: "Organize your findings logically before starting to write." },
-        // { id: 6, title: 'Call mom', time: '2024-05-12T17:30:00.000Z', emoji: '📞', location: "47.4940, 19.0488", description: "Discuss weekend plans", assignee: "Frank", note: "Ask about her recent doctor's appointment." },
-        // { id: 7, title: 'Pay bills', time: '2024-05-14T11:00:00.000Z', emoji: '💸', location: "47.4893, 19.0650", description: "Electricity, water, and internet bills", assignee: "Grace", note: "Make sure all bills are paid before their due dates." },
-        // { id: 8, title: 'Visit dentist', time: '2024-05-17T14:45:00.000Z', emoji: '😬', location: "47.4966, 19.0521", description: "Biannual check-up and cleaning", assignee: "Hannah", note: "Arrive 15 minutes early for the appointment." },
-        // { id: 2, title: 'Attend meeting', time: '2024-05-14T09:30:00.000Z', emoji: '📅', location: "47.512174, 19.058934", description: "Discuss project updates", assignee: "Bob", note: "Prepare " },
+        { id: 1, title: 'Buy groceries', time: '2024-05-12T15:00:00.000Z', emoji: '🛒', location: "47.47480786890561,19.176439097637857", description: "Milk, eggs, bread, and fruits", assignee: "Alice", note: "Don't forget to check for any ongoing discounts at the store.Don't forget to check for any ongoing discounts at the store.Don't forget to check for any ongoing discounts at the store.Don't forget to check for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store.ck for any ongoing discounts at the store." },
+        { id: 3, title: 'Workout session', time: '2024-05-13T18:00:00.000Z', emoji: '💪', location: "47.4925, 19.0513", description: "Cardio and strength training", assignee: "Charlie", note: "Remember to hydrate well before and after the workout." },
+        { id: 4, title: 'Read book', time: '2024-05-12T20:00:00.000Z', emoji: '📖', location: "47.4979, 19.0402", description: "Chapter 5-8 of 'Sapiens' by Yuval Noah Harari", assignee: "David", note: "Find a quiet spot to fully immerse yourself in the reading." },
+        { id: 5, title: 'Write report', time: '2024-05-15T12:00:00.000Z', emoji: '📝', location: "47.4818, 19.0790", description: "Data analysis findings", assignee: "Emma", note: "Organize your findings logically before starting to write." },
+        { id: 6, title: 'Call mom', time: '2024-05-12T17:30:00.000Z', emoji: '📞', location: "47.4940, 19.0488", description: "Discuss weekend plans", assignee: "Frank", note: "Ask about her recent doctor's appointment." },
+        { id: 7, title: 'Pay bills', time: '2024-05-14T11:00:00.000Z', emoji: '💸', location: "47.4893, 19.0650", description: "Electricity, water, and internet bills", assignee: "Grace", note: "Make sure all bills are paid before their due dates." },
+        { id: 8, title: 'Visit dentist', time: '2024-05-17T14:45:00.000Z', emoji: '😬', location: "47.4966, 19.0521", description: "Biannual check-up and cleaning", assignee: "Hannah", note: "Arrive 15 minutes early for the appointment." },
+        { id: 2, title: 'Attend meeting', time: '2024-05-14T09:30:00.000Z', emoji: '📅', location: "47.512174, 19.058934", description: "Discuss project updates", assignee: "Bob", note: "Prepare " },
         
     ];
       
-    // Ha mindenképp jon a task-al assignee, eltávolítjuk az assignee-t.
     const removeAssigneeAttribute = (tasks) => {
         return tasks.map(task => {
             const { assignee, ...rest } = task;

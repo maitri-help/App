@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, Animated } from 'react-native';
 import styles from '../Styles';
-import Task from '../components/Task';
+import OpenTask from '../components/OpenTask';
 import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication, clearUserData, clearAccessToken, getLeadUserData } from '../authStorage';
+import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import initalBackground from '../assets/img/welcome-bg.png';
 import CloseIcon from '../assets/icons/close-icon.svg';
 import { Platform } from 'react-native';
@@ -21,6 +22,10 @@ export default function HomeSupporterScreen({ navigation }) {
     const [showAllOpenTasks, setShowAllOpenTasks] = useState(false);
     const [showAllMyTasks, setShowAllMyTasks] = useState(false);
     const [tasks, setTasks] = useState([]);
+
+    const [taskModalVisible, setTaskModalVisible] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const overlayOpacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         async function fetchUserData() {
@@ -82,8 +87,7 @@ export default function HomeSupporterScreen({ navigation }) {
         }
     }, [leadId]);
 
-
-    console.log(tasks);
+    console.log('Tasks', tasks);
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
@@ -91,6 +95,30 @@ export default function HomeSupporterScreen({ navigation }) {
 
     const handleClose = () => {
         setIsViewActive(false);
+    };
+
+    useEffect(() => {
+        if (taskModalVisible) {
+            Animated.timing(overlayOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(overlayOpacity, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [{ taskModalVisible }]);
+
+    const handleTaskItemClick = async (task) => {
+        setSelectedTask(task);
+    };
+
+    const handleTaskModalClose = () => {
+        setTaskModalVisible(false);
     };
 
     const renderTasks = (tasks = []) => {
@@ -131,8 +159,9 @@ export default function HomeSupporterScreen({ navigation }) {
             <View style={stylesSuppHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesSuppHome.tasksScroll}>
                     {displayedTasks.map(task => (
-                        <Task
+                        <OpenTask
                             key={task.taskId}
+                            task={task}
                             title={task.title}
                             firstName={task.assignee ? task.assignee.firstName : ''}
                             lastName={task.assignee ? task.assignee.lastName : ''}
@@ -140,6 +169,8 @@ export default function HomeSupporterScreen({ navigation }) {
                             endTime={task.endDateTime}
                             emoji={task.assignee ? task.assignee.emoji : ''}
                             color={task.assignee ? task.assignee.color : ''}
+                            taskModal={() => setTaskModalVisible(true)}
+                            onTaskItemClick={handleTaskItemClick}
                         />
                     ))}
                     {(filteredTasks.length > 3 && !showAllOpenTasks && activeTab === 'Open') ||
@@ -154,57 +185,72 @@ export default function HomeSupporterScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <>
+            <SafeAreaView style={styles.safeArea}>
 
-            <View style={stylesSuppHome.topBar}>
+                <View style={stylesSuppHome.topBar}>
 
-                <View style={[
-                    stylesSuppHome.selectedEmojiItem, { borderColor: color }
-                ]}>
-                    <Text style={stylesSuppHome.selectedEmojiText}>{emoji}</Text>
+                    <View style={[
+                        stylesSuppHome.selectedEmojiItem, { borderColor: color }
+                    ]}>
+                        <Text style={stylesSuppHome.selectedEmojiText}>{emoji}</Text>
+                    </View>
+                    <View style={{ flexShrink: 1 }}>
+                        <Text style={stylesSuppHome.greetingsText}>Hey {firstName}</Text>
+                        <Text style={stylesSuppHome.thanksText}>Thanks for being here for <Text style={stylesSuppHome.nameText}>
+                            {leadFirstName} {leadLastName}!</Text></Text>
+                    </View>
                 </View>
-                <View style={{ flexShrink: 1 }}>
-                    <Text style={stylesSuppHome.greetingsText}>Hey {firstName}</Text>
-                    <Text style={stylesSuppHome.thanksText}>Thanks for being here for <Text style={stylesSuppHome.nameText}>
-                        {leadFirstName} {leadLastName}!</Text></Text>
-                </View>
-            </View>
 
-            {isViewActive && (
-                <View style={[styles.contentContainer, { paddingTop: 5, paddingBottom: 15, width: '100%' }]}>
-                    <ImageBackground
-                        source={initalBackground}
-                        style={stylesSuppHome.roundedRectangleContainer}
-                    >
-                        <TouchableOpacity onPress={handleClose} style={stylesSuppHome.closeIcon}>
-                            <CloseIcon width={15} height={15} color={'#000'} />
-                        </TouchableOpacity>
-                        <View style={{ alignItems: 'left', flexDirection: 'column', flex: 1, paddingRight: 10, }}>
-                            <Text style={stylesSuppHome.welcomeText}>Welcome to your home page</Text>
-                            <Text style={stylesSuppHome.infoText}>Tasks will show up below</Text>
-                        </View>
-                        <Image
-                            source={require('../assets/img/mimi-flower-illustration.png')}
-                            style={stylesSuppHome.rightImageStyle}
-                        />
-                    </ImageBackground>
-                </View>
-            )}
+                {isViewActive && (
+                    <View style={[styles.contentContainer, { paddingTop: 5, paddingBottom: 15, width: '100%' }]}>
+                        <ImageBackground
+                            source={initalBackground}
+                            style={stylesSuppHome.roundedRectangleContainer}
+                        >
+                            <TouchableOpacity onPress={handleClose} style={stylesSuppHome.closeIcon}>
+                                <CloseIcon width={15} height={15} color={'#000'} />
+                            </TouchableOpacity>
+                            <View style={{ alignItems: 'left', flexDirection: 'column', flex: 1, paddingRight: 10, }}>
+                                <Text style={stylesSuppHome.welcomeText}>Welcome to your home page</Text>
+                                <Text style={stylesSuppHome.infoText}>Tasks will show up below</Text>
+                            </View>
+                            <Image
+                                source={require('../assets/img/mimi-flower-illustration.png')}
+                                style={stylesSuppHome.rightImageStyle}
+                            />
+                        </ImageBackground>
+                    </View>
+                )}
 
-            <View style={[stylesSuppHome.tabsContainer, styles.contentContainer]}>
-                <TouchableOpacity onPress={() => handleTabPress('Open')} style={[stylesSuppHome.tab, activeTab === 'Open' && stylesSuppHome.activeTab]}>
-                    <Text style={[stylesSuppHome.tabText, activeTab === 'Open' && stylesSuppHome.activeTabText]}>Open tasks</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleTabPress('My')} style={[stylesSuppHome.tab, activeTab === 'My' && stylesSuppHome.activeTab]}>
-                    <Text style={[stylesSuppHome.tabText, activeTab === 'My' && stylesSuppHome.activeTabText]}>My tasks</Text>
-                </TouchableOpacity>
-            </View>
-            {tasks.length > 0 && (
-                <View style={stylesSuppHome.tabsContentContainer}>
-                    {renderTasks(tasks)}
+                <View style={[stylesSuppHome.tabsContainer, styles.contentContainer]}>
+                    <TouchableOpacity onPress={() => handleTabPress('Open')} style={[stylesSuppHome.tab, activeTab === 'Open' && stylesSuppHome.activeTab]}>
+                        <Text style={[stylesSuppHome.tabText, activeTab === 'Open' && stylesSuppHome.activeTabText]}>Open tasks</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleTabPress('My')} style={[stylesSuppHome.tab, activeTab === 'My' && stylesSuppHome.activeTab]}>
+                        <Text style={[stylesSuppHome.tabText, activeTab === 'My' && stylesSuppHome.activeTabText]}>My tasks</Text>
+                    </TouchableOpacity>
                 </View>
-            )}
-        </SafeAreaView>
+                {tasks.length > 0 && (
+                    <View style={stylesSuppHome.tabsContentContainer}>
+                        {renderTasks(tasks)}
+                    </View>
+                )}
+
+                {(taskModalVisible) && (
+                    <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+                )}
+
+            </SafeAreaView>
+
+            {taskModalVisible &&
+                <TaskDetailsModal
+                    visible={taskModalVisible}
+                    selectedTask={selectedTask}
+                    onClose={handleTaskModalClose}
+                />
+            }
+        </>
 
     );
 }
