@@ -119,8 +119,6 @@ export default styles = StyleSheet.create({
         zIndex: 2,
     },
     backLinkIcon: {
-        width: 18,
-        height: 18,
         color: '#000',
         pointerEvents: 'none',
     },

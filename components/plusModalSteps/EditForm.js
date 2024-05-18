@@ -10,6 +10,7 @@ import LocationPicker from './LocationPicker';
 import { updateTask, deleteTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, startDateTime, endDateTime, firstName, lastName, color, emoji, onClose, isEditable, setIsEditable, taskId, onTaskCreated }) {
 
@@ -142,7 +143,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
             <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
                 <View style={stylesReview.modalTopNavLeft}>
                     <TouchableOpacity onPress={onClose ? onClose : handleBack} style={[styles.backLinkInline]}>
-                        <ArrowLeftIcon style={styles.backLinkIcon} />
+                        <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
                     </TouchableOpacity>
                     <TextInput
                         style={[stylesReview.field, stylesReview.fieldTask]}
@@ -181,75 +182,77 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                     />
                 </View>
             </View>
-            <View style={[stylesReview.group, stylesReview.groupFirst]}>
-                <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                    <Text style={stylesReview.groupTitle}>Circles</Text>
-                    <View style={stylesReview.circles}>
-                        {circles.map((option) => (
-                            <TouchableOpacity
-                                key={option}
-                                style={[
-                                    stylesReview.circle,
-                                    !isEditable && !selectedCircle.includes(option) ? stylesReview.circleHidden : '',
-                                    selectedCircle.includes(option) && stylesReview.circleSelected
-                                ]}
-                                onPress={() => handleSelectOption(option)}
-                                disabled={!isEditable}
-                            >
-                                <Text style={[
-                                    stylesReview.circleText,
-                                    selectedCircle.includes(option) && stylesReview.circleTextSelected
-                                ]}>{option}</Text>
-                            </TouchableOpacity>
-                        ))}
+            <ScrollView>
+                <View style={[stylesReview.group, stylesReview.groupFirst]}>
+                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
+                        <Text style={stylesReview.groupTitle}>Circles</Text>
+                        <View style={stylesReview.circles}>
+                            {circles.map((option) => (
+                                <TouchableOpacity
+                                    key={option}
+                                    style={[
+                                        stylesReview.circle,
+                                        !isEditable && !selectedCircle.includes(option) ? stylesReview.circleHidden : '',
+                                        selectedCircle.includes(option) && stylesReview.circleSelected
+                                    ]}
+                                    onPress={() => handleSelectOption(option)}
+                                    disabled={!isEditable}
+                                >
+                                    <Text style={[
+                                        stylesReview.circleText,
+                                        selectedCircle.includes(option) && stylesReview.circleTextSelected
+                                    ]}>{option}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
                     </View>
                 </View>
-            </View>
-            <View style={stylesReview.group}>
-                <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                    <Text style={stylesReview.groupTitle}>Date & Time</Text>
-                    <TouchableOpacity onPress={handleDateTime} style={stylesReview.fieldLink} disabled={!isEditable}>
-                        <Text style={[stylesReview.fielText, isEditable && stylesReview.fieldLinkText]}>
-                            {dateTimeText}
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            <View style={stylesReview.group}>
-                <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                    <Text style={stylesReview.groupTitle}>Location </Text>
-                    <LocationPicker onSelect={setSelectedLocation} selectedLocation={selectedLocation} disabled={!isEditable} />
-                </View>
-            </View>
-            <View style={stylesReview.group}>
-                <View style={[styles.contentContainer, stylesReview.groupInner]}>
-                    <Text style={stylesReview.groupTitle}>Assignee</Text>
-                    {firstName && lastName &&
-                        <View style={stylesReview.assignee}>
-                            <View style={[stylesReview.emojiWrapper, { borderColor: color }]}>
-                                <Text style={stylesReview.emoji}>
-                                    {emoji}
-                                </Text>
-                            </View>
-
-                            <View style={stylesReview.nameWrapper}>
-                                <Text style={stylesReview.name}>
-                                    {firstName} {lastName}
-                                </Text>
-                            </View>
-                        </View>
-                    }
-                </View>
-            </View>
-            {isEditable &&
-                <View style={styles.contentContainer}>
-                    <View style={[styles.submitButtonContainer, stylesReview.submitButtonContainer]}>
-                        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                            <ArrowIcon width={18} height={18} color={'#fff'} />
+                <View style={stylesReview.group}>
+                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
+                        <Text style={stylesReview.groupTitle}>Date & Time</Text>
+                        <TouchableOpacity onPress={handleDateTime} style={stylesReview.fieldLink} disabled={!isEditable}>
+                            <Text style={[stylesReview.fieldText, isEditable && stylesReview.fieldLinkText]}>
+                                {dateTimeText}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-            }
+                <View style={stylesReview.group}>
+                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
+                        <Text style={stylesReview.groupTitle}>Location </Text>
+                        <LocationPicker onSelect={setSelectedLocation} selectedLocation={selectedLocation} disabled={!isEditable} />
+                    </View>
+                </View>
+                <View style={stylesReview.group}>
+                    <View style={[styles.contentContainer, stylesReview.groupInner]}>
+                        <Text style={stylesReview.groupTitle}>Assignee</Text>
+                        {firstName && lastName &&
+                            <View style={stylesReview.assignee}>
+                                <View style={[stylesReview.emojiWrapper, { borderColor: color }]}>
+                                    <Text style={stylesReview.emoji}>
+                                        {emoji}
+                                    </Text>
+                                </View>
+
+                                <View style={stylesReview.nameWrapper}>
+                                    <Text style={stylesReview.name}>
+                                        {firstName} {lastName}
+                                    </Text>
+                                </View>
+                            </View>
+                        }
+                    </View>
+                </View>
+                {isEditable &&
+                    <View style={styles.contentContainer}>
+                        <View style={[styles.submitButtonContainer, stylesReview.submitButtonContainer]}>
+                            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+                                <ArrowIcon width={18} height={18} color={'#fff'} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                }
+            </ScrollView>
             {confirmationVisible && (
                 <Modal visible={confirmationVisible} animationType='fade' onRequestClose={handleCancel} transparent>
                     <TouchableOpacity onPress={handleCancel} style={stylesReview.innerModalContainer}>
@@ -306,7 +309,7 @@ const stylesReview = StyleSheet.create({
         flexShrink: 1,
         flexGrow: 1,
     },
-    fielText: {
+    fieldText: {
         fontSize: 13,
         lineHeight: 18,
         fontFamily: 'poppins-regular',

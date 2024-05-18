@@ -107,7 +107,7 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
         <>
             <View style={[styles.modalTopNav, stylesFields.modalTopNav]}>
                 <TouchableOpacity onPress={handleBack} style={[styles.backLinkInline]}>
-                    <ArrowLeftIcon style={styles.backLinkIcon} />
+                    <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
                 </TouchableOpacity>
                 <Text style={[styles.topBarTitle, stylesFields.topBarTitle]}>
                     {selectedService.title}

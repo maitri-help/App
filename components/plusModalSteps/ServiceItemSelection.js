@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet } from 'react-native';
 import { modalServices } from '../../data/ModalServices';
 import styles from '../../Styles';
@@ -29,7 +29,7 @@ export default function ServiceItemSelection({ onPress, selectedService, setSele
         <>
             <View style={styles.modalTopNav}>
                 <TouchableOpacity onPress={onClose} style={[styles.backLink, styles.backLinkCustom]}>
-                    <ArrowLeftIcon style={styles.backLinkIcon} />
+                    <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
                 </TouchableOpacity>
                 <Text style={[styles.topBarTitle, stylesServices.topBarTitle]}>
                     What Are You Looking For?

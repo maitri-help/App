@@ -1,25 +1,31 @@
-import React, { useState, } from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';
+import { useToast } from 'react-native-toast-notifications';
 
 export default function TaskItem({ task, taskModal, onTaskItemClick }) {
   const [isChecked, setIsChecked] = useState(task.status === 'done');
+  const toast = useToast();
+
+  useEffect(() => {
+    setIsChecked(task.status === 'done');
+  }, [task.status]);
 
   const handleToggleCheckbox = async () => {
-    const status = (task.status == 'done') ? 'undone' : 'done'
-    const updatedTask = {
-        status: status,
-    };
-    let token = await getAccessToken();
-    const header = {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
+    const newStatus = isChecked ? 'undone' : 'done';
+    const updatedTask = { status: newStatus };
+
+    try {
+      const accessToken = await getAccessToken();
+      await updateTask(task.taskId, updatedTask, accessToken);
+      setIsChecked(!isChecked);
+      toast.show(`Task is set to: ${newStatus}`, { type: 'success' });
+    } catch (error) {
+      toast.show('Error updating task status', { type: 'error' });
+      console.error('Error updating task:', error);
     }
-    await updateTask(updatedTask, header, task.taskId)
-    setIsChecked(prevState => !prevState);
   };
 
   const formatDateTime = (task) => {
@@ -41,7 +47,7 @@ export default function TaskItem({ task, taskModal, onTaskItemClick }) {
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={handleClick}>
       <View style={styles.wrapper}>
-        <View style={[styles.emojiWrapper, task.assignee ? {borderColor: task.assignee.color ? task.assignee.color : '#1C4837'} : '']}>
+        <View style={[styles.emojiWrapper, task.assignee ? { borderColor: task.assignee.color ? task.assignee.color : '#1C4837' } : '']}>
           {task.assignee && <Text style={styles.emoji}>
             {task.assignee ? task.assignee.emoji : ''}
           </Text>}
@@ -50,7 +56,7 @@ export default function TaskItem({ task, taskModal, onTaskItemClick }) {
         <View style={styles.textContainer}>
           <Text style={[styles.title, isChecked ? styles.textStriked : '']}>{task.title}</Text>
           {task.assignee && <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>
-            {task.assignee ? task.assignee.firstName : ''} {task.assignee ? task.assignee.lastName : ''}
+            {task.assignee.firstName} {task.assignee.lastName}
           </Text>}
           {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '']}>
             {formatDateTime(task)}
@@ -59,10 +65,10 @@ export default function TaskItem({ task, taskModal, onTaskItemClick }) {
       </View>
 
       <TouchableOpacity style={styles.checkboxWrapper} onPress={handleToggleCheckbox}>
-        <View style={[(isChecked) ? styles.checkboxChecked : styles.checkbox]}>
+        <View style={isChecked ? styles.checkboxChecked : styles.checkbox}>
           {isChecked &&
             <View style={styles.checkboxInner}>
-              <CheckIcon style={styles.checkboxIcon} />
+              <CheckIcon width={13} height={13} style={styles.checkboxIcon} />
             </View>
           }
         </View>
@@ -160,13 +166,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#6AAA5F',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
   },
   checkboxIcon: {
-    width: 16,
-    height: 16,
     resizeMode: 'contain',
     color: '#fff',
   }

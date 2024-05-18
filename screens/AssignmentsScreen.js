@@ -306,7 +306,7 @@ export default function AssignmentsScreen({ navigation }) {
                         style={styles.floatingButton}
                         activeOpacity={1}
                     >
-                        <PlusIcon color={'#fff'} />
+                        <PlusIcon color={'#fff'} width={28} height={28} />
                     </TouchableOpacity>
                 </View>
 

@@ -26,7 +26,7 @@ export default function IdentifyAlmostThereScreen({ visible, onClose, navigation
     return (
         <Modal visible={visible} onClose={onClose}>
             <TouchableOpacity onPress={onClose} style={styles.backLink}>
-                <ArrowLeftIcon style={styles.backLinkIcon} />
+                <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
             </TouchableOpacity>
             <Formik
                 initialValues={{ tribe: '' }}

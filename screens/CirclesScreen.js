@@ -68,6 +68,8 @@ export default function CirclesScreen({ navigation }) {
         setCircleItemsContent(circleItemsContent);
     };
 
+    console.log('This', tabContents);
+
     const handleCircleItemPress = (item) => {
         setSelectedCircleItem(item);
         setSupporterCardModalVisible(true);
@@ -244,7 +246,7 @@ export default function CirclesScreen({ navigation }) {
                         </View>
                     )}
                     <TouchableOpacity style={styles.floatingButton} activeOpacity={1} onPress={() => setSendInvitesModalVisible(true)}>
-                        <PlusIcon color={'#fff'} />
+                        <PlusIcon color={'#fff'} width={28} height={28} />
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>

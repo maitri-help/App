@@ -102,7 +102,7 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
         <>
             <View style={[styles.modalTopNav, stylesDate.modalTopNav]}>
                 <TouchableOpacity onPress={handleBack} style={[styles.backLinkInline]}>
-                    <ArrowLeftIcon style={styles.backLinkIcon} />
+                    <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
                 </TouchableOpacity>
                 <Text style={[styles.topBarTitle, stylesDate.topBarTitle]}>
                     {taskName}

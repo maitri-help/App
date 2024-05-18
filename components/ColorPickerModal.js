@@ -52,7 +52,7 @@ export default function ColorPickerModal({ visible, onClose, onColorSelect, sele
     >
       <View style={styles.modalTopNav}>
         <TouchableOpacity onPress={onClose} style={[styles.backLink, styles.backLinkCustom]}>
-          <ArrowLeftIcon style={styles.backLinkIcon} />
+          <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
         </TouchableOpacity>
         <Text style={[styles.topBarTitle, stylesColor.topBarTitle]}>
           Select Your Color

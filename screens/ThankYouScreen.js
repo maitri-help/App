@@ -12,7 +12,7 @@ export default function ThankYouScreen({ visible, onClose, setAlmostThereModalVi
                 onClose();
                 setAlmostThereModalVisible(true);
             }} style={styles.backLink} >
-                <ArrowLeftIcon style={styles.backLinkIcon} />
+                <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
             </TouchableOpacity>
             <View style={[styles.container, stylesThankYou.container]}>
                 <View style={[styles.topTextsContainer, stylesThankYou.textsContainer]}>

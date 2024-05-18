@@ -67,7 +67,7 @@ export default function TaskSelection({ selectedService, modalServiceTasks, onTa
             <View style={[styles.modalTopNav, stylesTasks.modalTopNav]}>
                 <View style={stylesTasks.modalTopNavLeft}>
                     <TouchableOpacity onPress={handleBack} style={[styles.backLinkInline]}>
-                        <ArrowLeftIcon style={styles.backLinkIcon} />
+                        <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
                     </TouchableOpacity>
                     <Image source={selectedService.icon} style={stylesTasks.icon} />
                     <Text style={[styles.topBarTitle, stylesTasks.topBarTitle]}>

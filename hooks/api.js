@@ -42,25 +42,10 @@ export function createTask(data, header) {
     return axios.post(`${baseUrl}/task`, data, header);
 }
 
-export function updateTask(data, header, taskId) {
-    return axios.patch(`${baseUrl}/task/${taskId}`, data, header).then(response => {
-        console.log('Task updated successfully:', response.data);
-        return response.data;
-    })
-        .catch(error => {
-            if (error.response) {
-                console.error('Error response:', error.response.data);
-                console.error('Error status:', error.response.status);
-                console.error('Error headers:', error.response.headers);
-                throw new Error(`Server responded with status code ${error.response.status}: ${error.response.data.message}`);
-            } else if (error.request) {
-                console.error('Error request:', error.request);
-                throw new Error('No response was received from the server');
-            } else {
-                console.error('Error message:', error.message);
-                throw new Error('Error in setting up the request: ' + error.message);
-            }
-        });
+export async function updateTask(taskId, data, accessToken) {
+    return axios.patch(`${baseUrl}/task/${taskId}`, data, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
 }
 
 export function deleteTask(header, taskId) {

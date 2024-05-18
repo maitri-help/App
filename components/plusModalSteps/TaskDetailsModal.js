@@ -79,7 +79,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
             <View style={[styles.modalTopNav, stylesModal.modalTopNav]}>
                 <View style={stylesModal.modalTopNavLeft}>
                     <TouchableOpacity onPress={onClose} style={[styles.backLinkInline]}>
-                        <ArrowLeftIcon style={styles.backLinkIcon} />
+                        <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
                     </TouchableOpacity>
                     <Text style={[stylesModal.field, stylesModal.fieldTask]}>
                         {taskName}
@@ -92,20 +92,24 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
                     </Text>
                 </View>
             </View>
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
                 <ScrollView>
                     <View style={[stylesModal.group, stylesModal.groupFirst]}>
                         <View style={[styles.contentContainer, stylesModal.groupInner]}>
                             <Text style={stylesModal.groupTitle}>Date & Time</Text>
-                            <Text style={stylesModal.fieldText}>
-                                {dateTimeText}
-                            </Text>
+                            <View style={stylesModal.fieldWrapper}>
+                                <Text style={stylesModal.fieldText}>
+                                    {dateTimeText}
+                                </Text>
+                            </View>
                         </View>
                     </View>
                     <View style={stylesModal.group}>
                         <View style={[styles.contentContainer, stylesModal.groupInner]}>
                             <Text style={stylesModal.groupTitle}>Location</Text>
-                            <LocationPicker selectedLocation={selectedLocation} disabled />
+                            <View style={stylesModal.fieldWrapper}>
+                                <LocationPicker selectedLocation={selectedLocation} disabled />
+                            </View>
                         </View>
                     </View>
                     {/* <View style={[stylesModal.group, { borderBottomWidth: 0 }]}>
@@ -146,6 +150,12 @@ const stylesModal = StyleSheet.create({
     topDescription: {
         marginBottom: 20,
     },
+    fieldWrapper: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        flexShrink: 1,
+        flexGrow: 1,
+    },
     field: {
         borderWidth: 0,
         padding: 0,
@@ -166,7 +176,6 @@ const stylesModal = StyleSheet.create({
         lineHeight: 18,
         fontFamily: 'poppins-regular',
         color: '#000',
-        flexShrink: 1,
     },
     name: {
         color: '#000',
@@ -186,7 +195,8 @@ const stylesModal = StyleSheet.create({
     groupInner: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 15,
+        justifyContent: 'space-between',
+        gap: 10,
     },
     groupTitle: {
         width: 100,

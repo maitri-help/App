@@ -52,7 +52,7 @@ export default function TaskFilterModal({taskName, onClose, TimeFilterList, setT
                 <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
                     <View style={stylesReview.modalTopNavLeft}>
                         <TouchableOpacity onPress={onClose} style={[styles.backLinkInline]}>
-                            <ArrowLeftIcon style={styles.backLinkIcon} />
+                            <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
                         </TouchableOpacity>
                         <Text style={[stylesReview.field, stylesReview.fieldTask]}>
                             {taskName}

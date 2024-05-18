@@ -54,8 +54,8 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled })
         <>
             {showMap ? (
                 <>
-                    <TouchableOpacity onPress={() => setShowMap(false)}>
-                        <CloseIcon width={15} height={15} color={'#000'} />
+                    <TouchableOpacity style={stylesLocation.closeIconWrapper} onPress={() => setShowMap(false)}>
+                        <CloseIcon style={stylesLocation.closeIcon} />
                     </TouchableOpacity>
                     {!disabled &&
                         <MapView
@@ -82,6 +82,7 @@ const stylesLocation = StyleSheet.create({
         flexShrink: 1,
         flexGrow: 1,
         flexDirection: 'row',
+        justifyContent: 'flex-end',
     },
     fieldLinkText: {
         fontSize: 13,
@@ -97,4 +98,16 @@ const stylesLocation = StyleSheet.create({
         fontFamily: 'poppins-regular',
         color: '#000',
     },
+    closeIconWrapper: {
+        width: 24,
+        height: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: -4,
+    },
+    closeIcon: {
+        width: 14,
+        height: 14,
+        color: '#000',
+    }
 });

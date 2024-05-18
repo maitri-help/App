@@ -222,8 +222,8 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                     <Text style={stylesSuppOT.greetingsText}>Open Tasks</Text>
                     <Text style={stylesSuppOT.thanksText}>Pick a task. Spread the love</Text>
                 </View>
-                <TouchableOpacity onPress={handleFilter}>
-                    <FilterIcon color={"#1c4837"} width={19} height={19}></FilterIcon>
+                <TouchableOpacity onPress={handleFilter} style={stylesSuppOT.filterIconWrapper}>
+                    <FilterIcon width={19} height={19} style={stylesSuppOT.filterIcon}></FilterIcon>
                 </TouchableOpacity>
             </View>
                 <View style={stylesSuppOT.tabsContentContainer}>
@@ -300,4 +300,15 @@ const stylesSuppOT = StyleSheet.create({
         height: 120,
         resizeMode: 'contain',
     },
+    filterIconWrapper: {
+        backgroundColor: '#1c4837',
+        width: 35,
+        height: 35,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    filterIcon: {
+        color: '#fff',
+    }
 });
