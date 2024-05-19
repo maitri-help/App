@@ -68,8 +68,6 @@ export default function CirclesScreen({ navigation }) {
         setCircleItemsContent(circleItemsContent);
     };
 
-    console.log('This', tabContents);
-
     const handleCircleItemPress = (item) => {
         setSelectedCircleItem(item);
         setSupporterCardModalVisible(true);
@@ -106,14 +104,14 @@ export default function CirclesScreen({ navigation }) {
         } else if (activeTab === 'Circles') {
             return tabContents.First.length === 0 && tabContents.Second.length === 0 && tabContents.Third.length === 0;
         } else {
-            return tabContents[activeTab].length === 0;
+            return tabContents[activeTab] && tabContents[activeTab].length === 0;
         }
     };
 
     const generateAllTabContent = () => {
         const allContent = [];
         ['First', 'Second', 'Third'].forEach((tab) => {
-            tabContents[tab].forEach((item) => {
+            (tabContents[tab] || []).forEach((item) => {
                 allContent.push({ ...item, circle: `${tab}` });
             });
         });
@@ -121,6 +119,7 @@ export default function CirclesScreen({ navigation }) {
     };
 
     const getRandomItem = (array) => {
+        if (!array || array.length === 0) return null;
         return array[Math.floor(Math.random() * array.length)];
     };
 
@@ -260,6 +259,8 @@ export default function CirclesScreen({ navigation }) {
                 navigation={navigation}
             />
 
+            {console.log(selectedCircleItem)}
+
             <SupporterCardScreen
                 visible={supporterCardModalVisible}
                 onClose={() => {
@@ -276,6 +277,9 @@ export default function CirclesScreen({ navigation }) {
                 phoneNumber={selectedCircleItem ? selectedCircleItem.phoneNumber : ''}
                 email={selectedCircleItem ? selectedCircleItem.email : ''}
                 nickname={selectedCircleItem ? selectedCircleItem.nickname : ''}
+                circleId={selectedCircleItem ? selectedCircleItem.circleId : ''}
+                supporterUserId={selectedCircleItem ? selectedCircleItem.userId : ''}
+                onUserRemoved={() => fetchCircleUsers()}
             />
         </>
     );

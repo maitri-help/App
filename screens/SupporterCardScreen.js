@@ -9,11 +9,13 @@ import PhoneIcon from '../assets/icons/phone-classic-icon.svg';
 import EmailIcon from '../assets/icons/mail-icon.svg';
 import { deleteSupporterFromCircle } from '../hooks/api';
 import { getAccessToken } from '../authStorage';
+import { useToast } from 'react-native-toast-notifications';
 
-export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, circle, tasks = [], phoneNumber, email, navigation }) {
+export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, circle, tasks = [], phoneNumber, email, circleId, supporterUserId, onUserRemoved }) {
     const [selectedCircle, setSelectedCircle] = useState('First');
     const [showInnerModal, setShowInnerModal] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
+    const toast = useToast();
 
     useEffect(() => {
         if (circle && ['First', 'Second', 'Third'].includes(circle)) {
@@ -60,9 +62,8 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
 
             toast.show('Supporter deleted from circle', { type: 'success' });
 
-            handleCancel();
             onClose();
-            onTaskCreated();
+            onUserRemoved();
 
         } catch (error) {
             console.error("Error deleting supporter:", error);

@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, Animated } from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
+import MyTask from '../components/MyTask';
 import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication, clearUserData, clearAccessToken, getLeadUserData } from '../authStorage';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
+import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
 import initalBackground from '../assets/img/welcome-bg.png';
 import CloseIcon from '../assets/icons/close-icon.svg';
 import { Platform } from 'react-native';
@@ -24,6 +26,7 @@ export default function HomeSupporterScreen({ navigation }) {
     const [tasks, setTasks] = useState([]);
 
     const [taskModalVisible, setTaskModalVisible] = useState(false);
+    const [myTaskModalVisible, setMyTaskModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -98,7 +101,7 @@ export default function HomeSupporterScreen({ navigation }) {
     };
 
     useEffect(() => {
-        if (taskModalVisible) {
+        if (taskModalVisible || myTaskModalVisible) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
@@ -111,7 +114,7 @@ export default function HomeSupporterScreen({ navigation }) {
                 useNativeDriver: true,
             }).start();
         }
-    }, [{ taskModalVisible }]);
+    }, [taskModalVisible, myTaskModalVisible]);
 
     const handleTaskItemClick = async (task) => {
         setSelectedTask(task);
@@ -119,6 +122,7 @@ export default function HomeSupporterScreen({ navigation }) {
 
     const handleTaskModalClose = () => {
         setTaskModalVisible(false);
+        setMyTaskModalVisible(false);
     };
 
     const renderTasks = (tasks = []) => {
@@ -159,19 +163,35 @@ export default function HomeSupporterScreen({ navigation }) {
             <View style={stylesSuppHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesSuppHome.tasksScroll}>
                     {displayedTasks.map(task => (
-                        <OpenTask
-                            key={task.taskId}
-                            task={task}
-                            title={task.title}
-                            firstName={task.assignee ? task.assignee.firstName : ''}
-                            lastName={task.assignee ? task.assignee.lastName : ''}
-                            startTime={task.startDateTime}
-                            endTime={task.endDateTime}
-                            emoji={task.assignee ? task.assignee.emoji : ''}
-                            color={task.assignee ? task.assignee.color : ''}
-                            taskModal={() => setTaskModalVisible(true)}
-                            onTaskItemClick={handleTaskItemClick}
-                        />
+                        activeTab === 'Open' ? (
+                            <OpenTask
+                                key={task.taskId}
+                                task={task}
+                                title={task.title}
+                                firstName={task.assignee ? task.assignee.firstName : ''}
+                                lastName={task.assignee ? task.assignee.lastName : ''}
+                                startTime={task.startDateTime}
+                                endTime={task.endDateTime}
+                                emoji={task.assignee ? task.assignee.emoji : ''}
+                                color={task.assignee ? task.assignee.color : ''}
+                                taskModal={() => setTaskModalVisible(true)}
+                                onTaskItemClick={handleTaskItemClick}
+                            />
+                        ) : (
+                            <MyTask
+                                key={task.taskId}
+                                task={task}
+                                title={task.title}
+                                firstName={task.assignee ? task.assignee.firstName : ''}
+                                lastName={task.assignee ? task.assignee.lastName : ''}
+                                startTime={task.startDateTime}
+                                endTime={task.endDateTime}
+                                emoji={task.assignee ? task.assignee.emoji : ''}
+                                color={task.assignee ? task.assignee.color : ''}
+                                taskModal={() => setMyTaskModalVisible(true)}
+                                onTaskItemClick={handleTaskItemClick}
+                            />
+                        )
                     ))}
                     {(filteredTasks.length > 3 && !showAllOpenTasks && activeTab === 'Open') ||
                         (filteredTasks.length > 3 && !showAllMyTasks && activeTab === 'My') ? (
@@ -237,7 +257,7 @@ export default function HomeSupporterScreen({ navigation }) {
                     </View>
                 )}
 
-                {(taskModalVisible) && (
+                {(taskModalVisible || myTaskModalVisible) && (
                     <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
                 )}
 
@@ -246,6 +266,14 @@ export default function HomeSupporterScreen({ navigation }) {
             {taskModalVisible &&
                 <TaskDetailsModal
                     visible={taskModalVisible}
+                    selectedTask={selectedTask}
+                    onClose={handleTaskModalClose}
+                />
+            }
+
+            {myTaskModalVisible &&
+                <MyTaskDetailsModal
+                    visible={myTaskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
                 />
