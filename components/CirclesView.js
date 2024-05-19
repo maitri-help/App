@@ -21,7 +21,7 @@ export default function CirclesView({ circleItemsContent, additionalItemCountFir
                                     <Text style={[stylesCircles.circleItemText, stylesCircles.circleItemTextOutside]}>{item.firstName}</Text>
                                 </React.Fragment>
                             )}
-                            {!item.emoji && !['Peer', 'Friend', 'Parent'].includes(item.firstName) ? (
+                            {!item.emoji && !['Peer', 'Friend', 'Parent'].includes(item.firstName) && (
                                 <TouchableOpacity
                                     activeOpacity={1}
                                     onPress={() => onPressCircleItem(item)}
@@ -34,7 +34,8 @@ export default function CirclesView({ circleItemsContent, additionalItemCountFir
                                 >
                                     <Text style={stylesCircles.circleItemText}>{item.firstName}</Text>
                                 </TouchableOpacity>
-                            ) : (
+                            )}
+                            {!item.emoji && ['Peer', 'Friend', 'Parent'].includes(item.firstName) && (
                                 <View
                                     style={[
                                         stylesCircles.circleItem,
