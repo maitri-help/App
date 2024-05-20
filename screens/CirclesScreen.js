@@ -85,8 +85,7 @@ export default function CirclesScreen({ navigation }) {
         }
     
         const updatedItem = { ...item, circle };
-    
-        console.log('The item', updatedItem);
+        
         setSelectedCircleItem(updatedItem);
         setSupporterCardModalVisible(true);
     };
@@ -274,8 +273,6 @@ export default function CirclesScreen({ navigation }) {
                 onClose={() => setSendInvitesModalVisible(false)}
                 navigation={navigation}
             />
-
-            {console.log('Select', selectedCircleItem ? selectedCircleItem.circle : '')}
 
             <SupporterCardScreen
                 visible={supporterCardModalVisible}

@@ -13,7 +13,7 @@ import Modal from '../Modal';
 import Button from '../Button';
 import { ScrollView } from 'react-native-gesture-handler';
 
-export default function TaskFilterModal({taskName, onClose, TimeFilterList, setTimeFilterList, TypeFilterList, setTypeFilterList}) {
+export default function TaskFilterModal({ taskName, onClose, TimeFilterList, setTimeFilterList, TypeFilterList, setTypeFilterList }) {
 
     const TimeFilters = [
         "Morning",
@@ -35,7 +35,7 @@ export default function TaskFilterModal({taskName, onClose, TimeFilterList, setT
 
     const toggleFilter = (filter, setSelectedFilters) => {
         setSelectedFilters(selectedFilters => {
-            const newFilters = selectedFilters.includes(filter) 
+            const newFilters = selectedFilters.includes(filter)
                 ? selectedFilters.filter(f => f !== filter)
                 : [...selectedFilters, filter];
 
@@ -46,9 +46,9 @@ export default function TaskFilterModal({taskName, onClose, TimeFilterList, setT
 
     return (
         <Modal
-            onClose={()=>onClose(TimeFilterList, TypeFilterList)}
+            onClose={() => onClose(TimeFilterList, TypeFilterList)}
         >
-            <View style={{maxHeight: 400}}>
+            <View style={{ maxHeight: 400 }}>
                 <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
                     <View style={stylesReview.modalTopNavLeft}>
                         <TouchableOpacity onPress={onClose} style={[styles.backLinkInline]}>
@@ -68,16 +68,16 @@ export default function TaskFilterModal({taskName, onClose, TimeFilterList, setT
                                 <Button
                                     key={filter}
                                     buttonSmall={true}
-                                    textStyle={{ 
-                                        ...{fontSize: 14, lineHeight:18, paddingHorizontal: 0, color: '#000'},
-                                        color: TimeFilterList.includes(filter) 
-                                            ? 'white' 
+                                    textStyle={{
+                                        ...{ fontSize: 14, lineHeight: 18, paddingHorizontal: 0, color: '#000' },
+                                        color: TimeFilterList.includes(filter)
+                                            ? 'white'
                                             : 'black'
                                     }}
                                     buttonStyle={{
-                                        ...{ width: "auto", height: 30, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 100 },
-                                        backgroundColor: TimeFilterList.includes(filter) 
-                                            ? '#6AAA5F' 
+                                        ...{ width: "auto", height: 30, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 100 },
+                                        backgroundColor: TimeFilterList.includes(filter)
+                                            ? '#6AAA5F'
                                             : '#f7f7f7'
                                     }}
                                     title={filter}
@@ -90,42 +90,42 @@ export default function TaskFilterModal({taskName, onClose, TimeFilterList, setT
                 <View style={stylesReview.group}>
                     <View style={styles.contentContainer}>
                         <Text style={stylesReview.groupTitle}>Type</Text>
-                            <View style={[stylesReview.groupInner]}>
-                                {TypeFilters.map(filter => (
-                                    <Button
-                                        key={filter}
-                                        buttonSmall={true}
-                                        textStyle={{ 
-                                            ...{fontSize: 14, lineHeight:18, paddingHorizontal: 0, color: '#000'},
-                                            color: TypeFilterList.includes(filter) 
-                                                ? 'white' 
-                                                : 'black'
-                                        }}
-                                        buttonStyle={{
-                                            ...{ width: "auto", height: 30, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 100 },
-                                            backgroundColor: TypeFilterList.includes(filter) 
-                                                ? '#6AAA5F' 
-                                                : '#f7f7f7'
-                                        }}
-                                        title={filter}
-                                        onPress={() => toggleFilter(filter, setTypeFilterList)}
-                                    />
-                                ))}
-                            </View>
+                        <View style={[stylesReview.groupInner]}>
+                            {TypeFilters.map(filter => (
+                                <Button
+                                    key={filter}
+                                    buttonSmall={true}
+                                    textStyle={{
+                                        ...{ fontSize: 14, lineHeight: 18, paddingHorizontal: 0, color: '#000' },
+                                        color: TypeFilterList.includes(filter)
+                                            ? 'white'
+                                            : 'black'
+                                    }}
+                                    buttonStyle={{
+                                        ...{ width: "auto", height: 30, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 100 },
+                                        backgroundColor: TypeFilterList.includes(filter)
+                                            ? '#6AAA5F'
+                                            : '#f7f7f7'
+                                    }}
+                                    title={filter}
+                                    onPress={() => toggleFilter(filter, setTypeFilterList)}
+                                />
+                            ))}
+                        </View>
                     </View>
                 </View>
             </View>
-            
-            <View style={{width: 300, alignSelf: 'center', paddingTop: 40}}>
-                <Button 
+
+            <View style={{ width: 300, alignSelf: 'center', paddingTop: 40 }}>
+                <Button
                     textStyle={{ fontSize: 20 }}
-                    title="Filter" 
-                    onPress={onClose} 
+                    title="Filter"
+                    onPress={onClose}
                 />
             </View>
-            <View style={{paddingTop: 20}}>
+            <View style={{ paddingTop: 20 }}>
                 <TouchableOpacity>
-                    <Text style={[styles.text, {alignSelf: "center", color: '#55884C', textDecorationLine: 'underline'}]}>Reset</Text>
+                    <Text style={[styles.text, { alignSelf: "center", color: '#55884C', textDecorationLine: 'underline' }]}>Reset</Text>
                 </TouchableOpacity>
             </View>
 
@@ -134,7 +134,7 @@ export default function TaskFilterModal({taskName, onClose, TimeFilterList, setT
 }
 
 const stylesReview = StyleSheet.create({
-    taskNotes:{
+    taskNotes: {
         textAlignVertical: 'top',
         flexShrink: 1,
     },
