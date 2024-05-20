@@ -1,19 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Animated } from 'react-native';
 import styles from '../Styles';
-import Task from '../components/Task';
-import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
-import { Platform } from 'react-native';
+import MyTask from '../components/MyTask';
+import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
+import { checkAuthentication, clearUserData, clearAccessToken, getAccessToken } from '../authStorage';
+import { getLeadUser } from '../hooks/api';
 
 
 export default function MyTasksSupporterScreen({ navigation }) {
+    const [myTaskModalVisible, setMyTaskModalVisible] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [tasks, setTasks] = useState([]);
+    const [leadId, setLeadId] = useState('');
+    const [userId, setUserId] = useState('');
+
+    const overlayOpacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         async function fetchUserData() {
             try {
-                const userData = await checkAuthentication(); 
+                const userData = await checkAuthentication();
                 if (userData) {
-                    console.log('User data:', userData);
+                    setUserId(userData.userId);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -25,11 +33,72 @@ export default function MyTasksSupporterScreen({ navigation }) {
         fetchUserData();
     }, []);
 
-    const MyTasks = [
-    ];
+    useEffect(() => {
+        const fetchLeadUserData = async () => {
+            try {
+                const accessToken = await getAccessToken();
+
+                const userData = await getLeadUser(accessToken);
+
+                setLeadId(userData.data[0].userId);
+            } catch (error) {
+                console.error('Error fetching lead user data:', error);
+            }
+        };
+
+        fetchLeadUserData();
+    }, []);
+
+    async function fetchTasks() {
+        try {
+            if (leadId) {
+                const accessToken = await getAccessToken();
+
+                const tasksResponse = await getLeadUser(accessToken);
+
+                setTasks(tasksResponse.data[0].tasks);
+            } else {
+                console.error('No user data found or leadId not available');
+            }
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+        }
+    }
+
+    useEffect(() => {
+        if (leadId) {
+            fetchTasks();
+        }
+    }, [leadId]);
+
+    useEffect(() => {
+        if (myTaskModalVisible) {
+            Animated.timing(overlayOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(overlayOpacity, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [myTaskModalVisible]);
+
+    const handleTaskItemClick = async (task) => {
+        setSelectedTask(task);
+    };
+
+    const handleTaskModalClose = () => {
+        setMyTaskModalVisible(false);
+    };
 
     const renderTasks = (tasks) => {
-        if (tasks.length === 0) {
+        const myTasks = tasks.filter(task => task.assignedUserId && task.assignedUserId === userId);
+
+        if (myTasks.length === 0) {
             return (
                 <View style={stylesSuppMT.tasksContainer}>
                     <ScrollView contentContainerStyle={stylesSuppMT.tasksScrollEmpty}>
@@ -39,7 +108,7 @@ export default function MyTasksSupporterScreen({ navigation }) {
                                     Your task list is currently empty.
                                 </Text>
                                 <Text style={[styles.text, stylesSuppMT.tasksDescription, { marginBottom: 60, paddingHorizontal: 30 }]}>
-                                    Check the open tasks to see where you can lend a hand
+                                    Check the Open tasks to see where you can lend a hand.
                                 </Text>
                                 <Image
                                     source={require('../assets/img/mimi-illustration.png')}
@@ -55,8 +124,20 @@ export default function MyTasksSupporterScreen({ navigation }) {
         return (
             <View style={stylesSuppMT.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesSuppMT.tasksScroll}>
-                    {tasks.map(task => (
-                        <Task key={task.id} title={task.title} assignee={task.assignee} time={task.time} emoji={task.emoji} />
+                    {myTasks.map(task => (
+                        <MyTask
+                            key={task.taskId}
+                            task={task}
+                            title={task.title}
+                            firstName={task.assignee ? task.assignee.firstName : ''}
+                            lastName={task.assignee ? task.assignee.lastName : ''}
+                            startTime={task.startDateTime}
+                            endTime={task.endDateTime}
+                            emoji={task.assignee ? task.assignee.emoji : ''}
+                            color={task.assignee ? task.assignee.color : ''}
+                            taskModal={() => setMyTaskModalVisible(true)}
+                            onTaskItemClick={handleTaskItemClick}
+                        />
                     ))}
                 </ScrollView>
             </View>
@@ -64,21 +145,35 @@ export default function MyTasksSupporterScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <>
+            <SafeAreaView style={styles.safeArea}>
 
-            <View style={[styles.topBar, { gap: 0, flexDirection: 'row', borderBottomWidth: 0 }]}>
+                <View style={[styles.topBar, { gap: 0, flexDirection: 'row', borderBottomWidth: 0 }]}>
 
 
-                <View style={{ gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }}>
-                    <Text style={stylesSuppMT.greetingsText}>My Tasks</Text>
-                    <Text style={stylesSuppMT.thanksText}>Your help makes a difference.</Text>
+                    <View style={{ gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }}>
+                        <Text style={stylesSuppMT.greetingsText}>My Tasks</Text>
+                        <Text style={stylesSuppMT.thanksText}>Your help makes a difference.</Text>
+                    </View>
                 </View>
-            </View>
-            <View style={stylesSuppMT.tabsContentContainer}>
-                {renderTasks(MyTasks)}
-            </View>
-        </SafeAreaView>
+                <View style={stylesSuppMT.tabsContentContainer}>
+                    {renderTasks(tasks)}
+                </View>
 
+                {(myTaskModalVisible) && (
+                    <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+                )}
+            </SafeAreaView>
+
+            {myTaskModalVisible &&
+                <MyTaskDetailsModal
+                    visible={myTaskModalVisible}
+                    selectedTask={selectedTask}
+                    onClose={handleTaskModalClose}
+                    updateTask={() => fetchTasks()}
+                />
+            }
+        </>
     );
 }
 
