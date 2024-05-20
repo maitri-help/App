@@ -87,3 +87,11 @@ export function assingUserToTask(taskId, accessToken) {
         }
     });
 }
+
+export function changeUserCircle(leadUserId, supporterUserId, newCircle, accessToken) {
+    return axios.patch(`${baseUrl}/users/${leadUserId}/supporters/${supporterUserId}/circles`, { newCircleLevels: [newCircle] }, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}

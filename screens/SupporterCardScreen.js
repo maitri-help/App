@@ -7,26 +7,28 @@ import CheckIcon from '../assets/icons/check-icon.svg';
 import ClockIcon from '../assets/icons/clock-icon.svg';
 import PhoneIcon from '../assets/icons/phone-classic-icon.svg';
 import EmailIcon from '../assets/icons/mail-icon.svg';
-import { deleteSupporterFromCircle } from '../hooks/api';
+import { deleteSupporterFromCircle, changeUserCircle } from '../hooks/api';
 import { getAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 
-export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, circle, tasks = [], phoneNumber, email, circleId, supporterUserId, onUserRemoved }) {
-    const [selectedCircle, setSelectedCircle] = useState('First');
+export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, circle, tasks = [], phoneNumber, email, circleId, supporterUserId, leadUserId, updateUsers }) {
+    const [selectedCircle, setSelectedCircle] = useState(circle || 'First');
     const [showInnerModal, setShowInnerModal] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
     const toast = useToast();
 
+    console.log('Circle prop:', circle);
+
     useEffect(() => {
         if (circle && ['First', 'Second', 'Third'].includes(circle)) {
             setSelectedCircle(circle);
-        } else {
-            setSelectedCircle('First');
         }
     }, [circle]);
 
     const handleSelectCircle = (option) => {
         setSelectedCircle(option);
+        handleCircleChange(option);
+        updateUsers();
     };
 
     const toggleEditable = () => {
@@ -39,6 +41,30 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
 
     const closeInnerModal = () => {
         setShowInnerModal(false);
+    };
+
+    const handleCircleChange = async (newCircle) => {
+        try {
+            const accessToken = await getAccessToken();
+
+            if (!accessToken) {
+                console.error('Access token not found. Please log in.');
+                return;
+            }
+
+            const response = await changeUserCircle(leadUserId, supporterUserId, newCircle, accessToken);
+            console.log("Circle changed:", response.data);
+
+            toast.show('Supporter circle changed successfully', { type: 'success' });
+
+            setSelectedCircle(newCircle);
+            setIsEditable(!isEditable);
+            onClose();
+            updateUsers();
+        } catch (error) {
+            console.error("Error changing circle:", error);
+            toast.show('Unsuccessful circle change', { type: 'error' });
+        }
     };
 
     const handleDelete = async () => {
@@ -62,8 +88,10 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
 
             toast.show('Supporter deleted from circle', { type: 'success' });
 
+            setShowInnerModal(!showInnerModal);
+            setIsEditable(!isEditable);
             onClose();
-            onUserRemoved();
+            updateUsers();
 
         } catch (error) {
             console.error("Error deleting supporter:", error);
@@ -99,7 +127,7 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
             <ScrollView contentContainerStyle={stylesSupporter.scrollContainer} automaticallyAdjustKeyboardInsets={true}>
                 <View style={[styles.contentContainer, stylesSupporter.container]}>
                     <View style={stylesSupporter.supporterNickCircles}>
-                        <View style={stylesSupporter.supporterNickname}>
+                        {/* <View style={stylesSupporter.supporterNickname}>
                             {isEditable ? (
                                 <TextInput
                                     style={[stylesSupporter.input, stylesSupporter.inputNickname]}
@@ -113,7 +141,7 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                                     {firstName ? firstName : 'Nickname'}
                                 </Text>
                             )}
-                        </View>
+                        </View> */}
                         <View style={stylesSupporter.supporterCircles}>
                             {['First', 'Second', 'Third'].map((option) => (
                                 <TouchableOpacity

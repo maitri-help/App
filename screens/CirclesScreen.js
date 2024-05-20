@@ -14,6 +14,7 @@ export default function CirclesScreen({ navigation }) {
     const [sendInvitesModalVisible, setSendInvitesModalVisible] = useState(false);
     const [supporterCardModalVisible, setSupporterCardModalVisible] = useState(false);
     const [selectedCircleItem, setSelectedCircleItem] = useState(null);
+    const [userId, setUserId] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
     const [tabContents, setTabContents] = useState({
@@ -29,6 +30,8 @@ export default function CirclesScreen({ navigation }) {
             const userData = await checkAuthentication();
             if (userData) {
                 console.log('User Data:', userData);
+
+                setUserId(userData.userId);
 
                 const circlesResponse = await circlesUsers(userData.accessToken);
 
@@ -275,7 +278,8 @@ export default function CirclesScreen({ navigation }) {
                 nickname={selectedCircleItem ? selectedCircleItem.nickname : ''}
                 circleId={selectedCircleItem ? selectedCircleItem.circleId : ''}
                 supporterUserId={selectedCircleItem ? selectedCircleItem.userId : ''}
-                onUserRemoved={() => fetchCircleUsers()}
+                leadUserId={userId}
+                updateUsers={() => fetchCircleUsers()}
             />
         </>
     );
