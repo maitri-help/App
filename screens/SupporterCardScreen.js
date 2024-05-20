@@ -11,19 +11,17 @@ import { deleteSupporterFromCircle, changeUserCircle } from '../hooks/api';
 import { getAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 
-export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, circle, tasks = [], phoneNumber, email, circleId, supporterUserId, leadUserId, updateUsers }) {
-    const [selectedCircle, setSelectedCircle] = useState(circle || 'First');
+export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, initialCircle, tasks = [], phoneNumber, email, circleId, supporterUserId, leadUserId, updateUsers }) {
+    const [selectedCircle, setSelectedCircle] = useState(initialCircle || 'First');
     const [showInnerModal, setShowInnerModal] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
     const toast = useToast();
 
-    console.log('Circle prop:', circle);
-
     useEffect(() => {
-        if (circle && ['First', 'Second', 'Third'].includes(circle)) {
-            setSelectedCircle(circle);
+        if (initialCircle && ['First', 'Second', 'Third'].includes(initialCircle)) {
+            setSelectedCircle(initialCircle);
         }
-    }, [circle]);
+    }, [initialCircle]);
 
     const handleSelectCircle = (option) => {
         setSelectedCircle(option);

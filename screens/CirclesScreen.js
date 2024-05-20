@@ -72,7 +72,22 @@ export default function CirclesScreen({ navigation }) {
     };
 
     const handleCircleItemPress = (item) => {
-        setSelectedCircleItem(item);
+        let circle;
+        switch (activeTab) {
+            case 'All':
+                circle = item.circle;
+                break;
+            case 'Circles':
+                break;
+            default:
+                circle = activeTab;
+                break;
+        }
+    
+        const updatedItem = { ...item, circle };
+    
+        console.log('The item', updatedItem);
+        setSelectedCircleItem(updatedItem);
         setSupporterCardModalVisible(true);
     };
 
@@ -172,7 +187,7 @@ export default function CirclesScreen({ navigation }) {
             return (
                 <View style={stylesCircles.circleListItems}>
                     {allContent.map((item, index) => (
-                        <CircleItem key={index} item={{ ...item, circle: item.circle }} onPress={() => handleCircleItemPress(item)} />
+                        <CircleItem key={index} item={{ ...item, circle: activeTab !== 'All' ? activeTab : item.circle }} activeTab={activeTab} onPress={() => handleCircleItemPress(item)} />
                     ))}
                 </View>
             );
@@ -192,7 +207,7 @@ export default function CirclesScreen({ navigation }) {
             return (
                 <View style={stylesCircles.circleListItems}>
                     {tabContent.map((item, index) => (
-                        <CircleItem key={index} item={{ ...item, circle: tab }} onPress={() => handleCircleItemPress(item)} />
+                        <CircleItem key={index} item={{ ...item, circle: activeTab !== 'All' ? activeTab : item.circle }} activeTab={activeTab} onPress={() => handleCircleItemPress(item)} />
                     ))}
                 </View>
             );
@@ -260,6 +275,8 @@ export default function CirclesScreen({ navigation }) {
                 navigation={navigation}
             />
 
+            {console.log('Select', selectedCircleItem ? selectedCircleItem.circle : '')}
+
             <SupporterCardScreen
                 visible={supporterCardModalVisible}
                 onClose={() => {
@@ -271,7 +288,7 @@ export default function CirclesScreen({ navigation }) {
                 color={selectedCircleItem ? selectedCircleItem.color : ''}
                 firstName={selectedCircleItem ? selectedCircleItem.firstName : ''}
                 lastName={selectedCircleItem ? selectedCircleItem.lastName : ''}
-                circle={selectedCircleItem ? selectedCircleItem.circle : ''}
+                initialCircle={selectedCircleItem ? selectedCircleItem.circle : ''}
                 tasks={selectedCircleItem ? selectedCircleItem.tasks : []}
                 phoneNumber={selectedCircleItem ? selectedCircleItem.phoneNumber : ''}
                 email={selectedCircleItem ? selectedCircleItem.email : ''}
