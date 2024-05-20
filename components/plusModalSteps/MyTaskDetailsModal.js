@@ -146,8 +146,8 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose, updat
                                 <Text style={stylesModal.innerModalSubtitle}>This will not be visible to the supporter</Text>
                             </View>
                             <View style={stylesModal.innerModalButtons}>
-                                <TouchableOpacity style={[stylesModal.innerModalButton, stylesModal.innerModalButtonRed]} onPress={() => {}}>
-                                    <Text style={[stylesModal.innerModalButtonText, stylesModal.innerModalButtonRedText]}>Remove</Text>
+                                <TouchableOpacity style={[stylesModal.innerModalButton, stylesModal.innerModalButtonGreen]} onPress={() => {}}>
+                                    <Text style={[stylesModal.innerModalButtonText, stylesModal.innerModalButtonGreenText]}>Remove</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[stylesModal.innerModalButton, stylesModal.innerModalButtonWhite]} onPress={closeInnerModal}>
                                     <Text style={[stylesModal.innerModalButtonText, stylesModal.innerModalButtonWhiteText]}>Cancel</Text>
@@ -293,8 +293,8 @@ const stylesModal = StyleSheet.create({
         shadowRadius: 6,
         elevation: 8,
     },
-    innerModalButtonRed: {
-        backgroundColor: '#FF7070',
+    innerModalButtonGreen: {
+        backgroundColor: '#1C4837',
     },
     innerModalButtonWhite: {
         backgroundColor: '#fff',
@@ -304,7 +304,7 @@ const stylesModal = StyleSheet.create({
         fontFamily: 'poppins-medium',
         lineHeight: 18,
     },
-    innerModalButtonRedText: {
+    innerModalButtonGreenText: {
         color: '#fff',
     },
     innerModalButtonWhiteText: {
