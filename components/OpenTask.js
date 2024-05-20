@@ -17,11 +17,11 @@ export default function Task({ task, title, firstName, lastName, startTime, endT
     const handleClick = () => {
         onTaskItemClick(task);
         taskModal();
-      };
+    };
 
     return (
         <TouchableOpacity style={stylesTask.taskContainer} activeOpacity={0.7} onPress={handleClick}>
-            <View style={[stylesTask.taskEmojiWrapper, {borderColor: color}]}>
+            <View style={[stylesTask.taskEmojiWrapper, { borderColor: color }]}>
                 {emoji &&
                     <Text style={stylesTask.taskEmoji}>
                         {emoji}

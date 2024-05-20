@@ -4,7 +4,7 @@ import styles from '../Styles';
 import AppButton from '../components/Button';
 import CloseIcon from '../assets/icons/close-icon.svg';
 import { getLeadUser } from '../hooks/api';
-import { storeLeadUserData, getAccessToken } from '../authStorage';
+import {getAccessToken } from '../authStorage';
 
 export default function SuppGreatNewsScreen({ navigation }) {
 
@@ -16,7 +16,6 @@ export default function SuppGreatNewsScreen({ navigation }) {
         const accessToken = await getAccessToken();
         const response = await getLeadUser(accessToken);
         const userData = response.data;
-        await storeLeadUserData(userData);
         setLeadUserData(userData);
       } catch (error) {
         console.error('Error fetching lead user data:', error);

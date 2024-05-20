@@ -39,41 +39,6 @@ export const clearUserData = async () => {
     }
 };
 
-export const storeLeadUserData = async (leadUserData) => {
-    try {
-        await AsyncStorage.setItem('leadUserData', JSON.stringify(leadUserData));
-        console.log('Lead user data stored successfully:', leadUserData);
-    } catch (error) {
-        console.error('Error storing lead user data:', error);
-    }
-};
-
-export const getLeadUserData = async () => {
-    try {
-        const leadUserDataString = await AsyncStorage.getItem('leadUserData');
-        if (leadUserDataString !== null) {
-            const leadUserData = JSON.parse(leadUserDataString);
-            console.log('Lead user data retrieved successfully:', leadUserData);
-            return leadUserData;
-        } else {
-            console.log('No lead user data found');
-            return null;
-        }
-    } catch (error) {
-        console.error('Error retrieving lead user data:', error);
-        return null;
-    }
-};
-
-export const clearLeadUserData = async () => {
-    try {
-        await AsyncStorage.removeItem('leadUserData');
-        console.log('Lead user data cleared successfully');
-    } catch (error) {
-        console.error('Error clearing lead user data:', error);
-    }
-};
-
 export const setOnboardingCompleted = async (isCompleted) => {
     try {
         await AsyncStorage.setItem('onboardingCompleted', JSON.stringify(isCompleted));

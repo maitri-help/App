@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import LocationPicker from './LocationPicker';
 import { assingUserToTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
-import Modal from '../Modal';
+import ModalCustom from '../Modal';
 import { ScrollView } from 'react-native-gesture-handler';
 
-export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
+export default function TaskDetailsModal({ visible, selectedTask, onClose, updateTask }) {
     const [dateTimeText, setDateTimeText] = useState(null);
     const toast = useToast();
 
@@ -23,9 +23,6 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
 
     useEffect(() => {
         if (selectedTask) {
-
-            console.log("Selected Task:", selectedTask);
-
             setTaskId(selectedTask.taskId);
             setTaskName(selectedTask.title);
             setDescription(selectedTask.description);
@@ -70,6 +67,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
             toast.show('Assigned to task successfully', { type: 'success' });
 
             onClose();
+            updateTask();
 
         } catch (error) {
             console.error("Error updating task:", error);
@@ -79,7 +77,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
     };
 
     return (
-        <Modal
+        <ModalCustom
             visible={visible}
             onClose={onClose}
             style={stylesModal}
@@ -160,7 +158,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
                 </Modal>
             )}
 
-        </Modal>
+        </ModalCustom>
     )
 }
 

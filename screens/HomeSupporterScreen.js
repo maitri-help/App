@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Ima
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
 import MyTask from '../components/MyTask';
-import { getTasksForUser } from '../hooks/api';
-import { checkAuthentication, clearUserData, clearAccessToken, getLeadUserData } from '../authStorage';
+import { getLeadUser } from '../hooks/api';
+import { checkAuthentication, clearUserData, clearAccessToken, getAccessToken } from '../authStorage';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
 import initalBackground from '../assets/img/welcome-bg.png';
@@ -55,10 +55,13 @@ export default function HomeSupporterScreen({ navigation }) {
     useEffect(() => {
         const fetchLeadUserData = async () => {
             try {
-                const userData = await getLeadUserData();
-                setLeadFirstName(userData[0].firstName);
-                setLeadLastName(userData[0].lastName);
-                setLeadId(userData[0].userId);
+                const accessToken = await getAccessToken();
+
+                const userData = await getLeadUser(accessToken);
+
+                setLeadFirstName(userData.data[0].firstName);
+                setLeadLastName(userData.data[0].lastName);
+                setLeadId(userData.data[0].userId);
             } catch (error) {
                 console.error('Error fetching lead user data:', error);
             }
@@ -67,30 +70,27 @@ export default function HomeSupporterScreen({ navigation }) {
         fetchLeadUserData();
     }, []);
 
-    useEffect(() => {
-        async function fetchTasks() {
-            try {
-                const userData = await checkAuthentication();
-                if (userData && leadId) {
-                    console.log('User Data:', userData);
-                    console.log('Access token:', userData.accessToken);
+    async function fetchTasks() {
+        try {
+            if (leadId) {
+                const accessToken = await getAccessToken();
 
-                    const tasksResponse = await getTasksForUser(leadId, userData.accessToken);
-                    setTasks(tasksResponse.data);
-                } else {
-                    console.error('No user data found or leadId not available');
-                }
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
+                const tasksResponse = await getLeadUser(accessToken);
+
+                setTasks(tasksResponse.data[0].tasks);
+            } else {
+                console.error('No user data found or leadId not available');
             }
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
         }
+    }
 
+    useEffect(() => {
         if (leadId) {
             fetchTasks();
         }
     }, [leadId]);
-
-    console.log('Tasks', tasks);
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
@@ -268,6 +268,7 @@ export default function HomeSupporterScreen({ navigation }) {
                     visible={taskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
+                    updateTask={() => fetchTasks()}
                 />
             }
 
@@ -276,6 +277,7 @@ export default function HomeSupporterScreen({ navigation }) {
                     visible={myTaskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
+                    updateTask={() => fetchTasks()}
                 />
             }
         </>

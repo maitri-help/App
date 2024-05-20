@@ -10,7 +10,7 @@ import Modal from '../Modal';
 import Button from '../Button';
 import { ScrollView } from 'react-native-gesture-handler';
 
-export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
+export default function TaskDetailsModal({ visible, selectedTask, onClose, updateTask }) {
     const [dateTimeText, setDateTimeText] = useState(null);
     const toast = useToast();
 
@@ -23,9 +23,6 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
 
     useEffect(() => {
         if (selectedTask) {
-
-            console.log("Selected Task:", selectedTask);
-
             setTaskId(selectedTask.taskId);
             setTaskName(selectedTask.title);
             setDescription(selectedTask.description);
@@ -54,6 +51,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
                 toast.show('Access token not found. Please log in.', { type: 'error' });
                 return;
             }
+            console.log(taskId);
 
             const response = await assingUserToTask(taskId, accessToken);
 
@@ -62,6 +60,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
             toast.show('Assigned to task successfully', { type: 'success' });
 
             onClose();
+            updateTask();
 
         } catch (error) {
             console.error("Error updating task:", error);
