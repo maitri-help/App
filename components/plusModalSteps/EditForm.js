@@ -70,8 +70,6 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                 return;
             }
 
-            console.log(selectedCircle);
-
             const taskData = {
                 title: taskName,
                 description: description,
@@ -83,13 +81,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
 
             console.log("Task update data:", taskData);
 
-            const header = {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            }
-
-            const response = await updateTask(taskData, header, taskId);
+            const response = await updateTask(taskId, taskData, accessToken);
 
             console.log("Task updated successfully:", response.data);
 
@@ -97,6 +89,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
 
             onClose();
             onTaskCreated();
+            setIsEditable(!isEditable);
 
         } catch (error) {
             console.error("Error updating task:", error);

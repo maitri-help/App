@@ -52,6 +52,10 @@ export default function HomeScreen({ navigation }) {
                     setTasks(tasksResponse.data);
                 } else {
                     console.error('No user data found');
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Login' }]
+                    })
                 }
             } catch (error) {
                 console.error('Error fetching tasks:', error);

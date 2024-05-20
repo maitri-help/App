@@ -129,8 +129,6 @@ export default function CirclesScreen({ navigation }) {
             const additionalItemCountSecond = Math.max(0, tabContents.Second.length - 1);
             const additionalItemCountFirst = Math.max(0, tabContents.First.length - 1);
 
-            console.log('Circle items', circleItemsContent);
-
             return (
                 <>
                     <View style={stylesCircles.top}>
@@ -258,8 +256,6 @@ export default function CirclesScreen({ navigation }) {
                 onClose={() => setSendInvitesModalVisible(false)}
                 navigation={navigation}
             />
-
-            {console.log(selectedCircleItem)}
 
             <SupporterCardScreen
                 visible={supporterCardModalVisible}

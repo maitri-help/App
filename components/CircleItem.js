@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native
 
 export default function CircleItem({ item, onPress }) {
 
-    console.log('item', item);
-
     return (
         <TouchableOpacity onPress={onPress} style={stylesCircles.circleListItem}>
             <View style={[stylesCircles.circleListItemEmojiWrapper, item.color ? { borderColor: item.color } : null]}>
