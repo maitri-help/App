@@ -10,9 +10,14 @@
     "preview": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {},
+    "companyName": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "companyName": "Maitri Help inc"
+      }
+    }
   }
 }

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const baseUrl = 'http://52.19.91.67:3000';
+const baseUrl = 'https://maitri-backend.cubicfoxdev.com:3000';
 
 export const storeUserData = async (userData) => {
     try {
