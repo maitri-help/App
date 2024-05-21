@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import LocationPicker from './LocationPicker';
-import { assingUserToTask } from '../../hooks/api';
+import { unassingUserToTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import ModalCustom from '../Modal';
@@ -59,12 +59,13 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose, updat
                 toast.show('Access token not found. Please log in.', { type: 'error' });
                 return;
             }
+            console.log(taskId);
 
-            const response = await assingUserToTask(taskId, accessToken);
+            const response = await unassingUserToTask(taskId, accessToken);
 
             console.log("Task updated successfully:", response.data);
 
-            toast.show('Assigned to task successfully', { type: 'success' });
+            toast.show('Unassigned from task successfully', { type: 'success' });
 
             onClose();
             updateTask();
@@ -72,7 +73,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose, updat
         } catch (error) {
             console.error("Error updating task:", error);
 
-            toast.show('Unsuccessful task assign', { type: 'error' });
+            toast.show('Unsuccessful task unassign', { type: 'error' });
         }
     };
 
@@ -146,7 +147,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose, updat
                                 <Text style={stylesModal.innerModalSubtitle}>This will not be visible to the supporter</Text>
                             </View>
                             <View style={stylesModal.innerModalButtons}>
-                                <TouchableOpacity style={[stylesModal.innerModalButton, stylesModal.innerModalButtonGreen]} onPress={() => {}}>
+                                <TouchableOpacity style={[stylesModal.innerModalButton, stylesModal.innerModalButtonGreen]} onPress={handleSubmit}>
                                     <Text style={[stylesModal.innerModalButtonText, stylesModal.innerModalButtonGreenText]}>Remove</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[stylesModal.innerModalButton, stylesModal.innerModalButtonWhite]} onPress={closeInnerModal}>

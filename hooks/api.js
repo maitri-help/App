@@ -88,6 +88,14 @@ export function assingUserToTask(taskId, accessToken) {
     });
 }
 
+export function unassingUserToTask(taskId, accessToken) {
+    return axios.patch(`${baseUrl}/task/${taskId}/unassign`, null, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
+
 export function changeUserCircle(leadUserId, supporterUserId, newCircle, accessToken) {
     return axios.patch(`${baseUrl}/users/${leadUserId}/supporters/${supporterUserId}/circles`, { newCircleLevels: [newCircle] }, {
         headers: {
