@@ -186,8 +186,6 @@ export default function HomeSupporterScreen({ navigation }) {
                                 lastName={task.assignee ? task.assignee.lastName : ''}
                                 startTime={task.startDateTime}
                                 endTime={task.endDateTime}
-                                emoji={task.assignee ? task.assignee.emoji : ''}
-                                color={task.assignee ? task.assignee.color : ''}
                                 taskModal={() => setMyTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
                             />
