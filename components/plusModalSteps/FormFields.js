@@ -72,6 +72,7 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
                 location: selectedLocation,
                 startDateTime: startDateTime,
                 endDateTime: endDateTime,
+                category: selectedService.title,
             };
 
             console.log("Task data:", taskData);
