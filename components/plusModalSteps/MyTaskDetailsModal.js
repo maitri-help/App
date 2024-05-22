@@ -142,8 +142,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose, updat
                     <TouchableOpacity onPress={closeInnerModal} style={stylesModal.innerModalContainer}>
                         <View style={stylesModal.innerModalContent}>
                             <View style={stylesModal.innerModalTexts}>
-                                <Text style={stylesModal.innerModalTitle}>You are about to remove a supporter from your tribe</Text>
-                                <Text style={stylesModal.innerModalSubtitle}>This will not be visible to the supporter</Text>
+                                <Text style={stylesModal.innerModalTitle}>You are about to remove this task from your list</Text>
                             </View>
                             <View style={stylesModal.innerModalButtons}>
                                 <TouchableOpacity style={[stylesModal.innerModalButton, stylesModal.innerModalButtonGreen]} onPress={() => {}}>
