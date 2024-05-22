@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
 
-export default function Task({ task, title, firstName, lastName, startTime, endTime, emoji, color, taskModal, onTaskItemClick }) {
+export default function Task({ task, title, firstName, lastName, startTime, endTime, taskModal, onTaskItemClick }) {
 
     const formatDateTime = () => {
         const formattedStartDateTime = formatDate(startTime);
@@ -21,13 +21,6 @@ export default function Task({ task, title, firstName, lastName, startTime, endT
 
     return (
         <TouchableOpacity style={stylesTask.taskContainer} activeOpacity={0.7} onPress={handleClick}>
-            <View style={[stylesTask.taskEmojiWrapper, { borderColor: color }]}>
-                {emoji &&
-                    <Text style={stylesTask.taskEmoji}>
-                        {emoji}
-                    </Text>
-                }
-            </View>
             <View style={stylesTask.taskInfoContainer}>
                 <Text style={stylesTask.taskTitle}>{title}</Text>
                 {firstName && lastName && (
@@ -56,22 +49,11 @@ const stylesTask = StyleSheet.create({
         shadowRadius: 8.00,
         elevation: 12,
     },
-    taskEmojiWrapper: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        borderWidth: 2,
-        borderColor: '#1C4837',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    taskEmoji: {
-        fontSize: (Platform.OS === 'android') ? 24 : 28,
-        textAlign: 'center',
-    },
     taskInfoContainer: {
         flexShrink: 1,
         gap: 3,
+        minHeight: 50,
+        justifyContent: 'center',
     },
     taskTitle: {
         color: '#000',
