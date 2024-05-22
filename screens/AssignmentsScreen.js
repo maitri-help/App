@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform, Image, FlatList } from 'react-native';
 import styles from '../Styles';
 import TaskItem from '../components/TaskItem';
 import PlusModal from '../components/PlusModal';
@@ -52,6 +52,9 @@ export default function AssignmentsScreen({ navigation }) {
     const [emoji, setEmoji] = useState('');
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
+
+    const flatListRef = useRef();
+    const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(true);
 
     const handleTaskItemClick = async (task) => {
         setSelectedTask(task);
@@ -154,6 +157,7 @@ export default function AssignmentsScreen({ navigation }) {
         const day = String(formattedDate.getDate()).padStart(2, '0');
         setSelectedDate(`${year}-${month}-${day}`);
         setWeekSelectedDate(`${year}-${month}-${day}`);
+        scrollToClosestDate(date);
     };
 
     const handleTabChange = (tab) => {
@@ -170,6 +174,29 @@ export default function AssignmentsScreen({ navigation }) {
 
     const handleTaskModalClose = () => {
         setTaskModalVisible(false);
+    };
+
+    const scrollToClosestDate = (date) => {
+        const selected = new Date(date);
+        const closestIndex = tasks?.reduce((closestIndex, task, index) => {
+            const taskStartDate = new Date(task.startDateTime);
+            const closest = new Date(tasks[closestIndex].startDateTime);
+            return Math.abs(selected - taskStartDate) < Math.abs(selected - closest) ? index : closestIndex;
+        }, 0);
+
+        setIsProgrammaticScroll(true);
+        flatListRef.current.scrollToIndex({ index: closestIndex, animated: true });
+    };
+
+    const handleViewableItemsChanged = (viewableItem) => {
+        if (isProgrammaticScroll) return;
+
+        const formattedDate = new Date(viewableItem.item.startDateTime);
+        const year = formattedDate.getFullYear();
+        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(formattedDate.getDate()).padStart(2, '0');
+        setSelectedDate(`${year}-${month}-${day}`);
+        setWeekSelectedDate(`${year}-${month}-${day}`);
     };
 
     async function fetchTasks() {
@@ -194,7 +221,13 @@ export default function AssignmentsScreen({ navigation }) {
         fetchTasks();
     }, []);
 
-    const filteredTasks = tasks.filter(task => {
+    useEffect(() => {
+        if (tasks.length > 0) {
+            scrollToClosestDate(selectedDate);
+        }
+    }, [tasks]);
+
+    /* const filteredTasks = tasks.filter(task => {
         const taskStartDate = new Date(task.startDateTime);
         const taskEndDate = new Date(task.endDateTime);
 
@@ -202,7 +235,7 @@ export default function AssignmentsScreen({ navigation }) {
             selectedDate >= taskStartDate.toISOString().split('T')[0] &&
             selectedDate <= taskEndDate.toISOString().split('T')[0]
         );
-    });
+    }); */
 
     return (
         <>
@@ -256,8 +289,8 @@ export default function AssignmentsScreen({ navigation }) {
                 </View>
 
 
-                {filteredTasks.length === 0 ? (
-                    tasks.length === 0 ? (
+                {tasks.length === 0 ? (
+                    tasks.length === 0 && (
                         <>
                             <View style={stylesCal.calendarEmpty}>
                                 <View style={stylesCal.calendarEmptyImgWrapper}>
@@ -272,7 +305,7 @@ export default function AssignmentsScreen({ navigation }) {
                                 <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
                             </View>
                         </>
-                    ) : (
+                    )/*  : (
                         <>
                             <View style={stylesCal.calendarEmpty}>
                                 <Text style={stylesCal.calendarEmptyText}>
@@ -284,9 +317,9 @@ export default function AssignmentsScreen({ navigation }) {
                                 <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
                             </View>
                         </>
-                    )
+                    ) */
                 ) : (
-                    <ScrollView contentContainerStyle={stylesCal.calendarScroll}>
+                    /* <ScrollView contentContainerStyle={stylesCal.calendarScroll}>
                         <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
                             {filteredTasks.map((task, index) => (
                                 <TaskItem
@@ -297,7 +330,34 @@ export default function AssignmentsScreen({ navigation }) {
                                 />
                             ))}
                         </View>
-                    </ScrollView>
+                    </ScrollView> */
+                    <FlatList 
+                        contentContainerStyle={[styles.contentContainer, stylesCal.tasksWrapper]}
+                        data={tasks}
+                        keyExtractor={(item) => item.taskId}
+                        ref={flatListRef}
+                        renderItem={({ item }) => (
+                            <TaskItem
+                                key={item.taskId}
+                                task={item}
+                                taskModal={() => setTaskModalVisible(true)}
+                                onTaskItemClick={handleTaskItemClick}
+                            />
+                        )}
+                        onViewableItemsChanged={({ viewableItems }) => {
+                            handleViewableItemsChanged(viewableItems[0]);
+                        }}
+                        viewabilityConfig={{
+                            itemVisiblePercentThreshold: 50,
+                        }}
+                        onScrollBeginDrag={() => setIsProgrammaticScroll(false)}
+                        onScrollToIndexFailed={info => {
+                            const wait = new Promise(resolve => setTimeout(resolve, 100));
+                            wait.then(() => {
+                              flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+                            });
+                          }}
+                    />
                 )}
 
                 <View style={stylesCal.floatingButtonWrapper}>
