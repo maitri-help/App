@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Image } from "react-native";
+import { modalServices } from '../data/ModalServices';
 
-export default function Task({ task, title, firstName, lastName, startTime, endTime, emoji, color, taskModal, onTaskItemClick }) {
+export default function Task({ task, title, startTime, endTime, category, taskModal, onTaskItemClick }) {
 
     const formatDateTime = () => {
         const formattedStartDateTime = formatDate(startTime);
@@ -19,20 +20,20 @@ export default function Task({ task, title, firstName, lastName, startTime, endT
         taskModal();
     };
 
+    const findIcon = () => {
+        const service = modalServices.find(service => service.title === category);
+        return service ? service.icon : null;
+    };
+
+    const icon = findIcon();
+
     return (
         <TouchableOpacity style={stylesTask.taskContainer} activeOpacity={0.7} onPress={handleClick}>
-            <View style={[stylesTask.taskEmojiWrapper, { borderColor: color }]}>
-                {emoji &&
-                    <Text style={stylesTask.taskEmoji}>
-                        {emoji}
-                    </Text>
-                }
+            <View style={[stylesTask.serviceIconWrapper]}>
+                {icon && <Image source={icon} style={stylesTask.serviceIcon} />}
             </View>
             <View style={stylesTask.taskInfoContainer}>
                 <Text style={stylesTask.taskTitle}>{title}</Text>
-                {firstName && lastName && (
-                    <Text style={stylesTask.taskAssignee}>{firstName} {lastName}</Text>
-                )}
                 <Text style={stylesTask.taskTime}>{formatDateTime()}</Text>
             </View>
         </TouchableOpacity>
@@ -56,7 +57,7 @@ const stylesTask = StyleSheet.create({
         shadowRadius: 8.00,
         elevation: 12,
     },
-    taskEmojiWrapper: {
+    serviceIconWrapper: {
         width: 50,
         height: 50,
         borderRadius: 25,
@@ -65,9 +66,10 @@ const stylesTask = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    taskEmoji: {
-        fontSize: (Platform.OS === 'android') ? 24 : 28,
-        textAlign: 'center',
+    serviceIcon: {
+        width: 28,
+        height: 28,
+        resizeMode: 'contain',
     },
     taskInfoContainer: {
         flexShrink: 1,

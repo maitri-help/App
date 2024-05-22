@@ -1,19 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
-import ArrowIcon from '../../assets/icons/arrow-icon.svg';
-import EditIcon from '../../assets/icons/edit-icon.svg';
-import CheckIcon from '../../assets/icons/check-icon.svg';
-import LocationPicker from './LocationPicker';
-import { updateTask } from '../../hooks/api';
-import { getAccessToken } from '../../authStorage';
-import { useToast } from 'react-native-toast-notifications';
 import Modal from '../Modal';
 import Button from '../Button';
-import { ScrollView } from 'react-native-gesture-handler';
 
-export default function TaskFilterModal({ taskName, onClose, TimeFilterList, setTimeFilterList, TypeFilterList, setTypeFilterList }) {
+export default function TaskFilterModal({ visible, taskName, onClose, TimeFilterList, setTimeFilterList, TypeFilterList, setTypeFilterList }) {
 
     const TimeFilters = [
         "Morning",
@@ -46,79 +38,78 @@ export default function TaskFilterModal({ taskName, onClose, TimeFilterList, set
 
     return (
         <Modal
+            visible={visible}
             onClose={() => onClose(TimeFilterList, TypeFilterList)}
+            style={stylesReview}
         >
-            <View style={{ maxHeight: 400 }}>
-                <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
-                    <View style={stylesReview.modalTopNavLeft}>
-                        <TouchableOpacity onPress={onClose} style={[styles.backLinkInline]}>
-                            <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
-                        </TouchableOpacity>
-                        <Text style={[stylesReview.field, stylesReview.fieldTask]}>
-                            {taskName}
-                        </Text>
-                    </View>
+            <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
+                <View style={stylesReview.modalTopNavLeft}>
+                    <TouchableOpacity onPress={onClose} style={[styles.backLinkInline]}>
+                        <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
+                    </TouchableOpacity>
+                    <Text style={[stylesReview.field, stylesReview.fieldTask]}>
+                        {taskName}
+                    </Text>
+                </View>
 
-                </View>
-                <View style={stylesReview.group}>
-                    <View style={styles.contentContainer}>
-                        <Text style={stylesReview.groupTitle}>Time</Text>
-                        <View style={[stylesReview.groupInner]}>
-                            {TimeFilters.map(filter => (
-                                <Button
-                                    key={filter}
-                                    buttonSmall={true}
-                                    textStyle={{
-                                        ...{ fontSize: 14, lineHeight: 18, paddingHorizontal: 0, color: '#000' },
-                                        color: TimeFilterList.includes(filter)
-                                            ? 'white'
-                                            : 'black'
-                                    }}
-                                    buttonStyle={{
-                                        ...{ width: "auto", height: 30, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 100 },
-                                        backgroundColor: TimeFilterList.includes(filter)
-                                            ? '#6AAA5F'
-                                            : '#f7f7f7'
-                                    }}
-                                    title={filter}
-                                    onPress={() => toggleFilter(filter, setTimeFilterList)}
-                                />
-                            ))}
-                        </View>
+            </View>
+            <View style={stylesReview.group}>
+                <View style={styles.contentContainer}>
+                    <Text style={stylesReview.groupTitle}>Time</Text>
+                    <View style={[stylesReview.groupInner]}>
+                        {TimeFilters.map(filter => (
+                            <Button
+                                key={filter}
+                                buttonSmall={true}
+                                textStyle={{
+                                    ...{ fontSize: 14, lineHeight: 18, paddingHorizontal: 2, color: '#000' },
+                                    color: TimeFilterList.includes(filter)
+                                        ? 'white'
+                                        : 'black'
+                                }}
+                                buttonStyle={{
+                                    ...{ width: "auto", height: 30, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 100 },
+                                    backgroundColor: TimeFilterList.includes(filter)
+                                        ? '#6AAA5F'
+                                        : '#f7f7f7'
+                                }}
+                                title={filter}
+                                onPress={() => toggleFilter(filter, setTimeFilterList)}
+                            />
+                        ))}
                     </View>
                 </View>
-                <View style={stylesReview.group}>
-                    <View style={styles.contentContainer}>
-                        <Text style={stylesReview.groupTitle}>Type</Text>
-                        <View style={[stylesReview.groupInner]}>
-                            {TypeFilters.map(filter => (
-                                <Button
-                                    key={filter}
-                                    buttonSmall={true}
-                                    textStyle={{
-                                        ...{ fontSize: 14, lineHeight: 18, paddingHorizontal: 0, color: '#000' },
-                                        color: TypeFilterList.includes(filter)
-                                            ? 'white'
-                                            : 'black'
-                                    }}
-                                    buttonStyle={{
-                                        ...{ width: "auto", height: 30, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 100 },
-                                        backgroundColor: TypeFilterList.includes(filter)
-                                            ? '#6AAA5F'
-                                            : '#f7f7f7'
-                                    }}
-                                    title={filter}
-                                    onPress={() => toggleFilter(filter, setTypeFilterList)}
-                                />
-                            ))}
-                        </View>
+            </View>
+            <View style={stylesReview.group}>
+                <View style={styles.contentContainer}>
+                    <Text style={stylesReview.groupTitle}>Type</Text>
+                    <View style={[stylesReview.groupInner]}>
+                        {TypeFilters.map(filter => (
+                            <Button
+                                key={filter}
+                                buttonSmall={true}
+                                textStyle={{
+                                    ...{ fontSize: 14, lineHeight: 18, paddingHorizontal: 2, color: '#000' },
+                                    color: TypeFilterList.includes(filter)
+                                        ? 'white'
+                                        : 'black'
+                                }}
+                                buttonStyle={{
+                                    ...{ width: "auto", height: 30, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 100 },
+                                    backgroundColor: TypeFilterList.includes(filter)
+                                        ? '#6AAA5F'
+                                        : '#f7f7f7'
+                                }}
+                                title={filter}
+                                onPress={() => toggleFilter(filter, setTypeFilterList)}
+                            />
+                        ))}
                     </View>
                 </View>
             </View>
 
-            <View style={{ width: 300, alignSelf: 'center', paddingTop: 40 }}>
+            <View style={[styles.contentContainer, { marginTop: 40 }]}>
                 <Button
-                    textStyle={{ fontSize: 20 }}
                     title="Filter"
                     onPress={onClose}
                 />
@@ -219,19 +210,6 @@ const stylesReview = StyleSheet.create({
         alignItems: 'center',
         gap: 12,
     },
-    emojiWrapper: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        borderWidth: 2,
-        borderColor: '#1C4837',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    emoji: {
-        fontSize: (Platform.OS === 'android') ? 24 : 28,
-        textAlign: 'center',
-    },
     name: {
         color: '#000',
         fontSize: 14,
@@ -254,11 +232,10 @@ const stylesReview = StyleSheet.create({
         gap: 10,
     },
     groupTitle: {
-        width: 100,
         color: '#9F9F9F',
         fontSize: 14,
         fontFamily: 'poppins-regular',
         lineHeight: 18,
-        paddingBottom: 5,
+        paddingBottom: 10,
     },
 });

@@ -82,7 +82,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
     }, [taskRemoval]);
 
     useEffect(() => {
-        if (taskModalVisible) {
+        if (taskModalVisible || isFilterOpen) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
@@ -95,7 +95,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                 useNativeDriver: true,
             }).start();
         }
-    }, [taskModalVisible]);
+    }, [taskModalVisible, isFilterOpen]);
 
     const handleTaskItemClick = async (task) => {
         setSelectedTask(task);
@@ -231,19 +231,24 @@ export default function OpenTasksSupporterScreen({ navigation }) {
 
         return (
             <>
-                <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: "row", justifyContent: "left", gap: 5, flexWrap: "wrap" }}>
+                <View style={{ paddingHorizontal: 20, paddingBottom: 10, flexDirection: "row", justifyContent: "left", gap: 5, flexWrap: "wrap" }}>
                     {TimeFilterList.map(filter => (
                         <Button
                             key={filter}
                             buttonStyle={{
                                 paddingVertical: 0,
-                                width: "500",
+                                paddingLeft: 12,
+                                paddingRight: 6,
                                 height: 30,
+                                backgroundColor: '#fff',
+                                borderRadius: 100,
                             }}
                             textStyle={{
                                 lineHeight: 30,
+                                color: '#1C4837',
                             }}
                             buttonSmall={true}
+                            closeIcon={true}
                             title={filter}
                             onPress={() => handleRemoveFilter(filter, setTimeFilterList)}
                         />
@@ -253,19 +258,24 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                             key={filter}
                             buttonStyle={{
                                 paddingVertical: 0,
-                                width: "500",
+                                paddingLeft: 12,
+                                paddingRight: 6,
                                 height: 30,
+                                backgroundColor: '#fff',
+                                borderRadius: 100,
                             }}
                             textStyle={{
                                 lineHeight: 30,
+                                color: '#1C4837',
                             }}
                             buttonSmall={true}
+                            closeIcon={true}
                             title={filter}
                             onPress={() => handleRemoveFilter(filter, setTypeFilterList)}
                         />
                     ))}
                 </View>
-                
+
                 {openTasks.length === 0 ? (
                     <ScrollView contentContainerStyle={stylesSuppOT.tasksScrollEmpty}>
                         <View style={[styles.contentContainer, stylesSuppOT.tasksEmpty]}>
@@ -289,7 +299,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                                         </Text>
                                     </>
                                 )}
-                                
+
                                 <Image
                                     source={require('../assets/img/mimi-illustration.png')}
                                     style={stylesSuppOT.rightImageStyle}
@@ -304,12 +314,9 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                                 key={task.taskId}
                                 task={task}
                                 title={task.title}
-                                firstName={task.assignee ? task.assignee.firstName : ''}
-                                lastName={task.assignee ? task.assignee.lastName : ''}
                                 startTime={task.startDateTime}
                                 endTime={task.endDateTime}
-                                emoji={task.assignee ? task.assignee.emoji : ''}
-                                color={task.assignee ? task.assignee.color : ''}
+                                category={task.category}
                                 taskModal={() => setTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
                             />
@@ -348,6 +355,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
             {isFilterOpen &&
                 <TaskFilterModal
                     taskName={"Filters"}
+                    visible={isFilterOpen}
                     onClose={handleFilterClose}
                     TimeFilterList={TimeFilterList}
                     setTimeFilterList={setTimeFilterList}
@@ -396,12 +404,11 @@ const stylesSuppOT = StyleSheet.create({
     tasksScroll: {
         gap: 15,
         paddingHorizontal: 25,
-        paddingTop: "auto",
-        paddingBottom: 30,
+        paddingVertical: 15,
     },
     tasksScrollEmpty: {
         flex: 1,
-        paddingTop: 10,
+        paddingVertical: 15,
         paddingHorizontal: 25,
     },
     tasksEmpty: {
@@ -436,5 +443,6 @@ const stylesSuppOT = StyleSheet.create({
     },
     filterIcon: {
         color: '#fff',
+        pointerEvents: 'none'
     }
 });
