@@ -68,7 +68,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
 
     useFocusEffect(
         useCallback(() => {
-            fetchTasks();
+            if (leadId) fetchTasks();
         }, [leadId])
     );
 

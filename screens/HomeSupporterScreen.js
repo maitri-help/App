@@ -89,7 +89,7 @@ export default function HomeSupporterScreen({ navigation }) {
 
     useFocusEffect(
         useCallback(() => {
-            fetchTasks();
+            if (leadId) fetchTasks();
         }, [leadId])
     );
 
