@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Animated } from 'react-native';
 import styles from '../Styles';
 import MyTask from '../components/MyTask';
 import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
 import { checkAuthentication, clearUserData, clearAccessToken, getAccessToken } from '../authStorage';
 import { getLeadUser } from '../hooks/api';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export default function MyTasksSupporterScreen({ navigation }) {
@@ -65,11 +66,11 @@ export default function MyTasksSupporterScreen({ navigation }) {
         }
     }
 
-    useEffect(() => {
-        if (leadId) {
+    useFocusEffect(
+        useCallback(() => {
             fetchTasks();
-        }
-    }, [leadId]);
+        }, [leadId])
+    );
 
     useEffect(() => {
         if (myTaskModalVisible) {

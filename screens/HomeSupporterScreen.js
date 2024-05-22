@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, Animated } from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
@@ -10,6 +10,7 @@ import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal'
 import initalBackground from '../assets/img/welcome-bg.png';
 import CloseIcon from '../assets/icons/close-icon.svg';
 import { Platform } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
@@ -86,11 +87,11 @@ export default function HomeSupporterScreen({ navigation }) {
         }
     }
 
-    useEffect(() => {
-        if (leadId) {
+    useFocusEffect(
+        useCallback(() => {
             fetchTasks();
-        }
-    }, [leadId]);
+        }, [leadId])
+    );
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);

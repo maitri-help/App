@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Animated } from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
@@ -8,6 +8,7 @@ import FilterIcon from '../assets/icons/filter-icon.svg';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import TaskFilterModal from '../components/plusModalSteps/TaskFilterModal';
 import Button from '../components/Button';
+import { useFocusEffect } from '@react-navigation/native';
 
 const TIME_FILTER_HOURS = {
     Morning: { start: 6, end: 12 },
@@ -65,11 +66,11 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         }
     }
 
-    useEffect(() => {
-        if (leadId) {
+    useFocusEffect(
+        useCallback(() => {
             fetchTasks();
-        }
-    }, [leadId]);
+        }, [leadId])
+    );
 
     const handleRemoveFilter = (filter, setSelectedFilters) => {
         setSelectedFilters(selectedFilters => selectedFilters.filter(f => f !== filter));
