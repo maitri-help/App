@@ -166,9 +166,9 @@ export default function OpenTasksSupporterScreen({ navigation }) {
 
                 const dayMatch = dayFilters.some(filter => {
                     if (filter === 'Weekend') {
-                        return isWeekend(start) || isWeekend(end);
+                        return isWeekend(start) && isWeekend(end);
                     } else if (filter === 'Weekday') {
-                        return isWeekday(start) || isWeekday(end);
+                        return isWeekday(start) && isWeekday(end);
                     }
                     return false;
                 });
