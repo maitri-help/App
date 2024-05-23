@@ -6,7 +6,7 @@ import CloseIcon from '../../assets/icons/close-icon.svg';
 
 Geocoder.init("AIzaSyAWwo2zm6v7Jwam7QGxAFGkCH1DhsgGB_Y");
 
-export default function LocationPicker({ onSelect, selectedLocation, disabled }) {
+export default function LocationPicker({ onSelect, selectedLocation, disabled, deviceLocation }) {
     const [showMap, setShowMap] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [mapRegion, setMapRegion] = useState({
@@ -18,10 +18,20 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled })
         // Default cooridnates for Europe
     });
 
+    console.log(deviceLocation);
+
     useEffect(() => {
         const getAddressFromCoordinates = () => {
             if (selectedLocation) {
                 const [latitude, longitude] = selectedLocation.split(',').map(parseFloat);
+                Geocoder.from({ latitude, longitude })
+                    .then((json) => {
+                        const address = json.results[0].formatted_address;
+                        setSelectedAddress(address);
+                    })
+                    .catch((error) => console.warn(error));
+            } else if (deviceLocation) {
+                const [latitude, longitude] = deviceLocation.split(',').map(parseFloat);
                 Geocoder.from({ latitude, longitude })
                     .then((json) => {
                         const address = json.results[0].formatted_address;
@@ -42,8 +52,18 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled })
                 latitudeDelta: 0.002,
                 longitudeDelta: 0.002,
             }));
+        } else if (deviceLocation) {
+            const [latitude, longitude] = deviceLocation.split(',').map(parseFloat);
+            setMapRegion(prevRegion => ({
+                ...prevRegion,
+                latitude,
+                longitude,
+                latitudeDelta: 0.002,
+                longitudeDelta: 0.002,
+            }));
+            onSelect(deviceLocation);
         }
-    }, [selectedLocation]);
+    }, [selectedLocation, deviceLocation]);
 
     const handleLocationSelect = (location) => {
         onSelect(location);

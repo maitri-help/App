@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, StyleSheet, TouchableOpacity, View, Text, Platform } from 'react-native';
+import { Modal, StyleSheet, TouchableOpacity, View, Text, Platform, Linking } from 'react-native';
 import ModalCustom from '../components/Modal';
 import { modalServiceTasks } from '../data/ModalServiceTasks';
 import ServiceItemSelection from './plusModalSteps/ServiceItemSelection';
@@ -7,7 +7,7 @@ import TaskSelection from './plusModalSteps/TaskSelection';
 import FormFields from './plusModalSteps/FormFields';
 import DateTime from './plusModalSteps/DateTime';
 
-export default function PlusModal({ visible, onClose, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, onTaskCreated }) {
+export default function PlusModal({ visible, onClose, handleDateTimeSelect, startDate, setStartDate, endDate, setEndDate, startTime, setStartTime, endTime, setEndTime, handleDayPress, getDaysBetween, onTaskCreated, deviceLocation }) {
   const [currentStep, setCurrentStep] = useState(1);
   const circles = ['Personal', 'First', 'Second', 'Third'];
   const [selectedService, setSelectedService] = useState({ id: null, title: '', icon: null });
@@ -114,6 +114,7 @@ export default function PlusModal({ visible, onClose, handleDateTimeSelect, star
             onTaskCreated();
             resetModalState();
           }}
+          deviceLocation={deviceLocation}
         />
       )}
       {currentStep === 4 && (

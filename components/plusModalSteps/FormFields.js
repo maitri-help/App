@@ -8,7 +8,7 @@ import { createTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 
-export default function FormFields({ selectedService, currentStep, setCurrentStep, taskName, setTaskName, onBack, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, startDateTime, endDateTime, onClose, onTaskCreated }) {
+export default function FormFields({ selectedService, currentStep, setCurrentStep, taskName, setTaskName, onBack, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, startDateTime, endDateTime, onClose, onTaskCreated, deviceLocation }) {
 
     const [dateTimeText, setDateTimeText] = useState('Fill time and date');
     const toast = useToast();
@@ -172,7 +172,7 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
                                 <Text style={stylesFields.fieldLabel} numberOfLines={1}>
                                     Location
                                 </Text>
-                                <LocationPicker onSelect={setSelectedLocation} selectedLocation={selectedLocation} />
+                                <LocationPicker onSelect={setSelectedLocation} selectedLocation={selectedLocation} deviceLocation={deviceLocation} />
                             </View>
                         </View>
                     </View>

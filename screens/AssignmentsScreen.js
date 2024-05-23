@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform, Image, FlatList } from 'react-native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform, Image, FlatList, Modal, Linking, AppState } from 'react-native';
 import styles from '../Styles';
 import TaskItem from '../components/TaskItem';
 import PlusModal from '../components/PlusModal';
@@ -9,6 +9,7 @@ import WeekCalendar from '../components/calendar/WeekCalendar';
 import PlusIcon from '../assets/icons/plus-icon.svg';
 import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication } from '../authStorage';
+import * as Location from 'expo-location';
 
 export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
@@ -240,6 +241,52 @@ export default function AssignmentsScreen({ navigation }) {
         );
     }); */
 
+    const [locationPermissionNeeded, setLocationPermissionNeeded] = useState(false);
+
+    const requestLocation = async () => {
+        const permission = await Location.requestForegroundPermissionsAsync();
+        console.log('LOCATION PERMISSION', permission);
+        if (!permission.granted && !permission.canAskAgain) {
+            setLocationPermissionNeeded(true);
+            console.log('Permission to access location was denied');
+            return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({});
+        setDeviceLocation(`${location.coords.latitude},${location.coords.longitude}`);
+        console.log('LOCATION', location);
+    };
+
+
+    useEffect(() => {
+        requestLocation();
+    }, []);
+
+    const handleGoToSettings = () => {
+        Linking.openSettings();
+        setLocationPermissionNeeded(false);
+    }
+
+    const appState = useRef(AppState.currentState);
+    const [deviceLocation, setDeviceLocation] = useState(null);
+
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (
+                appState.current.match(/inactive|background/) &&
+                nextAppState === 'active'
+            ) {
+                console.log('App has come to the foreground!');
+                requestLocation();
+            }
+            appState.current = nextAppState;
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
@@ -394,6 +441,7 @@ export default function AssignmentsScreen({ navigation }) {
                 getDaysBetween={getDaysBetween}
                 handleDateTimeSelect={handleDateTimeSelectPlus}
                 onTaskCreated={() => fetchTasks()}
+                deviceLocation={deviceLocation}
             />
 
             <TaskModal
@@ -433,6 +481,24 @@ export default function AssignmentsScreen({ navigation }) {
                 setIsEditable={setIsEditable}
                 onTaskCreated={() => fetchTasks()}
             />
+
+            {locationPermissionNeeded && (
+                <Modal visible={locationPermissionNeeded} onRequestClose={() => console.log("close")} animationType='fade' transparent>
+                    <TouchableOpacity onPress={() => console.log("close")} style={stylesCal.innerModalContainer}>
+                        <View style={stylesCal.innerModalContent}>
+                        <View style={stylesCal.innerModalTexts}>
+                            <Text style={stylesCal.innerModalTitle}>Please provide access for this app to the device's location.</Text>
+                            <Text style={stylesCal.innerModalSubtitle}>We need your location to position the map the closest to you as possible.</Text>
+                        </View>
+                        <View style={stylesCal.innerModalButtons}>
+                            <TouchableOpacity style={[stylesCal.innerModalButton, stylesCal.innerModalButtonRed]} onPress={handleGoToSettings}>
+                            <Text style={[stylesCal.innerModalButtonText, stylesCal.innerModalButtonRedText]}>Go to Settings</Text>
+                            </TouchableOpacity>
+                        </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+            )}
         </>
     );
 }
@@ -561,4 +627,73 @@ const stylesCal = StyleSheet.create({
         height: 15,
         resizeMode: 'contain'
     },
+    innerModalContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      innerModalContent: {
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        maxWidth: 350,
+        paddingHorizontal: 20,
+        paddingVertical: 30,
+      },
+      innerModalTexts: {
+        marginBottom: 20,
+      },
+      innerModalTitle: {
+        color: '#000',
+        fontSize: 14,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+        marginBottom: 5
+      },
+      innerModalSubtitle: {
+        color: '#000',
+        fontSize: 12,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+      },
+      innerModalButtons: {
+        flexDirection: 'row',
+        gap: 10,
+        justifyContent: 'center',
+      },
+      innerModalButton: {
+        alignItems: 'center',
+        minWidth: 125,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 16,
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowOffset: {
+          width: 0,
+          height: 3,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 8,
+      },
+      innerModalButtonRed: {
+        backgroundColor: '#FF7070',
+      },
+      innerModalButtonWhite: {
+        backgroundColor: '#fff',
+      },
+      innerModalButtonText: {
+        fontSize: 14,
+        fontFamily: 'poppins-medium',
+        lineHeight: 18,
+      },
+      innerModalButtonRedText: {
+        color: '#fff',
+      },
+      innerModalButtonWhiteText: {
+        color: '#000',
+      },
 });
