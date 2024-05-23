@@ -197,6 +197,9 @@ export default function AssignmentsScreen({ navigation }) {
         const day = String(formattedDate.getDate()).padStart(2, '0');
         setSelectedDate(`${year}-${month}-${day}`);
         setWeekSelectedDate(`${year}-${month}-${day}`);
+        setDefaultWeekDate(formattedDate);
+        setCurrentMonth(formattedDate.getMonth() + 1);
+        setCurrentYear(formattedDate.getFullYear());
     };
 
     async function fetchTasks() {
