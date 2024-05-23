@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform, Modal, Linking } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import EditIcon from '../../assets/icons/edit-icon.svg';
 import CheckIcon from '../../assets/icons/check-icon.svg';
 import CloseIcon from '../../assets/icons/close-icon.svg';
+import CalendarIcon from '../../assets/icons/calendar-icon.svg';
 import LocationPicker from './LocationPicker';
 import { updateTask, deleteTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
@@ -124,6 +125,14 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
         }
     };
 
+    const handleOpenCalendar = () => {
+        if (Platform.OS === 'ios') {
+            Linking.openURL('calshow:');
+        } else if (Platform.OS === 'android') { 
+        Linking.openURL('content://com.android.calendar/time/');
+        }
+    }
+
 
     return (
         <>
@@ -239,6 +248,16 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                         </View>
                     </View>
                 }
+                {!isEditable && (
+                    <View style={styles.contentContainer}>
+                        <View style={stylesReview.calendarButtonContainer}>
+                            <TouchableOpacity style={stylesReview.calendarButton} onPress={handleOpenCalendar}>
+                                <Text style={stylesReview.calendarButtonText}>Export To My Calendar</Text>
+                                <CalendarIcon width={25} height={25} color={'#fff'} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                )}
             </ScrollView>
             {confirmationVisible && (
                 <Modal visible={confirmationVisible} animationType='fade' onRequestClose={handleCancel} transparent>
@@ -461,5 +480,33 @@ const stylesReview = StyleSheet.create({
     },
     innerModalButtonWhiteText: {
         color: '#000',
+    },
+    calendarButtonContainer: {
+        marginTop: 70,
+        marginHorizontal: 15,
+    },
+    calendarButton: {
+        backgroundColor: '#1C4837',
+        paddingVertical: 20,
+        borderRadius: 100,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10,
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowOffset: {
+        width: 0,
+        height: 2,
+        },
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+        elevation: 6,
+    },
+    calendarButtonText: {
+        fontSize: 14,
+        fontFamily: 'poppins-regular',
+        lineHeight: 18,
+        color: '#fff',
     },
 });

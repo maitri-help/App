@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal, Linking } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import LocationPicker from './LocationPicker';
@@ -8,6 +8,7 @@ import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import ModalCustom from '../Modal';
 import { ScrollView } from 'react-native-gesture-handler';
+import CalendarIcon from '../../assets/icons/calendar-icon.svg';
 
 export default function TaskDetailsModal({ visible, selectedTask, onClose, updateTask }) {
     const [dateTimeText, setDateTimeText] = useState(null);
@@ -77,6 +78,14 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose, updat
         }
     };
 
+    const handleOpenCalendar = () => {
+        if (Platform.OS === 'ios') {
+            Linking.openURL('calshow:');
+        } else if (Platform.OS === 'android') { 
+            Linking.openURL('content://com.android.calendar/time/');
+        }
+    }
+
     return (
         <ModalCustom
             visible={visible}
@@ -130,7 +139,16 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose, updat
                 </ScrollView>
             </View>
 
-            <View style={[styles.contentContainer, { marginTop: 40, marginBottom: 60, }]}>
+            <View style={styles.contentContainer}>
+                <View style={stylesModal.calendarButtonContainer}>
+                    <TouchableOpacity style={stylesModal.calendarButton} onPress={handleOpenCalendar}>
+                        <Text style={stylesModal.calendarButtonText}>Add To My Calendar</Text>
+                        <CalendarIcon width={25} height={25} color={'#fff'} />
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <View style={[styles.contentContainer, { marginTop: 50, marginBottom: 60, }]}>
                 <TouchableOpacity style={stylesModal.removeLink} onPress={openInnerModal}>
                     <Text style={stylesModal.removeLinkText}>
                         I can no longer complete this task
@@ -309,5 +327,33 @@ const stylesModal = StyleSheet.create({
     },
     innerModalButtonWhiteText: {
         color: '#000',
+    },
+    calendarButtonContainer: {
+        marginTop: 70,
+        marginHorizontal: 35,
+    },
+    calendarButton: {
+        backgroundColor: '#1C4837',
+        paddingVertical: 15,
+        borderRadius: 100,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 10,
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowOffset: {
+        width: 0,
+        height: 2,
+        },
+        shadowOpacity: 0.12,
+        shadowRadius: 8,
+        elevation: 6,
+    },
+    calendarButtonText: {
+        fontSize: 14,
+        fontFamily: 'poppins-regular',
+        lineHeight: 18,
+        color: '#fff',
     },
 });
