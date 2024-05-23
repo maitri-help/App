@@ -74,13 +74,7 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                 return;
             }
 
-            const header = {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            }
-
-            const response = await deleteSupporterFromCircle(header, circleId, supporterUserId);
+            const response = await deleteSupporterFromCircle(circleId, supporterUserId, accessToken);
 
             console.log("Supporter deleted from circle:", response.data);
 

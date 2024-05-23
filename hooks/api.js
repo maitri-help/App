@@ -38,8 +38,10 @@ export function joinTribe(userId, tribeCode) {
     return axios.post(`${baseUrl}/users/${userId}/join/tribe`, { tribeCode });
 }
 
-export function createTask(data, header) {
-    return axios.post(`${baseUrl}/task`, data, header);
+export function createTask(data, accessToken) {
+    return axios.post(`${baseUrl}/task`, data, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
 }
 
 export async function updateTask(taskId, data, accessToken) {
@@ -48,12 +50,16 @@ export async function updateTask(taskId, data, accessToken) {
     });
 }
 
-export function deleteTask(header, taskId) {
-    return axios.delete(`${baseUrl}/task/${taskId}`, header);
+export function deleteTask(taskId, accessToken) {
+    return axios.delete(`${baseUrl}/task/${taskId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
 }
 
-export function deleteSupporterFromCircle(header, circleId, supporterUserId) {
-    return axios.delete(`${baseUrl}/users/circles/${circleId}/supporters/${supporterUserId}`, header);
+export function deleteSupporterFromCircle(circleId, supporterUserId, accessToken) {
+    return axios.delete(`${baseUrl}/users/circles/${circleId}/supporters/${supporterUserId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
 }
 
 export function getTasksForUser(userId, accessToken) {

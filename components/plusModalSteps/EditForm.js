@@ -107,13 +107,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                 return;
             }
 
-            const header = {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            }
-
-            const response = await deleteTask(header, taskId);
+            const response = await deleteTask(taskId, accessToken);
 
             console.log("Task deleted successfully:", response.data);
 

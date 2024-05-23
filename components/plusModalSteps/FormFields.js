@@ -77,13 +77,7 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
 
             console.log("Task data:", taskData);
 
-            const header = {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                }
-            }
-
-            const response = await createTask(taskData, header);
+            const response = await createTask(taskData, accessToken);
 
             console.log("Task created successfully:", response.data);
 
