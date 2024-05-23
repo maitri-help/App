@@ -122,6 +122,8 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
                             onDayPress={handleDayPress}
                             markedDates={markedDates}
                             markingType={'period'}
+                            minDate={new Date().toISOString()}
+                            disableAllTouchEventsForDisabledDays={true}
                             theme={{
                                 textDayFontFamily: 'poppins-regular',
                                 textMonthFontFamily: 'poppins-medium',
