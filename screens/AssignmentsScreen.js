@@ -395,7 +395,7 @@ export default function AssignmentsScreen({ navigation }) {
                             />
                         )}
                         onViewableItemsChanged={({ viewableItems }) => {
-                            handleViewableItemsChanged(viewableItems[0]);
+                            if (viewableItems.length > 0) handleViewableItemsChanged(viewableItems[0]);
                         }}
                         viewabilityConfig={{
                             itemVisiblePercentThreshold: 50,
