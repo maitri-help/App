@@ -7,11 +7,38 @@ import Task from '../components/Task';
 import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
 
+const quotes = [
+    "Remember to breathe today.",
+    "Don't be afraid to ask for help when you need it.",
+    "Your feelings are valid. Go easy on yourself.",
+    "Acknowledge your feelings, feel them, but don’t become them.",
+    "Practice self-care daily, a small act of kindness to yourself can go a long way.",
+    "Try journaling to process your thoughts and track your progress.",
+    "Be patient with yourself. Healing takes time.",
+    "Focus on what you can control, and try to let go of what you can't.",
+    "You don't have to be anyone else's hero. Be your own hero - whatever that means to you!",
+    "Reach out to a loved one in a time of need, they’re just a phone call or text away!",
+    "Forgive yourself. Forgive your body. Forgive your past mistakes and future decisions.",
+    "Knowing when to take a break is a strength, not a weakness.",
+    "There’s no shame in taking something for pain to help your body help you heal.",
+    "You are allowed to talk to the people you love about things that are not the situation you are in."
+];
+
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
     const [firstName, setFirstName] = useState('');
     const [greetingText, setGreetingText] = useState('');
     const [tasks, setTasks] = useState([]);
+    const [randomQuote, setRandomQuote] = useState('');
+
+    useEffect(() => {
+        const selectRandomQuote = () => {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            setRandomQuote(quotes[randomIndex]);
+        };
+
+        selectRandomQuote();
+    }, []);
 
     useEffect(() => {
         async function fetchUserData() {
@@ -214,7 +241,7 @@ export default function HomeScreen({ navigation }) {
                         bgImg={4}
                     />
                     <CustomBox
-                        title="[Advice here, up to 6 short lines from the “quotes and advice” doc]"
+                        title={randomQuote}
                         bgColor="#D4E6E5"
                         bgImgColor="#B7D6D3"
                     />
