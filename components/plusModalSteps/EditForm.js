@@ -12,6 +12,7 @@ import { updateTask, deleteTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { ScrollView } from 'react-native-gesture-handler';
+import * as Calendar from 'expo-calendar';
 
 export default function EditForm({ currentStep, setCurrentStep, taskName, setTaskName, circles, selectedCircle, setSelectedCircle, description, setDescription, selectedLocation, setSelectedLocation, onBack, setReviewFormCurrentStep, startDateTime, endDateTime, firstName, lastName, color, emoji, onClose, isEditable, setIsEditable, taskId, onTaskCreated }) {
 
@@ -125,12 +126,45 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
         }
     };
 
-    const handleOpenCalendar = () => {
-        if (Platform.OS === 'ios') {
-            Linking.openURL('calshow:');
-        } else if (Platform.OS === 'android') { 
-        Linking.openURL('content://com.android.calendar/time/');
+    const [ calendarPermission ] = Calendar.useCalendarPermissions();
+    const [calendarPermissionNeeded, setCalendarPermissionNeeded] = useState(false);
+
+    const handleOpenCalendar = async () => {
+        // console.log('CALENDAR PERMISSION:', calendarPermission);
+        if (!calendarPermission.granted) {
+            setCalendarPermissionNeeded(true);
+            return;
         }
+
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        console.log('CALENDARS:', calendars);        
+        const defaultCalendar = Platform.select({
+            ios: calendars.find(cal => cal.allowsModifications && cal.source.name === 'iCloud'),
+            android: calendars.find(cal => cal.accessLevel === "owner" && cal.name === cal.ownerAccount),
+        });
+
+        if (!defaultCalendar) {
+            console.error('Default calendar not found');
+            toast.show('Default calendar not found', { type: 'error' });
+            return;
+        }
+
+        const event = {
+            title: taskName,
+            startDate: new Date(startDateTime),
+            endDate: new Date(endDateTime),
+            notes: description,
+        };
+
+        await Calendar.createEventAsync(defaultCalendar.id, event)
+            .then((event) => {
+                console.log('Event added to calendar: ', event);
+                toast.show('Event added to calendar', { type: 'success' });
+            })
+            .catch((error) => {
+                console.error('Error adding event to calendar:', error);
+                toast.show('Error adding event to calendar', { type: 'error' });
+            });
     }
 
 
@@ -274,6 +308,24 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                                     <Text style={[stylesReview.innerModalButtonText, stylesReview.innerModalButtonWhiteText]}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+            )}
+
+            {calendarPermissionNeeded && (
+                <Modal visible={calendarPermissionNeeded} onRequestClose={() => console.log("close")} animationType='fade' transparent>
+                    <TouchableOpacity onPress={() => console.log("close")} style={stylesReview.innerModalContainer}>
+                        <View style={stylesReview.innerModalContent}>
+                        <View style={stylesReview.innerModalTexts}>
+                            <Text style={stylesReview.innerModalTitle}>Please provide access for this app to your calendar.</Text>
+                            <Text style={stylesReview.innerModalSubtitle}>Without acces we cannot export this event to your calendar.</Text>
+                        </View>
+                        <View style={stylesReview.innerModalButtons}>
+                            <TouchableOpacity style={[stylesReview.innerModalButton, stylesReview.innerModalButtonRed]} onPress={handleGoToSettings}>
+                            <Text style={[stylesReview.innerModalButtonText, stylesReview.innerModalButtonRedText]}>Go to Settings</Text>
+                            </TouchableOpacity>
+                        </View>
                         </View>
                     </TouchableOpacity>
                 </Modal>

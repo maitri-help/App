@@ -33,6 +33,7 @@ import OpenIcon from './assets/icons/open-icon.svg';
 import MyTasksSupporterScreen from './screens/MyTasksSupporterScreen';
 import OpenTasksSupporterScreen from './screens/OpenTasksSupporterScreen';
 import ProfileSupporterScreen from './screens/ProfileSupporterScreen';
+import * as Calendar from 'expo-calendar';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -144,6 +145,17 @@ export default function App() {
     };
 
     checkAuthAndOnboarding();
+  }, []);
+
+  const requestCalendarPermission = async () => {
+    const permission = await Calendar.requestCalendarPermissionsAsync();
+    if (!permission.granted) {
+      console.log('Permission to access calendar was denied');
+    }
+  };
+
+  useEffect(() => {
+    requestCalendarPermission();
   }, []);
 
   if (!isReady || loading) {

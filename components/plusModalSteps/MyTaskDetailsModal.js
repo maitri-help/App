@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal, Linking } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal, Linking, AppState } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import LocationPicker from './LocationPicker';
@@ -9,6 +9,7 @@ import { useToast } from 'react-native-toast-notifications';
 import ModalCustom from '../Modal';
 import { ScrollView } from 'react-native-gesture-handler';
 import CalendarIcon from '../../assets/icons/calendar-icon.svg';
+import * as Calendar from 'expo-calendar';
 
 export default function TaskDetailsModal({ visible, selectedTask, onClose, updateTask }) {
     const [dateTimeText, setDateTimeText] = useState(null);
@@ -78,13 +79,51 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose, updat
         }
     };
 
-    const handleOpenCalendar = () => {
-        if (Platform.OS === 'ios') {
-            Linking.openURL('calshow:');
-        } else if (Platform.OS === 'android') { 
-            Linking.openURL('content://com.android.calendar/time/');
+    const [ calendarPermission ] = Calendar.useCalendarPermissions();
+    const [calendarPermissionNeeded, setCalendarPermissionNeeded] = useState(false);
+
+    const handleOpenCalendar = async () => {
+        // console.log('CALENDAR PERMISSION:', calendarPermission);
+        if (!calendarPermission.granted) {
+            setCalendarPermissionNeeded(true);
+            return;
         }
+
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        console.log('CALENDARS:', calendars);        
+        const defaultCalendar = Platform.select({
+            ios: calendars.find(cal => cal.allowsModifications /* && cal.source.name === 'Default' */),
+            android: calendars.find(cal => cal.accessLevel === "owner" && cal.name === cal.ownerAccount),
+        });
+
+        if (!defaultCalendar) {
+            console.error('Default calendar not found');
+            toast.show('Default calendar not found', { type: 'error' });
+            return;
+        }
+
+        const event = {
+            title: taskName,
+            startDate: new Date(startDateTime),
+            endDate: new Date(endDateTime),
+            notes: description,
+        };
+
+        await Calendar.createEventAsync(defaultCalendar.id, event)
+            .then((event) => {
+                console.log('Event added to calendar: ', event);
+                toast.show('Event added to calendar', { type: 'success' });
+            })
+            .catch((error) => {
+                console.error('Error adding event to calendar:', error);
+                toast.show('Error adding event to calendar', { type: 'error' });
+            });
     }
+
+    const handleGoToSettings = () => {
+        Linking.openSettings();
+        setCalendarPermissionNeeded(false);
+    };
 
     return (
         <ModalCustom
@@ -171,6 +210,24 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose, updat
                                     <Text style={[stylesModal.innerModalButtonText, stylesModal.innerModalButtonWhiteText]}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+            )}
+
+            {calendarPermissionNeeded && (
+                <Modal visible={calendarPermissionNeeded} onRequestClose={() => console.log("close")} animationType='fade' transparent>
+                    <TouchableOpacity onPress={() => console.log("close")} style={stylesModal.innerModalContainer}>
+                        <View style={stylesModal.innerModalContent}>
+                        <View style={stylesModal.innerModalTexts}>
+                            <Text style={stylesModal.innerModalTitle}>Please provide access for this app to your calendar.</Text>
+                            <Text style={stylesModal.innerModalSubtitle}>Without acces we cannot export this event to your calendar.</Text>
+                        </View>
+                        <View style={stylesModal.innerModalButtons}>
+                            <TouchableOpacity style={[stylesModal.innerModalButton, stylesModal.innerModalButtonRed]} onPress={handleGoToSettings}>
+                            <Text style={[stylesModal.innerModalButtonText, stylesModal.innerModalButtonRedText]}>Go to Settings</Text>
+                            </TouchableOpacity>
+                        </View>
                         </View>
                     </TouchableOpacity>
                 </Modal>
@@ -356,4 +413,73 @@ const stylesModal = StyleSheet.create({
         lineHeight: 18,
         color: '#fff',
     },
+    innerModalContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    innerModalContent: {
+        backgroundColor: '#fff',
+        borderRadius: 20,
+        maxWidth: 350,
+        paddingHorizontal: 20,
+        paddingVertical: 30,
+    },
+    innerModalTexts: {
+        marginBottom: 20,
+    },
+    innerModalTitle: {
+        color: '#000',
+        fontSize: 14,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+        marginBottom: 5
+    },
+    innerModalSubtitle: {
+        color: '#000',
+        fontSize: 12,
+        fontFamily: 'poppins-regular',
+        lineHeight: 16,
+        textAlign: 'center',
+    },
+    innerModalButtons: {
+        flexDirection: 'row',
+        gap: 10,
+        justifyContent: 'center',
+    },
+    innerModalButton: {
+        alignItems: 'center',
+        minWidth: 125,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 16,
+        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 8,
+    },
+    innerModalButtonRed: {
+        backgroundColor: '#FF7070',
+    },
+    innerModalButtonWhite: {
+        backgroundColor: '#fff',
+    },
+    innerModalButtonText: {
+        fontSize: 14,
+        fontFamily: 'poppins-medium',
+        lineHeight: 18,
+    },
+    innerModalButtonRedText: {
+        color: '#fff',
+    },
+    innerModalButtonWhiteText: {
+        color: '#000',
+    },    
 });
