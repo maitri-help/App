@@ -224,9 +224,7 @@ export default function HomeSupporterScreen({ navigation }) {
                             source={initalBackground}
                             style={stylesSuppHome.roundedRectangleContainer}
                         >
-                            <TouchableOpacity onPress={handleClose} style={stylesSuppHome.closeIcon}>
-                                <CloseIcon width={15} height={15} color={'#000'} />
-                            </TouchableOpacity>
+    
                             <View style={{ alignItems: 'left', flexDirection: 'column', flex: 1, paddingRight: 10, }}>
                                 <Text style={stylesSuppHome.welcomeText}>Welcome to your home page</Text>
                                 <Text style={stylesSuppHome.infoText}>Tasks will show up below</Text>
