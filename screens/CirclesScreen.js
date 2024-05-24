@@ -64,28 +64,16 @@ export default function CirclesScreen({ navigation }) {
 
     const generateRandomCircleItems = () => {
         const circleItemsContent = [
-            getRandomItem(tabContents.Third) || { firstName: 'Peer', emoji: null },
-            getRandomItem(tabContents.Second) || { firstName: 'Friend', emoji: null },
-            getRandomItem(tabContents.First) || { firstName: 'Parent', emoji: null },
+            { ...getRandomItem(tabContents.Third), circle: 'Third' } || { firstName: 'Peer', emoji: null, circle: 'Third' },
+            { ...getRandomItem(tabContents.Second), circle: 'Second' } || { firstName: 'Friend', emoji: null, circle: 'Second' },
+            { ...getRandomItem(tabContents.First), circle: 'First' } || { firstName: 'Parent', emoji: null, circle: 'First' },
         ];
         setCircleItemsContent(circleItemsContent);
     };
 
     const handleCircleItemPress = (item) => {
-        let circle;
-        switch (activeTab) {
-            case 'All':
-                circle = item.circle;
-                break;
-            case 'Circles':
-                break;
-            default:
-                circle = activeTab;
-                break;
-        }
-    
-        const updatedItem = { ...item, circle };
-        
+        const updatedItem = { ...item, circle: item.circle || activeTab };
+
         setSelectedCircleItem(updatedItem);
         setSupporterCardModalVisible(true);
     };

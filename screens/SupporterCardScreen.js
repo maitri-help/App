@@ -17,6 +17,8 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
     const [isEditable, setIsEditable] = useState(false);
     const toast = useToast();
 
+    console.log('circle:', initialCircle);
+
     useEffect(() => {
         if (initialCircle && ['First', 'Second', 'Third'].includes(initialCircle)) {
             setSelectedCircle(initialCircle);
