@@ -30,7 +30,8 @@
     "plugins": [
       "expo-font",
       "expo-location",
-      "expo-calendar"
+      "expo-calendar",
+      "onesignal-expo-plugin"
     ],
     "extra": {
       "eas": {
