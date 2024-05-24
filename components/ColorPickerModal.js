@@ -38,6 +38,8 @@ export default function ColorPickerModal({ visible, onClose, onColorSelect, sele
       await updateUser(userId, userDataToUpdate, accessToken);
       toast.show('Color changed successfully', { type: 'success' });
       console.log('User color updated successfully');
+
+      onClose();
     } catch (error) {
       toast.show('Unsuccessful color change', { type: 'error' });
       console.error('Error updating user color:', error);

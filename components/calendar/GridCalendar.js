@@ -107,12 +107,23 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
         return task.startDateTime.startsWith(dateStringForI);
       });
 
+      const isUnassigned = tasks.some(task => {
+        const taskStartDate = new Date(task.startDateTime);
+        const taskEndDate = new Date(task.endDateTime);
+        const isInDateRange = currentDate >= taskStartDate && currentDate <= taskEndDate;
+        const isStartDay = taskStartDate.getDate() === i;
+        const isUnassignedTask = task.assignee === null;
+
+        return isUnassignedTask && (isStartDay || isInDateRange);
+      });
+
       currentMonthDays.push({
         date: i,
         selected: isSameDate && i === currentDay,
         disabled: false,
         hasTask: taskRange.length > 0 || singleDayTasks.length > 0,
         isToday: isToday,
+        isUnassigned: isUnassigned,
         taskRange: taskRange
       });
     }
@@ -163,16 +174,11 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
         onPress={() => selectDate(`${currentYearProp}-${currentMonthProp}-${item.date}`)}
         disabled={item.disabled}
       >
-        <Text style={[styles.date(item), item.disabled && styles.disabledDate]}>
+        <Text style={[styles.date(item), item.disabled && styles.disabledDate, item.isToday && styles.dateToday]}>
           {item.date}
         </Text>
-        {item.hasTask && !item.isToday && (
-          <View style={styles.dot} />
-        )}
-        {item.isToday && <View style={[styles.dot, styles.dotToday]} />}
-        {item.hasTask && item.taskRange && item.taskRange.map(taskDate => (
-          <View key={taskDate} style={styles.dot} />
-        ))}
+        {item.isUnassigned && item.hasTask && <View style={[styles.dot, styles.dotRed]} />}
+        {!item.isUnassigned && item.hasTask && <View style={styles.dot} />}
       </TouchableOpacity>
     </View>
   );
@@ -292,6 +298,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: item.selected ? '#fff' : '#000',
   }),
+  dateToday: {
+    fontFamily: 'poppins-bold',
+  },
   disabledDate: {
     color: '#A4A4A4',
   },
@@ -308,7 +317,7 @@ const styles = StyleSheet.create({
     bottom: 4,
     right: 14,
   },
-  dotToday: {
+  dotRed: {
     backgroundColor: '#B22525',
   }
 });

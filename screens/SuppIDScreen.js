@@ -4,19 +4,20 @@ import AppButton from '../components/Button';
 import ArrowBackIcon from '../assets/icons/arrow-left-icon.svg';
 import ColorPickerModal from '../components/ColorPickerModal';
 import EmojiPickerModal from '../components/EmojiPickerModal';
-import { checkAuthentication, clearUserData, clearAccessToken, getLeadUserData } from '../authStorage';
+import { checkAuthentication, clearUserData, clearAccessToken, getAccessToken } from '../authStorage';
+import { getLeadUser } from '../hooks/api';
 
 export default function SuppIDScreen({ navigation }) {
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [leadFirstName, setLeadFirstName] = useState('Lead');
-  const [leadLastName, setLeadLastName] = useState('name');
+  const [leadUserData, setLeadUserData] = useState(null);
 
   const [emojiModalVisible, setEmojiModalVisible] = useState(false);
   const [colorModalVisible, setColorModalVisible] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedEmoji, setSelectedEmoji] = useState(null);
+  const [isNextButtonDisabled, setIsNextButtonDisabled] = useState(true);
 
   const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -40,18 +41,26 @@ export default function SuppIDScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    const fetchLeadUserData = async () => {
+    const fetchData = async () => {
       try {
-        const userData = await getLeadUserData();
-        setLeadFirstName(userData[0].firstName);
-        setLeadLastName(userData[0].lastName);
+        const accessToken = await getAccessToken();
+        const response = await getLeadUser(accessToken);
+        const userData = response.data;
+        setLeadUserData(userData);
       } catch (error) {
         console.error('Error fetching lead user data:', error);
       }
     };
 
-    fetchLeadUserData();
+    fetchData();
   }, []);
+
+  const leadFirstName = leadUserData ? leadUserData[0].firstName : 'Lead';
+  const leadLastName = leadUserData ? leadUserData[0].lastName : 'Name';
+
+  useEffect(() => {
+    setIsNextButtonDisabled(!(selectedColor && selectedEmoji));
+  }, [selectedColor, selectedEmoji]);
 
   const handleColorSelect = (color) => {
     console.log('Color selected:', color);
@@ -82,7 +91,7 @@ export default function SuppIDScreen({ navigation }) {
   return (
     <>
       <SafeAreaView style={[styles.safeArea]}>
-        <View style={styles.contentContainer}>
+        <View style={[styles.contentContainer, {height: '100%'}]}>
           <View style={stylesSuppID.topBar}>
             <TouchableOpacity onPress={() => navigation.navigate('SuppGreatNews')}>
               <ArrowBackIcon width={19} height={19} color={'#000'} />
@@ -90,9 +99,14 @@ export default function SuppIDScreen({ navigation }) {
           </View>
           <View style={stylesSuppID.textContainer}>
             <Text style={[styles.title, stylesSuppID.headerText]}>Hey <Text>{firstName}</Text></Text>
-            <Text style={[styles.text, { paddingBottom: 20, fontSize: 16, }, stylesSuppID.paragraph]}>Welcome to Maitri!</Text>
+            <Text style={[styles.text, { paddingBottom: 15, fontSize: 16, }, stylesSuppID.paragraph]}>Welcome to Maitri!</Text>
             <Text style={[styles.text, stylesSuppID.paragraph]}>Let's start by customizing your persona. This is how you'll show up on <Text style={{ fontFamily: 'poppins-bold' }}>{leadFirstName} {leadLastName}</Text>'s support circle.</Text>
             <Text style={[styles.text, stylesSuppID.paragraph]}>Choose a color and emoji that best represent you.</Text>
+          </View>
+          <View style={stylesSuppID.selectedEmojiWrapper}>
+            <View style={[stylesSuppID.selectedEmojiItem, { borderColor: selectedColor }]}>
+              <Text style={stylesSuppID.selectedEmojiText}>{selectedEmoji}</Text>
+            </View>
           </View>
           <View style={[styles.buttonContainer, stylesSuppID.buttonContainer]}>
             <AppButton
@@ -100,27 +114,13 @@ export default function SuppIDScreen({ navigation }) {
               onPress={() => setColorModalVisible(true)}
               buttonStyle={stylesSuppID.customButton}
               textStyle={stylesSuppID.customButtonText}
-              activeOpacity={1}
             />
 
-            <ColorPickerModal
-              visible={colorModalVisible}
-              onClose={() => setColorModalVisible(false)}
-              onColorSelect={handleColorSelect}
-              selectedColor={selectedColor}
-            />
             <AppButton
               title="Emoji"
               onPress={() => setEmojiModalVisible(true)}
               buttonStyle={stylesSuppID.customButton}
               textStyle={stylesSuppID.customButtonText}
-            />
-            <EmojiPickerModal
-              visible={emojiModalVisible}
-              onClose={() => setEmojiModalVisible(false)}
-              onEmojiSelect={handleEmojiSelect}
-              selectedEmoji={selectedEmoji}
-              selectedColor={selectedColor}
             />
           </View>
 
@@ -128,7 +128,8 @@ export default function SuppIDScreen({ navigation }) {
             <AppButton
               title="Next"
               onPress={() => navigation.navigate('MainSupporter')}
-              buttonStyle={[styles.buttonContainer]}
+              buttonStyle={[styles.nextButton, isNextButtonDisabled && stylesSuppID.nextButtonDisabled]}
+              disabled={isNextButtonDisabled}
             />
 
           </View>
@@ -141,6 +142,21 @@ export default function SuppIDScreen({ navigation }) {
       {(emojiModalVisible) && (
         <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
       )}
+
+      <ColorPickerModal
+        visible={colorModalVisible}
+        onClose={() => setColorModalVisible(false)}
+        onColorSelect={handleColorSelect}
+        selectedColor={selectedColor}
+      />
+
+      <EmojiPickerModal
+        visible={emojiModalVisible}
+        onClose={() => setEmojiModalVisible(false)}
+        onEmojiSelect={handleEmojiSelect}
+        selectedEmoji={selectedEmoji}
+        selectedColor={selectedColor}
+      />
     </>
 
   );
@@ -154,20 +170,25 @@ const stylesSuppID = StyleSheet.create({
     alignItems: 'center',
   },
   headerText: {
-    marginBottom: 40,
+    marginBottom: 30,
   },
   paragraph: {
     marginBottom: 10,
     textAlign: 'center',
   },
   buttonContainer: {
-    marginTop: 60,
+    marginTop: 40,
   },
   button: {
     backgroundColor: '#fff'
   },
   nextButtonContainer: {
-    marginTop: 130,
+    flex: 1,
+    paddingTop: 30,
+    justifyContent: 'flex-start',
+  },
+  nextButtonDisabled: {
+    opacity: 0.6,
   },
   customButton: {
     paddingVertical: 12,
@@ -186,5 +207,36 @@ const stylesSuppID = StyleSheet.create({
   customButtonText: {
     fontSize: 16,
     color: '#000',
+  },
+  selectedEmojiWrapper: {
+    paddingTop: 20,
+    alignItems: 'center',
+    marginBottom: -10,
+  },
+  selectedEmojiItemWrapper: {
+    borderRadius: 100,
+    backgroundColor: '#fff',
+    shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.4)' : '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  selectedEmojiItem: {
+    width: 85,
+    height: 85,
+    borderRadius: 100,
+    borderWidth: 2,
+    borderColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  selectedEmojiText: {
+    fontSize: (Platform.OS === 'android') ? 40 : 50,
+    textAlign: 'center',
+    lineHeight: (Platform.OS === 'android') ? 50 : 60,
   },
 });

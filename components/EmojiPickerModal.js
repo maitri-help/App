@@ -40,6 +40,8 @@ export default function EmojiPickerModal({ visible, onClose, onEmojiSelect, sele
       await updateUser(userId, userDataToUpdate, accessToken);
       toast.show('Emoji changed successfully', { type: 'success' });
       console.log('User emoji updated successfully');
+
+      onClose();
     } catch (error) {
       toast.show('Unsuccessful emoji change', { type: 'error' });
       console.error('Error updating user emoji:', error);

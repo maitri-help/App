@@ -2,9 +2,14 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Platform, View } from 'react-native';
 import CloseIcon from '../assets/icons/close-icon-small.svg';
 
-const AppButton = ({ onPress, title, buttonStyle, textStyle, buttonSmall, closeIcon }) => {
+const AppButton = ({ onPress, title, buttonStyle, textStyle, buttonSmall, closeIcon, disabled }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[buttonSmall ? styles.buttonSmall : styles.button, buttonStyle]}>
+    <TouchableOpacity
+      onPress={disabled ? null : onPress}
+      style={[buttonSmall ? styles.buttonSmall : styles.button, buttonStyle]}
+      activeOpacity={disabled ? 1 : 0.6}
+      disabled={disabled}
+    >
       <Text style={[buttonSmall ? styles.buttonSmallText : styles.text, textStyle]}>{title}</Text>
       {closeIcon &&
         <View style={styles.closeIconWrapper}>
