@@ -186,7 +186,7 @@ export default function AssignmentsScreen({ navigation }) {
         }, 0);
 
         setIsProgrammaticScroll(true);
-        flatListRef.current.scrollToIndex({ index: closestIndex, animated: true });
+        flatListRef.current?.scrollToIndex({ index: closestIndex, animated: true });
     };
 
     const handleViewableItemsChanged = (viewableItem) => {
