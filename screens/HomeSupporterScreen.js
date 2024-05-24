@@ -224,7 +224,6 @@ export default function HomeSupporterScreen({ navigation }) {
                             source={initalBackground}
                             style={stylesSuppHome.roundedRectangleContainer}
                         >
-    
                             <View style={{ alignItems: 'left', flexDirection: 'column', flex: 1, paddingRight: 10, }}>
                                 <Text style={stylesSuppHome.welcomeText}>Welcome to your home page</Text>
                                 <Text style={stylesSuppHome.infoText}>Tasks will show up below</Text>

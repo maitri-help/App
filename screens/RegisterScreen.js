@@ -142,9 +142,9 @@ export default function RegisterScreen({ navigation }) {
                                         </View>
                                         <Text style={styles.checkboxText}>
                                             I accept the
-                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')}> Privacy Policy </Text>
+                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.maitrihelp.com/privacy-policy')}> Privacy Policy </Text>
                                             and
-                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')}> Terms & Conditions</Text>
+                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.maitrihelp.com/terms-conditions')}> Terms & Conditions</Text>
                                         </Text>
                                     </TouchableOpacity>
                                     {touched.acceptedTerms && !values.acceptedTerms && errors.acceptedTerms &&
