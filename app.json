@@ -31,7 +31,12 @@
       "expo-font",
       "expo-location",
       "expo-calendar",
-      "onesignal-expo-plugin"
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
+      ]
     ],
     "extra": {
       "eas": {
