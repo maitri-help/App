@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Animated } from 'react-native';
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import CustomBox from '../components/CustomBox';
-import Task from '../components/Task';
+import TaskItem from '../components/TaskItem';
 import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
+import TaskModal from '../components/TaskModal';
 
 const quotes = [
     "Remember to breathe today.",
@@ -65,6 +66,25 @@ export default function HomeScreen({ navigation }) {
     const [tasks, setTasks] = useState([]);
     const [randomQuote, setRandomQuote] = useState('');
     const [randomMotivationalQuote, setRandomMotivationalQuote] = useState('');
+    const [taskModalVisible, setTaskModalVisible] = useState(false);
+    const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+    const [taskModalSelectedCircle, setTaskModalSelectedCircle] = useState('Personal');
+    const [taskModalTaskName, setTaskModalTaskName] = useState('');
+    const [taskModalTaskId, setTaskModalTaskId] = useState('');
+    const [taskModaldescription, setTaskModalDescription] = useState('');
+    const [taskModalSelectedLocation, setTaskModalSelectedLocation] = useState('');
+    const [taskModalStartDate, setTaskModalStartDate] = useState(null);
+    const [taskModalEndDate, setTaskModalEndDate] = useState(null);
+    const [taskModalStartTime, setTaskModalStartTime] = useState(null);
+    const [taskModalEndTime, setTaskModalEndTime] = useState(null);
+
+    const [assigneeFirstName, setAssigneeFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [color, setColor] = useState('');
+    const [emoji, setEmoji] = useState('');
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [isEditable, setIsEditable] = useState(false);
 
     useEffect(() => {
         const selectRandomQuote = () => {
@@ -102,38 +122,103 @@ export default function HomeScreen({ navigation }) {
                 console.error('Error fetching user data:', error);
                 clearUserData();
                 clearAccessToken();
-                navigation.navigate('Login');
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }]
+                })
             }
         }
         fetchUserData();
     }, []);
 
-    useEffect(() => {
-        async function fetchTasks() {
-            try {
-                const userData = await checkAuthentication();
-                if (userData) {
-                    console.log('User Data:', userData);
-                    console.log('Access token:', userData.accessToken);
+    async function fetchTasks() {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                console.log('User Data:', userData);
+                console.log('Access token:', userData.accessToken);
 
-                    const tasksResponse = await getTasksForUser(userData.userId, userData.accessToken);
-                    setTasks(tasksResponse.data);
-                } else {
-                    console.error('No user data found');
-                    navigation.reset({
-                        index: 0,
-                        routes: [{ name: 'Login' }]
-                    })
-                }
-            } catch (error) {
-                console.error('Error fetching tasks:', error);
+                const tasksResponse = await getTasksForUser(userData.userId, userData.accessToken);
+                setTasks(tasksResponse.data);
+            } else {
+                console.error('No user data found');
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }]
+                })
             }
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
         }
+    }
+
+    useEffect(() => {
         fetchTasks();
     }, []);
 
+    useEffect(() => {
+        if (taskModalVisible) {
+            Animated.timing(overlayOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(overlayOpacity, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [taskModalVisible]);
+
     const handleTabPress = (tab) => {
         setActiveTab(tab);
+    };
+
+    const handleTaskItemClick = async (task) => {
+        setSelectedTask(task);
+    };
+
+    const handleTaskModalClose = () => {
+        setTaskModalVisible(false);
+    };
+
+    const handleDateTimeSelectTask = ({ startDateTime, endDateTime }) => {
+        setTaskModalStartDate(startDateTime);
+        setTaskModalEndDate(endDateTime);
+    };
+
+    const handleDayPressTask = (day) => {
+        if (taskModalStartDate && taskModalEndDate) {
+            setTaskModalStartDate(day.dateString);
+            setTaskModalEndDate(null);
+        } else if (taskModalStartDate && !taskModalEndDate) {
+            const startDate = new Date(taskModalStartDate);
+            const endDate = new Date(day.dateString);
+
+            if (startDate <= endDate) {
+                setTaskModalEndDate(day.dateString);
+            } else {
+                setTaskModalStartDate(day.dateString);
+                setTaskModalEndDate(null);
+            }
+        } else {
+            setTaskModalStartDate(day.dateString);
+        }
+    };
+
+    const getDaysBetween = (start, end) => {
+        let currentDate = new Date(start);
+        const endDate = new Date(end);
+        let markedDates = {};
+        currentDate.setDate(currentDate.getDate() + 1);
+        while (currentDate < endDate) {
+            const dateString = currentDate.toISOString().split('T')[0];
+            markedDates[dateString] = { color: '#1C4837', textColor: '#fff' };
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return markedDates;
     };
 
     const renderTasks = (tasks) => {
@@ -226,15 +311,11 @@ export default function HomeScreen({ navigation }) {
             <View style={stylesHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesHome.tasksScroll}>
                     {filteredTasks.map(task => (
-                        <Task
+                        <TaskItem
                             key={task.taskId}
-                            title={task.title}
-                            firstName={task.assignee ? task.assignee.firstName : ''}
-                            lastName={task.assignee ? task.assignee.lastName : ''}
-                            startTime={task.startDateTime}
-                            endTime={task.endDateTime}
-                            emoji={task.assignee ? task.assignee.emoji : ''}
-                            color={task.assignee ? task.assignee.color : ''}
+                            task={task}
+                            taskModal={() => setTaskModalVisible(true)}
+                            onTaskItemClick={handleTaskItemClick}
                         />
                     ))}
                 </ScrollView>
@@ -243,18 +324,19 @@ export default function HomeScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.topBar}>
-                <Text style={stylesHome.greetingsText}>{greetingText} {firstName}!</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={stylesHome.bellWrapper}>
-                    <BellIcon style={stylesHome.bellIcon} />
-                    {/* <View style={stylesHome.indicator}></View> */}
-                </TouchableOpacity>
-            </View>
-            <View style={stylesHome.boxesContainer}>
-                <ScrollView horizontal={true} style={stylesHome.boxesScroll}>
-                    <View style={{ marginLeft: 15 }} />
-                    {/* <CustomBox
+        <>
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.topBar}>
+                    <Text style={stylesHome.greetingsText}>{greetingText} {firstName}!</Text>
+                    <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={stylesHome.bellWrapper}>
+                        <BellIcon style={stylesHome.bellIcon} />
+                        {/* <View style={stylesHome.indicator}></View> */}
+                    </TouchableOpacity>
+                </View>
+                <View style={stylesHome.boxesContainer}>
+                    <ScrollView horizontal={true} style={stylesHome.boxesScroll}>
+                        <View style={{ marginLeft: 15 }} />
+                        {/* <CustomBox
                         title="Rachel Green"
                         subtitle="Has completed"
                         largerText="Do the Laundry"
@@ -274,51 +356,95 @@ export default function HomeScreen({ navigation }) {
                         bgImg={3}
                         bgImgColor="#EDE3FE"
                     /> */}
-                    <CustomBox
-                        title="Nothing to do?"
-                        buttons={[{ title: 'Add a new task', onPress: (() => navigation.navigate('Assignments')) }]}
-                        bgColor="#E5F5E3"
-                        bgImgColor="#D6EFD2"
-                        bgImg={4}
-                    />
-                    <CustomBox
-                        title={randomQuote}
-                        bgColor="#D4E6E5"
-                        bgImgColor="#B7D6D3"
-                    />
-                    <CustomBox
-                        title={randomMotivationalQuote}
-                        bgColor="#E1D0FD"
-                        bgImgColor="#EDE3FE"
-                        bgImg={2}
-                    />
-                    <CustomBox
-                        title="Come add family & friends to your circles"
-                        buttons={[{ title: 'Add a new person', bgColor: '#fff', textColor: '#000', onPress: (() => navigation.navigate('Circles')) }]}
-                        bgColor="#FFE8D7"
-                        bgImgColor="#FFD8BC"
-                        bgImg={2}
-                    />
-                    <View style={{ marginRight: 15 }} />
-                </ScrollView>
-            </View>
+                        <CustomBox
+                            title="Nothing to do?"
+                            buttons={[{ title: 'Add a new task', onPress: (() => navigation.navigate('Assignments')) }]}
+                            bgColor="#E5F5E3"
+                            bgImgColor="#D6EFD2"
+                            bgImg={4}
+                        />
+                        <CustomBox
+                            title={randomQuote}
+                            bgColor="#D4E6E5"
+                            bgImgColor="#B7D6D3"
+                        />
+                        <CustomBox
+                            title={randomMotivationalQuote}
+                            bgColor="#E1D0FD"
+                            bgImgColor="#EDE3FE"
+                            bgImg={2}
+                        />
+                        <CustomBox
+                            title="Come add family & friends to your circles"
+                            buttons={[{ title: 'Add a new person', bgColor: '#fff', textColor: '#000', onPress: (() => navigation.navigate('Circles')) }]}
+                            bgColor="#FFE8D7"
+                            bgImgColor="#FFD8BC"
+                            bgImg={2}
+                        />
+                        <View style={{ marginRight: 15 }} />
+                    </ScrollView>
+                </View>
 
-            <View style={[stylesHome.tabsContainer, styles.contentContainer]}>
-                <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesHome.tab, activeTab === 'All' && stylesHome.activeTab]}>
-                    <Text style={[stylesHome.tabText, activeTab === 'All' && stylesHome.activeTabText]}>All tasks</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleTabPress('Unassigned')} style={[stylesHome.tab, activeTab === 'Unassigned' && stylesHome.activeTab]}>
-                    <Text style={[stylesHome.tabText, activeTab === 'Unassigned' && stylesHome.activeTabText]}>Unassigned</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleTabPress('Personal')} style={[stylesHome.tab, activeTab === 'Personal' && stylesHome.activeTab]}>
-                    <Text style={[stylesHome.tabText, activeTab === 'Personal' && stylesHome.activeTabText]}>Personal</Text>
-                </TouchableOpacity>
-            </View>
+                <View style={[stylesHome.tabsContainer, styles.contentContainer]}>
+                    <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesHome.tab, activeTab === 'All' && stylesHome.activeTab]}>
+                        <Text style={[stylesHome.tabText, activeTab === 'All' && stylesHome.activeTabText]}>All tasks</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleTabPress('Unassigned')} style={[stylesHome.tab, activeTab === 'Unassigned' && stylesHome.activeTab]}>
+                        <Text style={[stylesHome.tabText, activeTab === 'Unassigned' && stylesHome.activeTabText]}>Unassigned</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleTabPress('Personal')} style={[stylesHome.tab, activeTab === 'Personal' && stylesHome.activeTab]}>
+                        <Text style={[stylesHome.tabText, activeTab === 'Personal' && stylesHome.activeTabText]}>Personal</Text>
+                    </TouchableOpacity>
+                </View>
 
-            <View style={stylesHome.tabsContentContainer}>
-                {renderTasks(tasks)}
-            </View>
-        </SafeAreaView>
+                <View style={stylesHome.tabsContentContainer}>
+                    {renderTasks(tasks)}
+                </View>
+            </SafeAreaView>
+
+            {(taskModalVisible) && (
+                <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+            )}
+
+            <TaskModal
+                visible={taskModalVisible}
+                onClose={handleTaskModalClose}
+                selectedCircle={taskModalSelectedCircle}
+                setSelectedCircle={setTaskModalSelectedCircle}
+                taskId={taskModalTaskId}
+                setTaskId={setTaskModalTaskId}
+                taskName={taskModalTaskName}
+                setTaskName={setTaskModalTaskName}
+                description={taskModaldescription}
+                setDescription={setTaskModalDescription}
+                selectedLocation={taskModalSelectedLocation}
+                setSelectedLocation={setTaskModalSelectedLocation}
+                startDate={taskModalStartDate}
+                setStartDate={setTaskModalStartDate}
+                endDate={taskModalEndDate}
+                setEndDate={setTaskModalEndDate}
+                startTime={taskModalStartTime}
+                setStartTime={setTaskModalStartTime}
+                endTime={taskModalEndTime}
+                setEndTime={setTaskModalEndTime}
+                handleDayPress={handleDayPressTask}
+                getDaysBetween={getDaysBetween}
+                handleDateTimeSelect={handleDateTimeSelectTask}
+                selectedTask={selectedTask}
+                firstName={assigneeFirstName}
+                setFirstName={setAssigneeFirstName}
+                lastName={lastName}
+                setLastName={setLastName}
+                color={color}
+                setColor={setColor}
+                emoji={emoji}
+                setEmoji={setEmoji}
+                isEditable={isEditable}
+                setIsEditable={setIsEditable}
+                onTaskCreated={() => fetchTasks()}
+            />
+
+        </>
     );
 }
 

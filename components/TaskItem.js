@@ -5,7 +5,7 @@ import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';
 import { useToast } from 'react-native-toast-notifications';
 
-export default function TaskItem({ task, taskModal, onTaskItemClick }) {
+export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox }) {
   const [isChecked, setIsChecked] = useState(task.status === 'done');
   const toast = useToast();
 
@@ -64,15 +64,17 @@ export default function TaskItem({ task, taskModal, onTaskItemClick }) {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.checkboxWrapper} onPress={handleToggleCheckbox}>
-        <View style={isChecked ? styles.checkboxChecked : styles.checkbox}>
-          {isChecked &&
-            <View style={styles.checkboxInner}>
-              <CheckIcon width={13} height={13} style={styles.checkboxIcon} />
-            </View>
-          }
-        </View>
-      </TouchableOpacity>
+      {isCheckbox &&
+        <TouchableOpacity style={styles.checkboxWrapper} onPress={handleToggleCheckbox}>
+          <View style={isChecked ? styles.checkboxChecked : styles.checkbox}>
+            {isChecked &&
+              <View style={styles.checkboxInner}>
+                <CheckIcon width={13} height={13} style={styles.checkboxIcon} />
+              </View>
+            }
+          </View>
+        </TouchableOpacity>
+      }
     </TouchableOpacity>
   );
 }

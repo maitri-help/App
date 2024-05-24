@@ -392,6 +392,7 @@ export default function AssignmentsScreen({ navigation }) {
                                 task={item}
                                 taskModal={() => setTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
+                                isCheckbox={true}
                             />
                         )}
                         onViewableItemsChanged={({ viewableItems }) => {
