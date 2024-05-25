@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Platform, Image } from 'react-native';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';
 import { useToast } from 'react-native-toast-notifications';
+import { modalServices } from '../data/ModalServices'; // Ensure this import points to the correct path
 
 export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox }) {
   const [isChecked, setIsChecked] = useState(task.status === 'done');
@@ -44,20 +45,40 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox 
     taskModal();
   };
 
+  const findIcon = () => {
+    const service = modalServices.find(service => service.title === task.category);
+    return service ? service.icon : null;
+  };
+
+  const icon = findIcon();
+  const isPersonal = task.circles && task.circles.length === 1 && task.circles[0].circleLevel === 'Personal';
+
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={handleClick}>
       <View style={styles.wrapper}>
         <View style={[styles.emojiWrapper, task.assignee ? { borderColor: task.assignee.color ? task.assignee.color : '#1C4837' } : '']}>
-          {task.assignee && <Text style={styles.emoji}>
-            {task.assignee ? task.assignee.emoji : ''}
-          </Text>}
+          {isPersonal ? (
+            icon ? (
+              <Image source={icon} style={styles.emoji} />
+            ) : (
+              <Text style={styles.emoji}>👤</Text>
+            )
+          ) : (
+            <Text style={styles.emoji}>{task.assignee ? task.assignee.emoji : ''}</Text>
+          )}
         </View>
 
         <View style={styles.textContainer}>
           <Text style={[styles.title, isChecked ? styles.textStriked : '']}>{task.title}</Text>
-          {task.assignee && <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>
-            {task.assignee.firstName} {task.assignee.lastName}
-          </Text>}
+          {isPersonal ? (
+            <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>Just Me</Text>
+          ) : (
+            task.assignee && (
+              <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>
+                {`${task.assignee.firstName} ${task.assignee.lastName}`}
+              </Text>
+            )
+          )}
           {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '']}>
             {formatDateTime(task)}
           </Text>}
@@ -113,6 +134,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   emoji: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
     fontSize: (Platform.OS === 'android') ? 24 : 28,
     textAlign: 'center',
   },

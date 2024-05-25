@@ -180,19 +180,19 @@ export default function AssignmentsScreen({ navigation }) {
 
     const scrollToClosestDate = (date) => {
         const selected = new Date(date);
-        if (tasks.length === 0) return;
-        const closestIndex = tasks.reduce((closestIndex, task, index) => {
+        if (filteredTasks.length === 0) return;
+        const closestIndex = filteredTasks.reduce((closestIndex, task, index) => {
             const taskStartDate = new Date(task.startDateTime);
-            const closest = new Date(tasks[closestIndex].startDateTime);
+            const closest = new Date(filteredTasks[closestIndex].startDateTime);
             return Math.abs(selected - taskStartDate) < Math.abs(selected - closest) ? index : closestIndex;
         }, 0);
-
+    
         setIsProgrammaticScroll(true);
         flatListRef.current?.scrollToIndex({ index: closestIndex, animated: true });
     };
 
     const handleViewableItemsChanged = (viewableItem) => {
-        if (isProgrammaticScroll) return;
+        if (isProgrammaticScroll || !viewableItem.item) return;
 
         const formattedDate = new Date(viewableItem.item.startDateTime);
         const year = formattedDate.getFullYear();
@@ -233,10 +233,10 @@ export default function AssignmentsScreen({ navigation }) {
     }, []);
 
     useEffect(() => {
-        if (tasks.length > 0) {
+        if (tasks.length > 0 && filteredTasks.length > 0) {
             scrollToClosestDate(selectedDate);
         }
-    }, [tasks]);
+    }, [tasks, selectedDate, filteredTasks]);
 
     const isDateInRange = (date, startDate, endDate) => {
         const d = new Date(date).setHours(0, 0, 0, 0);
@@ -340,6 +340,7 @@ export default function AssignmentsScreen({ navigation }) {
                                 weekSelectedDate={weekSelectedDate}
                                 setWeekSelectedDate={setWeekSelectedDate}
                                 tasks={tasks}
+                                scrollViewRef={scrollViewRef}
                             />
                         )}
                     </View>
@@ -383,7 +384,9 @@ export default function AssignmentsScreen({ navigation }) {
                         onScrollToIndexFailed={info => {
                             const wait = new Promise(resolve => setTimeout(resolve, 100));
                             wait.then(() => {
-                              flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+                              if (info.index < tasks.length) {
+                                  flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+                              }
                             });
                           }}
                     />
