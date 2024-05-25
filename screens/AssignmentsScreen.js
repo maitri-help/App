@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform, Image, FlatList, Modal, Linking, AppState } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Platform, Image, FlatList, Modal, Linking, AppState, ScrollView } from 'react-native';
 import styles from '../Styles';
 import TaskItem from '../components/TaskItem';
 import PlusModal from '../components/PlusModal';
@@ -55,6 +55,7 @@ export default function AssignmentsScreen({ navigation }) {
     const [isEditable, setIsEditable] = useState(false);
 
     const flatListRef = useRef();
+    const scrollViewRef = useRef();
     const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(true);
 
     const handleTaskItemClick = async (task) => {
@@ -202,6 +203,11 @@ export default function AssignmentsScreen({ navigation }) {
         setDefaultWeekDate(formattedDate);
         setCurrentMonth(formattedDate.getMonth() + 1);
         setCurrentYear(formattedDate.getFullYear());
+
+        if (activeTab === 'Week') {
+            const newWeekIndex = Math.floor((formattedDate - new Date(weekStartDate)) / (7 * 24 * 60 * 60 * 1000));
+            scrollViewRef.current?.scrollTo({ x: newWeekIndex * 350, animated: true });
+        }
     };
 
     async function fetchTasks() {
@@ -258,7 +264,6 @@ export default function AssignmentsScreen({ navigation }) {
         setDeviceLocation(`${location.coords.latitude},${location.coords.longitude}`);
         console.log('LOCATION', location);
     };
-
 
     useEffect(() => {
         requestLocation();
@@ -339,7 +344,6 @@ export default function AssignmentsScreen({ navigation }) {
                         )}
                     </View>
                 </View>
-
 
                 {filteredTasks.length === 0 ? (
                     <View style={stylesCal.calendarEmpty}>
