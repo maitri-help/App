@@ -84,14 +84,12 @@ export default function OnboardingScreen() {
                                 </TouchableOpacity>
                             </View>
                         )}
-                        {index < onboardingData.length - 1 && (
-                            <TouchableOpacity onPress={handleSkip} style={stylesOnboard.skipButton}>
-                                <Text style={stylesOnboard.skipButtonText}>Skip</Text>
-                            </TouchableOpacity>
-                        )}
                     </View>
                 ))}
             </Swiper>
+            <TouchableOpacity onPress={handleSkip} style={stylesOnboard.fixedSkipButton}>
+                <Text style={stylesOnboard.skipButtonText}>Skip</Text>
+            </TouchableOpacity>
             <View style={stylesOnboard.dotsContainer}>
                 {onboardingData.map((_, index) => (
                     <TouchableOpacity
@@ -141,10 +139,11 @@ const stylesOnboard = StyleSheet.create({
     onboardingText: {
         textAlign: 'center',
     },
-    skipButton: {
+    fixedSkipButton: {
         position: 'absolute',
         top: 70,
         right: 25,
+        zIndex: 1,
     },
     skipButtonText: {
         fontFamily: 'poppins-semibold',
