@@ -179,7 +179,8 @@ export default function AssignmentsScreen({ navigation }) {
 
     const scrollToClosestDate = (date) => {
         const selected = new Date(date);
-        const closestIndex = tasks?.reduce((closestIndex, task, index) => {
+        if (tasks.length === 0) return;
+        const closestIndex = tasks.reduce((closestIndex, task, index) => {
             const taskStartDate = new Date(task.startDateTime);
             const closest = new Date(tasks[closestIndex].startDateTime);
             return Math.abs(selected - taskStartDate) < Math.abs(selected - closest) ? index : closestIndex;
@@ -231,15 +232,16 @@ export default function AssignmentsScreen({ navigation }) {
         }
     }, [tasks]);
 
-    /* const filteredTasks = tasks.filter(task => {
-        const taskStartDate = new Date(task.startDateTime);
-        const taskEndDate = new Date(task.endDateTime);
+    const isDateInRange = (date, startDate, endDate) => {
+        const d = new Date(date).setHours(0, 0, 0, 0);
+        const start = new Date(startDate).setHours(0, 0, 0, 0);
+        const end = new Date(endDate).setHours(0, 0, 0, 0);
+        return d >= start && d <= end;
+    };
 
-        return (
-            selectedDate >= taskStartDate.toISOString().split('T')[0] &&
-            selectedDate <= taskEndDate.toISOString().split('T')[0]
-        );
-    }); */
+    const filteredTasks = activeTab === 'Month'
+        ? tasks.filter(task => isDateInRange(selectedDate, task.startDateTime, task.endDateTime))
+        : tasks;
 
     const [locationPermissionNeeded, setLocationPermissionNeeded] = useState(false);
 
@@ -297,7 +299,7 @@ export default function AssignmentsScreen({ navigation }) {
                         <View style={stylesCal.tabs}>
                             <TouchableOpacity
                                 activeOpacity={0.5}
-                                onPress={() => setActiveTab('Month')} style={[stylesCal.tab, activeTab === 'Month' ? stylesCal.tabActive : '']}>
+                                onPress={() => handleTabChange('Month')} style={[stylesCal.tab, activeTab === 'Month' ? stylesCal.tabActive : '']}>
                                 <Text style={[stylesCal.tabText, activeTab === 'Month' ? stylesCal.tabActiveText : '']}>Month</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -339,51 +341,23 @@ export default function AssignmentsScreen({ navigation }) {
                 </View>
 
 
-                {tasks.length === 0 ? (
-                    tasks.length === 0 && (
-                        <>
-                            <View style={stylesCal.calendarEmpty}>
-                                <View style={stylesCal.calendarEmptyImgWrapper}>
-                                    <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesCal.calendarEmptyImg} />
-                                </View>
-                                <Text style={stylesCal.calendarEmptyText}>
-                                    Your list is empty
-                                </Text>
-                                <Text style={stylesCal.calendarEmptyTitle}>
-                                    Click here to add your first task
-                                </Text>
-                                <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
-                            </View>
-                        </>
-                    )/*  : (
-                        <>
-                            <View style={stylesCal.calendarEmpty}>
-                                <Text style={stylesCal.calendarEmptyText}>
-                                    No tasks for this day
-                                </Text>
-                                <Text style={stylesCal.calendarEmptyTitle}>
-                                    Click here to add a new task
-                                </Text>
-                                <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
-                            </View>
-                        </>
-                    ) */
-                ) : (
-                    /* <ScrollView contentContainerStyle={stylesCal.calendarScroll}>
-                        <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
-                            {filteredTasks.map((task, index) => (
-                                <TaskItem
-                                    key={index}
-                                    task={task}
-                                    taskModal={() => setTaskModalVisible(true)}
-                                    onTaskItemClick={handleTaskItemClick}
-                                />
-                            ))}
+                {filteredTasks.length === 0 ? (
+                    <View style={stylesCal.calendarEmpty}>
+                        <View style={stylesCal.calendarEmptyImgWrapper}>
+                            <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesCal.calendarEmptyImg} />
                         </View>
-                    </ScrollView> */
+                        <Text style={stylesCal.calendarEmptyText}>
+                            Your list is empty
+                        </Text>
+                        <Text style={stylesCal.calendarEmptyTitle}>
+                            Click here to add your first task
+                        </Text>
+                        <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
+                    </View>
+                ) : (
                     <FlatList 
                         contentContainerStyle={[styles.contentContainer, stylesCal.tasksWrapper]}
-                        data={tasks}
+                        data={filteredTasks}
                         keyExtractor={(item) => item.taskId}
                         ref={flatListRef}
                         renderItem={({ item }) => (
