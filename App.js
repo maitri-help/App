@@ -147,17 +147,6 @@ export default function App() {
     checkAuthAndOnboarding();
   }, []);
 
-  const requestCalendarPermission = async () => {
-    const permission = await Calendar.requestCalendarPermissionsAsync();
-    if (!permission.granted) {
-      console.log('Permission to access calendar was denied');
-    }
-  };
-
-  useEffect(() => {
-    requestCalendarPermission();
-  }, []);
-
   if (!isReady || loading) {
     return <Image source={require('./assets/splash.png')} style={styles.splashImg} />;
   }
