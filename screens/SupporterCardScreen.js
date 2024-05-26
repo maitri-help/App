@@ -17,8 +17,6 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
     const [isEditable, setIsEditable] = useState(false);
     const toast = useToast();
 
-    console.log('tasks:', tasks);
-
     useEffect(() => {
         if (initialCircle && ['First', 'Second', 'Third'].includes(initialCircle)) {
             setSelectedCircle(initialCircle);
@@ -94,6 +92,27 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
         }
     };
 
+    const formatDate = (date, includeTime = true) => {
+        const options = includeTime
+            ? { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }
+            : { month: 'long', day: 'numeric' };
+        return new Date(date).toLocaleDateString('en-US', options);
+    };
+
+    const formatDateTime = (startTime, endTime) => {
+        const start = new Date(startTime);
+        const end = new Date(endTime);
+
+        const startDate = start.toDateString();
+        const endDate = end.toDateString();
+
+        if (startDate === endDate) {
+            return formatDate(startTime);
+        } else {
+            return `${formatDate(startTime, true)} - ${formatDate(endTime, true)}`;
+        }
+    };
+
     return (
         <ModalCustom visible={visible} onClose={onClose} style={stylesSupporter} modalTopNav
             modalTopNavChildren={
@@ -157,11 +176,11 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                             {tasks.map((task, taskIndex) => (
                                 <View key={taskIndex} style={stylesSupporter.supporterTasksListItem}>
                                     <View style={[stylesSupporter.supporterTasksListItemHalf, stylesSupporter.supporterTasksListItemLeft]}>
-                                        <Text style={stylesSupporter.supporterTasksListItemTask}>{task.task}</Text>
+                                        <Text style={stylesSupporter.supporterTasksListItemTask}>{task.title}</Text>
                                     </View>
                                     <View style={[stylesSupporter.supporterTasksListItemHalf, stylesSupporter.supporterTasksListItemRight]}>
                                         <ClockIcon width={14} height={14} color={'#000'} style={stylesSupporter.clockIcon} />
-                                        <Text style={stylesSupporter.supporterTasksListItemTime}>{task.time}</Text>
+                                        <Text style={stylesSupporter.supporterTasksListItemTime}>{formatDateTime(task.startDateTime, task.endDateTime)}</Text>
                                     </View>
                                 </View>
                             ))}
