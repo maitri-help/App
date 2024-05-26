@@ -117,3 +117,11 @@ export function getNotificationsForUser(userId, accessToken) {
         }
     });
 }
+
+export async function markAsRead(notificationId, accessToken) {
+    return axios.patch(`${baseUrl}/notifications/${notificationId}/read`, null, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}

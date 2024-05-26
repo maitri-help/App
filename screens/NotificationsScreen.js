@@ -3,8 +3,9 @@ import { Platform, View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOp
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import Notification from '../components/Notification';
-import { getNotificationsForUser } from '../hooks/api';
+import { getNotificationsForUser, markAsRead } from '../hooks/api';
 import { checkAuthentication } from '../authStorage';
+import moment from 'moment';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -28,16 +29,24 @@ export default function NotificationsScreen({ navigation }) {
             try {
                 const userData = await checkAuthentication();
                 if (userData) {
-                    const response = await getNotificationsForUser(userData.userId, userData.accessToken);
+                    const accessToken = userData.accessToken;
+                    const userId = userData.userId;
+
+                    const response = await getNotificationsForUser(userId, accessToken);
                     const notifications = response.data;
 
-                    const newNotifications = notifications.filter(n => !n.isRead && n.type !== 'pending');
-                    const pendingNotifications = notifications.filter(n => n.type === 'pending');
-                    const earlierNotifications = notifications.filter(n => n.isRead && n.type !== 'pending');
+                    const newNotifications = notifications.filter(notification => !notification.isRead && notification.type !== 'Pending Request');
+                    const pendingNotifications = notifications.filter(notification => notification.type === 'Pending Request');
+                    const earlierNotifications = notifications.filter(notification => notification.isRead && notification.type !== 'Pending Request');
 
                     setNotificationsNew(newNotifications);
                     setNotificationsPending(pendingNotifications);
                     setNotificationsEarlier(earlierNotifications);
+
+                    // Mark new notifications as read
+                    newNotifications.forEach(notification => {
+                        markAsRead(notification.notificationId, accessToken);
+                    });
                 }
             } catch (error) {
                 console.error('Error fetching notifications:', error);
@@ -53,6 +62,10 @@ export default function NotificationsScreen({ navigation }) {
 
     const handleListLayout = ({ nativeEvent }) => {
         setListHeight(nativeEvent.layout.height);
+    };
+
+    const formatTimeAgo = (dateTime) => {
+        return moment(dateTime).fromNow();
     };
 
     return (
@@ -75,7 +88,7 @@ export default function NotificationsScreen({ navigation }) {
                                     key={notification.notificationId}
                                     assignee={`User ${notification.userId}`} // Replace with actual assignee if available
                                     title={notification.message}
-                                    time={new Date(notification.dateTime).toLocaleString()}
+                                    time={formatTimeAgo(notification.dateTime)}
                                     emoji={'🔔'} // Replace with appropriate emoji
                                 />
                             ))
@@ -99,7 +112,7 @@ export default function NotificationsScreen({ navigation }) {
                                             key={notification.notificationId}
                                             assignee={`User ${notification.userId}`} // Replace with actual assignee if available
                                             title={notification.message}
-                                            time={new Date(notification.dateTime).toLocaleString()}
+                                            time={formatTimeAgo(notification.dateTime)}
                                             emoji={'✌️'} // Replace with appropriate emoji
                                             buttons
                                         />
@@ -131,7 +144,7 @@ export default function NotificationsScreen({ navigation }) {
                                             key={notification.notificationId}
                                             assignee={`User ${notification.userId}`} // Replace with actual assignee if available
                                             title={notification.message}
-                                            time={new Date(notification.dateTime).toLocaleString()}
+                                            time={formatTimeAgo(notification.dateTime)}
                                             emoji={'🔔'} // Replace with appropriate emoji
                                         />
                                         : null
