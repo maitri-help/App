@@ -96,6 +96,10 @@ export default function MyTasksSupporterScreen({ navigation }) {
         setMyTaskModalVisible(false);
     };
 
+    const handleTaskStatusChange = () => {
+        fetchTasks(); 
+    };
+
     const renderTasks = (tasks) => {
         const myTasks = tasks.filter(task => task.assignedUserId && task.assignedUserId === userId);
 
@@ -134,8 +138,11 @@ export default function MyTasksSupporterScreen({ navigation }) {
                             lastName={task.assignee ? task.assignee.lastName : ''}
                             startTime={task.startDateTime}
                             endTime={task.endDateTime}
+                            category={task.category}
                             taskModal={() => setMyTaskModalVisible(true)}
                             onTaskItemClick={handleTaskItemClick}
+                            isCheckbox={true}
+                            onTaskStatusChange={handleTaskStatusChange}
                         />
                     ))}
                 </ScrollView>

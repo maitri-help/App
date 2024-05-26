@@ -140,8 +140,8 @@ export default function HomeSupporterScreen({ navigation }) {
         setActiveTab(tab);
     };
 
-    const handleClose = () => {
-        setIsViewActive(false);
+    const handleTaskStatusChange = () => {
+        fetchTasks(); 
     };
 
     useEffect(() => {
@@ -227,8 +227,11 @@ export default function HomeSupporterScreen({ navigation }) {
                                 lastName={task.assignee ? task.assignee.lastName : ''}
                                 startTime={task.startDateTime}
                                 endTime={task.endDateTime}
+                                category={task.category}
                                 taskModal={() => setMyTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
+                                isCheckbox={true}
+                                onTaskStatusChange={handleTaskStatusChange}
                             />
                         )
                     ))}

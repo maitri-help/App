@@ -23,7 +23,7 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox,
       await updateTask(task.taskId, updatedTask, accessToken);
       setIsChecked(!isChecked);
       toast.show(`Task is set to: ${newStatus}`, { type: 'success' });
-      onTaskStatusChange();  // Notify parent component
+      onTaskStatusChange();
     } catch (error) {
       toast.show('Error updating task status', { type: 'error' });
       console.error('Error updating task:', error);
