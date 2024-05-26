@@ -35,15 +35,14 @@ export default function NotificationsScreen({ navigation }) {
                     const response = await getNotificationsForUser(userId, accessToken);
                     const notifications = response.data;
 
-                    const newNotifications = notifications.filter(notification => !notification.isRead && notification.type !== 'Pending Request');
-                    const pendingNotifications = notifications.filter(notification => notification.type === 'Pending Request');
-                    const earlierNotifications = notifications.filter(notification => notification.isRead && notification.type !== 'Pending Request');
+                    const newNotifications = notifications.filter(notification => !notification.isRead && notification.type !== 'New Supporter Request');
+                    const pendingNotifications = notifications.filter(notification => notification.type === 'New Supporter Request');
+                    const earlierNotifications = notifications.filter(notification => notification.isRead && notification.type !== 'New Supporter Request');
 
                     setNotificationsNew(newNotifications);
                     setNotificationsPending(pendingNotifications);
                     setNotificationsEarlier(earlierNotifications);
 
-                    // Mark new notifications as read
                     newNotifications.forEach(notification => {
                         markAsRead(notification.notificationId, accessToken);
                     });
@@ -86,10 +85,10 @@ export default function NotificationsScreen({ navigation }) {
                             notificationsNew.map(notification => (
                                 <Notification
                                     key={notification.notificationId}
-                                    assignee={`User ${notification.userId}`} // Replace with actual assignee if available
+                                    assignee={`User ${notification.userId}`} 
                                     title={notification.message}
                                     time={formatTimeAgo(notification.dateTime)}
-                                    emoji={'🔔'} // Replace with appropriate emoji
+                                    emoji={'🔔'} 
                                 />
                             ))
                             : (
@@ -110,10 +109,10 @@ export default function NotificationsScreen({ navigation }) {
                                     index < 2 ?
                                         <Notification
                                             key={notification.notificationId}
-                                            assignee={`User ${notification.userId}`} // Replace with actual assignee if available
+                                            assignee={`User ${notification.userId}`} 
                                             title={notification.message}
                                             time={formatTimeAgo(notification.dateTime)}
-                                            emoji={'✌️'} // Replace with appropriate emoji
+                                            emoji={'✌️'}
                                             buttons
                                         />
                                         : null
