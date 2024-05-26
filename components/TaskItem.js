@@ -6,7 +6,7 @@ import { updateTask } from '../hooks/api';
 import { useToast } from 'react-native-toast-notifications';
 import { modalServices } from '../data/ModalServices'; 
 
-export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox }) {
+export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox, onTaskStatusChange }) {
   const [isChecked, setIsChecked] = useState(task.status === 'done');
   const toast = useToast();
 
@@ -23,6 +23,7 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox 
       await updateTask(task.taskId, updatedTask, accessToken);
       setIsChecked(!isChecked);
       toast.show(`Task is set to: ${newStatus}`, { type: 'success' });
+      onTaskStatusChange();  // Notify parent component
     } catch (error) {
       toast.show('Error updating task status', { type: 'error' });
       console.error('Error updating task:', error);

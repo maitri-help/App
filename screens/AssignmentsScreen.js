@@ -72,6 +72,10 @@ export default function AssignmentsScreen({ navigation }) {
         setTaskModalEndDate(endDateTime);
     };
 
+    const handleTaskStatusChange = () => {
+        fetchTasks(); 
+    };
+
     const handleDayPressPlus = (day) => {
         if (plusModalStartDate && plusModalEndDate) {
             setPlusModalStartDate(day.dateString);
@@ -379,6 +383,7 @@ export default function AssignmentsScreen({ navigation }) {
                                 taskModal={() => setTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
                                 isCheckbox={true}
+                                onTaskStatusChange={handleTaskStatusChange}
                             />
                         )}
                         onViewableItemsChanged={({ viewableItems }) => {
