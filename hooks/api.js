@@ -109,3 +109,11 @@ export function changeUserCircle(leadUserId, supporterUserId, newCircle, accessT
         }
     });
 }
+
+export function getNotificationsForUser(userId, accessToken) {
+    return axios.get(`${baseUrl}/notifications/${userId}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}

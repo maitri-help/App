@@ -3,6 +3,8 @@ import { Platform, View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOp
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import Notification from '../components/Notification';
+import { getNotificationsForUser } from '../hooks/api';
+import { checkAuthentication } from '../authStorage';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -11,32 +13,39 @@ if (Platform.OS === 'android') {
 }
 
 export default function NotificationsScreen({ navigation }) {
-    const notificationsNew = [
-        // { id: 1, assignee: 'Monica Geller', title: `assigned to take out the dog`, time: '2 min ago', emoji: '🐶' },
-        // { id: 2, assignee: 'Chandler Bing', title: `can't take out the dog`, time: '4 hours ago', emoji: '🐶' },
-        // { id: 3, assignee: 'Joey Tribbiani', title: 'assigned to ride to the hospital', time: '3 days ago', emoji: '🚙' },
-    ];
-
-    const notificationsPending = [
-        // { id: 1, assignee: 'Rachel Green', title: `wants to join your circle`, time: '2 min ago', emoji: '✌️' },
-        // { id: 2, assignee: 'Phoebe Buffay', title: `wants to join your circle`, time: '4 hours ago', emoji: '✌️' },
-        // { id: 2, assignee: 'Gunther', title: `wants to join your circle`, time: '5 hours ago', emoji: '✌️' },
-    ];
-
-    const notificationsEarlier = [
-        // { id: 1, assignee: 'Ross Geller', title: `completed hospital Ride`, time: '4 days ago', emoji: '🚙' },
-        // { id: 2, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '5 days ago', emoji: '🐶' },
-        // { id: 3, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '6 days ago', emoji: '🐶' },
-        // { id: 4, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '7 days ago', emoji: '🐶' },
-        // { id: 5, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '8 days ago', emoji: '🐶' },
-    ];
-
+    const [notificationsNew, setNotificationsNew] = useState([]);
+    const [notificationsPending, setNotificationsPending] = useState([]);
+    const [notificationsEarlier, setNotificationsEarlier] = useState([]);
     const [showAllEarlier, setShowAllEarlier] = useState(false);
     const [listHeight, setListHeight] = useState(null);
 
     useEffect(() => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     }, [showAllEarlier]);
+
+    useEffect(() => {
+        async function fetchNotifications() {
+            try {
+                const userData = await checkAuthentication();
+                if (userData) {
+                    const response = await getNotificationsForUser(userData.userId, userData.accessToken);
+                    const notifications = response.data;
+
+                    const newNotifications = notifications.filter(n => !n.isRead && n.type !== 'pending');
+                    const pendingNotifications = notifications.filter(n => n.type === 'pending');
+                    const earlierNotifications = notifications.filter(n => n.isRead && n.type !== 'pending');
+
+                    setNotificationsNew(newNotifications);
+                    setNotificationsPending(pendingNotifications);
+                    setNotificationsEarlier(earlierNotifications);
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+            }
+        }
+
+        fetchNotifications();
+    }, []);
 
     const handleToggleShowAllEarlier = () => {
         setShowAllEarlier(!showAllEarlier);
@@ -62,7 +71,13 @@ export default function NotificationsScreen({ navigation }) {
                     <View style={stylesNotifications.notificationsGroupList}>
                         {notificationsNew.length > 0 ?
                             notificationsNew.map(notification => (
-                                <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
+                                <Notification
+                                    key={notification.notificationId}
+                                    assignee={`User ${notification.userId}`} // Replace with actual assignee if available
+                                    title={notification.message}
+                                    time={new Date(notification.dateTime).toLocaleString()}
+                                    emoji={'🔔'} // Replace with appropriate emoji
+                                />
                             ))
                             : (
                                 <View style={stylesNotifications.notificationsGroupEmpty}>
@@ -80,7 +95,14 @@ export default function NotificationsScreen({ navigation }) {
                             {notificationsPending.length > 0 ?
                                 notificationsPending.map((notification, index) => (
                                     index < 2 ?
-                                        <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} buttons />
+                                        <Notification
+                                            key={notification.notificationId}
+                                            assignee={`User ${notification.userId}`} // Replace with actual assignee if available
+                                            title={notification.message}
+                                            time={new Date(notification.dateTime).toLocaleString()}
+                                            emoji={'✌️'} // Replace with appropriate emoji
+                                            buttons
+                                        />
                                         : null
                                 ))
                                 : (
@@ -105,7 +127,13 @@ export default function NotificationsScreen({ navigation }) {
                             {notificationsEarlier.length > 0 ?
                                 notificationsEarlier.map((notification, index) => (
                                     index < 2 || showAllEarlier ?
-                                        <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
+                                        <Notification
+                                            key={notification.notificationId}
+                                            assignee={`User ${notification.userId}`} // Replace with actual assignee if available
+                                            title={notification.message}
+                                            time={new Date(notification.dateTime).toLocaleString()}
+                                            emoji={'🔔'} // Replace with appropriate emoji
+                                        />
                                         : null
                                 ))
                                 : (
