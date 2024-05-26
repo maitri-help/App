@@ -4,7 +4,7 @@ import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';
 import { useToast } from 'react-native-toast-notifications';
-import { modalServices } from '../data/ModalServices'; // Ensure this import points to the correct path
+import { modalServices } from '../data/ModalServices'; 
 
 export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox }) {
   const [isChecked, setIsChecked] = useState(task.status === 'done');
@@ -54,7 +54,7 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox 
   const isPersonal = task.circles && task.circles.length === 1 && task.circles[0].circleLevel === 'Personal';
 
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.7} onPress={handleClick}>
+    <TouchableOpacity style={[styles.container, isChecked && styles.greyedOut]} activeOpacity={0.7} onPress={handleClick}>
       <View style={styles.wrapper}>
         <View style={[styles.emojiWrapper, task.assignee ? { borderColor: task.assignee.color ? task.assignee.color : '#1C4837' } : '']}>
           {isPersonal ? (
@@ -69,17 +69,17 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox 
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={[styles.title, isChecked ? styles.textStriked : '']}>{task.title}</Text>
+          <Text style={[styles.title, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut]}>{task.title}</Text>
           {isPersonal ? (
-            <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>Just Me</Text>
+            <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut]}>Just Me</Text>
           ) : (
             task.assignee && (
-              <Text style={[styles.assignee, isChecked ? styles.textStriked : '']}>
+              <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut]}>
                 {`${task.assignee.firstName} ${task.assignee.lastName}`}
               </Text>
             )
           )}
-          {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '']}>
+          {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut]}>
             {formatDateTime(task)}
           </Text>}
         </View>
@@ -199,5 +199,8 @@ const styles = StyleSheet.create({
   checkboxIcon: {
     resizeMode: 'contain',
     color: '#fff',
+  },
+  greyedOut: {
+    color: '#B0B0B0',
   }
 });

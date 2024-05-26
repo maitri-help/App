@@ -186,7 +186,7 @@ export default function AssignmentsScreen({ navigation }) {
             const closest = new Date(filteredTasks[closestIndex].startDateTime);
             return Math.abs(selected - taskStartDate) < Math.abs(selected - closest) ? index : closestIndex;
         }, 0);
-    
+
         setIsProgrammaticScroll(true);
         flatListRef.current?.scrollToIndex({ index: closestIndex, animated: true });
     };
@@ -248,6 +248,13 @@ export default function AssignmentsScreen({ navigation }) {
     const filteredTasks = activeTab === 'Month'
         ? tasks.filter(task => isDateInRange(selectedDate, task.startDateTime, task.endDateTime))
         : tasks;
+
+    // Sort tasks to ensure done tasks are at the bottom
+    const sortedTasks = [...filteredTasks].sort((a, b) => {
+        if (a.status === 'done' && b.status !== 'done') return 1;
+        if (a.status !== 'done' && b.status === 'done') return -1;
+        return 0;
+    });
 
     const [locationPermissionNeeded, setLocationPermissionNeeded] = useState(false);
 
@@ -362,7 +369,7 @@ export default function AssignmentsScreen({ navigation }) {
                 ) : (
                     <FlatList 
                         contentContainerStyle={[styles.contentContainer, stylesCal.tasksWrapper]}
-                        data={filteredTasks}
+                        data={sortedTasks}
                         keyExtractor={(item) => item.taskId}
                         ref={flatListRef}
                         renderItem={({ item }) => (
@@ -384,7 +391,7 @@ export default function AssignmentsScreen({ navigation }) {
                         onScrollToIndexFailed={info => {
                             const wait = new Promise(resolve => setTimeout(resolve, 100));
                             wait.then(() => {
-                              if (info.index < tasks.length) {
+                              if (info.index < sortedTasks.length) {
                                   flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
                               }
                             });

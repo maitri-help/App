@@ -307,6 +307,8 @@ export default function HomeScreen({ navigation }) {
                 break;
         }
 
+        filteredTasks = filteredTasks.sort((a, b) => a.status === 'done' ? 1 : -1);
+
         return (
             <View style={stylesHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesHome.tasksScroll}>
