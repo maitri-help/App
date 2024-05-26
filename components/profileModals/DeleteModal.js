@@ -7,12 +7,30 @@ import {
 } from 'react-native';
 import Modal from '../../components/Modal';
 import styles from '../../Styles';
+import { deleteUser } from '../../hooks/api'; 
+import { checkAuthentication, clearUserData, clearAccessToken } from '../../authStorage'; 
 
-export default function DeleteModal({ visible, onClose, deleteAccount }) {
+export default function DeleteModal({ visible, onClose, navigation }) {
 
-  const handleDelete = () => {
-    deleteAccount();
-    onClose();
+  const handleDelete = async () => {
+    try {
+      const userData = await checkAuthentication();
+      if (userData) {
+        const accessToken = userData.accessToken;
+        const userId = userData.userId;
+        console.log(userData)
+        await deleteUser(userId, accessToken);
+        await clearUserData();
+        await clearAccessToken();
+        onClose();
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
   };
 
   return (

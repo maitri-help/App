@@ -125,3 +125,11 @@ export async function markAsRead(notificationId, accessToken) {
         }
     });
 }
+
+export async function deleteUser(userId, accessToken) {
+    return axios.delete(`${baseUrl}/users/${userId}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
