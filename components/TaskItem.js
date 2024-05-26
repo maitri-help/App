@@ -50,6 +50,7 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox 
     return service ? service.icon : null;
   };
 
+  const isDue = new Date(task.endDateTime) < new Date() && task.status === 'undone';
   const icon = findIcon();
   const isPersonal = task.circles && task.circles.length === 1 && task.circles[0].circleLevel === 'Personal';
 
@@ -69,17 +70,17 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox 
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={[styles.title, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut]}>{task.title}</Text>
+          <Text style={[styles.title, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue && styles.dueText]}>{task.title}</Text>
           {isPersonal ? (
-            <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut]}>Just Me</Text>
+            <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue && styles.dueText]}>Just Me</Text>
           ) : (
             task.assignee && (
-              <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut]}>
+              <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue && styles.dueText]}>
                 {`${task.assignee.firstName} ${task.assignee.lastName}`}
               </Text>
             )
           )}
-          {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut]}>
+          {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue && styles.dueText]}>
             {formatDateTime(task)}
           </Text>}
         </View>
@@ -202,5 +203,8 @@ const styles = StyleSheet.create({
   },
   greyedOut: {
     color: '#B0B0B0',
+  },
+  dueText: {
+    color: 'red',
   }
 });
