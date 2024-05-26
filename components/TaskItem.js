@@ -4,7 +4,7 @@ import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';
 import { useToast } from 'react-native-toast-notifications';
-import { modalServices } from '../data/ModalServices'; 
+import { modalServices } from '../data/ModalServices';
 
 export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox, onTaskStatusChange }) {
   const [isChecked, setIsChecked] = useState(task.status === 'done');
@@ -61,7 +61,7 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox,
         <View style={[styles.emojiWrapper, task.assignee ? { borderColor: task.assignee.color ? task.assignee.color : '#1C4837' } : '']}>
           {isPersonal ? (
             icon ? (
-              <Image source={icon} style={styles.emoji} />
+              <Image source={icon} style={styles.emojiIMG} />
             ) : (
               <Text style={styles.emoji}>👤</Text>
             )
@@ -136,11 +136,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   emoji: {
-    width: 28,
-    height: 28,
-    resizeMode: 'contain',
     fontSize: (Platform.OS === 'android') ? 24 : 28,
     textAlign: 'center',
+  },
+  emojiIMG: {
+    width: 26,
+    height: 26,
+    resizeMode: 'contain',
   },
   textContainer: {
     flexShrink: 1,
@@ -206,6 +208,6 @@ const styles = StyleSheet.create({
     color: '#B0B0B0',
   },
   dueText: {
-    color: 'red',
+    color: '#FF5454',
   }
 });

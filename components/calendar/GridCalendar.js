@@ -113,8 +113,9 @@ export default function GridCalendar({ setDate, selectedDate, currentYearProp, c
         const isInDateRange = currentDate >= taskStartDate && currentDate <= taskEndDate;
         const isStartDay = taskStartDate.getDate() === i;
         const isUnassignedTask = task.assignee === null;
+        const isPersonal = task.circles.some(circle => circle.circleLevel === 'Personal');
 
-        return isUnassignedTask && (isStartDay || isInDateRange);
+        return isUnassignedTask && (isStartDay || isInDateRange) && !isPersonal;
       });
 
       currentMonthDays.push({

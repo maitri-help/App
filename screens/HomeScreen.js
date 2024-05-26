@@ -174,6 +174,7 @@ export default function HomeScreen({ navigation }) {
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
+        fetchTasks();
     };
 
     const handleTaskItemClick = async (task) => {
