@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Image } from "react-native";
+import { modalServices } from '../data/ModalServices';
 
-export default function Task({ task, title, firstName, lastName, startTime, endTime, taskModal, onTaskItemClick }) {
+export default function Task({ task, title, firstName, lastName, startTime, endTime, taskModal, onTaskItemClick, category }) {
 
     const formatDateTime = () => {
         const formattedStartDateTime = formatDate(startTime);
@@ -13,6 +14,13 @@ export default function Task({ task, title, firstName, lastName, startTime, endT
         const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
         return new Date(date).toLocaleDateString('en-US', options);
     };
+
+    const findIcon = () => {
+        const service = modalServices.find(service => service.title === category);
+        return service ? service.icon : null;
+    };
+
+    const icon = findIcon();
 
     const handleClick = () => {
         onTaskItemClick(task);
@@ -27,6 +35,9 @@ export default function Task({ task, title, firstName, lastName, startTime, endT
                     <Text style={stylesTask.taskAssignee}>{firstName} {lastName}</Text>
                 )}
                 <Text style={stylesTask.taskTime}>{formatDateTime()}</Text>
+            </View>
+            <View style={[stylesTask.serviceIconWrapper]}>
+                {icon && <Image source={icon} style={stylesTask.serviceIcon} />}
             </View>
         </TouchableOpacity>
     );

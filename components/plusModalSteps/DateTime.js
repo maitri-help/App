@@ -57,7 +57,7 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
     };
 
     const handleEndTimeConfirm = (time) => {
-        const currentDate = endDate ? new Date(endDate) : new Date();
+        const currentDate = endDate ? new Date(endDate) : (startDate ? new Date(startDate) : new Date());
         const updatedDateTime = new Date(currentDate.setHours(time.getHours(), time.getMinutes()));
         setEndTime(updatedDateTime.toISOString());
         setEndTimePickerVisible(false);
@@ -90,7 +90,7 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
 
     const handleDateTimeSelect = () => {
         if (startDate) {
-            if (!endDate) {
+            if (!endDate && !startTime && !endTime) {
                 const formattedStartDateTime = new Date(startDate).toISOString();
                 const formattedEndDateTime = new Date(startDate).toISOString();
 
@@ -120,12 +120,18 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
 
                 setStartTime(startDateTimeLocal);
                 setEndTime(endDateTimeLocal);
+            } else if (!endDate && startTime && endTime) {
+                const formattedStartDateTime = new Date(startDate).toISOString();
+                const formattedEndDateTime = new Date(startDate).toISOString();
+
+                onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
             } else {
                 const formattedStartDateTime = new Date(startDate).toISOString();
                 const formattedEndDateTime = endDate ? new Date(endDate).toISOString() : null;
 
                 onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
             }
+
             reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1);
         } else {
             console.log('Please select a start date');
