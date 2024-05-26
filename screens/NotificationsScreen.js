@@ -3,9 +3,9 @@ import { Platform, View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOp
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import Notification from '../components/Notification';
-import { getNotificationsForUser, markAsRead } from '../hooks/api';
-import { checkAuthentication } from '../authStorage';
-import moment from 'moment';
+import { getAccessToken, checkAuthentication } from '../authStorage'; 
+import { getNotificationsForUser, markAsRead, changeUserCircle } from '../hooks/api'; 
+import { formatDistanceToNow } from 'date-fns';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -14,9 +14,7 @@ if (Platform.OS === 'android') {
 }
 
 export default function NotificationsScreen({ navigation }) {
-    const [notificationsNew, setNotificationsNew] = useState([]);
-    const [notificationsPending, setNotificationsPending] = useState([]);
-    const [notificationsEarlier, setNotificationsEarlier] = useState([]);
+    const [notifications, setNotifications] = useState([]);
     const [showAllEarlier, setShowAllEarlier] = useState(false);
     const [listHeight, setListHeight] = useState(null);
 
@@ -33,19 +31,7 @@ export default function NotificationsScreen({ navigation }) {
                     const userId = userData.userId;
 
                     const response = await getNotificationsForUser(userId, accessToken);
-                    const notifications = response.data;
-
-                    const newNotifications = notifications.filter(notification => !notification.isRead && notification.type !== 'New Supporter Request');
-                    const pendingNotifications = notifications.filter(notification => notification.type === 'New Supporter Request');
-                    const earlierNotifications = notifications.filter(notification => notification.isRead && notification.type !== 'New Supporter Request');
-
-                    setNotificationsNew(newNotifications);
-                    setNotificationsPending(pendingNotifications);
-                    setNotificationsEarlier(earlierNotifications);
-
-                    newNotifications.forEach(notification => {
-                        markAsRead(notification.notificationId, accessToken);
-                    });
+                    setNotifications(response.data);
                 }
             } catch (error) {
                 console.error('Error fetching notifications:', error);
@@ -55,6 +41,21 @@ export default function NotificationsScreen({ navigation }) {
         fetchNotifications();
     }, []);
 
+    const handleAccept = async (notification, circleName) => {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const accessToken = userData.accessToken;
+                console.log(circleName)
+                await changeUserCircle(notification.userId, notification.triggeredByUserId, circleName, accessToken);
+                await markAsRead(notification.notificationId, accessToken);
+                setNotifications(notifications.filter(n => n.notificationId !== notification.notificationId));
+            }
+        } catch (error) {
+            console.error('Error accepting request:', error.response.data);
+        }
+    };
+
     const handleToggleShowAllEarlier = () => {
         setShowAllEarlier(!showAllEarlier);
     };
@@ -63,8 +64,32 @@ export default function NotificationsScreen({ navigation }) {
         setListHeight(nativeEvent.layout.height);
     };
 
-    const formatTimeAgo = (dateTime) => {
-        return moment(dateTime).fromNow();
+    const renderNotifications = (filterFn, type) => {
+        const filteredNotifications = notifications.filter(filterFn);
+
+        if (filteredNotifications.length === 0) {
+            return (
+                <View style={stylesNotifications.notificationsGroupEmpty}>
+                    <Text style={stylesNotifications.notificationsGroupEmptyText}>
+                        {type === 'new' && 'No new notifications'}
+                        {type === 'pending' && 'No pending requests'}
+                        {type === 'earlier' && 'No older notifications'}
+                    </Text>
+                </View>
+            );
+        }
+
+        return filteredNotifications.map((notification, index) => (
+            <Notification
+                key={notification.notificationId}
+                title={notification.message}
+                assignee={notification.triggeredByUserName}
+                time={formatDistanceToNow(new Date(notification.dateTime))}
+                emoji={notification.taskCategory === 'dog' ? '🐶' : notification.taskCategory === 'car' ? '🚙' : '✌️'}
+                buttons={type === 'pending'}
+                onAccept={(circleName) => handleAccept(notification, circleName)}
+            />
+        ));
     };
 
     return (
@@ -81,21 +106,7 @@ export default function NotificationsScreen({ navigation }) {
                         <Text style={stylesNotifications.notificationsGroupTitleText}>New</Text>
                     </View>
                     <View style={stylesNotifications.notificationsGroupList}>
-                        {notificationsNew.length > 0 ?
-                            notificationsNew.map(notification => (
-                                <Notification
-                                    key={notification.notificationId}
-                                    assignee={`User ${notification.userId}`} 
-                                    title={notification.message}
-                                    time={formatTimeAgo(notification.dateTime)}
-                                    emoji={'🔔'} 
-                                />
-                            ))
-                            : (
-                                <View style={stylesNotifications.notificationsGroupEmpty}>
-                                    <Text style={stylesNotifications.notificationsGroupEmptyText}>No new notifications</Text>
-                                </View>
-                            )}
+                        {renderNotifications(n => !n.isRead && n.type !== 'pending_request', 'new')}
                     </View>
                 </View>
                 <View style={[stylesNotifications.notificationsGroup, styles.contentContainer]}>
@@ -104,31 +115,9 @@ export default function NotificationsScreen({ navigation }) {
                     </View>
                     <View style={{ overflow: 'hidden', marginBottom: 10 }}>
                         <View style={stylesNotifications.notificationsGroupList}>
-                            {notificationsPending.length > 0 ?
-                                notificationsPending.map((notification, index) => (
-                                    index < 2 ?
-                                        <Notification
-                                            key={notification.notificationId}
-                                            assignee={`User ${notification.userId}`} 
-                                            title={notification.message}
-                                            time={formatTimeAgo(notification.dateTime)}
-                                            emoji={'✌️'}
-                                            buttons
-                                        />
-                                        : null
-                                ))
-                                : (
-                                    <View style={stylesNotifications.notificationsGroupEmpty}>
-                                        <Text style={stylesNotifications.notificationsGroupEmptyText}>No pending requests</Text>
-                                    </View>
-                                )}
+                            {renderNotifications(n => n.type === 'pending_request' && !n.isRead, 'pending')}
                         </View>
                     </View>
-                    {notificationsPending.length > 2 && (
-                        <TouchableOpacity style={stylesNotifications.notificationsGroupLink} onPress={() => navigation.navigate('PendingRequest')}>
-                            <Text style={stylesNotifications.notificationsGroupLinkText}>See all</Text>
-                        </TouchableOpacity>
-                    )}
                 </View>
                 <View style={[styles.contentContainer, stylesNotifications.notificationsGroup, { borderBottomWidth: 0 }]}>
                     <View style={stylesNotifications.notificationsGroupTitle}>
@@ -136,26 +125,10 @@ export default function NotificationsScreen({ navigation }) {
                     </View>
                     <View style={{ overflow: 'hidden', marginBottom: 10, height: showAllEarlier ? 'auto' : listHeight }}>
                         <View onLayout={handleListLayout} style={stylesNotifications.notificationsGroupList}>
-                            {notificationsEarlier.length > 0 ?
-                                notificationsEarlier.map((notification, index) => (
-                                    index < 2 || showAllEarlier ?
-                                        <Notification
-                                            key={notification.notificationId}
-                                            assignee={`User ${notification.userId}`} // Replace with actual assignee if available
-                                            title={notification.message}
-                                            time={formatTimeAgo(notification.dateTime)}
-                                            emoji={'🔔'} // Replace with appropriate emoji
-                                        />
-                                        : null
-                                ))
-                                : (
-                                    <View style={stylesNotifications.notificationsGroupEmpty}>
-                                        <Text style={stylesNotifications.notificationsGroupEmptyText}>No older notifications</Text>
-                                    </View>
-                                )}
+                            {renderNotifications(n => n.isRead, 'earlier')}
                         </View>
                     </View>
-                    {notificationsEarlier.length > 2 && (
+                    {notifications.filter(n => n.isRead).length > 2 && (
                         <TouchableOpacity onPress={handleToggleShowAllEarlier} style={stylesNotifications.notificationsGroupLink}>
                             <Text style={stylesNotifications.notificationsGroupLinkText}>
                                 {showAllEarlier ? 'See less notifications' : 'See previous notifications'}
