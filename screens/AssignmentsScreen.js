@@ -163,7 +163,6 @@ export default function AssignmentsScreen({ navigation }) {
         const day = String(formattedDate.getDate()).padStart(2, '0');
         setSelectedDate(`${year}-${month}-${day}`);
         setWeekSelectedDate(`${year}-${month}-${day}`);
-        scrollToClosestDate(date);
     };
 
     const handleTabChange = (tab) => {
@@ -180,38 +179,6 @@ export default function AssignmentsScreen({ navigation }) {
 
     const handleTaskModalClose = () => {
         setTaskModalVisible(false);
-    };
-
-    const scrollToClosestDate = (date) => {
-        const selected = new Date(date);
-        if (filteredTasks.length === 0) return;
-        const closestIndex = filteredTasks.reduce((closestIndex, task, index) => {
-            const taskStartDate = new Date(task.startDateTime);
-            const closest = new Date(filteredTasks[closestIndex].startDateTime);
-            return Math.abs(selected - taskStartDate) < Math.abs(selected - closest) ? index : closestIndex;
-        }, 0);
-
-        setIsProgrammaticScroll(true);
-        flatListRef.current?.scrollToIndex({ index: closestIndex, animated: true });
-    };
-
-    const handleViewableItemsChanged = (viewableItem) => {
-        if (isProgrammaticScroll || !viewableItem.item) return;
-
-        const formattedDate = new Date(viewableItem.item.startDateTime);
-        const year = formattedDate.getFullYear();
-        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');
-        const day = String(formattedDate.getDate()).padStart(2, '0');
-        setSelectedDate(`${year}-${month}-${day}`);
-        setWeekSelectedDate(`${year}-${month}-${day}`);
-        setDefaultWeekDate(formattedDate);
-        setCurrentMonth(formattedDate.getMonth() + 1);
-        setCurrentYear(formattedDate.getFullYear());
-
-        if (activeTab === 'Week') {
-            const newWeekIndex = Math.floor((formattedDate - new Date(weekStartDate)) / (7 * 24 * 60 * 60 * 1000));
-            scrollViewRef.current?.scrollTo({ x: newWeekIndex * 350, animated: true });
-        }
     };
 
     async function fetchTasks() {
@@ -235,12 +202,6 @@ export default function AssignmentsScreen({ navigation }) {
     useEffect(() => {
         fetchTasks();
     }, []);
-
-    useEffect(() => {
-        if (tasks.length > 0 && filteredTasks.length > 0) {
-            scrollToClosestDate(selectedDate);
-        }
-    }, [tasks, selectedDate, filteredTasks]);
 
     const isDateInRange = (date, startDate, endDate) => {
         const d = new Date(date).setHours(0, 0, 0, 0);
@@ -386,12 +347,6 @@ export default function AssignmentsScreen({ navigation }) {
                                 onTaskStatusChange={handleTaskStatusChange}
                             />
                         )}
-                        onViewableItemsChanged={({ viewableItems }) => {
-                            if (viewableItems.length > 0) handleViewableItemsChanged(viewableItems[0]);
-                        }}
-                        viewabilityConfig={{
-                            itemVisiblePercentThreshold: 50,
-                        }}
                         onScrollBeginDrag={() => setIsProgrammaticScroll(false)}
                         onScrollToIndexFailed={info => {
                             const wait = new Promise(resolve => setTimeout(resolve, 100));

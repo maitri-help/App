@@ -75,7 +75,7 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
 
     const hideEndTimePicker = () => {
         setEndTimePickerVisible(false);
-    }
+    };
 
     useEffect(() => {
         if (propStartDate) {
@@ -87,14 +87,14 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
     }, [propStartDate, propEndDate]);
 
     const handleDateTimeSelect = () => {
-        if (startDate && endDate && startTime && endTime) {
+        if (startDate) {
             const formattedStartDateTime = new Date(startDate).toISOString();
-            const formattedEndDateTime = new Date(endDate).toISOString();
+            const formattedEndDateTime = endDate ? new Date(endDate).toISOString() : null;
 
             onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
             reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1);
         } else {
-            console.log('Please select both start and end date and time');
+            console.log('Please select a start date');
         }
     };
 

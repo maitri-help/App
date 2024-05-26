@@ -57,6 +57,11 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
     };
 
     const handleSubmit = async () => {
+        if (!taskName || !startDateTime) {
+            toast.show('Task name and start date are required.', { type: 'error' });
+            return;
+        }
+
         try {
             const accessToken = await getAccessToken();
 
@@ -67,11 +72,11 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
 
             const taskData = {
                 title: taskName,
-                description: description,
+                description: description || null,
                 circles: selectedCircle,
-                location: selectedLocation,
+                location: selectedLocation || null,
                 startDateTime: startDateTime,
-                endDateTime: endDateTime,
+                endDateTime: endDateTime || null,
                 category: selectedService.title,
             };
 
@@ -91,7 +96,7 @@ export default function FormFields({ selectedService, currentStep, setCurrentSte
             console.error("Error creating task:", error);
 
             if (error.response && error.response.status === 400) {
-                toast.show('All details must be set.', { type: 'error' });
+                toast.show('Error creating task. Please try again.', { type: 'error' });
             } else {
                 toast.show('Unsuccessful task creation', { type: 'error' });
             }
