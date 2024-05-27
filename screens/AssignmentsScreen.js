@@ -1,5 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Platform, Image, FlatList, Modal, Linking, AppState, ScrollView } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    SafeAreaView,
+    TouchableOpacity,
+    Animated,
+    Platform,
+    Image,
+    FlatList,
+    Modal,
+    Linking,
+    AppState,
+    ScrollView
+} from 'react-native';
 import styles from '../Styles';
 import TaskItem from '../components/TaskItem';
 import PlusModal from '../components/PlusModal';
@@ -33,11 +47,13 @@ export default function AssignmentsScreen({ navigation }) {
     const [tasks, setTasks] = useState([]);
     const [userId, setUserId] = useState(null);
 
-    const [taskModalSelectedCircle, setTaskModalSelectedCircle] = useState('Personal');
+    const [taskModalSelectedCircle, setTaskModalSelectedCircle] =
+        useState('Personal');
     const [taskModalTaskName, setTaskModalTaskName] = useState('');
     const [taskModalTaskId, setTaskModalTaskId] = useState('');
     const [taskModaldescription, setTaskModalDescription] = useState('');
-    const [taskModalSelectedLocation, setTaskModalSelectedLocation] = useState('');
+    const [taskModalSelectedLocation, setTaskModalSelectedLocation] =
+        useState('');
     const [taskModalStartDate, setTaskModalStartDate] = useState(null);
     const [taskModalEndDate, setTaskModalEndDate] = useState(null);
     const [taskModalStartTime, setTaskModalStartTime] = useState(null);
@@ -73,7 +89,7 @@ export default function AssignmentsScreen({ navigation }) {
     };
 
     const handleTaskStatusChange = () => {
-        fetchTasks(); 
+        fetchTasks();
     };
 
     const handleDayPressPlus = (day) => {
@@ -132,13 +148,13 @@ export default function AssignmentsScreen({ navigation }) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         } else {
             Animated.timing(overlayOpacity, {
                 toValue: 0,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         }
     }, [plusModalVisible, taskModalVisible]);
@@ -185,10 +201,10 @@ export default function AssignmentsScreen({ navigation }) {
         try {
             const userData = await checkAuthentication();
             if (userData) {
-                console.log('User Data:', userData);
-                console.log('Access token:', userData.accessToken);
-
-                const tasksResponse = await getTasksForUser(userData.userId, userData.accessToken);
+                const tasksResponse = await getTasksForUser(
+                    userData.userId,
+                    userData.accessToken
+                );
                 setUserId(userData.userId);
                 setTasks(tasksResponse.data);
             } else {
@@ -210,9 +226,16 @@ export default function AssignmentsScreen({ navigation }) {
         return d >= start && d <= end;
     };
 
-    const filteredTasks = activeTab === 'Month'
-        ? tasks.filter(task => isDateInRange(selectedDate, task.startDateTime, task.endDateTime))
-        : tasks;
+    const filteredTasks =
+        activeTab === 'Month'
+            ? tasks.filter((task) =>
+                  isDateInRange(
+                      selectedDate,
+                      task.startDateTime,
+                      task.endDateTime
+                  )
+              )
+            : tasks;
 
     // Sort tasks to ensure done tasks are at the bottom
     const sortedTasks = [...filteredTasks].sort((a, b) => {
@@ -221,7 +244,8 @@ export default function AssignmentsScreen({ navigation }) {
         return 0;
     });
 
-    const [locationPermissionNeeded, setLocationPermissionNeeded] = useState(false);
+    const [locationPermissionNeeded, setLocationPermissionNeeded] =
+        useState(false);
 
     const requestLocation = async () => {
         const permission = await Location.requestForegroundPermissionsAsync();
@@ -233,7 +257,9 @@ export default function AssignmentsScreen({ navigation }) {
         }
 
         const location = await Location.getCurrentPositionAsync({});
-        setDeviceLocation(`${location.coords.latitude},${location.coords.longitude}`);
+        setDeviceLocation(
+            `${location.coords.latitude},${location.coords.longitude}`
+        );
         console.log('LOCATION', location);
     };
 
@@ -244,22 +270,25 @@ export default function AssignmentsScreen({ navigation }) {
     const handleGoToSettings = () => {
         Linking.openSettings();
         setLocationPermissionNeeded(false);
-    }
+    };
 
     const appState = useRef(AppState.currentState);
     const [deviceLocation, setDeviceLocation] = useState(null);
 
     useEffect(() => {
-        const subscription = AppState.addEventListener('change', nextAppState => {
-            if (
-                appState.current.match(/inactive|background/) &&
-                nextAppState === 'active'
-            ) {
-                console.log('App has come to the foreground!');
-                requestLocation();
+        const subscription = AppState.addEventListener(
+            'change',
+            (nextAppState) => {
+                if (
+                    appState.current.match(/inactive|background/) &&
+                    nextAppState === 'active'
+                ) {
+                    console.log('App has come to the foreground!');
+                    requestLocation();
+                }
+                appState.current = nextAppState;
             }
-            appState.current = nextAppState;
-        });
+        );
 
         return () => {
             subscription.remove();
@@ -269,26 +298,63 @@ export default function AssignmentsScreen({ navigation }) {
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
-
                 <View style={stylesCal.calendarContainer}>
                     <View style={stylesCal.whiteSpace}></View>
-                    <View style={[styles.contentContainer, stylesCal.calendarWrapper]}>
+                    <View
+                        style={[
+                            styles.contentContainer,
+                            stylesCal.calendarWrapper
+                        ]}
+                    >
                         <View style={stylesCal.tabs}>
                             <TouchableOpacity
                                 activeOpacity={0.5}
-                                onPress={() => handleTabChange('Month')} style={[stylesCal.tab, activeTab === 'Month' ? stylesCal.tabActive : '']}>
-                                <Text style={[stylesCal.tabText, activeTab === 'Month' ? stylesCal.tabActiveText : '']}>Month</Text>
+                                onPress={() => handleTabChange('Month')}
+                                style={[
+                                    stylesCal.tab,
+                                    activeTab === 'Month'
+                                        ? stylesCal.tabActive
+                                        : ''
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        stylesCal.tabText,
+                                        activeTab === 'Month'
+                                            ? stylesCal.tabActiveText
+                                            : ''
+                                    ]}
+                                >
+                                    Month
+                                </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 activeOpacity={0.5}
-                                onPress={() => handleTabChange('Week')} style={[stylesCal.tab, activeTab === 'Week' ? stylesCal.tabActive : '']}>
-                                <Text style={[stylesCal.tabText, activeTab === 'Week' ? stylesCal.tabActiveText : '']}>Week</Text>
+                                onPress={() => handleTabChange('Week')}
+                                style={[
+                                    stylesCal.tab,
+                                    activeTab === 'Week'
+                                        ? stylesCal.tabActive
+                                        : ''
+                                ]}
+                            >
+                                <Text
+                                    style={[
+                                        stylesCal.tabText,
+                                        activeTab === 'Week'
+                                            ? stylesCal.tabActiveText
+                                            : ''
+                                    ]}
+                                >
+                                    Week
+                                </Text>
                             </TouchableOpacity>
                         </View>
 
                         <TouchableOpacity
                             onPress={handleTodayPress}
-                            style={stylesCal.todayWrapper}>
+                            style={stylesCal.todayWrapper}
+                        >
                             <Text style={stylesCal.today}>Today</Text>
                         </TouchableOpacity>
 
@@ -321,7 +387,10 @@ export default function AssignmentsScreen({ navigation }) {
                 {filteredTasks.length === 0 ? (
                     <View style={stylesCal.calendarEmpty}>
                         <View style={stylesCal.calendarEmptyImgWrapper}>
-                            <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesCal.calendarEmptyImg} />
+                            <Image
+                                source={require('../assets/img/tasks-placeholder.png')}
+                                style={stylesCal.calendarEmptyImg}
+                            />
                         </View>
                         <Text style={stylesCal.calendarEmptyText}>
                             Your list is empty
@@ -329,11 +398,17 @@ export default function AssignmentsScreen({ navigation }) {
                         <Text style={stylesCal.calendarEmptyTitle}>
                             Click here to add your first task
                         </Text>
-                        <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
+                        <Image
+                            source={require('../assets/img/purple-arrow-right.png')}
+                            style={stylesCal.calendarEmptyArrow}
+                        />
                     </View>
                 ) : (
-                    <FlatList 
-                        contentContainerStyle={[styles.contentContainer, stylesCal.tasksWrapper]}
+                    <FlatList
+                        contentContainerStyle={[
+                            styles.contentContainer,
+                            stylesCal.tasksWrapper
+                        ]}
                         data={sortedTasks}
                         keyExtractor={(item) => item.taskId}
                         ref={flatListRef}
@@ -348,14 +423,19 @@ export default function AssignmentsScreen({ navigation }) {
                             />
                         )}
                         onScrollBeginDrag={() => setIsProgrammaticScroll(false)}
-                        onScrollToIndexFailed={info => {
-                            const wait = new Promise(resolve => setTimeout(resolve, 100));
+                        onScrollToIndexFailed={(info) => {
+                            const wait = new Promise((resolve) =>
+                                setTimeout(resolve, 100)
+                            );
                             wait.then(() => {
-                              if (info.index < sortedTasks.length) {
-                                  flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
-                              }
+                                if (info.index < sortedTasks.length) {
+                                    flatListRef.current?.scrollToIndex({
+                                        index: info.index,
+                                        animated: true
+                                    });
+                                }
                             });
-                          }}
+                        }}
                     />
                 )}
 
@@ -368,11 +448,12 @@ export default function AssignmentsScreen({ navigation }) {
                         <PlusIcon color={'#fff'} width={28} height={28} />
                     </TouchableOpacity>
                 </View>
-
             </SafeAreaView>
 
             {(plusModalVisible || taskModalVisible) && (
-                <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+                <Animated.View
+                    style={[styles.overlay, { opacity: overlayOpacity }]}
+                />
             )}
 
             <PlusModal
@@ -432,18 +513,45 @@ export default function AssignmentsScreen({ navigation }) {
             />
 
             {locationPermissionNeeded && (
-                <Modal visible={locationPermissionNeeded} onRequestClose={() => console.log("close")} animationType='fade' transparent>
-                    <TouchableOpacity onPress={() => console.log("close")} style={stylesCal.innerModalContainer}>
+                <Modal
+                    visible={locationPermissionNeeded}
+                    onRequestClose={() => console.log('close')}
+                    animationType="fade"
+                    transparent
+                >
+                    <TouchableOpacity
+                        onPress={() => console.log('close')}
+                        style={stylesCal.innerModalContainer}
+                    >
                         <View style={stylesCal.innerModalContent}>
-                        <View style={stylesCal.innerModalTexts}>
-                            <Text style={stylesCal.innerModalTitle}>Please provide access for this app to the device's location.</Text>
-                            <Text style={stylesCal.innerModalSubtitle}>We need your location to position the map the closest to you as possible.</Text>
-                        </View>
-                        <View style={stylesCal.innerModalButtons}>
-                            <TouchableOpacity style={[stylesCal.innerModalButton, stylesCal.innerModalButtonRed]} onPress={handleGoToSettings}>
-                            <Text style={[stylesCal.innerModalButtonText, stylesCal.innerModalButtonRedText]}>Go to Settings</Text>
-                            </TouchableOpacity>
-                        </View>
+                            <View style={stylesCal.innerModalTexts}>
+                                <Text style={stylesCal.innerModalTitle}>
+                                    Please provide access for this app to the
+                                    device's location.
+                                </Text>
+                                <Text style={stylesCal.innerModalSubtitle}>
+                                    We need your location to position the map
+                                    the closest to you as possible.
+                                </Text>
+                            </View>
+                            <View style={stylesCal.innerModalButtons}>
+                                <TouchableOpacity
+                                    style={[
+                                        stylesCal.innerModalButton,
+                                        stylesCal.innerModalButtonRed
+                                    ]}
+                                    onPress={handleGoToSettings}
+                                >
+                                    <Text
+                                        style={[
+                                            stylesCal.innerModalButtonText,
+                                            stylesCal.innerModalButtonRedText
+                                        ]}
+                                    >
+                                        Go to Settings
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </TouchableOpacity>
                 </Modal>
@@ -455,7 +563,7 @@ export default function AssignmentsScreen({ navigation }) {
 const stylesCal = StyleSheet.create({
     calendarContainer: {
         position: 'relative',
-        zIndex: 2,
+        zIndex: 2
     },
     whiteSpace: {
         position: 'absolute',
@@ -465,24 +573,24 @@ const stylesCal = StyleSheet.create({
         height: 100,
         backgroundColor: '#fff',
         zIndex: 3,
-        marginBottom: -1,
+        marginBottom: -1
     },
     calendarScroll: {
         position: 'relative',
-        zIndex: 1,
+        zIndex: 1
     },
     calendarWrapper: {
         backgroundColor: '#fff',
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
-            height: 6,
+            height: 6
         },
         shadowOpacity: 0.08,
         shadowRadius: 8,
-        elevation: 14,
+        elevation: 14
     },
     tabs: {
         flexDirection: 'row',
@@ -492,23 +600,23 @@ const stylesCal = StyleSheet.create({
         borderColor: '#E5E5E5',
         gap: 15,
         paddingTop: 20,
-        paddingBottom: 18,
+        paddingBottom: 18
     },
     tab: {
         borderWidth: 1,
         borderColor: '#1C4837',
         paddingHorizontal: 12,
         paddingVertical: 4,
-        borderRadius: 20,
+        borderRadius: 20
     },
     tabActive: {
-        backgroundColor: '#1C4837',
+        backgroundColor: '#1C4837'
     },
     tabText: {
         color: '#1C4837',
         fontFamily: 'poppins-regular',
         fontSize: 13,
-        lineHeight: 18,
+        lineHeight: 18
     },
     tabActiveText: {
         color: '#fff'
@@ -516,19 +624,19 @@ const stylesCal = StyleSheet.create({
     todayWrapper: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        paddingVertical: 10,
+        paddingVertical: 10
     },
     today: {
         color: '#737373',
         fontFamily: 'poppins-regular',
         fontSize: 13,
         lineHeight: 18,
-        textDecorationLine: 'underline',
+        textDecorationLine: 'underline'
     },
     tasksWrapper: {
         paddingTop: 20,
         paddingBottom: 30,
-        gap: 15,
+        gap: 15
     },
     floatingButtonWrapper: {
         position: 'absolute',
@@ -536,22 +644,22 @@ const stylesCal = StyleSheet.create({
         right: 0,
         flexDirection: 'row',
         alignItems: 'flex-end',
-        zIndex: 5,
+        zIndex: 5
     },
     calendarEmpty: {
         flex: 1,
         justifyContent: 'flex-end',
         position: 'relative',
-        paddingBottom: 35,
+        paddingBottom: 35
     },
     calendarEmptyImgWrapper: {
-        marginVertical: 20,
+        marginVertical: 20
     },
     calendarEmptyImg: {
         width: 180,
         height: 150,
         resizeMode: 'contain',
-        alignSelf: 'center',
+        alignSelf: 'center'
     },
     calendarEmptyText: {
         textAlign: 'center',
@@ -559,14 +667,14 @@ const stylesCal = StyleSheet.create({
         fontFamily: 'poppins-regular',
         fontSize: 14,
         lineHeight: 18,
-        marginBottom: 5,
+        marginBottom: 5
     },
     calendarEmptyTitle: {
         textAlign: 'center',
         color: '#000',
         fontFamily: 'poppins-medium',
         fontSize: 14,
-        lineHeight: 18,
+        lineHeight: 18
     },
     calendarEmptyArrow: {
         position: 'absolute',
@@ -581,68 +689,68 @@ const stylesCal = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)',
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-      },
-      innerModalContent: {
+        alignItems: 'center'
+    },
+    innerModalContent: {
         backgroundColor: '#fff',
         borderRadius: 20,
         maxWidth: 350,
         paddingHorizontal: 20,
-        paddingVertical: 30,
-      },
-      innerModalTexts: {
-        marginBottom: 20,
-      },
-      innerModalTitle: {
+        paddingVertical: 30
+    },
+    innerModalTexts: {
+        marginBottom: 20
+    },
+    innerModalTitle: {
         color: '#000',
         fontSize: 14,
         fontFamily: 'poppins-regular',
         lineHeight: 16,
         textAlign: 'center',
         marginBottom: 5
-      },
-      innerModalSubtitle: {
+    },
+    innerModalSubtitle: {
         color: '#000',
         fontSize: 12,
         fontFamily: 'poppins-regular',
         lineHeight: 16,
-        textAlign: 'center',
-      },
-      innerModalButtons: {
+        textAlign: 'center'
+    },
+    innerModalButtons: {
         flexDirection: 'row',
         gap: 10,
-        justifyContent: 'center',
-      },
-      innerModalButton: {
+        justifyContent: 'center'
+    },
+    innerModalButton: {
         alignItems: 'center',
         minWidth: 125,
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 16,
-        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
-          width: 0,
-          height: 3,
+            width: 0,
+            height: 3
         },
         shadowOpacity: 0.1,
         shadowRadius: 6,
-        elevation: 8,
-      },
-      innerModalButtonRed: {
-        backgroundColor: '#FF7070',
-      },
-      innerModalButtonWhite: {
-        backgroundColor: '#fff',
-      },
-      innerModalButtonText: {
+        elevation: 8
+    },
+    innerModalButtonRed: {
+        backgroundColor: '#FF7070'
+    },
+    innerModalButtonWhite: {
+        backgroundColor: '#fff'
+    },
+    innerModalButtonText: {
         fontSize: 14,
         fontFamily: 'poppins-medium',
-        lineHeight: 18,
-      },
-      innerModalButtonRedText: {
-        color: '#fff',
-      },
-      innerModalButtonWhiteText: {
-        color: '#000',
-      },
+        lineHeight: 18
+    },
+    innerModalButtonRedText: {
+        color: '#fff'
+    },
+    innerModalButtonWhiteText: {
+        color: '#000'
+    }
 });

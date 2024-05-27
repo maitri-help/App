@@ -41,7 +41,10 @@ export const clearUserData = async () => {
 
 export const setOnboardingCompleted = async (isCompleted) => {
     try {
-        await AsyncStorage.setItem('onboardingCompleted', JSON.stringify(isCompleted));
+        await AsyncStorage.setItem(
+            'onboardingCompleted',
+            JSON.stringify(isCompleted)
+        );
         console.log('Onboarding completion status stored successfully');
     } catch (error) {
         console.error('Error storing onboarding completion status:', error);
@@ -50,10 +53,15 @@ export const setOnboardingCompleted = async (isCompleted) => {
 
 export const getOnboardingCompleted = async () => {
     try {
-        const onboardingCompletedString = await AsyncStorage.getItem('onboardingCompleted');
+        const onboardingCompletedString = await AsyncStorage.getItem(
+            'onboardingCompleted'
+        );
         if (onboardingCompletedString !== null) {
             const isCompleted = JSON.parse(onboardingCompletedString);
-            console.log('Onboarding completion status retrieved successfully:', isCompleted);
+            console.log(
+                'Onboarding completion status retrieved successfully:',
+                isCompleted
+            );
             return isCompleted;
         } else {
             console.log('No onboarding completion status found');
@@ -77,7 +85,6 @@ export const clearOnboardingCompleted = async () => {
 export const storeAccessToken = async (accessToken) => {
     try {
         await AsyncStorage.setItem('accessToken', accessToken);
-        console.log('Access token stored successfully');
     } catch (error) {
         console.error('Error storing access token:', error);
     }
@@ -87,7 +94,6 @@ export const getAccessToken = async () => {
     try {
         const accessToken = await AsyncStorage.getItem('accessToken');
         if (accessToken !== null) {
-            console.log('Access token retrieved successfully:', accessToken);
             return accessToken;
         } else {
             console.log('No access token found');
@@ -134,7 +140,6 @@ export const checkAuthentication = async () => {
             });
             const userData = response.data;
             userData.accessToken = accessToken;
-            console.log('Authentication response:', userData);
             return userData;
         } else {
             return null;

@@ -1,62 +1,75 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, Animated } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    SafeAreaView,
+    TouchableOpacity,
+    ScrollView,
+    Image,
+    Animated
+} from 'react-native';
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import CustomBox from '../components/CustomBox';
 import TaskItem from '../components/TaskItem';
 import { getTasksForUser } from '../hooks/api';
-import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
+import {
+    checkAuthentication,
+    clearUserData,
+    clearAccessToken
+} from '../authStorage';
 import TaskModal from '../components/TaskModal';
 
 const quotes = [
-    "Remember to breathe today.",
+    'Remember to breathe today.',
     "Don't be afraid to ask for help when you need it.",
-    "Your feelings are valid. Go easy on yourself.",
-    "Acknowledge your feelings, feel them, but don’t become them.",
-    "Practice self-care daily, a small act of kindness to yourself can go a long way.",
-    "Try journaling to process your thoughts and track your progress.",
-    "Be patient with yourself. Healing takes time.",
+    'Your feelings are valid. Go easy on yourself.',
+    'Acknowledge your feelings, feel them, but don’t become them.',
+    'Practice self-care daily, a small act of kindness to yourself can go a long way.',
+    'Try journaling to process your thoughts and track your progress.',
+    'Be patient with yourself. Healing takes time.',
     "Focus on what you can control, and try to let go of what you can't.",
     "You don't have to be anyone else's hero. Be your own hero - whatever that means to you!",
-    "Reach out to a loved one in a time of need, they’re just a phone call or text away!",
-    "Forgive yourself. Forgive your body. Forgive your past mistakes and future decisions.",
-    "Knowing when to take a break is a strength, not a weakness.",
-    "There’s no shame in taking something for pain to help your body help you heal.",
-    "You are allowed to talk to the people you love about things that are not the situation you are in."
+    'Reach out to a loved one in a time of need, they’re just a phone call or text away!',
+    'Forgive yourself. Forgive your body. Forgive your past mistakes and future decisions.',
+    'Knowing when to take a break is a strength, not a weakness.',
+    'There’s no shame in taking something for pain to help your body help you heal.',
+    'You are allowed to talk to the people you love about things that are not the situation you are in.'
 ];
 
 const motivationalQuotes = [
-    "In the middle of difficulty lies opportunity. - Albert Einstein",
-    "Difficult roads often lead to beautiful destinations. - Unknown",
-    "When everything seems to be going against you, remember that the airplane takes off against the wind, not with it. - Henry Ford",
-    "The only way to make sense out of change is to plunge into it, move with it, and join the dance. - Alan Watts",
-    "Tough times never last, but tough people do. - Robert H. Schuller",
+    'In the middle of difficulty lies opportunity. - Albert Einstein',
+    'Difficult roads often lead to beautiful destinations. - Unknown',
+    'When everything seems to be going against you, remember that the airplane takes off against the wind, not with it. - Henry Ford',
+    'The only way to make sense out of change is to plunge into it, move with it, and join the dance. - Alan Watts',
+    'Tough times never last, but tough people do. - Robert H. Schuller',
     "It's not the load that breaks you down, it's the way you carry it. - Lou Holtz",
     "Believe you can and you're halfway there. - Theodore Roosevelt",
-    "The comeback is always stronger than the setback. - Unknown",
-    "Fall down seven times, stand up eight. - Japanese Proverb",
-    "Sometimes the darkest challenges bring the brightest blessings. - Unknown",
-    "Every storm runs out of rain. - Maya Angelou",
-    "Adversity introduces a man to himself. - Albert Einstein",
-    "Challenges are what make life interesting and overcoming them is what makes life meaningful. - Joshua J. Marine",
+    'The comeback is always stronger than the setback. - Unknown',
+    'Fall down seven times, stand up eight. - Japanese Proverb',
+    'Sometimes the darkest challenges bring the brightest blessings. - Unknown',
+    'Every storm runs out of rain. - Maya Angelou',
+    'Adversity introduces a man to himself. - Albert Einstein',
+    'Challenges are what make life interesting and overcoming them is what makes life meaningful. - Joshua J. Marine',
     "Stars can't shine without darkness. - Unknown",
-    "The wound is the place where the light enters you. - Rumi",
-    "You were given this life because you are strong enough to live it. - Unknown",
-    "When you come out of the storm, you won’t be the same person who walked in. - Haruki Murakami",
-    "Even the darkest night will end and the sun will rise. - Victor Hugo",
-    "The human spirit is stronger than anything that can happen to it. - C.C. Scott",
-    "The gem cannot be polished without friction, nor man perfected without trials. - Chinese Proverb",
+    'The wound is the place where the light enters you. - Rumi',
+    'You were given this life because you are strong enough to live it. - Unknown',
+    'When you come out of the storm, you won’t be the same person who walked in. - Haruki Murakami',
+    'Even the darkest night will end and the sun will rise. - Victor Hugo',
+    'The human spirit is stronger than anything that can happen to it. - C.C. Scott',
+    'The gem cannot be polished without friction, nor man perfected without trials. - Chinese Proverb',
     "Strength grows in the moments when you think you can't go on but you keep going anyway. - Unknown",
-    "The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela",
-    "What lies behind us and what lies before us are tiny matters compared to what lies within us. - Ralph Waldo Emerson",
-    "No matter how hard the past, you can always begin again. - Buddha",
-    "Out of difficulties grow miracles. - Jean de La Bruyère",
-    "The greater the obstacle, the more glory in overcoming it. - Molière",
+    'The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela',
+    'What lies behind us and what lies before us are tiny matters compared to what lies within us. - Ralph Waldo Emerson',
+    'No matter how hard the past, you can always begin again. - Buddha',
+    'Out of difficulties grow miracles. - Jean de La Bruyère',
+    'The greater the obstacle, the more glory in overcoming it. - Molière',
     "Life isn't about waiting for the storm to pass, it's about learning to dance in the rain. - Vivian Greene",
-    "A smooth sea never made a skilled sailor. - Franklin D. Roosevelt",
-    "Sometimes the bad things that happen in our lives put us directly on the path to the best things that will ever happen to us. - Unknown",
+    'A smooth sea never made a skilled sailor. - Franklin D. Roosevelt',
+    'Sometimes the bad things that happen in our lives put us directly on the path to the best things that will ever happen to us. - Unknown',
     "Strength doesn't come from what you can do. It comes from overcoming the things you once thought you couldn't. - Rikki Rogers",
-    "Life is 10% what happens to us and 90% how we react to it. - Charles R. Swindoll"
+    'Life is 10% what happens to us and 90% how we react to it. - Charles R. Swindoll'
 ];
 
 export default function HomeScreen({ navigation }) {
@@ -69,11 +82,13 @@ export default function HomeScreen({ navigation }) {
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
-    const [taskModalSelectedCircle, setTaskModalSelectedCircle] = useState('Personal');
+    const [taskModalSelectedCircle, setTaskModalSelectedCircle] =
+        useState('Personal');
     const [taskModalTaskName, setTaskModalTaskName] = useState('');
     const [taskModalTaskId, setTaskModalTaskId] = useState('');
     const [taskModaldescription, setTaskModalDescription] = useState('');
-    const [taskModalSelectedLocation, setTaskModalSelectedLocation] = useState('');
+    const [taskModalSelectedLocation, setTaskModalSelectedLocation] =
+        useState('');
     const [taskModalStartDate, setTaskModalStartDate] = useState(null);
     const [taskModalEndDate, setTaskModalEndDate] = useState(null);
     const [taskModalStartTime, setTaskModalStartTime] = useState(null);
@@ -93,7 +108,9 @@ export default function HomeScreen({ navigation }) {
         };
 
         const selectRandomMotivationalQuote = () => {
-            const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
+            const randomIndex = Math.floor(
+                Math.random() * motivationalQuotes.length
+            );
             setRandomMotivationalQuote(motivationalQuotes[randomIndex]);
         };
 
@@ -106,7 +123,6 @@ export default function HomeScreen({ navigation }) {
             try {
                 const userData = await checkAuthentication();
                 if (userData) {
-                    console.log('User data:', userData);
                     setFirstName(userData.firstName);
 
                     const currentHour = new Date().getHours();
@@ -125,7 +141,7 @@ export default function HomeScreen({ navigation }) {
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'Login' }]
-                })
+                });
             }
         }
         fetchUserData();
@@ -135,17 +151,17 @@ export default function HomeScreen({ navigation }) {
         try {
             const userData = await checkAuthentication();
             if (userData) {
-                console.log('User Data:', userData);
-                console.log('Access token:', userData.accessToken);
-
-                const tasksResponse = await getTasksForUser(userData.userId, userData.accessToken);
+                const tasksResponse = await getTasksForUser(
+                    userData.userId,
+                    userData.accessToken
+                );
                 setTasks(tasksResponse.data);
             } else {
                 console.error('No user data found');
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'Login' }]
-                })
+                });
             }
         } catch (error) {
             console.error('Error fetching tasks:', error);
@@ -161,13 +177,13 @@ export default function HomeScreen({ navigation }) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         } else {
             Animated.timing(overlayOpacity, {
                 toValue: 0,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         }
     }, [taskModalVisible]);
@@ -228,22 +244,45 @@ export default function HomeScreen({ navigation }) {
                 case 'All':
                     return (
                         <View style={stylesHome.tasksContainer}>
-                            <ScrollView contentContainerStyle={stylesHome.tasksScrollEmpty}>
-                                <View style={[styles.contentContainer, stylesHome.tasksEmpty]}>
+                            <ScrollView
+                                contentContainerStyle={
+                                    stylesHome.tasksScrollEmpty
+                                }
+                            >
+                                <View
+                                    style={[
+                                        styles.contentContainer,
+                                        stylesHome.tasksEmpty
+                                    ]}
+                                >
                                     <View style={stylesHome.tasksTop}>
                                         <Text style={stylesHome.tasksWelcome}>
                                             Welcome to Maitri!
                                         </Text>
-                                        <View style={stylesHome.tasksImgWrapper}>
-                                            <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesHome.tasksImg} />
+                                        <View
+                                            style={stylesHome.tasksImgWrapper}
+                                        >
+                                            <Image
+                                                source={require('../assets/img/tasks-placeholder.png')}
+                                                style={stylesHome.tasksImg}
+                                            />
                                         </View>
                                     </View>
                                     <View style={stylesHome.tasksBottom}>
-                                        <Text style={stylesHome.tasksDescription}>
+                                        <Text
+                                            style={stylesHome.tasksDescription}
+                                        >
                                             Click here To add your first task
                                         </Text>
-                                        <View style={stylesHome.tasksArrowImgWrapper}>
-                                            <Image source={require('../assets/img/purple-arrow-down.png')} style={stylesHome.tasksArrowImg} />
+                                        <View
+                                            style={
+                                                stylesHome.tasksArrowImgWrapper
+                                            }
+                                        >
+                                            <Image
+                                                source={require('../assets/img/purple-arrow-down.png')}
+                                                style={stylesHome.tasksArrowImg}
+                                            />
                                         </View>
                                     </View>
                                 </View>
@@ -253,16 +292,39 @@ export default function HomeScreen({ navigation }) {
                 case 'Unassigned':
                     return (
                         <View style={stylesHome.tasksContainer}>
-                            <ScrollView contentContainerStyle={stylesHome.tasksScrollEmpty}>
-                                <View style={[styles.contentContainer, stylesHome.tasksEmpty]}>
-                                    <View style={stylesHome.unassignedContainer}>
+                            <ScrollView
+                                contentContainerStyle={
+                                    stylesHome.tasksScrollEmpty
+                                }
+                            >
+                                <View
+                                    style={[
+                                        styles.contentContainer,
+                                        stylesHome.tasksEmpty
+                                    ]}
+                                >
+                                    <View
+                                        style={stylesHome.unassignedContainer}
+                                    >
                                         <View style={stylesHome.textWrapper}>
-                                            <Text style={[styles.text, stylesHome.text]}>
+                                            <Text
+                                                style={[
+                                                    styles.text,
+                                                    stylesHome.text
+                                                ]}
+                                            >
                                                 All tasks have been assigned
                                             </Text>
                                         </View>
-                                        <View style={stylesHome.illustrationWrapper}>
-                                            <Image source={require('../assets/img/mimi-illustration.png')} style={stylesHome.illustration} />
+                                        <View
+                                            style={
+                                                stylesHome.illustrationWrapper
+                                            }
+                                        >
+                                            <Image
+                                                source={require('../assets/img/mimi-illustration.png')}
+                                                style={stylesHome.illustration}
+                                            />
                                         </View>
                                     </View>
                                 </View>
@@ -272,19 +334,42 @@ export default function HomeScreen({ navigation }) {
                 case 'Personal':
                     return (
                         <View style={stylesHome.tasksContainer}>
-                            <ScrollView contentContainerStyle={stylesHome.tasksScrollEmpty}>
-                                <View style={[styles.contentContainer, stylesHome.tasksEmpty]}>
+                            <ScrollView
+                                contentContainerStyle={
+                                    stylesHome.tasksScrollEmpty
+                                }
+                            >
+                                <View
+                                    style={[
+                                        styles.contentContainer,
+                                        stylesHome.tasksEmpty
+                                    ]}
+                                >
                                     <View style={stylesHome.tasksPersonalTop}>
-                                        <Text style={[styles.text, stylesHome.text]}>
+                                        <Text
+                                            style={[
+                                                styles.text,
+                                                stylesHome.text
+                                            ]}
+                                        >
                                             You have no personal tasks yet
                                         </Text>
                                     </View>
                                     <View style={stylesHome.tasksBottom}>
-                                        <Text style={stylesHome.tasksDescription}>
+                                        <Text
+                                            style={stylesHome.tasksDescription}
+                                        >
                                             Click here To add your first task
                                         </Text>
-                                        <View style={stylesHome.tasksArrowImgWrapper}>
-                                            <Image source={require('../assets/img/purple-arrow-down.png')} style={stylesHome.tasksArrowImg} />
+                                        <View
+                                            style={
+                                                stylesHome.tasksArrowImgWrapper
+                                            }
+                                        >
+                                            <Image
+                                                source={require('../assets/img/purple-arrow-down.png')}
+                                                style={stylesHome.tasksArrowImg}
+                                            />
                                         </View>
                                     </View>
                                 </View>
@@ -299,21 +384,27 @@ export default function HomeScreen({ navigation }) {
         let filteredTasks = tasks;
         switch (activeTab) {
             case 'Unassigned':
-                filteredTasks = tasks.filter(task => !task.assignee);
+                filteredTasks = tasks.filter((task) => !task.assignee);
                 break;
             case 'Personal':
-                filteredTasks = tasks.filter(task => task.circles.some(circle => circle.circleLevel === 'Personal'));
+                filteredTasks = tasks.filter((task) =>
+                    task.circles.some(
+                        (circle) => circle.circleLevel === 'Personal'
+                    )
+                );
                 break;
             default:
                 break;
         }
 
-        filteredTasks = filteredTasks.sort((a, b) => a.status === 'done' ? 1 : -1);
+        filteredTasks = filteredTasks.sort((a, b) =>
+            a.status === 'done' ? 1 : -1
+        );
 
         return (
             <View style={stylesHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesHome.tasksScroll}>
-                    {filteredTasks.map(task => (
+                    {filteredTasks.map((task) => (
                         <TaskItem
                             key={task.taskId}
                             task={task}
@@ -330,14 +421,22 @@ export default function HomeScreen({ navigation }) {
         <>
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.topBar}>
-                    <Text style={stylesHome.greetingsText}>{greetingText} {firstName}!</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={stylesHome.bellWrapper}>
+                    <Text style={stylesHome.greetingsText}>
+                        {greetingText} {firstName}!
+                    </Text>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Notifications')}
+                        style={stylesHome.bellWrapper}
+                    >
                         <BellIcon style={stylesHome.bellIcon} />
                         {/* <View style={stylesHome.indicator}></View> */}
                     </TouchableOpacity>
                 </View>
                 <View style={stylesHome.boxesContainer}>
-                    <ScrollView horizontal={true} style={stylesHome.boxesScroll}>
+                    <ScrollView
+                        horizontal={true}
+                        style={stylesHome.boxesScroll}
+                    >
                         <View style={{ marginLeft: 15 }} />
                         {/* <CustomBox
                         title="Rachel Green"
@@ -361,7 +460,13 @@ export default function HomeScreen({ navigation }) {
                     /> */}
                         <CustomBox
                             title="Nothing to do?"
-                            buttons={[{ title: 'Add a new task', onPress: (() => navigation.navigate('Assignments')) }]}
+                            buttons={[
+                                {
+                                    title: 'Add a new task',
+                                    onPress: () =>
+                                        navigation.navigate('Assignments')
+                                }
+                            ]}
                             bgColor="#E5F5E3"
                             bgImgColor="#D6EFD2"
                             bgImg={4}
@@ -379,7 +484,15 @@ export default function HomeScreen({ navigation }) {
                         />
                         <CustomBox
                             title="Come add family & friends to your circles"
-                            buttons={[{ title: 'Add a new person', bgColor: '#fff', textColor: '#000', onPress: (() => navigation.navigate('Circles')) }]}
+                            buttons={[
+                                {
+                                    title: 'Add a new person',
+                                    bgColor: '#fff',
+                                    textColor: '#000',
+                                    onPress: () =>
+                                        navigation.navigate('Circles')
+                                }
+                            ]}
                             bgColor="#FFE8D7"
                             bgImgColor="#FFD8BC"
                             bgImg={2}
@@ -388,15 +501,58 @@ export default function HomeScreen({ navigation }) {
                     </ScrollView>
                 </View>
 
-                <View style={[stylesHome.tabsContainer, styles.contentContainer]}>
-                    <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesHome.tab, activeTab === 'All' && stylesHome.activeTab]}>
-                        <Text style={[stylesHome.tabText, activeTab === 'All' && stylesHome.activeTabText]}>All tasks</Text>
+                <View
+                    style={[stylesHome.tabsContainer, styles.contentContainer]}
+                >
+                    <TouchableOpacity
+                        onPress={() => handleTabPress('All')}
+                        style={[
+                            stylesHome.tab,
+                            activeTab === 'All' && stylesHome.activeTab
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                stylesHome.tabText,
+                                activeTab === 'All' && stylesHome.activeTabText
+                            ]}
+                        >
+                            All tasks
+                        </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('Unassigned')} style={[stylesHome.tab, activeTab === 'Unassigned' && stylesHome.activeTab]}>
-                        <Text style={[stylesHome.tabText, activeTab === 'Unassigned' && stylesHome.activeTabText]}>Unassigned</Text>
+                    <TouchableOpacity
+                        onPress={() => handleTabPress('Unassigned')}
+                        style={[
+                            stylesHome.tab,
+                            activeTab === 'Unassigned' && stylesHome.activeTab
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                stylesHome.tabText,
+                                activeTab === 'Unassigned' &&
+                                    stylesHome.activeTabText
+                            ]}
+                        >
+                            Unassigned
+                        </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('Personal')} style={[stylesHome.tab, activeTab === 'Personal' && stylesHome.activeTab]}>
-                        <Text style={[stylesHome.tabText, activeTab === 'Personal' && stylesHome.activeTabText]}>Personal</Text>
+                    <TouchableOpacity
+                        onPress={() => handleTabPress('Personal')}
+                        style={[
+                            stylesHome.tab,
+                            activeTab === 'Personal' && stylesHome.activeTab
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                stylesHome.tabText,
+                                activeTab === 'Personal' &&
+                                    stylesHome.activeTabText
+                            ]}
+                        >
+                            Personal
+                        </Text>
                     </TouchableOpacity>
                 </View>
 
@@ -405,8 +561,10 @@ export default function HomeScreen({ navigation }) {
                 </View>
             </SafeAreaView>
 
-            {(taskModalVisible) && (
-                <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+            {taskModalVisible && (
+                <Animated.View
+                    style={[styles.overlay, { opacity: overlayOpacity }]}
+                />
             )}
 
             <TaskModal
@@ -446,7 +604,6 @@ export default function HomeScreen({ navigation }) {
                 setIsEditable={setIsEditable}
                 onTaskCreated={() => fetchTasks()}
             />
-
         </>
     );
 }
@@ -454,7 +611,7 @@ export default function HomeScreen({ navigation }) {
 const stylesHome = StyleSheet.create({
     greetingsText: {
         fontSize: 18,
-        fontFamily: 'poppins-medium',
+        fontFamily: 'poppins-medium'
     },
     bellWrapper: {
         position: 'relative',
@@ -463,12 +620,12 @@ const stylesHome = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginHorizontal: -5,
-        marginVertical: -5,
+        marginVertical: -5
     },
     bellIcon: {
         width: 20,
         height: 20,
-        color: '#000',
+        color: '#000'
     },
     indicator: {
         backgroundColor: '#E91145',
@@ -477,16 +634,16 @@ const stylesHome = StyleSheet.create({
         borderRadius: 4,
         position: 'absolute',
         bottom: 4,
-        right: 1,
+        right: 1
     },
     boxesScroll: {
-        paddingVertical: 20,
+        paddingVertical: 20
     },
     tabsContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         gap: 15,
-        marginVertical: 10,
+        marginVertical: 10
     },
     tab: {
         paddingHorizontal: 10,
@@ -494,97 +651,97 @@ const stylesHome = StyleSheet.create({
         borderColor: '#1C4837',
         borderWidth: 1,
         borderRadius: 20,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     activeTab: {
-        backgroundColor: '#1C4837',
+        backgroundColor: '#1C4837'
     },
     tabText: {
         color: '#000',
         fontFamily: 'poppins-regular',
         fontSize: 13,
-        lineHeight: 17,
+        lineHeight: 17
     },
     activeTabText: {
-        color: '#fff',
+        color: '#fff'
     },
     tabsContentContainer: {
-        flex: 1,
+        flex: 1
     },
     tasksContainer: {
-        flex: 1,
+        flex: 1
     },
     tasksScroll: {
         gap: 15,
         paddingHorizontal: 25,
         paddingTop: 10,
-        paddingBottom: 30,
+        paddingBottom: 30
     },
     tasksScrollEmpty: {
         flex: 1,
         paddingTop: 10,
-        paddingHorizontal: 25,
+        paddingHorizontal: 25
     },
     tasksEmpty: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-end'
     },
     tasks: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-start'
     },
     tasksWelcome: {
         textAlign: 'center',
         fontSize: 20,
         fontFamily: 'poppins-bold',
-        marginBottom: 15,
+        marginBottom: 15
     },
     tasksImgWrapper: {
         alignItems: 'center',
-        marginBottom: 15,
+        marginBottom: 15
     },
     tasksImg: {
         width: 150,
         height: 110,
-        resizeMode: 'contain',
+        resizeMode: 'contain'
     },
     tasksDescription: {
         textAlign: 'center',
         fontSize: 16,
         fontFamily: 'poppins-medium',
         lineHeight: 20,
-        marginBottom: 10,
+        marginBottom: 10
     },
     tasksArrowImgWrapper: {
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 20
     },
     tasksArrowImg: {
         width: 35,
         height: 90,
         resizeMode: 'contain',
-        marginLeft: -120,
+        marginLeft: -120
     },
     unassignedContainer: {
         flex: 1,
         justifyContent: 'center',
-        gap: 25,
+        gap: 25
     },
     illustrationWrapper: {
-        alignItems: 'center',
+        alignItems: 'center'
     },
     illustration: {
         width: 120,
         height: 120,
-        resizeMode: 'contain',
+        resizeMode: 'contain'
     },
     text: {
-        textAlign: 'center',
+        textAlign: 'center'
     },
     tasksPersonalTop: {
         justifyContent: 'center',
-        flex: 1,
+        flex: 1
     }
 });

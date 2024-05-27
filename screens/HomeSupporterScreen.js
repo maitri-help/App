@@ -1,10 +1,25 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, Animated } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    SafeAreaView,
+    TouchableOpacity,
+    ScrollView,
+    Image,
+    ImageBackground,
+    Animated
+} from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
 import MyTask from '../components/MyTask';
 import { getLeadUser } from '../hooks/api';
-import { checkAuthentication, clearUserData, clearAccessToken, getAccessToken } from '../authStorage';
+import {
+    checkAuthentication,
+    clearUserData,
+    clearAccessToken,
+    getAccessToken
+} from '../authStorage';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
 import initalBackground from '../assets/img/welcome-bg.png';
@@ -12,37 +27,37 @@ import { Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 const inspirationalQuotes = [
-    "In the middle of difficulty lies opportunity. - Albert Einstein",
-    "Difficult roads often lead to beautiful destinations. - Unknown",
-    "When everything seems to be going against you, remember that the airplane takes off against the wind, not with it. - Henry Ford",
-    "The only way to make sense out of change is to plunge into it, move with it, and join the dance. - Alan Watts",
-    "Tough times never last, but tough people do. - Robert H. Schuller",
+    'In the middle of difficulty lies opportunity. - Albert Einstein',
+    'Difficult roads often lead to beautiful destinations. - Unknown',
+    'When everything seems to be going against you, remember that the airplane takes off against the wind, not with it. - Henry Ford',
+    'The only way to make sense out of change is to plunge into it, move with it, and join the dance. - Alan Watts',
+    'Tough times never last, but tough people do. - Robert H. Schuller',
     "It's not the load that breaks you down, it's the way you carry it. - Lou Holtz",
     "Believe you can and you're halfway there. - Theodore Roosevelt",
-    "The comeback is always stronger than the setback. - Unknown",
-    "Fall down seven times, stand up eight. - Japanese Proverb",
-    "Sometimes the darkest challenges bring the brightest blessings. - Unknown",
-    "Every storm runs out of rain. - Maya Angelou",
-    "Adversity introduces a man to himself. - Albert Einstein",
-    "Challenges are what make life interesting and overcoming them is what makes life meaningful. - Joshua J. Marine",
+    'The comeback is always stronger than the setback. - Unknown',
+    'Fall down seven times, stand up eight. - Japanese Proverb',
+    'Sometimes the darkest challenges bring the brightest blessings. - Unknown',
+    'Every storm runs out of rain. - Maya Angelou',
+    'Adversity introduces a man to himself. - Albert Einstein',
+    'Challenges are what make life interesting and overcoming them is what makes life meaningful. - Joshua J. Marine',
     "Stars can't shine without darkness. - Unknown",
-    "The wound is the place where the light enters you. - Rumi",
-    "You were given this life because you are strong enough to live it. - Unknown",
-    "When you come out of the storm, you won’t be the same person who walked in. - Haruki Murakami",
-    "Even the darkest night will end and the sun will rise. - Victor Hugo",
-    "The human spirit is stronger than anything that can happen to it. - C.C. Scott",
-    "The gem cannot be polished without friction, nor man perfected without trials. - Chinese Proverb",
+    'The wound is the place where the light enters you. - Rumi',
+    'You were given this life because you are strong enough to live it. - Unknown',
+    'When you come out of the storm, you won’t be the same person who walked in. - Haruki Murakami',
+    'Even the darkest night will end and the sun will rise. - Victor Hugo',
+    'The human spirit is stronger than anything that can happen to it. - C.C. Scott',
+    'The gem cannot be polished without friction, nor man perfected without trials. - Chinese Proverb',
     "Strength grows in the moments when you think you can't go on but you keep going anyway. - Unknown",
-    "The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela",
-    "What lies behind us and what lies before us are tiny matters compared to what lies within us. - Ralph Waldo Emerson",
-    "No matter how hard the past, you can always begin again. - Buddha",
-    "Out of difficulties grow miracles. - Jean de La Bruyère",
-    "The greater the obstacle, the more glory in overcoming it. - Molière",
+    'The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela',
+    'What lies behind us and what lies before us are tiny matters compared to what lies within us. - Ralph Waldo Emerson',
+    'No matter how hard the past, you can always begin again. - Buddha',
+    'Out of difficulties grow miracles. - Jean de La Bruyère',
+    'The greater the obstacle, the more glory in overcoming it. - Molière',
     "Life isn't about waiting for the storm to pass, it's about learning to dance in the rain. - Vivian Greene",
-    "A smooth sea never made a skilled sailor. - Franklin D. Roosevelt",
-    "Sometimes the bad things that happen in our lives put us directly on the path to the best things that will ever happen to us. - Unknown",
+    'A smooth sea never made a skilled sailor. - Franklin D. Roosevelt',
+    'Sometimes the bad things that happen in our lives put us directly on the path to the best things that will ever happen to us. - Unknown',
     "Strength doesn't come from what you can do. It comes from overcoming the things you once thought you couldn't. - Rikki Rogers",
-    "Life is 10% what happens to us and 90% how we react to it. - Charles R. Swindoll"
+    'Life is 10% what happens to us and 90% how we react to it. - Charles R. Swindoll'
 ];
 
 export default function HomeSupporterScreen({ navigation }) {
@@ -58,7 +73,8 @@ export default function HomeSupporterScreen({ navigation }) {
     const [showAllOpenTasks, setShowAllOpenTasks] = useState(false);
     const [showAllMyTasks, setShowAllMyTasks] = useState(false);
     const [tasks, setTasks] = useState([]);
-    const [randomInspirationalQuote, setRandomInspirationalQuote] = useState('');
+    const [randomInspirationalQuote, setRandomInspirationalQuote] =
+        useState('');
 
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const [myTaskModalVisible, setMyTaskModalVisible] = useState(false);
@@ -67,7 +83,9 @@ export default function HomeSupporterScreen({ navigation }) {
 
     useEffect(() => {
         const selectRandomInspirationalQuote = () => {
-            const randomIndex = Math.floor(Math.random() * inspirationalQuotes.length);
+            const randomIndex = Math.floor(
+                Math.random() * inspirationalQuotes.length
+            );
             setRandomInspirationalQuote(inspirationalQuotes[randomIndex]);
         };
 
@@ -79,8 +97,6 @@ export default function HomeSupporterScreen({ navigation }) {
             try {
                 const userData = await checkAuthentication();
                 if (userData) {
-                    console.log('User data:', userData);
-
                     setUserId(userData.userId);
                     setFirstName(userData.firstName);
                     setColor(userData.color);
@@ -141,7 +157,7 @@ export default function HomeSupporterScreen({ navigation }) {
     };
 
     const handleTaskStatusChange = () => {
-        fetchTasks(); 
+        fetchTasks();
     };
 
     useEffect(() => {
@@ -149,13 +165,13 @@ export default function HomeSupporterScreen({ navigation }) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         } else {
             Animated.timing(overlayOpacity, {
                 toValue: 0,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         }
     }, [taskModalVisible, myTaskModalVisible]);
@@ -172,27 +188,45 @@ export default function HomeSupporterScreen({ navigation }) {
     const renderTasks = (tasks = []) => {
         let filteredTasks = tasks;
         if (activeTab === 'Open') {
-            filteredTasks = tasks.filter(task => task.status === 'undone' && !task.assignedUserId);
+            filteredTasks = tasks.filter(
+                (task) => task.status === 'undone' && !task.assignedUserId
+            );
         } else if (activeTab === 'My') {
-            filteredTasks = tasks.filter(task => task.assignedUserId && task.assignedUserId === userId);
+            filteredTasks = tasks.filter(
+                (task) => task.assignedUserId && task.assignedUserId === userId
+            );
         }
 
         if (filteredTasks.length === 0) {
             return (
                 <View style={stylesSuppHome.tasksContainer}>
-                    <ScrollView contentContainerStyle={stylesSuppHome.tasksScrollEmpty}>
-                        <View style={[styles.contentContainer, stylesSuppHome.tasksEmpty]}>
+                    <ScrollView
+                        contentContainerStyle={stylesSuppHome.tasksScrollEmpty}
+                    >
+                        <View
+                            style={[
+                                styles.contentContainer,
+                                stylesSuppHome.tasksEmpty
+                            ]}
+                        >
                             <View style={stylesSuppHome.tasksTop}>
                                 <Text style={stylesSuppHome.tasksWelcome}>
-                                    {activeTab === 'Open' ? 'No open tasks yet.' : 'Your task list is currently empty.'}
+                                    {activeTab === 'Open'
+                                        ? 'No open tasks yet.'
+                                        : 'Your task list is currently empty.'}
                                 </Text>
                                 <View style={stylesSuppHome.tasksImgWrapper}>
-                                    <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesSuppHome.tasksImg} />
+                                    <Image
+                                        source={require('../assets/img/tasks-placeholder.png')}
+                                        style={stylesSuppHome.tasksImg}
+                                    />
                                 </View>
                             </View>
                             <View style={stylesSuppHome.tasksBottom}>
                                 <Text style={stylesSuppHome.tasksDescription}>
-                                    {activeTab === 'Open' ? 'Check back in later!' : 'Check the Open tasks to see where you can lend a hand.'}
+                                    {activeTab === 'Open'
+                                        ? 'Check back in later!'
+                                        : 'Check the Open tasks to see where you can lend a hand.'}
                                 </Text>
                             </View>
                         </View>
@@ -201,12 +235,15 @@ export default function HomeSupporterScreen({ navigation }) {
             );
         }
 
-        const displayedTasks = filteredTasks.slice(0, showAllOpenTasks || showAllMyTasks ? filteredTasks.length : 3);
+        const displayedTasks = filteredTasks.slice(
+            0,
+            showAllOpenTasks || showAllMyTasks ? filteredTasks.length : 3
+        );
 
         return (
             <View style={stylesSuppHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesSuppHome.tasksScroll}>
-                    {displayedTasks.map(task => (
+                    {displayedTasks.map((task) =>
                         activeTab === 'Open' ? (
                             <OpenTask
                                 key={task.taskId}
@@ -223,8 +260,12 @@ export default function HomeSupporterScreen({ navigation }) {
                                 key={task.taskId}
                                 task={task}
                                 title={task.title}
-                                firstName={task.assignee ? task.assignee.firstName : ''}
-                                lastName={task.assignee ? task.assignee.lastName : ''}
+                                firstName={
+                                    task.assignee ? task.assignee.firstName : ''
+                                }
+                                lastName={
+                                    task.assignee ? task.assignee.lastName : ''
+                                }
                                 startTime={task.startDateTime}
                                 endTime={task.endDateTime}
                                 category={task.category}
@@ -234,11 +275,23 @@ export default function HomeSupporterScreen({ navigation }) {
                                 onTaskStatusChange={handleTaskStatusChange}
                             />
                         )
-                    ))}
-                    {(filteredTasks.length > 3 && !showAllOpenTasks && activeTab === 'Open') ||
-                        (filteredTasks.length > 3 && !showAllMyTasks && activeTab === 'My') ? (
-                        <TouchableOpacity onPress={() => activeTab === 'Open' ? setShowAllOpenTasks(true) : setShowAllMyTasks(true)}>
-                            <Text style={stylesSuppHome.seeAllText}>See All</Text>
+                    )}
+                    {(filteredTasks.length > 3 &&
+                        !showAllOpenTasks &&
+                        activeTab === 'Open') ||
+                    (filteredTasks.length > 3 &&
+                        !showAllMyTasks &&
+                        activeTab === 'My') ? (
+                        <TouchableOpacity
+                            onPress={() =>
+                                activeTab === 'Open'
+                                    ? setShowAllOpenTasks(true)
+                                    : setShowAllMyTasks(true)
+                            }
+                        >
+                            <Text style={stylesSuppHome.seeAllText}>
+                                See All
+                            </Text>
                         </TouchableOpacity>
                     ) : null}
                 </ScrollView>
@@ -249,34 +302,67 @@ export default function HomeSupporterScreen({ navigation }) {
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
-
                 <View style={stylesSuppHome.topBar}>
-
-                    <View style={[
-                        stylesSuppHome.selectedEmojiItem, { borderColor: color }
-                    ]}>
-                        <Text style={stylesSuppHome.selectedEmojiText}>{emoji}</Text>
+                    <View
+                        style={[
+                            stylesSuppHome.selectedEmojiItem,
+                            { borderColor: color }
+                        ]}
+                    >
+                        <Text style={stylesSuppHome.selectedEmojiText}>
+                            {emoji}
+                        </Text>
                     </View>
                     <View style={{ flexShrink: 1 }}>
-                        <Text style={stylesSuppHome.greetingsText}>Hey {firstName}</Text>
-                        <Text style={stylesSuppHome.thanksText}>Thanks for being here for <Text style={stylesSuppHome.nameText}>
-                            {leadFirstName} {leadLastName}!</Text></Text>
+                        <Text style={stylesSuppHome.greetingsText}>
+                            Hey {firstName}
+                        </Text>
+                        <Text style={stylesSuppHome.thanksText}>
+                            Thanks for being here for{' '}
+                            <Text style={stylesSuppHome.nameText}>
+                                {leadFirstName} {leadLastName}!
+                            </Text>
+                        </Text>
                     </View>
                 </View>
 
                 {isViewActive && (
-                    <View style={[styles.contentContainer, { paddingTop: 5, paddingBottom: 15, width: '100%' }]}>
+                    <View
+                        style={[
+                            styles.contentContainer,
+                            { paddingTop: 5, paddingBottom: 15, width: '100%' }
+                        ]}
+                    >
                         <ImageBackground
                             source={initalBackground}
                             style={stylesSuppHome.roundedRectangleContainer}
                         >
-                            <View style={{ alignItems: 'left', flexDirection: 'column', flex: 1, paddingRight: 10, }}>
+                            <View
+                                style={{
+                                    alignItems: 'left',
+                                    flexDirection: 'column',
+                                    flex: 1,
+                                    paddingRight: 10
+                                }}
+                            >
                                 {tasks.length > 0 ? (
-                                    <Text style={stylesSuppHome.inspirationalQuoteText}>{randomInspirationalQuote}</Text>
+                                    <Text
+                                        style={
+                                            stylesSuppHome.inspirationalQuoteText
+                                        }
+                                    >
+                                        {randomInspirationalQuote}
+                                    </Text>
                                 ) : (
                                     <>
-                                        <Text style={stylesSuppHome.welcomeText}>Welcome to your home page</Text>
-                                        <Text style={stylesSuppHome.infoText}>Tasks will show up below</Text>
+                                        <Text
+                                            style={stylesSuppHome.welcomeText}
+                                        >
+                                            Welcome to your home page
+                                        </Text>
+                                        <Text style={stylesSuppHome.infoText}>
+                                            Tasks will show up below
+                                        </Text>
                                     </>
                                 )}
                             </View>
@@ -288,12 +374,45 @@ export default function HomeSupporterScreen({ navigation }) {
                     </View>
                 )}
 
-                <View style={[stylesSuppHome.tabsContainer, styles.contentContainer]}>
-                    <TouchableOpacity onPress={() => handleTabPress('Open')} style={[stylesSuppHome.tab, activeTab === 'Open' && stylesSuppHome.activeTab]}>
-                        <Text style={[stylesSuppHome.tabText, activeTab === 'Open' && stylesSuppHome.activeTabText]}>Open tasks</Text>
+                <View
+                    style={[
+                        stylesSuppHome.tabsContainer,
+                        styles.contentContainer
+                    ]}
+                >
+                    <TouchableOpacity
+                        onPress={() => handleTabPress('Open')}
+                        style={[
+                            stylesSuppHome.tab,
+                            activeTab === 'Open' && stylesSuppHome.activeTab
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                stylesSuppHome.tabText,
+                                activeTab === 'Open' &&
+                                    stylesSuppHome.activeTabText
+                            ]}
+                        >
+                            Open tasks
+                        </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('My')} style={[stylesSuppHome.tab, activeTab === 'My' && stylesSuppHome.activeTab]}>
-                        <Text style={[stylesSuppHome.tabText, activeTab === 'My' && stylesSuppHome.activeTabText]}>My tasks</Text>
+                    <TouchableOpacity
+                        onPress={() => handleTabPress('My')}
+                        style={[
+                            stylesSuppHome.tab,
+                            activeTab === 'My' && stylesSuppHome.activeTab
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                stylesSuppHome.tabText,
+                                activeTab === 'My' &&
+                                    stylesSuppHome.activeTabText
+                            ]}
+                        >
+                            My tasks
+                        </Text>
                     </TouchableOpacity>
                 </View>
                 {tasks.length > 0 && (
@@ -303,28 +422,29 @@ export default function HomeSupporterScreen({ navigation }) {
                 )}
 
                 {(taskModalVisible || myTaskModalVisible) && (
-                    <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+                    <Animated.View
+                        style={[styles.overlay, { opacity: overlayOpacity }]}
+                    />
                 )}
-
             </SafeAreaView>
 
-            {taskModalVisible &&
+            {taskModalVisible && (
                 <TaskDetailsModal
                     visible={taskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
                     updateTask={() => fetchTasks()}
                 />
-            }
+            )}
 
-            {myTaskModalVisible &&
+            {myTaskModalVisible && (
                 <MyTaskDetailsModal
                     visible={myTaskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
                     updateTask={() => fetchTasks()}
                 />
-            }
+            )}
         </>
     );
 }
@@ -335,13 +455,13 @@ const stylesSuppHome = StyleSheet.create({
         paddingHorizontal: 25,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
+        gap: 10
     },
     greetingsText: {
         fontSize: 18,
         fontFamily: 'poppins-medium',
         lineHeight: 22,
-        marginBottom: 5,
+        marginBottom: 5
     },
     roundedRectangleContainer: {
         borderRadius: 15,
@@ -350,56 +470,56 @@ const stylesSuppHome = StyleSheet.create({
         paddingTop: 30,
         paddingHorizontal: 20,
         paddingBottom: 10,
-        maxWidth: "100%",
+        maxWidth: '100%'
     },
     thanksText: {
         fontFamily: 'poppins-regular',
         fontSize: 12,
         lineHeight: 16,
-        color: '#737373',
+        color: '#737373'
     },
     nameText: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'poppins-bold'
     },
     welcomeText: {
         fontFamily: 'poppins-bold',
         fontSize: 14,
         lineHeight: 18,
         color: '#fff',
-        marginBottom: 10,
+        marginBottom: 10
     },
     infoText: {
         fontFamily: 'poppins-regular',
         fontSize: 14,
         lineHeight: 18,
-        color: '#fff',
+        color: '#fff'
     },
     inspirationalQuoteText: {
         fontFamily: 'poppins-bold',
         fontSize: 14,
         lineHeight: 18,
         color: '#fff',
-        marginBottom: 10,
+        marginBottom: 10
     },
     rightImageStyle: {
         marginLeft: 20,
         width: 120,
         height: 120,
-        resizeMode: 'contain',
+        resizeMode: 'contain'
     },
     closeIcon: {
         position: 'absolute',
         top: 15,
-        right: 20,
+        right: 20
     },
     tabsContentContainer: {
-        flex: 1,
+        flex: 1
     },
     tabsContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         gap: 15,
-        marginVertical: 10,
+        marginVertical: 10
     },
     tab: {
         paddingHorizontal: 10,
@@ -407,75 +527,75 @@ const stylesSuppHome = StyleSheet.create({
         borderColor: '#1C4837',
         borderWidth: 1,
         borderRadius: 20,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     activeTab: {
-        backgroundColor: '#1C4837',
+        backgroundColor: '#1C4837'
     },
     tabText: {
         color: '#000',
         fontFamily: 'poppins-regular',
         fontSize: 13,
-        lineHeight: 17,
+        lineHeight: 17
     },
     activeTabText: {
-        color: '#fff',
+        color: '#fff'
     },
     tabsContentContainer: {
-        flex: 1,
+        flex: 1
     },
     tasksContainer: {
-        flex: 1,
+        flex: 1
     },
     tasksScroll: {
         gap: 15,
         paddingHorizontal: 25,
         paddingTop: 10,
-        paddingBottom: 30,
+        paddingBottom: 30
     },
     tasksScrollEmpty: {
         flex: 1,
         paddingTop: 10,
-        paddingHorizontal: 25,
+        paddingHorizontal: 25
     },
     tasksEmpty: {
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        paddingVertical: 30,
+        paddingVertical: 30
     },
     tasks: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-start'
     },
     tasksWelcome: {
         textAlign: 'center',
         fontSize: 20,
         fontFamily: 'poppins-bold',
         lineHeight: 24,
-        marginBottom: 15,
+        marginBottom: 15
     },
     tasksDescription: {
         textAlign: 'center',
         fontSize: 16,
         fontFamily: 'poppins-regular',
         lineHeight: 20,
-        marginBottom: 10,
+        marginBottom: 10
     },
     tasksImgWrapper: {
         alignItems: 'center',
-        marginBottom: 15,
+        marginBottom: 15
     },
     tasksImg: {
         width: 150,
         height: 110,
-        resizeMode: 'contain',
+        resizeMode: 'contain'
     },
     illustration: {
         width: 120,
         height: 120,
-        resizeMode: 'contain',
+        resizeMode: 'contain'
     },
     selectedEmojiItem: {
         width: 50,
@@ -486,24 +606,24 @@ const stylesSuppHome = StyleSheet.create({
         borderColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
-            height: 3,
+            height: 3
         },
         shadowOpacity: 0.15,
         shadowRadius: 8,
-        elevation: 8,
+        elevation: 8
     },
     selectedEmojiText: {
-        fontSize: (Platform.OS === 'android') ? 30 : 32,
+        fontSize: Platform.OS === 'android' ? 30 : 32,
         textAlign: 'center',
-        lineHeight: (Platform.OS === 'android') ? 37 : 42,
+        lineHeight: Platform.OS === 'android' ? 37 : 42
     },
     seeAllText: {
         fontFamily: 'poppins-regular',
         textAlign: 'center',
         color: '#737373',
-        textDecorationLine: 'underline',
-    },
+        textDecorationLine: 'underline'
+    }
 });
