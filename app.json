@@ -2,7 +2,7 @@
   "expo": {
     "name": "MaitriApp",
     "slug": "MaitriApp",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -35,7 +35,8 @@
     "extra": {
       "eas": {
         "projectId": "3a482699-39fe-4fe2-880c-012d3fed9f60"
-      }
+      },
+      "API_URL": "https://maitri-backend.cubicfoxdev.com:3000"
     }
   }
 }
