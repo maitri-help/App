@@ -7,7 +7,8 @@ import {
     TouchableOpacity,
     ScrollView,
     Image,
-    Animated
+    Animated,
+    ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
@@ -94,7 +95,7 @@ export default function HomeScreen({ navigation }) {
     const [taskModalEndDate, setTaskModalEndDate] = useState(null);
     const [taskModalStartTime, setTaskModalStartTime] = useState(null);
     const [taskModalEndTime, setTaskModalEndTime] = useState(null);
-
+    const [isLoading, setIsLoading] = useState(false);
     const [assigneeFirstName, setAssigneeFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [color, setColor] = useState('');
@@ -150,6 +151,7 @@ export default function HomeScreen({ navigation }) {
 
     async function fetchTasks() {
         try {
+            setIsLoading(true);
             const userData = await checkAuthentication();
             if (userData) {
                 const tasksResponse = await getTasksForUser(
@@ -164,8 +166,10 @@ export default function HomeScreen({ navigation }) {
                     routes: [{ name: 'Login' }]
                 });
             }
+            setIsLoading(false);
         } catch (error) {
             console.error('Error fetching tasks:', error);
+            setIsLoading(false);
         }
     }
 
@@ -559,9 +563,15 @@ export default function HomeScreen({ navigation }) {
                     </TouchableOpacity>
                 </View>
 
-                <View style={stylesHome.tabsContentContainer}>
-                    {renderTasks(tasks)}
-                </View>
+                {isLoading ? (
+                    <View>
+                        <ActivityIndicator size="large" />
+                    </View>
+                ) : (
+                    <View style={stylesHome.tabsContentContainer}>
+                        {renderTasks(tasks)}
+                    </View>
+                )}
             </SafeAreaView>
 
             {taskModalVisible && (
