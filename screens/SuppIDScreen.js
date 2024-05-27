@@ -239,7 +239,7 @@ const stylesSuppID = StyleSheet.create({
     },
     nextButtonContainer: {
         flex: 1,
-        paddingTop: 30,
+        paddingTop: 25,
         justifyContent: 'flex-start'
     },
     nextButtonDisabled: {
