@@ -4,6 +4,7 @@ import { modalServices } from '../data/ModalServices';
 import AddToCalICon from '../assets/icons/add-to-cal-icon.svg';
 import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';
+import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { useToast } from 'react-native-toast-notifications';
 import * as Calendar from 'expo-calendar';
 
