@@ -20,6 +20,7 @@ import {
     clearAccessToken
 } from '../authStorage';
 import TaskModal from '../components/TaskModal';
+import { useFocusEffect } from '@react-navigation/native';
 
 const quotes = [
     'Remember to breathe today.',
@@ -168,9 +169,11 @@ export default function HomeScreen({ navigation }) {
         }
     }
 
-    useEffect(() => {
-        fetchTasks();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchTasks();
+        }, [])
+    );
 
     useEffect(() => {
         if (taskModalVisible) {

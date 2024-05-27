@@ -51,8 +51,6 @@ export default function LoginScreen({ navigation }) {
 
         try {
             const { userId, otpResponse } = await handleSignIn(values);
-            console.log('userId:', userId);
-            console.log('OTP response:', otpResponse);
 
             toast.show('Code is sent to: ' + values.phoneNumber, {
                 type: 'success'
