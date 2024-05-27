@@ -6,9 +6,10 @@ import {
     StyleSheet,
     SafeAreaView,
     TouchableOpacity,
-    Animated
+    Animated,
+    FlatList,
+    Dimensions
 } from 'react-native';
-import Swiper from 'react-native-swiper';
 import styles from '../Styles';
 import CirclesView from '../components/CirclesView';
 import CircleItem from '../components/CircleItem';
@@ -17,6 +18,8 @@ import SendInviteScreen from './SendInviteScreen';
 import SupporterCardScreen from './SupporterCardScreen';
 import { circlesUsers } from '../hooks/api';
 import { checkAuthentication } from '../authStorage';
+import Tab from '../components/common/Tab';
+import { circlesTabs } from '../constants/variables';
 
 export default function CirclesScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Circles');
@@ -29,6 +32,8 @@ export default function CirclesScreen({ navigation }) {
     const overlayOpacity = useRef(new Animated.Value(0)).current;
     const swiperRef = useRef(null);
 
+    const tabData = circlesTabs.map((tab) => ({ key: tab }));
+    const { width: screenWidth } = Dimensions.get('window');
     const [tabContents, setTabContents] = useState({
         First: [],
         Second: [],
@@ -120,15 +125,20 @@ export default function CirclesScreen({ navigation }) {
         }
     }, [sendInvitesModalVisible || supporterCardModalVisible]);
 
+    // const handleTabPress = (tab) => {
+    //     console.log(tab);
+    //     setActiveTab(tab);
+    //     const tabIndex = circlesTabs.indexOf(tab);
+    //     console.log(tabIndex);
+    //     swiperRef.current?.scrollBy(
+    //         tabIndex - swiperRef.current?.state?.index,
+    //         true
+    //     );
+    // };
     const handleTabPress = (tab) => {
+        const tabIndex = circlesTabs.indexOf(tab);
+        swiperRef.current.scrollToIndex({ index: tabIndex, animated: true });
         setActiveTab(tab);
-        const tabIndex = ['Circles', 'All', 'First', 'Second', 'Third'].indexOf(
-            tab
-        );
-        swiperRef.current?.scrollBy(
-            tabIndex - swiperRef.current?.state?.index,
-            true
-        );
     };
 
     const handlePressCircleItemCount = (tab) => {
@@ -310,128 +320,41 @@ export default function CirclesScreen({ navigation }) {
                         styles.contentContainer
                     ]}
                 >
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('Circles')}
-                        style={[
-                            stylesCircles.tab,
-                            activeTab === 'Circles' && stylesCircles.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesCircles.tabText,
-                                activeTab === 'Circles' &&
-                                    stylesCircles.activeTabText
-                            ]}
-                        >
-                            Circles
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('All')}
-                        style={[
-                            stylesCircles.tab,
-                            activeTab === 'All' && stylesCircles.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesCircles.tabText,
-                                activeTab === 'All' &&
-                                    stylesCircles.activeTabText
-                            ]}
-                        >
-                            All
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('First')}
-                        style={[
-                            stylesCircles.tab,
-                            activeTab === 'First' && stylesCircles.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesCircles.tabText,
-                                activeTab === 'First' &&
-                                    stylesCircles.activeTabText
-                            ]}
-                        >
-                            First
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('Second')}
-                        style={[
-                            stylesCircles.tab,
-                            activeTab === 'Second' && stylesCircles.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesCircles.tabText,
-                                activeTab === 'Second' &&
-                                    stylesCircles.activeTabText
-                            ]}
-                        >
-                            Second
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('Third')}
-                        style={[
-                            stylesCircles.tab,
-                            activeTab === 'Third' && stylesCircles.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesCircles.tabText,
-                                activeTab === 'Third' &&
-                                    stylesCircles.activeTabText
-                            ]}
-                        >
-                            Third
-                        </Text>
-                    </TouchableOpacity>
+                    {circlesTabs.map((tab, index) => (
+                        <Tab
+                            key={index}
+                            clickHandler={() => handleTabPress(tab)}
+                            label={tab}
+                            isActive={activeTab === tab}
+                        />
+                    ))}
                 </View>
-
-                <Swiper
+                <FlatList
+                    data={tabData}
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(item) => item.key}
+                    renderItem={({ item }) => (
+                        <View
+                            style={[
+                                stylesCircles.tabContent,
+                                { width: screenWidth }
+                            ]}
+                        >
+                            {circlesContent(item.key)}
+                        </View>
+                    )}
+                    onMomentumScrollEnd={(event) => {
+                        const index = Math.floor(
+                            event.nativeEvent.contentOffset.x /
+                                event.nativeEvent.layoutMeasurement.width
+                        );
+                        setActiveTab(circlesTabs[index]);
+                    }}
                     ref={swiperRef}
-                    loop={false}
-                    showsPagination={false}
-                    index={[
-                        'Circles',
-                        'All',
-                        'First',
-                        'Second',
-                        'Third'
-                    ].indexOf(activeTab)}
-                    onIndexChanged={(index) =>
-                        setActiveTab(
-                            ['Circles', 'All', 'First', 'Second', 'Third'][
-                                index
-                            ]
-                        )
-                    }
-                >
-                    <View style={stylesCircles.tabContent}>
-                        {circlesContent('Circles')}
-                    </View>
-                    <View style={stylesCircles.tabContent}>
-                        {circlesContent('All')}
-                    </View>
-                    <View style={stylesCircles.tabContent}>
-                        {circlesContent('First')}
-                    </View>
-                    <View style={stylesCircles.tabContent}>
-                        {circlesContent('Second')}
-                    </View>
-                    <View style={stylesCircles.tabContent}>
-                        {circlesContent('Third')}
-                    </View>
-                </Swiper>
+                    initialScrollIndex={circlesTabs.indexOf(activeTab)}
+                />
 
                 <View style={stylesCircles.floatingButtonWrapper}>
                     {hasEmptyContent() && (
@@ -508,26 +431,6 @@ const stylesCircles = StyleSheet.create({
         justifyContent: 'center',
         gap: 8,
         marginVertical: 15
-    },
-    tab: {
-        paddingHorizontal: 12,
-        paddingVertical: 5,
-        borderColor: '#1C4837',
-        borderWidth: 1,
-        borderRadius: 20,
-        alignItems: 'center'
-    },
-    activeTab: {
-        backgroundColor: '#1C4837'
-    },
-    tabText: {
-        color: '#1C4837',
-        fontFamily: 'poppins-regular',
-        fontSize: 12,
-        lineHeight: 16
-    },
-    activeTabText: {
-        color: '#fff'
     },
     top: {
         marginBottom: 20

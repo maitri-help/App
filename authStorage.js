@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { API_URL } from './constants/config';
 
-const baseUrl = 'https://maitri-backend.cubicfoxdev.com:3000';
+const baseUrl = API_URL;
 
 export const storeUserData = async (userData) => {
     try {
         await AsyncStorage.setItem('userData', JSON.stringify(userData));
-        console.log('User data stored successfully:', userData);
     } catch (error) {
         console.error('Error storing user data:', error);
     }
