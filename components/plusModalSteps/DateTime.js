@@ -5,6 +5,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
+import { useToast } from 'react-native-toast-notifications';
 
 export default function DateTime({ currentStep, setCurrentStep, taskName, onBack, onDateTimeSelect, startDate: propStartDate, startTime: propStartTime, endDate: propEndDate, endTime: propEndTime, setStartTime, setEndTime, handleDayPress, getDaysBetween, reviewFormCurrentStep }) {
     const [startDate, setStartDateLocal] = useState(propStartDate !== null ? propStartDate : null);
@@ -14,6 +15,7 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
     const [isStartTimePickerVisible, setStartTimePickerVisible] = useState(false);
     const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
     const [markedDates, setMarkedDates] = useState({});
+    const toast = useToast();
 
     useEffect(() => {
         if (propStartDate) {
@@ -55,7 +57,7 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
     };
 
     const handleEndTimeConfirm = (time) => {
-        const currentDate = endDate ? new Date(endDate) : new Date();
+        const currentDate = endDate ? new Date(endDate) : (startDate ? new Date(startDate) : new Date());
         const updatedDateTime = new Date(currentDate.setHours(time.getHours(), time.getMinutes()));
         setEndTime(updatedDateTime.toISOString());
         setEndTimePickerVisible(false);
@@ -75,7 +77,7 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
 
     const hideEndTimePicker = () => {
         setEndTimePickerVisible(false);
-    }
+    };
 
     useEffect(() => {
         if (propStartDate) {
@@ -87,14 +89,53 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
     }, [propStartDate, propEndDate]);
 
     const handleDateTimeSelect = () => {
-        if (startDate && endDate && startTime && endTime) {
-            const formattedStartDateTime = new Date(startDate).toISOString();
-            const formattedEndDateTime = new Date(endDate).toISOString();
+        if (startDate) {
+            if (!endDate && !startTime && !endTime) {
+                const formattedStartDateTime = new Date(startDate).toISOString();
+                const formattedEndDateTime = new Date(startDate).toISOString();
 
-            onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
+                onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
+                reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1);
+
+                const updatedStartDateTime = new Date(formattedStartDateTime);
+                updatedStartDateTime.setHours(0, 0, 0, 0);
+
+                const updatedEndDateTime = new Date(formattedEndDateTime);
+                updatedEndDateTime.setHours(0, 0, 0, 0);
+
+                const formatLocalDateTime = (date) => {
+                    const year = date.getFullYear();
+                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    const day = date.getDate().toString().padStart(2, '0');
+                    const hours = date.getHours().toString().padStart(2, '0');
+                    const minutes = date.getMinutes().toString().padStart(2, '0');
+                    const seconds = date.getSeconds().toString().padStart(2, '0');
+                    const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+
+                    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+                }
+
+                const startDateTimeLocal = formatLocalDateTime(updatedStartDateTime);
+                const endDateTimeLocal = formatLocalDateTime(updatedEndDateTime);
+
+                setStartTime(startDateTimeLocal);
+                setEndTime(endDateTimeLocal);
+            } else if (!endDate && startTime && endTime) {
+                const formattedStartDateTime = new Date(startDate).toISOString();
+                const formattedEndDateTime = new Date(startDate).toISOString();
+
+                onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
+            } else {
+                const formattedStartDateTime = new Date(startDate).toISOString();
+                const formattedEndDateTime = endDate ? new Date(endDate).toISOString() : null;
+
+                onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
+            }
+
             reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1);
         } else {
-            console.log('Please select both start and end date and time');
+            console.log('Please select a start date');
+            toast.show('Please select a start date', { type: 'error' });
         }
     };
 

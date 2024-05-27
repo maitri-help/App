@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, Image, StyleSheet, SafeAreaView, TouchableOpacity, Animated } from 'react-native';
+import Swiper from 'react-native-swiper';
 import styles from '../Styles';
 import CirclesView from '../components/CirclesView';
 import CircleItem from '../components/CircleItem';
@@ -16,6 +17,7 @@ export default function CirclesScreen({ navigation }) {
     const [selectedCircleItem, setSelectedCircleItem] = useState(null);
     const [userId, setUserId] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
+    const swiperRef = useRef(null);
 
     const [tabContents, setTabContents] = useState({
         First: [],
@@ -64,28 +66,16 @@ export default function CirclesScreen({ navigation }) {
 
     const generateRandomCircleItems = () => {
         const circleItemsContent = [
-            getRandomItem(tabContents.Third) || { firstName: 'Peer', emoji: null },
-            getRandomItem(tabContents.Second) || { firstName: 'Friend', emoji: null },
-            getRandomItem(tabContents.First) || { firstName: 'Parent', emoji: null },
+            { ...getRandomItem(tabContents.Third), circle: 'Third' } || { firstName: 'Peer', emoji: null, circle: 'Third' },
+            { ...getRandomItem(tabContents.Second), circle: 'Second' } || { firstName: 'Friend', emoji: null, circle: 'Second' },
+            { ...getRandomItem(tabContents.First), circle: 'First' } || { firstName: 'Parent', emoji: null, circle: 'First' },
         ];
         setCircleItemsContent(circleItemsContent);
     };
 
     const handleCircleItemPress = (item) => {
-        let circle;
-        switch (activeTab) {
-            case 'All':
-                circle = item.circle;
-                break;
-            case 'Circles':
-                break;
-            default:
-                circle = activeTab;
-                break;
-        }
-    
-        const updatedItem = { ...item, circle };
-        
+        const updatedItem = { ...item, circle: item.circle || activeTab };
+
         setSelectedCircleItem(updatedItem);
         setSupporterCardModalVisible(true);
     };
@@ -108,10 +98,12 @@ export default function CirclesScreen({ navigation }) {
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
+        const tabIndex = ['Circles', 'All', 'First', 'Second', 'Third'].indexOf(tab);
+        swiperRef.current?.scrollBy(tabIndex - swiperRef.current?.state?.index, true);
     };
 
     const handlePressCircleItemCount = (tab) => {
-        setActiveTab(tab);
+        handleTabPress(tab);
     };
 
     const hasEmptyContent = () => {
@@ -227,28 +219,37 @@ export default function CirclesScreen({ navigation }) {
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
-                <ScrollView contentContainerStyle={[stylesCircles.scrollContainer, hasEmptyContent() && !(activeTab === 'Circles') ? stylesCircles.scrollContainerFull : null]}>
-                    <View style={[stylesCircles.tabsContainer, styles.contentContainer]}>
-                        <TouchableOpacity onPress={() => handleTabPress('Circles')} style={[stylesCircles.tab, activeTab === 'Circles' && stylesCircles.activeTab]}>
-                            <Text style={[stylesCircles.tabText, activeTab === 'Circles' && stylesCircles.activeTabText]}>Circles</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesCircles.tab, activeTab === 'All' && stylesCircles.activeTab]}>
-                            <Text style={[stylesCircles.tabText, activeTab === 'All' && stylesCircles.activeTabText]}>All</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => handleTabPress('First')} style={[stylesCircles.tab, activeTab === 'First' && stylesCircles.activeTab]}>
-                            <Text style={[stylesCircles.tabText, activeTab === 'First' && stylesCircles.activeTabText]}>First</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => handleTabPress('Second')} style={[stylesCircles.tab, activeTab === 'Second' && stylesCircles.activeTab]}>
-                            <Text style={[stylesCircles.tabText, activeTab === 'Second' && stylesCircles.activeTabText]}>Second</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => handleTabPress('Third')} style={[stylesCircles.tab, activeTab === 'Third' && stylesCircles.activeTab]}>
-                            <Text style={[stylesCircles.tabText, activeTab === 'Third' && stylesCircles.activeTabText]}>Third</Text>
-                        </TouchableOpacity>
-                    </View>
+                <View style={[stylesCircles.tabsContainer, styles.contentContainer]}>
+                    <TouchableOpacity onPress={() => handleTabPress('Circles')} style={[stylesCircles.tab, activeTab === 'Circles' && stylesCircles.activeTab]}>
+                        <Text style={[stylesCircles.tabText, activeTab === 'Circles' && stylesCircles.activeTabText]}>Circles</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesCircles.tab, activeTab === 'All' && stylesCircles.activeTab]}>
+                        <Text style={[stylesCircles.tabText, activeTab === 'All' && stylesCircles.activeTabText]}>All</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleTabPress('First')} style={[stylesCircles.tab, activeTab === 'First' && stylesCircles.activeTab]}>
+                        <Text style={[stylesCircles.tabText, activeTab === 'First' && stylesCircles.activeTabText]}>First</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleTabPress('Second')} style={[stylesCircles.tab, activeTab === 'Second' && stylesCircles.activeTab]}>
+                        <Text style={[stylesCircles.tabText, activeTab === 'Second' && stylesCircles.activeTabText]}>Second</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleTabPress('Third')} style={[stylesCircles.tab, activeTab === 'Third' && stylesCircles.activeTab]}>
+                        <Text style={[stylesCircles.tabText, activeTab === 'Third' && stylesCircles.activeTabText]}>Third</Text>
+                    </TouchableOpacity>
+                </View>
 
-                    {circlesContent(activeTab)}
-
-                </ScrollView>
+                <Swiper
+                    ref={swiperRef}
+                    loop={false}
+                    showsPagination={false}
+                    index={['Circles', 'All', 'First', 'Second', 'Third'].indexOf(activeTab)}
+                    onIndexChanged={(index) => setActiveTab(['Circles', 'All', 'First', 'Second', 'Third'][index])}
+                >
+                    <View style={stylesCircles.tabContent}>{circlesContent('Circles')}</View>
+                    <View style={stylesCircles.tabContent}>{circlesContent('All')}</View>
+                    <View style={stylesCircles.tabContent}>{circlesContent('First')}</View>
+                    <View style={stylesCircles.tabContent}>{circlesContent('Second')}</View>
+                    <View style={stylesCircles.tabContent}>{circlesContent('Third')}</View>
+                </Swiper>
 
                 <View style={stylesCircles.floatingButtonWrapper}>
                     {hasEmptyContent() && (
@@ -400,5 +401,9 @@ const stylesCircles = StyleSheet.create({
         width: 140,
         height: 135,
         resizeMode: 'contain',
-    }
+    },
+    tabContent: {
+        flex: 1,
+        paddingBottom: 100,
+    },
 });

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Image, SafeAreaView, TouchableOpacity } from 'react-native';
 import styles from '../Styles';
 
 export default function LoginScreen({ navigation, route }) {
@@ -8,14 +8,18 @@ export default function LoginScreen({ navigation, route }) {
     useEffect(() => {
         const timer = setTimeout(() => {
             navigation.navigate('Identify', { userId });
-        }, 5000);
+        }, 3000);
 
         return () => clearTimeout(timer);
     }, [navigation]);
 
+    const handleSkip = () => {
+        navigation.navigate('Identify', { userId });
+    };
+
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.container}>
+            <TouchableOpacity style={styles.container} onPress={handleSkip}>
                 <View style={stylesSuccess.illustrationWrapper}>
                     <Image source={require('../assets/img/mimi-illustration.png')} style={stylesSuccess.illustration} />
                 </View>
@@ -23,9 +27,9 @@ export default function LoginScreen({ navigation, route }) {
                     <Text style={[styles.title, stylesSuccess.title]}>Success!</Text>
                     <Text style={[styles.text, stylesSuccess.text]}>Your Maitri account has been verified.</Text>
                 </View>
-            </View>
+            </TouchableOpacity>
         </SafeAreaView>
-    )
+    );
 }
 
 const stylesSuccess = StyleSheet.create({

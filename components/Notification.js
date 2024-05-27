@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Platform, View, Text, TouchableOpacity, Image, LayoutAnimation, StyleSheet, UIManager } from "react-native";
+import { Platform, View, Text, TouchableOpacity, LayoutAnimation, StyleSheet, UIManager } from "react-native";
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -7,7 +7,7 @@ if (Platform.OS === 'android') {
     }
 }
 
-export default function Notification({ title, assignee, time, emoji, buttons }) {
+export default function Notification({ title, assignee, time, emoji, buttons, onAccept }) {
     const [infoVisible, setInfoVisible] = useState(false);
 
     const toggleInfoVisibility = () => {
@@ -19,7 +19,7 @@ export default function Notification({ title, assignee, time, emoji, buttons }) 
         { name: 'First' },
         { name: 'Second' },
         { name: 'Third' },
-    ]
+    ];
 
     return (
         <View style={stylesNotification.NotificationContainer}>
@@ -60,7 +60,7 @@ export default function Notification({ title, assignee, time, emoji, buttons }) 
                     </View>
                     <View style={stylesNotification.InfoBoxButtons}>
                         {circles.map((circle, index) => (
-                            <TouchableOpacity key={index} style={stylesNotification.InfoBoxButton} onPress={toggleInfoVisibility}>
+                            <TouchableOpacity key={index} style={stylesNotification.InfoBoxButton} onPress={() => onAccept(circle.name)}>
                                 <Text style={stylesNotification.InfoBoxButtonText}>{circle.name}</Text>
                             </TouchableOpacity>
                         ))}

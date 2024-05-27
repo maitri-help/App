@@ -4,7 +4,7 @@ import styles from '../Styles';
 import AppButton from '../components/Button';
 import CloseIcon from '../assets/icons/close-icon.svg';
 import { getLeadUser } from '../hooks/api';
-import {getAccessToken } from '../authStorage';
+import { getAccessToken } from '../authStorage';
 
 export default function SuppGreatNewsScreen({ navigation }) {
 

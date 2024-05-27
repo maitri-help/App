@@ -53,9 +53,9 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         try {
             if (leadId) {
                 const accessToken = await getAccessToken();
-
                 const tasksResponse = await getLeadUser(accessToken);
-
+                console.log("asdasd")
+                console.log(tasksResponse.data[0])
                 setTasks(tasksResponse.data[0].tasks);
                 setFilteredTasks(tasksResponse.data[0].tasks);
             } else {

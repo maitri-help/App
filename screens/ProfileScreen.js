@@ -119,6 +119,7 @@ export default function ProfileScreen({ navigation }) {
                 visible={deleteModalVisible}
                 onClose={() => setDeleteModalVisible(false)}
                 deleteAccount={handleLogout}
+                navigation={navigation}
             />
         </>
     );

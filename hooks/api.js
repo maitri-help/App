@@ -109,3 +109,27 @@ export function changeUserCircle(leadUserId, supporterUserId, newCircle, accessT
         }
     });
 }
+
+export function getNotificationsForUser(userId, accessToken) {
+    return axios.get(`${baseUrl}/notifications/${userId}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
+
+export async function markAsRead(notificationId, accessToken) {
+    return axios.patch(`${baseUrl}/notifications/${notificationId}/read`, null, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
+
+export async function deleteUser(userId, accessToken) {
+    return axios.delete(`${baseUrl}/users/${userId}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}

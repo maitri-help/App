@@ -3,6 +3,9 @@ import { Platform, View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOp
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import Notification from '../components/Notification';
+import { getAccessToken, checkAuthentication } from '../authStorage'; 
+import { getNotificationsForUser, markAsRead, changeUserCircle } from '../hooks/api'; 
+import { formatDistanceToNow } from 'date-fns';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -11,26 +14,7 @@ if (Platform.OS === 'android') {
 }
 
 export default function NotificationsScreen({ navigation }) {
-    const notificationsNew = [
-        // { id: 1, assignee: 'Monica Geller', title: `assigned to take out the dog`, time: '2 min ago', emoji: '🐶' },
-        // { id: 2, assignee: 'Chandler Bing', title: `can't take out the dog`, time: '4 hours ago', emoji: '🐶' },
-        // { id: 3, assignee: 'Joey Tribbiani', title: 'assigned to ride to the hospital', time: '3 days ago', emoji: '🚙' },
-    ];
-
-    const notificationsPending = [
-        // { id: 1, assignee: 'Rachel Green', title: `wants to join your circle`, time: '2 min ago', emoji: '✌️' },
-        // { id: 2, assignee: 'Phoebe Buffay', title: `wants to join your circle`, time: '4 hours ago', emoji: '✌️' },
-        // { id: 2, assignee: 'Gunther', title: `wants to join your circle`, time: '5 hours ago', emoji: '✌️' },
-    ];
-
-    const notificationsEarlier = [
-        // { id: 1, assignee: 'Ross Geller', title: `completed hospital Ride`, time: '4 days ago', emoji: '🚙' },
-        // { id: 2, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '5 days ago', emoji: '🐶' },
-        // { id: 3, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '6 days ago', emoji: '🐶' },
-        // { id: 4, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '7 days ago', emoji: '🐶' },
-        // { id: 5, assignee: 'Phoebe Buffay', title: `assigned to take out the dog`, time: '8 days ago', emoji: '🐶' },
-    ];
-
+    const [notifications, setNotifications] = useState([]);
     const [showAllEarlier, setShowAllEarlier] = useState(false);
     const [listHeight, setListHeight] = useState(null);
 
@@ -38,12 +22,74 @@ export default function NotificationsScreen({ navigation }) {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     }, [showAllEarlier]);
 
+    useEffect(() => {
+        async function fetchNotifications() {
+            try {
+                const userData = await checkAuthentication();
+                if (userData) {
+                    const accessToken = userData.accessToken;
+                    const userId = userData.userId;
+
+                    const response = await getNotificationsForUser(userId, accessToken);
+                    setNotifications(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+            }
+        }
+
+        fetchNotifications();
+    }, []);
+
+    const handleAccept = async (notification, circleName) => {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const accessToken = userData.accessToken;
+                console.log(circleName)
+                await changeUserCircle(notification.userId, notification.triggeredByUserId, circleName, accessToken);
+                await markAsRead(notification.notificationId, accessToken);
+                setNotifications(notifications.filter(n => n.notificationId !== notification.notificationId));
+            }
+        } catch (error) {
+            console.error('Error accepting request:', error.response.data);
+        }
+    };
+
     const handleToggleShowAllEarlier = () => {
         setShowAllEarlier(!showAllEarlier);
     };
 
     const handleListLayout = ({ nativeEvent }) => {
         setListHeight(nativeEvent.layout.height);
+    };
+
+    const renderNotifications = (filterFn, type) => {
+        const filteredNotifications = notifications.filter(filterFn);
+
+        if (filteredNotifications.length === 0) {
+            return (
+                <View style={stylesNotifications.notificationsGroupEmpty}>
+                    <Text style={stylesNotifications.notificationsGroupEmptyText}>
+                        {type === 'new' && 'No new notifications'}
+                        {type === 'pending' && 'No pending requests'}
+                        {type === 'earlier' && 'No older notifications'}
+                    </Text>
+                </View>
+            );
+        }
+
+        return filteredNotifications.map((notification, index) => (
+            <Notification
+                key={notification.notificationId}
+                title={notification.message}
+                assignee={notification.triggeredByUserName}
+                time={formatDistanceToNow(new Date(notification.dateTime))}
+                emoji={notification.taskCategory === 'dog' ? '🐶' : notification.taskCategory === 'car' ? '🚙' : '✌️'}
+                buttons={type === 'pending'}
+                onAccept={(circleName) => handleAccept(notification, circleName)}
+            />
+        ));
     };
 
     return (
@@ -60,15 +106,7 @@ export default function NotificationsScreen({ navigation }) {
                         <Text style={stylesNotifications.notificationsGroupTitleText}>New</Text>
                     </View>
                     <View style={stylesNotifications.notificationsGroupList}>
-                        {notificationsNew.length > 0 ?
-                            notificationsNew.map(notification => (
-                                <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
-                            ))
-                            : (
-                                <View style={stylesNotifications.notificationsGroupEmpty}>
-                                    <Text style={stylesNotifications.notificationsGroupEmptyText}>No new notifications</Text>
-                                </View>
-                            )}
+                        {renderNotifications(n => !n.isRead && n.type !== 'pending_request', 'new')}
                     </View>
                 </View>
                 <View style={[stylesNotifications.notificationsGroup, styles.contentContainer]}>
@@ -77,24 +115,9 @@ export default function NotificationsScreen({ navigation }) {
                     </View>
                     <View style={{ overflow: 'hidden', marginBottom: 10 }}>
                         <View style={stylesNotifications.notificationsGroupList}>
-                            {notificationsPending.length > 0 ?
-                                notificationsPending.map((notification, index) => (
-                                    index < 2 ?
-                                        <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} buttons />
-                                        : null
-                                ))
-                                : (
-                                    <View style={stylesNotifications.notificationsGroupEmpty}>
-                                        <Text style={stylesNotifications.notificationsGroupEmptyText}>No pending requests</Text>
-                                    </View>
-                                )}
+                            {renderNotifications(n => n.type === 'pending_request' && !n.isRead, 'pending')}
                         </View>
                     </View>
-                    {notificationsPending.length > 2 && (
-                        <TouchableOpacity style={stylesNotifications.notificationsGroupLink} onPress={() => navigation.navigate('PendingRequest')}>
-                            <Text style={stylesNotifications.notificationsGroupLinkText}>See all</Text>
-                        </TouchableOpacity>
-                    )}
                 </View>
                 <View style={[styles.contentContainer, stylesNotifications.notificationsGroup, { borderBottomWidth: 0 }]}>
                     <View style={stylesNotifications.notificationsGroupTitle}>
@@ -102,20 +125,10 @@ export default function NotificationsScreen({ navigation }) {
                     </View>
                     <View style={{ overflow: 'hidden', marginBottom: 10, height: showAllEarlier ? 'auto' : listHeight }}>
                         <View onLayout={handleListLayout} style={stylesNotifications.notificationsGroupList}>
-                            {notificationsEarlier.length > 0 ?
-                                notificationsEarlier.map((notification, index) => (
-                                    index < 2 || showAllEarlier ?
-                                        <Notification key={notification.id} assignee={notification.assignee} title={notification.title} time={notification.time} emoji={notification.emoji} />
-                                        : null
-                                ))
-                                : (
-                                    <View style={stylesNotifications.notificationsGroupEmpty}>
-                                        <Text style={stylesNotifications.notificationsGroupEmptyText}>No older notifications</Text>
-                                    </View>
-                                )}
+                            {renderNotifications(n => n.isRead, 'earlier')}
                         </View>
                     </View>
-                    {notificationsEarlier.length > 2 && (
+                    {notifications.filter(n => n.isRead).length > 2 && (
                         <TouchableOpacity onPress={handleToggleShowAllEarlier} style={stylesNotifications.notificationsGroupLink}>
                             <Text style={stylesNotifications.notificationsGroupLinkText}>
                                 {showAllEarlier ? 'See less notifications' : 'See previous notifications'}

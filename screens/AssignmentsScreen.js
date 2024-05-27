@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Animated, Platform, Image, FlatList, Modal, Linking, AppState } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Animated, Platform, Image, FlatList, Modal, Linking, AppState, ScrollView } from 'react-native';
 import styles from '../Styles';
 import TaskItem from '../components/TaskItem';
 import PlusModal from '../components/PlusModal';
@@ -55,6 +55,7 @@ export default function AssignmentsScreen({ navigation }) {
     const [isEditable, setIsEditable] = useState(false);
 
     const flatListRef = useRef();
+    const scrollViewRef = useRef();
     const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(true);
 
     const handleTaskItemClick = async (task) => {
@@ -69,6 +70,10 @@ export default function AssignmentsScreen({ navigation }) {
     const handleDateTimeSelectTask = ({ startDateTime, endDateTime }) => {
         setTaskModalStartDate(startDateTime);
         setTaskModalEndDate(endDateTime);
+    };
+
+    const handleTaskStatusChange = () => {
+        fetchTasks(); 
     };
 
     const handleDayPressPlus = (day) => {
@@ -158,7 +163,6 @@ export default function AssignmentsScreen({ navigation }) {
         const day = String(formattedDate.getDate()).padStart(2, '0');
         setSelectedDate(`${year}-${month}-${day}`);
         setWeekSelectedDate(`${year}-${month}-${day}`);
-        scrollToClosestDate(date);
     };
 
     const handleTabChange = (tab) => {
@@ -175,32 +179,6 @@ export default function AssignmentsScreen({ navigation }) {
 
     const handleTaskModalClose = () => {
         setTaskModalVisible(false);
-    };
-
-    const scrollToClosestDate = (date) => {
-        const selected = new Date(date);
-        const closestIndex = tasks?.reduce((closestIndex, task, index) => {
-            const taskStartDate = new Date(task.startDateTime);
-            const closest = new Date(tasks[closestIndex].startDateTime);
-            return Math.abs(selected - taskStartDate) < Math.abs(selected - closest) ? index : closestIndex;
-        }, 0);
-
-        setIsProgrammaticScroll(true);
-        flatListRef.current?.scrollToIndex({ index: closestIndex, animated: true });
-    };
-
-    const handleViewableItemsChanged = (viewableItem) => {
-        if (isProgrammaticScroll) return;
-
-        const formattedDate = new Date(viewableItem.item.startDateTime);
-        const year = formattedDate.getFullYear();
-        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');
-        const day = String(formattedDate.getDate()).padStart(2, '0');
-        setSelectedDate(`${year}-${month}-${day}`);
-        setWeekSelectedDate(`${year}-${month}-${day}`);
-        setDefaultWeekDate(formattedDate);
-        setCurrentMonth(formattedDate.getMonth() + 1);
-        setCurrentYear(formattedDate.getFullYear());
     };
 
     async function fetchTasks() {
@@ -225,21 +203,23 @@ export default function AssignmentsScreen({ navigation }) {
         fetchTasks();
     }, []);
 
-    useEffect(() => {
-        if (tasks.length > 0) {
-            scrollToClosestDate(selectedDate);
-        }
-    }, [tasks]);
+    const isDateInRange = (date, startDate, endDate) => {
+        const d = new Date(date).setHours(0, 0, 0, 0);
+        const start = new Date(startDate).setHours(0, 0, 0, 0);
+        const end = new Date(endDate).setHours(0, 0, 0, 0);
+        return d >= start && d <= end;
+    };
 
-    /* const filteredTasks = tasks.filter(task => {
-        const taskStartDate = new Date(task.startDateTime);
-        const taskEndDate = new Date(task.endDateTime);
+    const filteredTasks = activeTab === 'Month'
+        ? tasks.filter(task => isDateInRange(selectedDate, task.startDateTime, task.endDateTime))
+        : tasks;
 
-        return (
-            selectedDate >= taskStartDate.toISOString().split('T')[0] &&
-            selectedDate <= taskEndDate.toISOString().split('T')[0]
-        );
-    }); */
+    // Sort tasks to ensure done tasks are at the bottom
+    const sortedTasks = [...filteredTasks].sort((a, b) => {
+        if (a.status === 'done' && b.status !== 'done') return 1;
+        if (a.status !== 'done' && b.status === 'done') return -1;
+        return 0;
+    });
 
     const [locationPermissionNeeded, setLocationPermissionNeeded] = useState(false);
 
@@ -256,7 +236,6 @@ export default function AssignmentsScreen({ navigation }) {
         setDeviceLocation(`${location.coords.latitude},${location.coords.longitude}`);
         console.log('LOCATION', location);
     };
-
 
     useEffect(() => {
         requestLocation();
@@ -297,7 +276,7 @@ export default function AssignmentsScreen({ navigation }) {
                         <View style={stylesCal.tabs}>
                             <TouchableOpacity
                                 activeOpacity={0.5}
-                                onPress={() => setActiveTab('Month')} style={[stylesCal.tab, activeTab === 'Month' ? stylesCal.tabActive : '']}>
+                                onPress={() => handleTabChange('Month')} style={[stylesCal.tab, activeTab === 'Month' ? stylesCal.tabActive : '']}>
                                 <Text style={[stylesCal.tabText, activeTab === 'Month' ? stylesCal.tabActiveText : '']}>Month</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -333,57 +312,29 @@ export default function AssignmentsScreen({ navigation }) {
                                 weekSelectedDate={weekSelectedDate}
                                 setWeekSelectedDate={setWeekSelectedDate}
                                 tasks={tasks}
+                                scrollViewRef={scrollViewRef}
                             />
                         )}
                     </View>
                 </View>
 
-
-                {tasks.length === 0 ? (
-                    tasks.length === 0 && (
-                        <>
-                            <View style={stylesCal.calendarEmpty}>
-                                <View style={stylesCal.calendarEmptyImgWrapper}>
-                                    <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesCal.calendarEmptyImg} />
-                                </View>
-                                <Text style={stylesCal.calendarEmptyText}>
-                                    Your list is empty
-                                </Text>
-                                <Text style={stylesCal.calendarEmptyTitle}>
-                                    Click here to add your first task
-                                </Text>
-                                <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
-                            </View>
-                        </>
-                    )/*  : (
-                        <>
-                            <View style={stylesCal.calendarEmpty}>
-                                <Text style={stylesCal.calendarEmptyText}>
-                                    No tasks for this day
-                                </Text>
-                                <Text style={stylesCal.calendarEmptyTitle}>
-                                    Click here to add a new task
-                                </Text>
-                                <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
-                            </View>
-                        </>
-                    ) */
-                ) : (
-                    /* <ScrollView contentContainerStyle={stylesCal.calendarScroll}>
-                        <View style={[styles.contentContainer, stylesCal.tasksWrapper]}>
-                            {filteredTasks.map((task, index) => (
-                                <TaskItem
-                                    key={index}
-                                    task={task}
-                                    taskModal={() => setTaskModalVisible(true)}
-                                    onTaskItemClick={handleTaskItemClick}
-                                />
-                            ))}
+                {filteredTasks.length === 0 ? (
+                    <View style={stylesCal.calendarEmpty}>
+                        <View style={stylesCal.calendarEmptyImgWrapper}>
+                            <Image source={require('../assets/img/tasks-placeholder.png')} style={stylesCal.calendarEmptyImg} />
                         </View>
-                    </ScrollView> */
+                        <Text style={stylesCal.calendarEmptyText}>
+                            Your list is empty
+                        </Text>
+                        <Text style={stylesCal.calendarEmptyTitle}>
+                            Click here to add your first task
+                        </Text>
+                        <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCal.calendarEmptyArrow} />
+                    </View>
+                ) : (
                     <FlatList 
                         contentContainerStyle={[styles.contentContainer, stylesCal.tasksWrapper]}
-                        data={tasks}
+                        data={sortedTasks}
                         keyExtractor={(item) => item.taskId}
                         ref={flatListRef}
                         renderItem={({ item }) => (
@@ -392,19 +343,17 @@ export default function AssignmentsScreen({ navigation }) {
                                 task={item}
                                 taskModal={() => setTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
+                                isCheckbox={true}
+                                onTaskStatusChange={handleTaskStatusChange}
                             />
                         )}
-                        onViewableItemsChanged={({ viewableItems }) => {
-                            if (viewableItems.length > 0) handleViewableItemsChanged(viewableItems[0]);
-                        }}
-                        viewabilityConfig={{
-                            itemVisiblePercentThreshold: 50,
-                        }}
                         onScrollBeginDrag={() => setIsProgrammaticScroll(false)}
                         onScrollToIndexFailed={info => {
                             const wait = new Promise(resolve => setTimeout(resolve, 100));
                             wait.then(() => {
-                              flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+                              if (info.index < sortedTasks.length) {
+                                  flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+                              }
                             });
                           }}
                     />

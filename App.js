@@ -33,12 +33,11 @@ import OpenIcon from './assets/icons/open-icon.svg';
 import MyTasksSupporterScreen from './screens/MyTasksSupporterScreen';
 import OpenTasksSupporterScreen from './screens/OpenTasksSupporterScreen';
 import ProfileSupporterScreen from './screens/ProfileSupporterScreen';
-import * as Calendar from 'expo-calendar';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function MainNavigator({ setIsLoggedIn }) {
+function MainNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -70,7 +69,7 @@ function MainNavigator({ setIsLoggedIn }) {
   );
 }
 
-function SuppNavigator({ setIsLoggedIn }) {
+function SuppNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -130,9 +129,10 @@ export default function App() {
         const userData = await checkAuthentication();
         setUserData(userData);
         setIsLoggedIn(userData !== null);
-        if (userData) {
-          setHasCompletedOnboarding(await getOnboardingCompleted());
-        }
+
+        const completedOnboarding = await getOnboardingCompleted();
+        setHasCompletedOnboarding(completedOnboarding);
+
         setLoading(false);
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -145,17 +145,6 @@ export default function App() {
     };
 
     checkAuthAndOnboarding();
-  }, []);
-
-  const requestCalendarPermission = async () => {
-    const permission = await Calendar.requestCalendarPermissionsAsync();
-    if (!permission.granted) {
-      console.log('Permission to access calendar was denied');
-    }
-  };
-
-  useEffect(() => {
-    requestCalendarPermission();
   }, []);
 
   if (!isReady || loading) {
@@ -181,7 +170,13 @@ export default function App() {
     >
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName={!isLoggedIn ? (hasCompletedOnboarding ? 'Login' : 'Onboarding') : (userData && userData.userType === 'Supporter' ? 'MainSupporter' : 'Main')}
+          initialRouteName={
+            !isLoggedIn ? (
+              hasCompletedOnboarding ? 'Login' : 'Onboarding'
+            ) : (
+              userData && userData.userType === 'Supporter' ? 'MainSupporter' : 'Main'
+            )
+          }
           screenOptions={{ headerShown: false }}
         >
           {!isLoggedIn || !hasCompletedOnboarding ? (

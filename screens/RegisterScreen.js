@@ -12,7 +12,10 @@ import handleSignUp from '../hooks/handleSignUp';
 import { useToast } from 'react-native-toast-notifications';
 
 const validationSchema = yup.object().shape({
-    fullName: yup.string().required('Full Name is required'),
+    fullName: yup.string().matches(
+        /^[a-zA-Z\s'‘’"”]+$/,
+        'Full Name can only contain letters, spaces, and certain punctuation (e.g., \' " ‘ ’)'
+    ).required('Full Name is required'),
     email: yup.string().email('Enter a valid email').required('Email is required'),
     phoneNumber: yup.string().matches(
         /^(?:(?:\+|00)(?:[1-9]\d{0,2}))?(?:\s*\d{7,})$/,
@@ -20,6 +23,7 @@ const validationSchema = yup.object().shape({
     ).required('Phone Number is required'),
     acceptedTerms: yup.boolean().oneOf([true], 'You must accept the Privacy Policy and Terms & Conditions'),
 });
+
 
 export default function RegisterScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
@@ -142,9 +146,9 @@ export default function RegisterScreen({ navigation }) {
                                         </View>
                                         <Text style={styles.checkboxText}>
                                             I accept the
-                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')}> Privacy Policy </Text>
+                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.maitrihelp.com/privacy-policy')}> Privacy Policy </Text>
                                             and
-                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')}> Terms & Conditions</Text>
+                                            <Text style={{ textDecorationLine: 'underline' }} onPress={() => Linking.openURL('https://www.maitrihelp.com/terms-conditions')}> Terms & Conditions</Text>
                                         </Text>
                                     </TouchableOpacity>
                                     {touched.acceptedTerms && !values.acceptedTerms && errors.acceptedTerms &&

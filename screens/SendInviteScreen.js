@@ -29,7 +29,14 @@ export default function SendInviteScreen({ visible, onClose, navigation }) {
     const shareTribeCode = async () => {
         try {
             await Share.share({
-                message: `Join my tribe with this code: ${userTribeCode}`,
+                message: `Hey! This is a personal invite to join my tribe on Maitri - A new way to ask for help.
+
+                After you download the app, use my unique invite code to find me.
+                
+                [apple app store link]
+                [android app store link]
+                
+                ${userTribeCode}`,
             });
         } catch (error) {
             console.error('Error sharing tribe code:', error);

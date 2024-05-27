@@ -20,6 +20,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
     const toast = useToast();
 
     const [confirmationVisible, setConfirmationVisible] = useState(false);
+    const [calendarPermissionNeeded, setCalendarPermissionNeeded] = useState(false);
 
     const handleCancel = () => {
         setConfirmationVisible(false);
@@ -126,18 +127,24 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
         }
     };
 
-    const [ calendarPermission ] = Calendar.useCalendarPermissions();
-    const [calendarPermissionNeeded, setCalendarPermissionNeeded] = useState(false);
+    const requestCalendarPermission = async () => {
+        const permission = await Calendar.requestCalendarPermissionsAsync();
+        if (!permission.granted) {
+            console.log('Permission to access calendar was denied');
+            setCalendarPermissionNeeded(true);
+            return false;
+        }
+        return true;
+    };
 
     const handleOpenCalendar = async () => {
-        // console.log('CALENDAR PERMISSION:', calendarPermission);
-        if (!calendarPermission.granted) {
-            setCalendarPermissionNeeded(true);
+        const permissionGranted = await requestCalendarPermission();
+        if (!permissionGranted) {
             return;
         }
 
         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-        console.log('CALENDARS:', calendars);        
+        console.log('CALENDARS:', calendars);
         const defaultCalendar = Platform.select({
             ios: calendars.find(cal => cal.allowsModifications && cal.source.name === 'iCloud'),
             android: calendars.find(cal => cal.accessLevel === "owner" && cal.name === cal.ownerAccount),
@@ -165,8 +172,12 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                 console.error('Error adding event to calendar:', error);
                 toast.show('Error adding event to calendar', { type: 'error' });
             });
-    }
+    };
 
+    const handleGoToSettings = () => {
+        Linking.openSettings();
+        setCalendarPermissionNeeded(false);
+    };
 
     return (
         <>
@@ -319,7 +330,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                         <View style={stylesReview.innerModalContent}>
                         <View style={stylesReview.innerModalTexts}>
                             <Text style={stylesReview.innerModalTitle}>Please provide access for this app to your calendar.</Text>
-                            <Text style={stylesReview.innerModalSubtitle}>Without acces we cannot export this event to your calendar.</Text>
+                            <Text style={stylesReview.innerModalSubtitle}>Without access we cannot export this event to your calendar.</Text>
                         </View>
                         <View style={stylesReview.innerModalButtons}>
                             <TouchableOpacity style={[stylesReview.innerModalButton, stylesReview.innerModalButtonRed]} onPress={handleGoToSettings}>

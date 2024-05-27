@@ -19,6 +19,8 @@ export default function PlusModal({ visible, onClose, handleDateTimeSelect, star
 
   const [confirmationVisible, setConfirmationVisible] = useState(false);
 
+  console.log('startDate', startDate, 'endDate', endDate, 'startTime', startTime, 'endTime', endTime);
+
   useEffect(() => {
     if (!visible) {
       resetModalState();
