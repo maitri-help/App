@@ -8,7 +8,8 @@ import {
     TouchableOpacity,
     Animated,
     FlatList,
-    Dimensions
+    Dimensions,
+    ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
 import CirclesView from '../components/CirclesView';
@@ -31,6 +32,7 @@ export default function CirclesScreen({ navigation }) {
     const [userId, setUserId] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
     const swiperRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const tabData = circlesTabs.map((tab) => ({ key: tab }));
     const { width: screenWidth } = Dimensions.get('window');
@@ -44,6 +46,7 @@ export default function CirclesScreen({ navigation }) {
 
     async function fetchCircleUsers() {
         try {
+            setIsLoading(true);
             const userData = await checkAuthentication();
             if (userData) {
                 setUserId(userData.userId);
@@ -68,8 +71,10 @@ export default function CirclesScreen({ navigation }) {
             } else {
                 console.error('No user data found');
             }
+            setIsLoading(false);
         } catch (error) {
             console.error('Error fetching circle users:', error);
+            setIsLoading(false);
         }
     }
 
@@ -329,6 +334,21 @@ export default function CirclesScreen({ navigation }) {
                         />
                     ))}
                 </View>
+                {isLoading && (
+                    <View
+                        style={{
+                            minHeight: 80,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            position: 'absolute',
+                            height: '100%',
+                            width: '100%',
+                            zIndex: 10
+                        }}
+                    >
+                        <ActivityIndicator size="large" />
+                    </View>
+                )}
                 <FlatList
                     data={tabData}
                     horizontal

@@ -8,7 +8,8 @@ import {
     ScrollView,
     Image,
     ImageBackground,
-    Animated
+    Animated,
+    ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
@@ -81,6 +82,8 @@ export default function HomeSupporterScreen({ navigation }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
+    const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         const selectRandomInspirationalQuote = () => {
             const randomIndex = Math.floor(
@@ -94,6 +97,7 @@ export default function HomeSupporterScreen({ navigation }) {
 
     useEffect(() => {
         async function fetchUserData() {
+            setIsLoading(true);
             try {
                 const userData = await checkAuthentication();
                 if (userData) {
@@ -102,11 +106,13 @@ export default function HomeSupporterScreen({ navigation }) {
                     setColor(userData.color);
                     setEmoji(userData.emoji);
                 }
+                setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 clearUserData();
                 clearAccessToken();
                 navigation.navigate('Login');
+                setIsLoading(false);
             }
         }
         fetchUserData();
@@ -415,10 +421,24 @@ export default function HomeSupporterScreen({ navigation }) {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                {tasks.length > 0 && (
-                    <View style={stylesSuppHome.tabsContentContainer}>
-                        {renderTasks(tasks)}
+                {isLoading ? (
+                    <View
+                        style={{
+                            minHeight: 80,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <ActivityIndicator size="large" />
                     </View>
+                ) : (
+                    <>
+                        {tasks.length > 0 && (
+                            <View style={stylesSuppHome.tabsContentContainer}>
+                                {renderTasks(tasks)}
+                            </View>
+                        )}
+                    </>
                 )}
 
                 {(taskModalVisible || myTaskModalVisible) && (

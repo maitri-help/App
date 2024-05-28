@@ -564,7 +564,13 @@ export default function HomeScreen({ navigation }) {
                 </View>
 
                 {isLoading ? (
-                    <View>
+                    <View
+                        style={{
+                            minHeight: 80,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
                         <ActivityIndicator size="large" />
                     </View>
                 ) : (

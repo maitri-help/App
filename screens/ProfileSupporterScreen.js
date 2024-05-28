@@ -89,7 +89,7 @@ export default function ProfileSupporterScreen({ navigation }) {
                     {isLoading ? (
                         <View
                             style={{
-                                minHeight: 135,
+                                minHeight: 210,
                                 justifyContent: 'center',
                                 alignItems: 'center'
                             }}

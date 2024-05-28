@@ -12,7 +12,7 @@ import {
     Modal,
     Linking,
     AppState,
-    ScrollView
+    ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
 import TaskItem from '../components/TaskItem';
@@ -73,6 +73,7 @@ export default function AssignmentsScreen({ navigation }) {
     const flatListRef = useRef();
     const scrollViewRef = useRef();
     const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleTaskItemClick = async (task) => {
         setSelectedTask(task);
@@ -199,6 +200,7 @@ export default function AssignmentsScreen({ navigation }) {
 
     async function fetchTasks() {
         try {
+            setIsLoading(true);
             const userData = await checkAuthentication();
             if (userData) {
                 const tasksResponse = await getTasksForUser(
@@ -210,8 +212,10 @@ export default function AssignmentsScreen({ navigation }) {
             } else {
                 console.error('No user data found');
             }
+            setIsLoading(false);
         } catch (error) {
             console.error('Error fetching tasks:', error);
+            setIsLoading(false);
         }
     }
 
@@ -383,60 +387,79 @@ export default function AssignmentsScreen({ navigation }) {
                         )}
                     </View>
                 </View>
-
-                {filteredTasks.length === 0 ? (
-                    <View style={stylesCal.calendarEmpty}>
-                        <View style={stylesCal.calendarEmptyImgWrapper}>
-                            <Image
-                                source={require('../assets/img/tasks-placeholder.png')}
-                                style={stylesCal.calendarEmptyImg}
-                            />
-                        </View>
-                        <Text style={stylesCal.calendarEmptyText}>
-                            Your list is empty
-                        </Text>
-                        <Text style={stylesCal.calendarEmptyTitle}>
-                            Click here to add your first task
-                        </Text>
-                        <Image
-                            source={require('../assets/img/purple-arrow-right.png')}
-                            style={stylesCal.calendarEmptyArrow}
-                        />
+                {isLoading ? (
+                    <View
+                        style={{
+                            minHeight: 80,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <ActivityIndicator size="large" />
                     </View>
                 ) : (
-                    <FlatList
-                        contentContainerStyle={[
-                            styles.contentContainer,
-                            stylesCal.tasksWrapper
-                        ]}
-                        data={sortedTasks}
-                        keyExtractor={(item) => item.taskId}
-                        ref={flatListRef}
-                        renderItem={({ item }) => (
-                            <TaskItem
-                                key={item.taskId}
-                                task={item}
-                                taskModal={() => setTaskModalVisible(true)}
-                                onTaskItemClick={handleTaskItemClick}
-                                isCheckbox={true}
-                                onTaskStatusChange={handleTaskStatusChange}
+                    <View>
+                        {filteredTasks.length === 0 ? (
+                            <View style={stylesCal.calendarEmpty}>
+                                <View style={stylesCal.calendarEmptyImgWrapper}>
+                                    <Image
+                                        source={require('../assets/img/tasks-placeholder.png')}
+                                        style={stylesCal.calendarEmptyImg}
+                                    />
+                                </View>
+                                <Text style={stylesCal.calendarEmptyText}>
+                                    Your list is empty
+                                </Text>
+                                <Text style={stylesCal.calendarEmptyTitle}>
+                                    Click here to add your first task
+                                </Text>
+                                <Image
+                                    source={require('../assets/img/purple-arrow-right.png')}
+                                    style={stylesCal.calendarEmptyArrow}
+                                />
+                            </View>
+                        ) : (
+                            <FlatList
+                                contentContainerStyle={[
+                                    styles.contentContainer,
+                                    stylesCal.tasksWrapper
+                                ]}
+                                data={sortedTasks}
+                                keyExtractor={(item) => item.taskId}
+                                ref={flatListRef}
+                                renderItem={({ item }) => (
+                                    <TaskItem
+                                        key={item.taskId}
+                                        task={item}
+                                        taskModal={() =>
+                                            setTaskModalVisible(true)
+                                        }
+                                        onTaskItemClick={handleTaskItemClick}
+                                        isCheckbox={true}
+                                        onTaskStatusChange={
+                                            handleTaskStatusChange
+                                        }
+                                    />
+                                )}
+                                onScrollBeginDrag={() =>
+                                    setIsProgrammaticScroll(false)
+                                }
+                                onScrollToIndexFailed={(info) => {
+                                    const wait = new Promise((resolve) =>
+                                        setTimeout(resolve, 100)
+                                    );
+                                    wait.then(() => {
+                                        if (info.index < sortedTasks.length) {
+                                            flatListRef.current?.scrollToIndex({
+                                                index: info.index,
+                                                animated: true
+                                            });
+                                        }
+                                    });
+                                }}
                             />
                         )}
-                        onScrollBeginDrag={() => setIsProgrammaticScroll(false)}
-                        onScrollToIndexFailed={(info) => {
-                            const wait = new Promise((resolve) =>
-                                setTimeout(resolve, 100)
-                            );
-                            wait.then(() => {
-                                if (info.index < sortedTasks.length) {
-                                    flatListRef.current?.scrollToIndex({
-                                        index: info.index,
-                                        animated: true
-                                    });
-                                }
-                            });
-                        }}
-                    />
+                    </View>
                 )}
 
                 <View style={stylesCal.floatingButtonWrapper}>
