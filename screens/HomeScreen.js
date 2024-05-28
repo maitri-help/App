@@ -14,7 +14,7 @@ import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import CustomBox from '../components/CustomBox';
 import TaskItem from '../components/TaskItem';
-import { getTasksForUser } from '../hooks/api';
+import { getTasksForUser, getNotificationsForUser } from '../hooks/api';
 import {
     checkAuthentication,
     clearUserData,
@@ -102,6 +102,9 @@ export default function HomeScreen({ navigation }) {
     const [emoji, setEmoji] = useState('');
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
+    
+    const [notifications, setNotifications] = useState([]);
+    const [hasUnreadPendingRequest, setHasUnreadPendingRequest] = useState(false);
 
     useEffect(() => {
         const selectRandomQuote = () => {
@@ -159,6 +162,9 @@ export default function HomeScreen({ navigation }) {
                     userData.accessToken
                 );
                 setTasks(tasksResponse.data);
+
+                console.log('userId:', userData.userId);
+                console.log('accessToken:', userData.accessToken);
             } else {
                 console.error('No user data found');
                 navigation.reset({
@@ -173,9 +179,34 @@ export default function HomeScreen({ navigation }) {
         }
     }
 
+    async function fetchNotifications() {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const notificationsResponse = await getNotificationsForUser(userData.userId, userData.accessToken);
+                const notificationsData = notificationsResponse.data;
+                setNotifications(notificationsData);
+
+                const hasUnreadPending = notificationsData.some(notification =>
+                    notification.isRead === false || notification.type === 'pending_request'
+                );
+                setHasUnreadPendingRequest(hasUnreadPending);
+            } else {
+                console.error('No user data found');
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }]
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    }
+
     useFocusEffect(
         React.useCallback(() => {
             fetchTasks();
+            fetchNotifications();
         }, [])
     );
 
@@ -436,7 +467,9 @@ export default function HomeScreen({ navigation }) {
                         style={stylesHome.bellWrapper}
                     >
                         <BellIcon style={stylesHome.bellIcon} />
-                        {/* <View style={stylesHome.indicator}></View> */}
+                        {hasUnreadPendingRequest && (
+                            <View style={stylesHome.indicator}></View>
+                        )}
                     </TouchableOpacity>
                 </View>
                 <View style={stylesHome.boxesContainer}>
@@ -538,7 +571,7 @@ export default function HomeScreen({ navigation }) {
                             style={[
                                 stylesHome.tabText,
                                 activeTab === 'Unassigned' &&
-                                    stylesHome.activeTabText
+                                stylesHome.activeTabText
                             ]}
                         >
                             Unassigned
@@ -555,7 +588,7 @@ export default function HomeScreen({ navigation }) {
                             style={[
                                 stylesHome.tabText,
                                 activeTab === 'Personal' &&
-                                    stylesHome.activeTabText
+                                stylesHome.activeTabText
                             ]}
                         >
                             Personal
