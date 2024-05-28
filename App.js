@@ -110,10 +110,6 @@ export default function App() {
   const [userData, setUserData] = useState(null);
   const toast = useToast();
 
-  OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-  OneSignal.initialize("1b855f1e-0e05-450c-99e8-34e4d6f7f642");
-  OneSignal.Notifications.requestPermission(true);
-
   useEffect(() => {
     async function loadAppResources() {
       try {
@@ -151,6 +147,15 @@ export default function App() {
 
     checkAuthAndOnboarding();
   }, []);
+
+  useEffect(() => {
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+    OneSignal.initialize("1b855f1e-0e05-450c-99e8-34e4d6f7f642");
+    OneSignal.Notifications.requestPermission(true);
+    if (isLoggedIn) {
+      OneSignal.login(`${userData.userId}`); // OneSignal requires a string
+    }
+  }, [isLoggedIn]);
 
   if (!isReady || loading) {
     return <Image source={require('./assets/splash.png')} style={styles.splashImg} />;
