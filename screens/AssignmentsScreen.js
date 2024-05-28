@@ -398,7 +398,7 @@ export default function AssignmentsScreen({ navigation }) {
                         <ActivityIndicator size="large" />
                     </View>
                 ) : (
-                    <View>
+                    <>
                         {filteredTasks.length === 0 ? (
                             <View style={stylesCal.calendarEmpty}>
                                 <View style={stylesCal.calendarEmptyImgWrapper}>
@@ -459,7 +459,7 @@ export default function AssignmentsScreen({ navigation }) {
                                 }}
                             />
                         )}
-                    </View>
+                    </>
                 )}
 
                 <View style={stylesCal.floatingButtonWrapper}>
