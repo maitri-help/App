@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_URL } from '../constants/config';
 
-const baseUrl = 'https://maitri-backend.cubicfoxdev.com:3000';
+const baseUrl = API_URL;
 // const baseUrl = 'http://localhost:3000';
 
 export function resendOtp(phoneNumber) {
@@ -57,10 +58,17 @@ export function deleteTask(taskId, accessToken) {
     });
 }
 
-export function deleteSupporterFromCircle(circleId, supporterUserId, accessToken) {
-    return axios.delete(`${baseUrl}/users/circles/${circleId}/supporters/${supporterUserId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-    });
+export function deleteSupporterFromCircle(
+    circleId,
+    supporterUserId,
+    accessToken
+) {
+    return axios.delete(
+        `${baseUrl}/users/circles/${circleId}/supporters/${supporterUserId}`,
+        {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        }
+    );
 }
 
 export function getTasksForUser(userId, accessToken) {
@@ -103,12 +111,21 @@ export function unassingUserToTask(taskId, accessToken) {
     });
 }
 
-export function changeUserCircle(leadUserId, supporterUserId, newCircle, accessToken) {
-    return axios.patch(`${baseUrl}/users/${leadUserId}/supporters/${supporterUserId}/circles`, { newCircleLevels: [newCircle] }, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
+export function changeUserCircle(
+    leadUserId,
+    supporterUserId,
+    newCircle,
+    accessToken
+) {
+    return axios.patch(
+        `${baseUrl}/users/${leadUserId}/supporters/${supporterUserId}/circles`,
+        { newCircleLevels: [newCircle] },
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
         }
-    });
+    );
 }
 
 export function getNotificationsForUser(userId, accessToken) {
@@ -120,11 +137,15 @@ export function getNotificationsForUser(userId, accessToken) {
 }
 
 export async function markAsRead(notificationId, accessToken) {
-    return axios.patch(`${baseUrl}/notifications/${notificationId}/read`, null, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
+    return axios.patch(
+        `${baseUrl}/notifications/${notificationId}/read`,
+        null,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
         }
-    });
+    );
 }
 
 export async function deleteUser(userId, accessToken) {

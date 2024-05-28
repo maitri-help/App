@@ -1,5 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    SafeAreaView
+} from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import styles from '../Styles';
@@ -17,7 +24,7 @@ const validationSchema = yup.object().shape({
         .required('Code is required')
         .matches(/^\d+$/, 'Code must be numeric')
         .min(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`)
-        .max(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`),
+        .max(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`)
 });
 
 export default function VerifyNumberScreen({ route, navigation }) {
@@ -67,13 +74,15 @@ export default function VerifyNumberScreen({ route, navigation }) {
             .then((response) => {
                 const accessToken = response.data.accessToken;
                 storeAccessToken(accessToken);
-                console.log('OTP Verification Response:', response.data);
+
                 navigation.navigate('Success', { userId });
                 toast.show('Signed in successfully', { type: 'success' });
             })
             .catch((error) => {
                 console.error('OTP Verification Error:', error);
-                toast.show('Invalid Code. Please try again.', { type: 'error' });
+                toast.show('Invalid Code. Please try again.', {
+                    type: 'error'
+                });
             });
     };
 
@@ -81,17 +90,29 @@ export default function VerifyNumberScreen({ route, navigation }) {
         <SafeAreaView style={styles.safeArea}>
             <Formik
                 initialValues={{ otp: '' }}
-                onSubmit={() => { }}
+                onSubmit={() => {}}
                 validationSchema={validationSchema}
             >
                 {({ handleChange, setErrors, errors, touched }) => (
                     <View style={[styles.container, styles.authContainer]}>
-                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backLink}>
-                            <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
+                        <TouchableOpacity
+                            onPress={() => navigation.goBack()}
+                            style={styles.backLink}
+                        >
+                            <ArrowLeftIcon
+                                width={18}
+                                height={18}
+                                style={styles.backLinkIcon}
+                            />
                         </TouchableOpacity>
                         <View style={styles.topTextsContainer}>
-                            <Text style={[styles.title, stylesVerify.title]}>Verify your Number</Text>
-                            <Text style={[styles.text, stylesVerify.text]}>Enter the 6-digit code verification code sent to your phone</Text>
+                            <Text style={[styles.title, stylesVerify.title]}>
+                                Verify your Number
+                            </Text>
+                            <Text style={[styles.text, stylesVerify.text]}>
+                                Enter the 6-digit code verification code sent to
+                                your phone
+                            </Text>
                         </View>
                         <View style={stylesVerify.otpInputContainer}>
                             {otp.map((value, index) => (
@@ -99,26 +120,53 @@ export default function VerifyNumberScreen({ route, navigation }) {
                                     key={index}
                                     style={[
                                         stylesVerify.otpInput,
-                                        index === OTP_LENGTH - 1 && value !== '' ? stylesVerify.lastInput : null,
-                                        errors.otp && touched.otp && touched.otp[index] ? stylesVerify.errorInput : null,
+                                        index === OTP_LENGTH - 1 && value !== ''
+                                            ? stylesVerify.lastInput
+                                            : null,
+                                        errors.otp &&
+                                        touched.otp &&
+                                        touched.otp[index]
+                                            ? stylesVerify.errorInput
+                                            : null
                                     ]}
-                                    onChangeText={(text) => handleOtpChange(index, text, setErrors)}
+                                    onChangeText={(text) =>
+                                        handleOtpChange(index, text, setErrors)
+                                    }
                                     value={value}
                                     keyboardType="numeric"
                                     maxLength={1}
-                                    ref={(ref) => (otpInputRef.current[index] = ref)}
+                                    ref={(ref) =>
+                                        (otpInputRef.current[index] = ref)
+                                    }
                                 />
                             ))}
                         </View>
-                        {touched.otp && errors.otp &&
+                        {touched.otp && errors.otp && (
                             <Text style={styles.errorText}>{errors.otp}</Text>
-                        }
+                        )}
 
                         <View style={stylesVerify.bottomTextsContainer}>
-                            <Text style={stylesVerify.bottomTitle}>Didn't receive a code? </Text>
-                            <TouchableOpacity onPress={resendClickable ? handleResendPress : null}>
-                                <Text style={[stylesVerify.bottomText, resendClickable ? stylesVerify.resendClickable : null]}>
-                                    {countdown > 0 ? `Resend in 00:${countdown.toString().padStart(2, '0')}s` : 'Resend'}
+                            <Text style={stylesVerify.bottomTitle}>
+                                Didn't receive a code?{' '}
+                            </Text>
+                            <TouchableOpacity
+                                onPress={
+                                    resendClickable ? handleResendPress : null
+                                }
+                            >
+                                <Text
+                                    style={[
+                                        stylesVerify.bottomText,
+                                        resendClickable
+                                            ? stylesVerify.resendClickable
+                                            : null
+                                    ]}
+                                >
+                                    {countdown > 0
+                                        ? `Resend in 00:${countdown
+                                              .toString()
+                                              .padStart(2, '0')}s`
+                                        : 'Resend'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -131,17 +179,17 @@ export default function VerifyNumberScreen({ route, navigation }) {
 
 const stylesVerify = StyleSheet.create({
     title: {
-        textAlign: 'center',
+        textAlign: 'center'
     },
     text: {
-        textAlign: 'center',
+        textAlign: 'center'
     },
     otpInputContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         gap: 10,
         marginTop: 100,
-        marginBottom: 15,
+        marginBottom: 15
     },
     otpInput: {
         width: 40,
@@ -153,19 +201,19 @@ const stylesVerify = StyleSheet.create({
         fontSize: 16,
         lineHeight: 23,
         color: '#252525',
-        fontFamily: 'poppins-regular',
+        fontFamily: 'poppins-regular'
     },
     errorInput: {
-        borderColor: '#EE0004',
+        borderColor: '#EE0004'
     },
     bottomTextsContainer: {
         marginTop: 60,
         alignItems: 'center',
-        gap: 10,
+        gap: 10
     },
     bottomTitle: {
         fontFamily: 'poppins-semibold',
-        fontSize: 15,
+        fontSize: 15
     },
     bottomText: {
         fontFamily: 'poppins-regular',
@@ -175,6 +223,6 @@ const stylesVerify = StyleSheet.create({
     resendClickable: {
         color: '#000',
         fontFamily: 'poppins-medium',
-        textDecorationLine: 'underline',
+        textDecorationLine: 'underline'
     }
 });

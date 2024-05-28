@@ -1,6 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, SafeAreaView, TouchableOpacity, Animated } from 'react-native';
-import Swiper from 'react-native-swiper';
+import {
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    SafeAreaView,
+    TouchableOpacity,
+    Animated,
+    FlatList,
+    Dimensions
+} from 'react-native';
 import styles from '../Styles';
 import CirclesView from '../components/CirclesView';
 import CircleItem from '../components/CircleItem';
@@ -9,16 +18,22 @@ import SendInviteScreen from './SendInviteScreen';
 import SupporterCardScreen from './SupporterCardScreen';
 import { circlesUsers } from '../hooks/api';
 import { checkAuthentication } from '../authStorage';
+import Tab from '../components/common/Tab';
+import { circlesTabs } from '../constants/variables';
 
 export default function CirclesScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Circles');
-    const [sendInvitesModalVisible, setSendInvitesModalVisible] = useState(false);
-    const [supporterCardModalVisible, setSupporterCardModalVisible] = useState(false);
+    const [sendInvitesModalVisible, setSendInvitesModalVisible] =
+        useState(false);
+    const [supporterCardModalVisible, setSupporterCardModalVisible] =
+        useState(false);
     const [selectedCircleItem, setSelectedCircleItem] = useState(null);
     const [userId, setUserId] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
     const swiperRef = useRef(null);
 
+    const tabData = circlesTabs.map((tab) => ({ key: tab }));
+    const { width: screenWidth } = Dimensions.get('window');
     const [tabContents, setTabContents] = useState({
         First: [],
         Second: [],
@@ -31,16 +46,19 @@ export default function CirclesScreen({ navigation }) {
         try {
             const userData = await checkAuthentication();
             if (userData) {
-                console.log('User Data:', userData);
-
                 setUserId(userData.userId);
 
-                const circlesResponse = await circlesUsers(userData.accessToken);
-
-                console.log('Circles user data:', circlesResponse.data);
+                const circlesResponse = await circlesUsers(
+                    userData.accessToken
+                );
 
                 const filteredData = Object.keys(circlesResponse.data)
-                    .filter(key => key !== "New" && key !== "Personal" && key !== "Frist")
+                    .filter(
+                        (key) =>
+                            key !== 'New' &&
+                            key !== 'Personal' &&
+                            key !== 'Frist'
+                    )
                     .reduce((obj, key) => {
                         obj[key] = circlesResponse.data[key];
                         return obj;
@@ -59,16 +77,27 @@ export default function CirclesScreen({ navigation }) {
         fetchCircleUsers();
     }, []);
 
-
     useEffect(() => {
         generateRandomCircleItems();
     }, [tabContents]);
 
     const generateRandomCircleItems = () => {
         const circleItemsContent = [
-            { ...getRandomItem(tabContents.Third), circle: 'Third' } || { firstName: 'Peer', emoji: null, circle: 'Third' },
-            { ...getRandomItem(tabContents.Second), circle: 'Second' } || { firstName: 'Friend', emoji: null, circle: 'Second' },
-            { ...getRandomItem(tabContents.First), circle: 'First' } || { firstName: 'Parent', emoji: null, circle: 'First' },
+            { ...getRandomItem(tabContents.Third), circle: 'Third' } || {
+                firstName: 'Peer',
+                emoji: null,
+                circle: 'Third'
+            },
+            { ...getRandomItem(tabContents.Second), circle: 'Second' } || {
+                firstName: 'Friend',
+                emoji: null,
+                circle: 'Second'
+            },
+            { ...getRandomItem(tabContents.First), circle: 'First' } || {
+                firstName: 'Parent',
+                emoji: null,
+                circle: 'First'
+            }
         ];
         setCircleItemsContent(circleItemsContent);
     };
@@ -85,21 +114,31 @@ export default function CirclesScreen({ navigation }) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         } else {
             Animated.timing(overlayOpacity, {
                 toValue: 0,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         }
     }, [sendInvitesModalVisible || supporterCardModalVisible]);
 
+    // const handleTabPress = (tab) => {
+    //     console.log(tab);
+    //     setActiveTab(tab);
+    //     const tabIndex = circlesTabs.indexOf(tab);
+    //     console.log(tabIndex);
+    //     swiperRef.current?.scrollBy(
+    //         tabIndex - swiperRef.current?.state?.index,
+    //         true
+    //     );
+    // };
     const handleTabPress = (tab) => {
+        const tabIndex = circlesTabs.indexOf(tab);
+        swiperRef.current.scrollToIndex({ index: tabIndex, animated: true });
         setActiveTab(tab);
-        const tabIndex = ['Circles', 'All', 'First', 'Second', 'Third'].indexOf(tab);
-        swiperRef.current?.scrollBy(tabIndex - swiperRef.current?.state?.index, true);
     };
 
     const handlePressCircleItemCount = (tab) => {
@@ -111,9 +150,15 @@ export default function CirclesScreen({ navigation }) {
             const allContent = generateAllTabContent();
             return allContent.length === 0;
         } else if (activeTab === 'Circles') {
-            return tabContents.First.length === 0 && tabContents.Second.length === 0 && tabContents.Third.length === 0;
+            return (
+                tabContents.First.length === 0 &&
+                tabContents.Second.length === 0 &&
+                tabContents.Third.length === 0
+            );
         } else {
-            return tabContents[activeTab] && tabContents[activeTab].length === 0;
+            return (
+                tabContents[activeTab] && tabContents[activeTab].length === 0
+            );
         }
     };
 
@@ -134,9 +179,18 @@ export default function CirclesScreen({ navigation }) {
 
     const circlesContent = (tab) => {
         if (tab === 'Circles') {
-            const additionalItemCountThird = Math.max(0, tabContents.Third.length - 1);
-            const additionalItemCountSecond = Math.max(0, tabContents.Second.length - 1);
-            const additionalItemCountFirst = Math.max(0, tabContents.First.length - 1);
+            const additionalItemCountThird = Math.max(
+                0,
+                tabContents.Third.length - 1
+            );
+            const additionalItemCountSecond = Math.max(
+                0,
+                tabContents.Second.length - 1
+            );
+            const additionalItemCountFirst = Math.max(
+                0,
+                tabContents.First.length - 1
+            );
 
             return (
                 <>
@@ -149,7 +203,9 @@ export default function CirclesScreen({ navigation }) {
                         <CirclesView
                             circleItemsContent={circleItemsContent}
                             additionalItemCountThird={additionalItemCountThird}
-                            additionalItemCountSecond={additionalItemCountSecond}
+                            additionalItemCountSecond={
+                                additionalItemCountSecond
+                            }
                             additionalItemCountFirst={additionalItemCountFirst}
                             onPressCircleItemCount={handlePressCircleItemCount}
                             onPressCircleItem={handleCircleItemPress}
@@ -161,16 +217,25 @@ export default function CirclesScreen({ navigation }) {
             const allContent = generateAllTabContent();
             if (allContent.length === 0) {
                 return (
-                    <View style={[styles.contentContainer, stylesCircles.circleListEmptyContainer]}>
+                    <View
+                        style={[
+                            styles.contentContainer,
+                            stylesCircles.circleListEmptyContainer
+                        ]}
+                    >
                         <View style={stylesCircles.circleListEmptyTexts}>
                             <Text style={stylesCircles.circleListEmptyText}>
-                                You haven't invited anyone to your support circle yet.
+                                You haven't invited anyone to your support
+                                circle yet.
                             </Text>
                             <Text style={stylesCircles.circleListEmptyText}>
                                 Asking for help is hard. We're here to help.
                             </Text>
                         </View>
-                        <Image source={require('../assets/img/mimi-flower-illustration.png')} style={stylesCircles.circleListEmptyIllustration} />
+                        <Image
+                            source={require('../assets/img/mimi-flower-illustration.png')}
+                            style={stylesCircles.circleListEmptyIllustration}
+                        />
                     </View>
                 );
             }
@@ -178,7 +243,18 @@ export default function CirclesScreen({ navigation }) {
             return (
                 <View style={stylesCircles.circleListItems}>
                     {allContent.map((item, index) => (
-                        <CircleItem key={index} item={{ ...item, circle: activeTab !== 'All' ? activeTab : item.circle }} activeTab={activeTab} onPress={() => handleCircleItemPress(item)} />
+                        <CircleItem
+                            key={index}
+                            item={{
+                                ...item,
+                                circle:
+                                    activeTab !== 'All'
+                                        ? activeTab
+                                        : item.circle
+                            }}
+                            activeTab={activeTab}
+                            onPress={() => handleCircleItemPress(item)}
+                        />
                     ))}
                 </View>
             );
@@ -186,11 +262,19 @@ export default function CirclesScreen({ navigation }) {
             const tabContent = tabContents[tab] || [];
             if (tabContent.length === 0) {
                 return (
-                    <View style={[styles.contentContainer, stylesCircles.circleListEmptyContainer]}>
+                    <View
+                        style={[
+                            styles.contentContainer,
+                            stylesCircles.circleListEmptyContainer
+                        ]}
+                    >
                         <Text style={stylesCircles.circleListEmptyText}>
                             There are no supporters in this circle yet
                         </Text>
-                        <Image source={require('../assets/img/mimi-hearts-illustration.png')} style={stylesCircles.circleListEmptyIllustration} />
+                        <Image
+                            source={require('../assets/img/mimi-hearts-illustration.png')}
+                            style={stylesCircles.circleListEmptyIllustration}
+                        />
                     </View>
                 );
             }
@@ -198,7 +282,18 @@ export default function CirclesScreen({ navigation }) {
             return (
                 <View style={stylesCircles.circleListItems}>
                     {tabContent.map((item, index) => (
-                        <CircleItem key={index} item={{ ...item, circle: activeTab !== 'All' ? activeTab : item.circle }} activeTab={activeTab} onPress={() => handleCircleItemPress(item)} />
+                        <CircleItem
+                            key={index}
+                            item={{
+                                ...item,
+                                circle:
+                                    activeTab !== 'All'
+                                        ? activeTab
+                                        : item.circle
+                            }}
+                            activeTab={activeTab}
+                            onPress={() => handleCircleItemPress(item)}
+                        />
                     ))}
                 </View>
             );
@@ -219,37 +314,47 @@ export default function CirclesScreen({ navigation }) {
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
-                <View style={[stylesCircles.tabsContainer, styles.contentContainer]}>
-                    <TouchableOpacity onPress={() => handleTabPress('Circles')} style={[stylesCircles.tab, activeTab === 'Circles' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'Circles' && stylesCircles.activeTabText]}>Circles</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('All')} style={[stylesCircles.tab, activeTab === 'All' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'All' && stylesCircles.activeTabText]}>All</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('First')} style={[stylesCircles.tab, activeTab === 'First' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'First' && stylesCircles.activeTabText]}>First</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('Second')} style={[stylesCircles.tab, activeTab === 'Second' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'Second' && stylesCircles.activeTabText]}>Second</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleTabPress('Third')} style={[stylesCircles.tab, activeTab === 'Third' && stylesCircles.activeTab]}>
-                        <Text style={[stylesCircles.tabText, activeTab === 'Third' && stylesCircles.activeTabText]}>Third</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <Swiper
-                    ref={swiperRef}
-                    loop={false}
-                    showsPagination={false}
-                    index={['Circles', 'All', 'First', 'Second', 'Third'].indexOf(activeTab)}
-                    onIndexChanged={(index) => setActiveTab(['Circles', 'All', 'First', 'Second', 'Third'][index])}
+                <View
+                    style={[
+                        stylesCircles.tabsContainer,
+                        styles.contentContainer
+                    ]}
                 >
-                    <View style={stylesCircles.tabContent}>{circlesContent('Circles')}</View>
-                    <View style={stylesCircles.tabContent}>{circlesContent('All')}</View>
-                    <View style={stylesCircles.tabContent}>{circlesContent('First')}</View>
-                    <View style={stylesCircles.tabContent}>{circlesContent('Second')}</View>
-                    <View style={stylesCircles.tabContent}>{circlesContent('Third')}</View>
-                </Swiper>
+                    {circlesTabs.map((tab, index) => (
+                        <Tab
+                            key={index}
+                            clickHandler={() => handleTabPress(tab)}
+                            label={tab}
+                            isActive={activeTab === tab}
+                        />
+                    ))}
+                </View>
+                <FlatList
+                    data={tabData}
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(item) => item.key}
+                    renderItem={({ item }) => (
+                        <View
+                            style={[
+                                stylesCircles.tabContent,
+                                { width: screenWidth }
+                            ]}
+                        >
+                            {circlesContent(item.key)}
+                        </View>
+                    )}
+                    onMomentumScrollEnd={(event) => {
+                        const index = Math.floor(
+                            event.nativeEvent.contentOffset.x /
+                                event.nativeEvent.layoutMeasurement.width
+                        );
+                        setActiveTab(circlesTabs[index]);
+                    }}
+                    ref={swiperRef}
+                    initialScrollIndex={circlesTabs.indexOf(activeTab)}
+                />
 
                 <View style={stylesCircles.floatingButtonWrapper}>
                     {hasEmptyContent() && (
@@ -257,16 +362,25 @@ export default function CirclesScreen({ navigation }) {
                             <Text style={stylesCircles.floatingButtonEmptyText}>
                                 {getFloatingButtonText()}
                             </Text>
-                            <Image source={require('../assets/img/purple-arrow-right.png')} style={stylesCircles.floatingButtonEmptyImg} />
+                            <Image
+                                source={require('../assets/img/purple-arrow-right.png')}
+                                style={stylesCircles.floatingButtonEmptyImg}
+                            />
                         </View>
                     )}
-                    <TouchableOpacity style={styles.floatingButton} activeOpacity={1} onPress={() => setSendInvitesModalVisible(true)}>
+                    <TouchableOpacity
+                        style={styles.floatingButton}
+                        activeOpacity={1}
+                        onPress={() => setSendInvitesModalVisible(true)}
+                    >
                         <PlusIcon color={'#fff'} width={28} height={28} />
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
             {(sendInvitesModalVisible || supporterCardModalVisible) && (
-                <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+                <Animated.View
+                    style={[styles.overlay, { opacity: overlayOpacity }]}
+                />
             )}
 
             <SendInviteScreen
@@ -284,15 +398,23 @@ export default function CirclesScreen({ navigation }) {
                 navigation={navigation}
                 emoji={selectedCircleItem ? selectedCircleItem.emoji : ''}
                 color={selectedCircleItem ? selectedCircleItem.color : ''}
-                firstName={selectedCircleItem ? selectedCircleItem.firstName : ''}
+                firstName={
+                    selectedCircleItem ? selectedCircleItem.firstName : ''
+                }
                 lastName={selectedCircleItem ? selectedCircleItem.lastName : ''}
-                initialCircle={selectedCircleItem ? selectedCircleItem.circle : ''}
+                initialCircle={
+                    selectedCircleItem ? selectedCircleItem.circle : ''
+                }
                 tasks={selectedCircleItem ? selectedCircleItem.tasks : []}
-                phoneNumber={selectedCircleItem ? selectedCircleItem.phoneNumber : ''}
+                phoneNumber={
+                    selectedCircleItem ? selectedCircleItem.phoneNumber : ''
+                }
                 email={selectedCircleItem ? selectedCircleItem.email : ''}
                 nickname={selectedCircleItem ? selectedCircleItem.nickname : ''}
                 circleId={selectedCircleItem ? selectedCircleItem.circleId : ''}
-                supporterUserId={selectedCircleItem ? selectedCircleItem.userId : ''}
+                supporterUserId={
+                    selectedCircleItem ? selectedCircleItem.userId : ''
+                }
                 leadUserId={userId}
                 updateUsers={() => fetchCircleUsers()}
             />
@@ -302,52 +424,32 @@ export default function CirclesScreen({ navigation }) {
 
 const stylesCircles = StyleSheet.create({
     scrollContainerFull: {
-        flex: 1,
+        flex: 1
     },
     tabsContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         gap: 8,
-        marginVertical: 15,
-    },
-    tab: {
-        paddingHorizontal: 12,
-        paddingVertical: 5,
-        borderColor: '#1C4837',
-        borderWidth: 1,
-        borderRadius: 20,
-        alignItems: 'center',
-    },
-    activeTab: {
-        backgroundColor: '#1C4837',
-    },
-    tabText: {
-        color: '#1C4837',
-        fontFamily: 'poppins-regular',
-        fontSize: 12,
-        lineHeight: 16,
-    },
-    activeTabText: {
-        color: '#fff',
+        marginVertical: 15
     },
     top: {
-        marginBottom: 20,
+        marginBottom: 20
     },
     topText: {
         textAlign: 'center',
         color: '#7A7A7A',
         fontSize: 13,
         fontFamily: 'poppins-regular',
-        lineHeight: 18,
+        lineHeight: 18
     },
     circlesContainer: {
-        marginBottom: 50,
+        marginBottom: 50
     },
     circleListItems: {
         gap: 15,
         paddingHorizontal: 25,
         paddingTop: 5,
-        paddingBottom: 25,
+        paddingBottom: 25
     },
     floatingButtonWrapper: {
         position: 'absolute',
@@ -355,7 +457,7 @@ const stylesCircles = StyleSheet.create({
         right: 0,
         flexDirection: 'row',
         alignItems: 'flex-end',
-        zIndex: 5,
+        zIndex: 5
     },
     floatingButtonEmpty: {
         flexDirection: 'row',
@@ -366,44 +468,44 @@ const stylesCircles = StyleSheet.create({
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
         position: 'relative',
-        zIndex: 1,
+        zIndex: 1
     },
     floatingButtonEmptyImg: {
         width: 60,
         height: 15,
-        resizeMode: 'contain',
+        resizeMode: 'contain'
     },
     floatingButtonEmptyText: {
         color: '#000',
         fontSize: 14,
         fontFamily: 'poppins-regular',
         lineHeight: 18,
-        marginBottom: 10,
+        marginBottom: 10
     },
     circleListEmptyContainer: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 40,
+        gap: 40
     },
     circleListEmptyTexts: {
         gap: 20,
-        maxWidth: 200,
+        maxWidth: 200
     },
     circleListEmptyText: {
         textAlign: 'center',
         color: '#7A7A7A',
         fontSize: 14,
         fontFamily: 'poppins-regular',
-        lineHeight: 20,
+        lineHeight: 20
     },
     circleListEmptyIllustration: {
         width: 140,
         height: 135,
-        resizeMode: 'contain',
+        resizeMode: 'contain'
     },
     tabContent: {
         flex: 1,
-        paddingBottom: 100,
-    },
+        paddingBottom: 100
+    }
 });

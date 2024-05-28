@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    SafeAreaView,
+    TouchableWithoutFeedback,
+    Keyboard
+} from 'react-native';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import PhoneIcon from '../assets/icons/phone-icon.svg';
@@ -12,10 +21,13 @@ import { checkAuthentication } from '../authStorage';
 import { OneSignal } from 'react-native-onesignal';
 
 const validationSchema = yup.object().shape({
-    phoneNumber: yup.string().matches(
-        /^(?:(?:\+|00)(?:[1-9]\d{0,2}))?(?:\s*\d{7,})$/,
-        'Enter a valid phone number - No spaces or any special characters only "+" allowed.'
-    ).required('Phone Number is required'),
+    phoneNumber: yup
+        .string()
+        .matches(
+            /^(?:(?:\+|00)(?:[1-9]\d{0,2}))?(?:\s*\d{7,})$/,
+            'Enter a valid phone number - No spaces or any special characters only "+" allowed.'
+        )
+        .required('Phone Number is required')
 });
 
 export default function LoginScreen({ navigation }) {
@@ -26,9 +38,6 @@ export default function LoginScreen({ navigation }) {
         async function fetchUserData() {
             try {
                 const userData = await checkAuthentication();
-                if (userData) {
-                    console.log('User data:', userData);
-                }
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 clearUserData();
@@ -47,8 +56,13 @@ export default function LoginScreen({ navigation }) {
             console.log('OTP response:', otpResponse);
             OneSignal.login(`${userId}`); // OneSignal requires a string
 
-            toast.show('Code is sent to: ' + values.phoneNumber, { type: 'success' });
-            navigation.navigate('AlmostThere', { phoneNumber: values.phoneNumber, userId });
+            toast.show('Code is sent to: ' + values.phoneNumber, {
+                type: 'success'
+            });
+            navigation.navigate('AlmostThere', {
+                phoneNumber: values.phoneNumber,
+                userId
+            });
         } catch (error) {
             console.error('Sign in error:', error);
             toast.show(`Phone number doesn't exist.`, { type: 'error' });
@@ -58,7 +72,7 @@ export default function LoginScreen({ navigation }) {
     return (
         <SafeAreaView style={styles.safeArea}>
             <Formik
-                initialValues={{ phoneNumber: '', }}
+                initialValues={{ phoneNumber: '' }}
                 onSubmit={handleFormSubmit}
                 validationSchema={validationSchema}
                 validateOnChange={true}
@@ -67,7 +81,8 @@ export default function LoginScreen({ navigation }) {
                 initialErrors={{}}
                 enableReinitialize={true}
                 validate={(values) => {
-                    validationSchema.validate(values, { abortEarly: false })
+                    validationSchema
+                        .validate(values, { abortEarly: false })
                         .then(() => {
                             setIsFormValid(true);
                         })
@@ -76,44 +91,102 @@ export default function LoginScreen({ navigation }) {
                         });
                 }}
             >
-                {({ handleChange, handleSubmit, values, errors, touched, setFieldValue, setFieldTouched, isValid }) => (
+                {({
+                    handleChange,
+                    handleSubmit,
+                    values,
+                    errors,
+                    touched,
+                    setFieldValue,
+                    setFieldTouched,
+                    isValid
+                }) => (
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                         <View style={[styles.container, styles.authContainer]}>
                             <View style={styles.topTextsContainer}>
-                                <Text style={[styles.title, stylesLogin.title]}>Welcome Back!</Text>
-                                <Text style={[styles.text, stylesLogin.text]}>Login to your Maitri account</Text>
+                                <Text style={[styles.title, stylesLogin.title]}>
+                                    Welcome Back!
+                                </Text>
+                                <Text style={[styles.text, stylesLogin.text]}>
+                                    Login to your Maitri account
+                                </Text>
                             </View>
-                            <View style={[styles.formContainer, stylesLogin.formContainer]}>
+                            <View
+                                style={[
+                                    styles.formContainer,
+                                    stylesLogin.formContainer
+                                ]}
+                            >
                                 <View style={styles.inputWrapper}>
                                     <TextInput
                                         style={styles.input}
                                         placeholder="+1 Phone Number"
                                         value={values.phoneNumber}
                                         onChangeText={(text) => {
-                                            const newValue = text.replace(/\s/g, '');
-                                            setFieldValue('phoneNumber', newValue);
+                                            const newValue = text.replace(
+                                                /\s/g,
+                                                ''
+                                            );
+                                            setFieldValue(
+                                                'phoneNumber',
+                                                newValue
+                                            );
                                         }}
                                         keyboardType="phone-pad"
-                                        onBlur={() => setFieldTouched('phoneNumber')}
+                                        onBlur={() =>
+                                            setFieldTouched('phoneNumber')
+                                        }
                                     />
-                                    {touched.phoneNumber && errors.phoneNumber ?
-                                        <ExclamationIcon style={styles.inputErrorIcon} width={20} height={20} />
-                                        :
-                                        <PhoneIcon style={styles.inputIcon} width={20} height={20} />
-                                    }
+                                    {touched.phoneNumber &&
+                                    errors.phoneNumber ? (
+                                        <ExclamationIcon
+                                            style={styles.inputErrorIcon}
+                                            width={20}
+                                            height={20}
+                                        />
+                                    ) : (
+                                        <PhoneIcon
+                                            style={styles.inputIcon}
+                                            width={20}
+                                            height={20}
+                                        />
+                                    )}
                                 </View>
-                                {touched.phoneNumber && errors.phoneNumber &&
-                                    <Text style={styles.errorText}>{errors.phoneNumber}</Text>
-                                }
+                                {touched.phoneNumber && errors.phoneNumber && (
+                                    <Text style={styles.errorText}>
+                                        {errors.phoneNumber}
+                                    </Text>
+                                )}
                             </View>
                             <View style={styles.submitButtonContainer}>
-                                <TouchableOpacity onPress={handleSubmit} style={[styles.submitButton, !isFormValid && { opacity: 0.5 }]} disabled={!isFormValid}>
-                                    <ArrowIcon width={18} height={18} color={'#fff'} />
+                                <TouchableOpacity
+                                    onPress={handleSubmit}
+                                    style={[
+                                        styles.submitButton,
+                                        !isFormValid && { opacity: 0.5 }
+                                    ]}
+                                    disabled={!isFormValid}
+                                >
+                                    <ArrowIcon
+                                        width={18}
+                                        height={18}
+                                        color={'#fff'}
+                                    />
                                 </TouchableOpacity>
                             </View>
                             <View style={stylesLogin.bottomContainer}>
-                                <TouchableOpacity onPress={() => navigation.navigate('Register')} style={stylesLogin.registerTextLink}>
-                                    <Text style={stylesLogin.newHereText}>New Here? <Text style={stylesLogin.registerText}>Sign Up</Text></Text>
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        navigation.navigate('Register')
+                                    }
+                                    style={stylesLogin.registerTextLink}
+                                >
+                                    <Text style={stylesLogin.newHereText}>
+                                        New Here?{' '}
+                                        <Text style={stylesLogin.registerText}>
+                                            Sign Up
+                                        </Text>
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -126,23 +199,23 @@ export default function LoginScreen({ navigation }) {
 
 const stylesLogin = StyleSheet.create({
     title: {
-        textAlign: 'center',
+        textAlign: 'center'
     },
     text: {
-        textAlign: 'center',
+        textAlign: 'center'
     },
     formContainer: {
-        marginTop: 120,
+        marginTop: 120
     },
     registerTextLink: {
-        marginTop: 15,
+        marginTop: 15
     },
     newHereText: {
         fontSize: 14,
-        fontFamily: 'poppins-regular',
+        fontFamily: 'poppins-regular'
     },
     registerText: {
         fontFamily: 'poppins-semibold',
-        textDecorationLine: 'underline',
-    },
+        textDecorationLine: 'underline'
+    }
 });

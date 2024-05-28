@@ -6,9 +6,7 @@ export default function handleSignIn(values) {
 
     return new Promise((resolve, reject) => {
         getUser(phoneNumber)
-            .then(response => {
-                console.log('Sign In Success:', response.data);
-
+            .then((response) => {
                 if (response.status === 200) {
                     storeUserData(response.data);
                     return { userId: response.data.userId };
@@ -17,17 +15,15 @@ export default function handleSignIn(values) {
                 }
             })
             .then(({ userId }) => {
-                return sendOtp(phoneNumber)
-                    .then(otpResponse => {
-                        if (otpResponse && otpResponse.data) {
-                            console.log('OTP Sent:', otpResponse.data);
-                            resolve({ userId, otpResponse: otpResponse.data });
-                        } else {
-                            reject(new Error('No OTP response received'));
-                        }
-                    });
+                return sendOtp(phoneNumber).then((otpResponse) => {
+                    if (otpResponse && otpResponse.data) {
+                        resolve({ userId, otpResponse: otpResponse.data });
+                    } else {
+                        reject(new Error('No OTP response received'));
+                    }
+                });
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Sign In Error:', error);
                 reject(error);
             });
