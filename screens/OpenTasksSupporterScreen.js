@@ -325,111 +325,94 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                         />
                     ))}
                 </View>
-                {isLoading ? (
-                    <View
-                        style={{
-                            minHeight: 80,
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <ActivityIndicator size="large" />
-                    </View>
-                ) : (
-                    <>
-                        {openTasks.length === 0 ? (
-                            <ScrollView
-                                contentContainerStyle={
-                                    stylesSuppOT.tasksScrollEmpty
-                                }
-                            >
-                                <View
-                                    style={[
-                                        styles.contentContainer,
-                                        stylesSuppOT.tasksEmpty
-                                    ]}
-                                >
-                                    <View style={stylesSuppOT.tasksTop}>
-                                        {TimeFilterList.length > 0 ||
-                                        TypeFilterList.length > 0 ? (
-                                            <>
-                                                <Text
-                                                    style={[
-                                                        styles.text,
-                                                        stylesSuppOT.tasksDescription,
-                                                        { marginBottom: 30 }
-                                                    ]}
-                                                >
-                                                    No open tasks with the
-                                                    selected filters.
-                                                </Text>
-                                                <Text
-                                                    style={[
-                                                        styles.text,
-                                                        stylesSuppOT.tasksDescription,
-                                                        {
-                                                            marginBottom: 60,
-                                                            paddingHorizontal: 30
-                                                        }
-                                                    ]}
-                                                >
-                                                    Try removing some filters!
-                                                </Text>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Text
-                                                    style={[
-                                                        styles.text,
-                                                        stylesSuppOT.tasksDescription,
-                                                        { marginBottom: 30 }
-                                                    ]}
-                                                >
-                                                    No open tasks yet.
-                                                </Text>
-                                                <Text
-                                                    style={[
-                                                        styles.text,
-                                                        stylesSuppOT.tasksDescription,
-                                                        {
-                                                            marginBottom: 60,
-                                                            paddingHorizontal: 30
-                                                        }
-                                                    ]}
-                                                >
-                                                    Check back in later!
-                                                </Text>
-                                            </>
-                                        )}
 
-                                        <Image
-                                            source={require('../assets/img/mimi-illustration.png')}
-                                            style={stylesSuppOT.rightImageStyle}
-                                        />
-                                    </View>
-                                </View>
-                            </ScrollView>
-                        ) : (
-                            <ScrollView
-                                contentContainerStyle={stylesSuppOT.tasksScroll}
-                            >
-                                {openTasks.map((task) => (
-                                    <OpenTask
-                                        key={task.taskId}
-                                        task={task}
-                                        title={task.title}
-                                        startTime={task.startDateTime}
-                                        endTime={task.endDateTime}
-                                        category={task.category}
-                                        taskModal={() =>
-                                            setTaskModalVisible(true)
-                                        }
-                                        onTaskItemClick={handleTaskItemClick}
-                                    />
-                                ))}
-                            </ScrollView>
-                        )}
-                    </>
+                {openTasks.length === 0 ? (
+                    <ScrollView
+                        contentContainerStyle={stylesSuppOT.tasksScrollEmpty}
+                    >
+                        <View
+                            style={[
+                                styles.contentContainer,
+                                stylesSuppOT.tasksEmpty
+                            ]}
+                        >
+                            <View style={stylesSuppOT.tasksTop}>
+                                {TimeFilterList.length > 0 ||
+                                TypeFilterList.length > 0 ? (
+                                    <>
+                                        <Text
+                                            style={[
+                                                styles.text,
+                                                stylesSuppOT.tasksDescription,
+                                                { marginBottom: 30 }
+                                            ]}
+                                        >
+                                            No open tasks with the selected
+                                            filters.
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.text,
+                                                stylesSuppOT.tasksDescription,
+                                                {
+                                                    marginBottom: 60,
+                                                    paddingHorizontal: 30
+                                                }
+                                            ]}
+                                        >
+                                            Try removing some filters!
+                                        </Text>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Text
+                                            style={[
+                                                styles.text,
+                                                stylesSuppOT.tasksDescription,
+                                                { marginBottom: 30 }
+                                            ]}
+                                        >
+                                            No open tasks yet.
+                                        </Text>
+                                        <Text
+                                            style={[
+                                                styles.text,
+                                                stylesSuppOT.tasksDescription,
+                                                {
+                                                    marginBottom: 60,
+                                                    paddingHorizontal: 30
+                                                }
+                                            ]}
+                                        >
+                                            Check back in later!
+                                        </Text>
+                                    </>
+                                )}
+
+                                <Image
+                                    source={require('../assets/img/mimi-illustration.png')}
+                                    style={stylesSuppOT.rightImageStyle}
+                                />
+                            </View>
+                        </View>
+                    </ScrollView>
+                ) : (
+                    <ScrollView
+                        contentContainerStyle={stylesSuppOT.tasksScroll}
+                    >
+                        {openTasks.map((task) => (
+                            <OpenTask
+                                key={task.taskId}
+                                task={task}
+                                title={task.title}
+                                startTime={task.startDateTime}
+                                endTime={task.endDateTime}
+                                category={task.category}
+                                taskModal={() => setTaskModalVisible(true)}
+                                onTaskItemClick={handleTaskItemClick}
+                            />
+                        ))}
+                    </ScrollView>
                 )}
             </>
         );
@@ -470,9 +453,21 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                         ></FilterIcon>
                     </TouchableOpacity>
                 </View>
-                <View style={stylesSuppOT.tabsContentContainer}>
-                    {renderTasks(filteredTasks)}
-                </View>
+                {isLoading ? (
+                    <View
+                        style={{
+                            minHeight: 80,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <ActivityIndicator size="large" />
+                    </View>
+                ) : (
+                    <View style={stylesSuppOT.tabsContentContainer}>
+                        {renderTasks(filteredTasks)}
+                    </View>
+                )}
 
                 {isFilterOpen && (
                     <Animated.View
