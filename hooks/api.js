@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const baseUrl = 'https://maitri-backend.cubicfoxdev.com:3000';
+// const baseUrl = 'http://localhost:3000';
 
 export function resendOtp(phoneNumber) {
     return axios.post(`${baseUrl}/auth/otp/resend`, { phoneNumber });

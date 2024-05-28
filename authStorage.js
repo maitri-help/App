@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const baseUrl = 'https://maitri-backend.cubicfoxdev.com:3000';
+// const baseUrl = 'http://localhost:3000';
 
 export const storeUserData = async (userData) => {
     try {
@@ -127,11 +128,13 @@ export const checkAuthentication = async () => {
     try {
         const accessToken = await getAccessToken();
         if (accessToken) {
+            console.log("CHECK AUTH", accessToken)
             const response = await axios.get(`${baseUrl}/users/me`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
             });
+            console.log("RESPONSE", response)
             const userData = response.data;
             userData.accessToken = accessToken;
             console.log('Authentication response:', userData);
