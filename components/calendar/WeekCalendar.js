@@ -6,8 +6,7 @@ import {
     TouchableOpacity,
     ScrollView
 } from 'react-native';
-
-const days = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+import { days } from '../../constants/date';
 
 export default function WeekCalendar({
     defaultDate,
