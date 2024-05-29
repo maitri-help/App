@@ -149,55 +149,57 @@ export default function Task({
                 activeOpacity={0.7}
                 onPress={handleClick}
             >
-                {isCheckbox && (
-                    <TouchableOpacity
-                        style={stylesTask.checkboxWrapper}
-                        onPress={handleToggleCheckbox}
-                    >
-                        <View
-                            style={
-                                isChecked
-                                    ? stylesTask.checkboxChecked
-                                    : stylesTask.checkbox
-                            }
+                <View style={{ flexDirection: 'row', gap: 20 }}>
+                    {isCheckbox && (
+                        <TouchableOpacity
+                            style={stylesTask.checkboxWrapper}
+                            onPress={handleToggleCheckbox}
                         >
-                            {isChecked && (
-                                <View style={stylesTask.checkboxInner}>
-                                    <CheckIcon
-                                        width={13}
-                                        height={13}
-                                        style={stylesTask.checkboxIcon}
-                                    />
-                                </View>
-                            )}
-                        </View>
-                    </TouchableOpacity>
-                )}
-
-                <View style={stylesTask.taskInfoContainer}>
-                    <Text
-                        style={[
-                            stylesTask.taskTitle,
-                            isChecked ? stylesTask.textStriked : '',
-                            isChecked && stylesTask.greyedOut
-                        ]}
-                    >
-                        {title}
-                    </Text>
-                    {firstName && lastName && (
-                        <Text style={stylesTask.taskAssignee}>
-                            {firstName} {lastName}
-                        </Text>
+                            <View
+                                style={
+                                    isChecked
+                                        ? stylesTask.checkboxChecked
+                                        : stylesTask.checkbox
+                                }
+                            >
+                                {isChecked && (
+                                    <View style={stylesTask.checkboxInner}>
+                                        <CheckIcon
+                                            width={13}
+                                            height={13}
+                                            style={stylesTask.checkboxIcon}
+                                        />
+                                    </View>
+                                )}
+                            </View>
+                        </TouchableOpacity>
                     )}
-                    <Text
-                        style={[
-                            stylesTask.taskTime,
-                            isChecked ? stylesTask.textStriked : '',
-                            isChecked && stylesTask.greyedOut
-                        ]}
-                    >
-                        {formatDateTime()}
-                    </Text>
+
+                    <View style={stylesTask.taskInfoContainer}>
+                        <Text
+                            style={[
+                                stylesTask.taskTitle,
+                                isChecked ? stylesTask.textStriked : '',
+                                isChecked && stylesTask.greyedOut
+                            ]}
+                        >
+                            {title}
+                        </Text>
+                        {firstName && lastName && (
+                            <Text style={stylesTask.taskAssignee}>
+                                {firstName} {lastName}
+                            </Text>
+                        )}
+                        <Text
+                            style={[
+                                stylesTask.taskTime,
+                                isChecked ? stylesTask.textStriked : '',
+                                isChecked && stylesTask.greyedOut
+                            ]}
+                        >
+                            {formatDateTime()}
+                        </Text>
+                    </View>
                 </View>
                 <View style={stylesTask.iconsWrapper}>
                     <TouchableOpacity
