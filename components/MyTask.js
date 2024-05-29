@@ -147,7 +147,7 @@ export default function Task({
                 activeOpacity={0.7}
                 onPress={handleClick}
             >
-                <View style={{ flexDirection: 'row', gap: 20 }}>
+                <View style={{ flexDirection: 'row', gap: 20, flexShrink: 1 }}>
                     {isCheckbox && (
                         <TouchableOpacity
                             style={stylesTask.checkboxWrapper}
