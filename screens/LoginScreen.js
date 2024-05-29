@@ -47,8 +47,6 @@ export default function LoginScreen({ navigation }) {
     }, []);
 
     const handleFormSubmit = async (values) => {
-        console.log('Form values in handleFormSubmit:', values);
-
         try {
             const { userId, otpResponse } = await handleSignIn(values);
 

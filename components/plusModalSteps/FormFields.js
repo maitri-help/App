@@ -129,11 +129,8 @@ export default function FormFields({
                 });
                 return;
             }
-            console.log('Task data:', taskData);
 
-            const response = await createTask(taskData, accessToken);
-
-            console.log('Task created successfully:', response.data);
+            await createTask(taskData, accessToken);
 
             toast.show('Task created successfully', { type: 'success' });
 

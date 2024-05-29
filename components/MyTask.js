@@ -89,7 +89,6 @@ export default function Task({
         useState(false);
 
     const handleOpenCalendar = async () => {
-        // console.log('CALENDAR PERMISSION:', calendarPermission);
         if (!calendarPermission.granted) {
             setCalendarPermissionNeeded(true);
             return;
@@ -98,7 +97,7 @@ export default function Task({
         const calendars = await Calendar.getCalendarsAsync(
             Calendar.EntityTypes.EVENT
         );
-        console.log('CALENDARS:', calendars);
+
         const defaultCalendar = Platform.select({
             ios: calendars.find(
                 (cal) =>
@@ -125,7 +124,6 @@ export default function Task({
 
         await Calendar.createEventAsync(defaultCalendar.id, event)
             .then((event) => {
-                console.log('Event added to calendar: ', event);
                 toast.show('Event added to calendar', { type: 'success' });
             })
             .catch((error) => {

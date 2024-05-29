@@ -40,7 +40,6 @@ export default function TaskFilterModal({
                 ? selectedFilters.filter((f) => f !== filter)
                 : [...selectedFilters, filter];
 
-            console.log(`Selected filters: ${newFilters.join(', ')}`);
             return newFilters;
         });
     };

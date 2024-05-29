@@ -82,11 +82,11 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                 endDateTime: endDateTime,
             };
 
-            console.log("Task update data:", taskData);
+          
 
             const response = await updateTask(taskId, taskData, accessToken);
 
-            console.log("Task updated successfully:", response.data);
+            
 
             toast.show('Task updated successfully', { type: 'success' });
 
@@ -110,9 +110,9 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
                 return;
             }
 
-            const response = await deleteTask(taskId, accessToken);
+            await deleteTask(taskId, accessToken);
 
-            console.log("Task deleted successfully:", response.data);
+           
 
             toast.show('Task deleted successfully', { type: 'success' });
 
@@ -130,7 +130,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
     const requestCalendarPermission = async () => {
         const permission = await Calendar.requestCalendarPermissionsAsync();
         if (!permission.granted) {
-            console.log('Permission to access calendar was denied');
+           
             setCalendarPermissionNeeded(true);
             return false;
         }
@@ -144,7 +144,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
         }
 
         const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-        console.log('CALENDARS:', calendars);
+        
         const defaultCalendar = Platform.select({
             ios: calendars.find(cal => cal.allowsModifications && cal.source.name === 'iCloud'),
             android: calendars.find(cal => cal.accessLevel === "owner" && cal.name === cal.ownerAccount),
@@ -165,7 +165,7 @@ export default function EditForm({ currentStep, setCurrentStep, taskName, setTas
 
         await Calendar.createEventAsync(defaultCalendar.id, event)
             .then((event) => {
-                console.log('Event added to calendar: ', event);
+              
                 toast.show('Event added to calendar', { type: 'success' });
             })
             .catch((error) => {

@@ -53,18 +53,12 @@ export default function RegisterScreen({ navigation }) {
     const toast = useToast();
 
     const handleFormSubmit = async (values) => {
-        console.log('Form values in handleFormSubmit:', values);
-
         try {
             const signUpResponse = await handleSignUp(values, navigation);
-            console.log('Sign up response:', signUpResponse);
+
             const { exists, userId } = signUpResponse;
 
             if (exists) {
-                console.log(
-                    'User with phone number already exists:',
-                    values.phoneNumber
-                );
                 toast.show('User with phone number already exists', {
                     type: 'error'
                 });

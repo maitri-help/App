@@ -4,26 +4,31 @@ import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
 import CloseIcon from '../../assets/icons/close-icon.svg';
 
-Geocoder.init("AIzaSyAWwo2zm6v7Jwam7QGxAFGkCH1DhsgGB_Y");
+Geocoder.init('AIzaSyAWwo2zm6v7Jwam7QGxAFGkCH1DhsgGB_Y');
 
-export default function LocationPicker({ onSelect, selectedLocation, disabled, deviceLocation }) {
+export default function LocationPicker({
+    onSelect,
+    selectedLocation,
+    disabled,
+    deviceLocation
+}) {
     const [showMap, setShowMap] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [mapRegion, setMapRegion] = useState({
         latitude: 51.1657,
         longitude: 10.4515,
         latitudeDelta: 30,
-        longitudeDelta: 30,
+        longitudeDelta: 30
 
         // Default cooridnates for Europe
     });
 
-    console.log(deviceLocation);
-
     useEffect(() => {
         const getAddressFromCoordinates = () => {
             if (selectedLocation) {
-                const [latitude, longitude] = selectedLocation.split(',').map(parseFloat);
+                const [latitude, longitude] = selectedLocation
+                    .split(',')
+                    .map(parseFloat);
                 Geocoder.from({ latitude, longitude })
                     .then((json) => {
                         const address = json.results[0].formatted_address;
@@ -31,7 +36,9 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled, d
                     })
                     .catch((error) => console.warn(error));
             } else if (deviceLocation) {
-                const [latitude, longitude] = deviceLocation.split(',').map(parseFloat);
+                const [latitude, longitude] = deviceLocation
+                    .split(',')
+                    .map(parseFloat);
                 Geocoder.from({ latitude, longitude })
                     .then((json) => {
                         const address = json.results[0].formatted_address;
@@ -44,22 +51,26 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled, d
         getAddressFromCoordinates();
 
         if (selectedLocation) {
-            const [latitude, longitude] = selectedLocation.split(',').map(parseFloat);
-            setMapRegion(prevRegion => ({
+            const [latitude, longitude] = selectedLocation
+                .split(',')
+                .map(parseFloat);
+            setMapRegion((prevRegion) => ({
                 ...prevRegion,
                 latitude,
                 longitude,
                 latitudeDelta: 0.002,
-                longitudeDelta: 0.002,
+                longitudeDelta: 0.002
             }));
         } else if (deviceLocation) {
-            const [latitude, longitude] = deviceLocation.split(',').map(parseFloat);
-            setMapRegion(prevRegion => ({
+            const [latitude, longitude] = deviceLocation
+                .split(',')
+                .map(parseFloat);
+            setMapRegion((prevRegion) => ({
                 ...prevRegion,
                 latitude,
                 longitude,
                 latitudeDelta: 0.002,
-                longitudeDelta: 0.002,
+                longitudeDelta: 0.002
             }));
             onSelect(deviceLocation);
         }
@@ -74,22 +85,52 @@ export default function LocationPicker({ onSelect, selectedLocation, disabled, d
         <>
             {showMap ? (
                 <>
-                    <TouchableOpacity style={stylesLocation.closeIconWrapper} onPress={() => setShowMap(false)}>
+                    <TouchableOpacity
+                        style={stylesLocation.closeIconWrapper}
+                        onPress={() => setShowMap(false)}
+                    >
                         <CloseIcon style={stylesLocation.closeIcon} />
                     </TouchableOpacity>
-                    {!disabled &&
+                    {!disabled && (
                         <MapView
                             style={{ width: '100%', height: 200 }}
                             region={mapRegion}
-                            onPress={(e) => handleLocationSelect(`${e.nativeEvent.coordinate.latitude},${e.nativeEvent.coordinate.longitude}`)}
+                            onPress={(e) =>
+                                handleLocationSelect(
+                                    `${e.nativeEvent.coordinate.latitude},${e.nativeEvent.coordinate.longitude}`
+                                )
+                            }
                         >
-                            {selectedLocation && <Marker coordinate={{ latitude: parseFloat(selectedLocation.split(',')[0]), longitude: parseFloat(selectedLocation.split(',')[1]) }} />}
+                            {selectedLocation && (
+                                <Marker
+                                    coordinate={{
+                                        latitude: parseFloat(
+                                            selectedLocation.split(',')[0]
+                                        ),
+                                        longitude: parseFloat(
+                                            selectedLocation.split(',')[1]
+                                        )
+                                    }}
+                                />
+                            )}
                         </MapView>
-                    }
+                    )}
                 </>
             ) : (
-                <TouchableOpacity onPress={() => setShowMap(true)} style={stylesLocation.fieldLink} disabled={disabled}>
-                    <Text style={[stylesLocation.fielText, !disabled && stylesLocation.fieldLinkText]}>{selectedAddress ? selectedAddress : "Fill the location"}
+                <TouchableOpacity
+                    onPress={() => setShowMap(true)}
+                    style={stylesLocation.fieldLink}
+                    disabled={disabled}
+                >
+                    <Text
+                        style={[
+                            stylesLocation.fielText,
+                            !disabled && stylesLocation.fieldLinkText
+                        ]}
+                    >
+                        {selectedAddress
+                            ? selectedAddress
+                            : 'Fill the location'}
                     </Text>
                 </TouchableOpacity>
             )}
@@ -102,7 +143,7 @@ const stylesLocation = StyleSheet.create({
         flexShrink: 1,
         flexGrow: 1,
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-end'
     },
     fieldLinkText: {
         fontSize: 13,
@@ -110,24 +151,24 @@ const stylesLocation = StyleSheet.create({
         fontFamily: 'poppins-regular',
         color: '#737373',
         textDecorationLine: 'underline',
-        flexShrink: 1,
+        flexShrink: 1
     },
     fielText: {
         fontSize: 13,
         lineHeight: 18,
         fontFamily: 'poppins-regular',
-        color: '#000',
+        color: '#000'
     },
     closeIconWrapper: {
         width: 24,
         height: 24,
         alignItems: 'center',
         justifyContent: 'center',
-        marginHorizontal: -4,
+        marginHorizontal: -4
     },
     closeIcon: {
         width: 14,
         height: 14,
-        color: '#000',
+        color: '#000'
     }
 });

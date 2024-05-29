@@ -130,16 +130,6 @@ export default function CirclesScreen({ navigation }) {
         }
     }, [sendInvitesModalVisible || supporterCardModalVisible]);
 
-    // const handleTabPress = (tab) => {
-    //     console.log(tab);
-    //     setActiveTab(tab);
-    //     const tabIndex = circlesTabs.indexOf(tab);
-    //     console.log(tabIndex);
-    //     swiperRef.current?.scrollBy(
-    //         tabIndex - swiperRef.current?.state?.index,
-    //         true
-    //     );
-    // };
     const handleTabPress = (tab) => {
         const tabIndex = circlesTabs.indexOf(tab);
         swiperRef.current.scrollToIndex({ index: tabIndex, animated: true });

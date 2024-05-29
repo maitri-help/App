@@ -253,10 +253,10 @@ export default function AssignmentsScreen({ navigation }) {
 
     const requestLocation = async () => {
         const permission = await Location.requestForegroundPermissionsAsync();
-        console.log('LOCATION PERMISSION', permission);
+
         if (!permission.granted && !permission.canAskAgain) {
             setLocationPermissionNeeded(true);
-            console.log('Permission to access location was denied');
+
             return;
         }
 
@@ -264,7 +264,6 @@ export default function AssignmentsScreen({ navigation }) {
         setDeviceLocation(
             `${location.coords.latitude},${location.coords.longitude}`
         );
-        console.log('LOCATION', location);
     };
 
     useEffect(() => {
@@ -287,7 +286,6 @@ export default function AssignmentsScreen({ navigation }) {
                     appState.current.match(/inactive|background/) &&
                     nextAppState === 'active'
                 ) {
-                    console.log('App has come to the foreground!');
                     requestLocation();
                 }
                 appState.current = nextAppState;

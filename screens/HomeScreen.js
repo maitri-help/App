@@ -163,8 +163,6 @@ export default function HomeScreen({ navigation }) {
                     userData.accessToken
                 );
                 setTasks(tasksResponse.data);
-
-                console.log('userId:', userData.userId);
             } else {
                 console.error('No user data found');
                 navigation.reset({

@@ -1,9 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Image,
+    StyleSheet,
+    ScrollView
+} from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 
-export default function TaskSelection({ selectedService, modalServiceTasks, onTaskSelect, setCurrentStep, currentStep, onBack, setIsOtherTask }) {
+export default function TaskSelection({
+    selectedService,
+    modalServiceTasks,
+    onTaskSelect,
+    setCurrentStep,
+    currentStep,
+    onBack,
+    setIsOtherTask
+}) {
     const [tasks, setTasks] = useState([]);
     const [selectedTask, setSelectedTask] = useState(null);
     const [selectedServiceIcon, setSelectedServiceIcon] = useState(null);
@@ -20,14 +35,12 @@ export default function TaskSelection({ selectedService, modalServiceTasks, onTa
     };
 
     useEffect(() => {
-        console.log("Selected service:", selectedService);
         if (selectedService && modalServiceTasks[selectedService.id]) {
-            console.log("Setting tasks:", modalServiceTasks[selectedService.id]);
             setTasks(modalServiceTasks[selectedService.id]);
             setSelectedServiceIcon(selectedService.icon);
             setSelectedServiceTitle(selectedService.title);
         } else {
-            console.log("No tasks found");
+            console.log('No tasks found');
             setTasks([]);
             setSelectedServiceIcon(null);
             setSelectedServiceTitle('');
@@ -66,19 +79,30 @@ export default function TaskSelection({ selectedService, modalServiceTasks, onTa
         <>
             <View style={[styles.modalTopNav, stylesTasks.modalTopNav]}>
                 <View style={stylesTasks.modalTopNavLeft}>
-                    <TouchableOpacity onPress={handleBack} style={[styles.backLinkInline]}>
-                        <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
+                    <TouchableOpacity
+                        onPress={handleBack}
+                        style={[styles.backLinkInline]}
+                    >
+                        <ArrowLeftIcon
+                            width={18}
+                            height={18}
+                            style={styles.backLinkIcon}
+                        />
                     </TouchableOpacity>
-                    <Image source={selectedService.icon} style={stylesTasks.icon} />
+                    <Image
+                        source={selectedService.icon}
+                        style={stylesTasks.icon}
+                    />
                     <Text style={[styles.topBarTitle, stylesTasks.topBarTitle]}>
                         {selectedService.title}
                     </Text>
                 </View>
                 <View>
-                    <TouchableOpacity onPress={handleCustomTask} style={[styles.skipLink]}>
-                        <Text style={stylesTasks.skipText}>
-                            Skip
-                        </Text>
+                    <TouchableOpacity
+                        onPress={handleCustomTask}
+                        style={[styles.skipLink]}
+                    >
+                        <Text style={stylesTasks.skipText}>Skip</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -93,17 +117,28 @@ export default function TaskSelection({ selectedService, modalServiceTasks, onTa
                         <TouchableOpacity
                             key={index}
                             activeOpacity={1}
-                            style={[stylesTasks.tasksListItem, pressedIndex === index && stylesTasks.tasksListItemPressed]}
+                            style={[
+                                stylesTasks.tasksListItem,
+                                pressedIndex === index &&
+                                    stylesTasks.tasksListItemPressed
+                            ]}
                             onPressIn={() => handlePressIn(index)}
                             onPressOut={handlePressOut}
                             onPress={() => handleTaskSelect(task)}
                         >
-                            <Text style={[stylesTasks.tasksListItemText, pressedIndex === index && stylesTasks.tasksListItemTextPressed]}>
+                            <Text
+                                style={[
+                                    stylesTasks.tasksListItemText,
+                                    pressedIndex === index &&
+                                        stylesTasks.tasksListItemTextPressed
+                                ]}
+                            >
                                 {task}
                             </Text>
                         </TouchableOpacity>
                     ))}
-                    <TouchableOpacity activeOpacity={1}
+                    <TouchableOpacity
+                        activeOpacity={1}
                         style={[
                             stylesTasks.tasksListItem,
                             stylesTasks.tasksListItemOther,
@@ -117,11 +152,14 @@ export default function TaskSelection({ selectedService, modalServiceTasks, onTa
                         }}
                         onPress={handleCustomTask}
                     >
-                        <Text style={[
-                            stylesTasks.tasksListItemText,
-                            stylesTasks.tasksListItemTextOther,
-                            isOtherPressed && stylesTasks.tasksListItemTextPressed
-                        ]}>
+                        <Text
+                            style={[
+                                stylesTasks.tasksListItemText,
+                                stylesTasks.tasksListItemTextOther,
+                                isOtherPressed &&
+                                    stylesTasks.tasksListItemTextPressed
+                            ]}
+                        >
                             Other
                         </Text>
                     </TouchableOpacity>
@@ -133,18 +171,18 @@ export default function TaskSelection({ selectedService, modalServiceTasks, onTa
 
 const stylesTasks = StyleSheet.create({
     modalTopNav: {
-        justifyContent: 'space-between',
+        justifyContent: 'space-between'
     },
     modalTopNavLeft: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     icon: {
         width: 24,
         height: 24,
         resizeMode: 'contain',
         marginLeft: 15,
-        marginRight: 8,
+        marginRight: 8
     },
     topBarTitle: {
         fontSize: 16,
@@ -157,7 +195,7 @@ const stylesTasks = StyleSheet.create({
     },
     topDescription: {
         marginTop: -15,
-        marginBottom: 15,
+        marginBottom: 15
     },
     topDescriptionText: {
         color: '#737373',
@@ -169,13 +207,13 @@ const stylesTasks = StyleSheet.create({
         paddingVertical: 25,
         borderBottomColor: '#E5E5E5',
         borderBottomWidth: 1,
-        paddingHorizontal: 10,
+        paddingHorizontal: 10
     },
     tasksListItemPressed: {
-        backgroundColor: '#EFEFEF',
+        backgroundColor: '#EFEFEF'
     },
     tasksListItemOther: {
-        borderBottomWidth: 0,
+        borderBottomWidth: 0
     },
     tasksListItemText: {
         color: '#000',
@@ -185,5 +223,5 @@ const stylesTasks = StyleSheet.create({
     },
     tasksListItemTextOther: {
         fontFamily: 'poppins-semibold'
-    },
+    }
 });
