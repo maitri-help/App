@@ -118,9 +118,13 @@ export default function MyTasksSupporterScreen({ navigation }) {
     };
 
     const renderTasks = (tasks) => {
-        const myTasks = tasks.filter(
-            (task) => task.assignedUserId && task.assignedUserId === userId
-        );
+        const myTasks = tasks
+            .filter(
+                (task) => task.assignedUserId && task.assignedUserId === userId
+            )
+            .sort((a, b) =>
+                a.status === 'done' ? 1 : b.status === 'done' ? -1 : 0
+            );
 
         if (myTasks.length === 0) {
             return (

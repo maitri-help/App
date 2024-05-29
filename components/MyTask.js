@@ -200,16 +200,18 @@ export default function Task({
                     </View>
                 </View>
                 <View style={stylesTask.iconsWrapper}>
-                    <TouchableOpacity
-                        style={stylesTask.addToCalIconWrapper}
-                        onPress={handleOpenCalendar}
-                    >
-                        <AddToCalICon
-                            width={30}
-                            height={30}
-                            style={stylesTask.addToCalIcon}
-                        />
-                    </TouchableOpacity>
+                    {!isChecked && (
+                        <TouchableOpacity
+                            style={stylesTask.addToCalIconWrapper}
+                            onPress={handleOpenCalendar}
+                        >
+                            <AddToCalICon
+                                width={30}
+                                height={30}
+                                style={stylesTask.addToCalIcon}
+                            />
+                        </TouchableOpacity>
+                    )}
                     <View style={stylesTask.serviceIconWrapper}>
                         <Image source={icon} style={stylesTask.serviceIcon} />
                     </View>
