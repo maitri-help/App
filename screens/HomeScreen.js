@@ -102,9 +102,10 @@ export default function HomeScreen({ navigation }) {
     const [emoji, setEmoji] = useState('');
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
-    
+
     const [notifications, setNotifications] = useState([]);
-    const [hasUnreadPendingRequest, setHasUnreadPendingRequest] = useState(false);
+    const [hasUnreadPendingRequest, setHasUnreadPendingRequest] =
+        useState(false);
 
     useEffect(() => {
         const selectRandomQuote = () => {
@@ -164,7 +165,6 @@ export default function HomeScreen({ navigation }) {
                 setTasks(tasksResponse.data);
 
                 console.log('userId:', userData.userId);
-                console.log('accessToken:', userData.accessToken);
             } else {
                 console.error('No user data found');
                 navigation.reset({
@@ -183,12 +183,17 @@ export default function HomeScreen({ navigation }) {
         try {
             const userData = await checkAuthentication();
             if (userData) {
-                const notificationsResponse = await getNotificationsForUser(userData.userId, userData.accessToken);
+                const notificationsResponse = await getNotificationsForUser(
+                    userData.userId,
+                    userData.accessToken
+                );
                 const notificationsData = notificationsResponse.data;
                 setNotifications(notificationsData);
 
-                const hasUnreadPending = notificationsData.some(notification =>
-                    notification.isRead === false || notification.type === 'pending_request'
+                const hasUnreadPending = notificationsData.some(
+                    (notification) =>
+                        notification.isRead === false ||
+                        notification.type === 'pending_request'
                 );
                 setHasUnreadPendingRequest(hasUnreadPending);
             } else {
@@ -571,7 +576,7 @@ export default function HomeScreen({ navigation }) {
                             style={[
                                 stylesHome.tabText,
                                 activeTab === 'Unassigned' &&
-                                stylesHome.activeTabText
+                                    stylesHome.activeTabText
                             ]}
                         >
                             Unassigned
@@ -588,7 +593,7 @@ export default function HomeScreen({ navigation }) {
                             style={[
                                 stylesHome.tabText,
                                 activeTab === 'Personal' &&
-                                stylesHome.activeTabText
+                                    stylesHome.activeTabText
                             ]}
                         >
                             Personal

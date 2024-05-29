@@ -12,7 +12,9 @@ export default function TaskFilterModal({
     TimeFilterList,
     setTimeFilterList,
     TypeFilterList,
-    setTypeFilterList
+    setTypeFilterList,
+    taskRemoval,
+    setTaskRemoval
 }) {
     const TimeFilters = [
         'Morning',
@@ -41,6 +43,13 @@ export default function TaskFilterModal({
             console.log(`Selected filters: ${newFilters.join(', ')}`);
             return newFilters;
         });
+    };
+
+    const handleResetFilters = () => {
+        setTimeFilterList([]);
+        setTypeFilterList([]);
+        setTaskRemoval(taskRemoval === 0 ? 1 : 0);
+        onClose();
     };
 
     return (
@@ -155,7 +164,7 @@ export default function TaskFilterModal({
                 <Button title="Filter" onPress={onClose} />
             </View>
             <View style={{ paddingTop: 20 }}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleResetFilters}>
                     <Text
                         style={[
                             styles.text,

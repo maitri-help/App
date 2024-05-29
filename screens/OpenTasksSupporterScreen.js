@@ -490,6 +490,8 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                     setTimeFilterList={setTimeFilterList}
                     TypeFilterList={TypeFilterList}
                     setTypeFilterList={setTypeFilterList}
+                    taskRemoval={taskRemoval}
+                    setTaskRemoval={setTaskRemoval}
                 />
             )}
 
