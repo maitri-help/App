@@ -95,11 +95,13 @@ export default function DateTime({
     };
 
     const handleStartTimeConfirm = (time) => {
+        console.log(time, 'time');
         const currentDate = startDate ? new Date(startDate) : new Date();
         const updatedDateTime = new Date(
             currentDate.setHours(time.getHours(), time.getMinutes())
         );
         setStartTime(updatedDateTime.toISOString());
+        setEndTime(updatedDateTime.toISOString());
         setStartTimePickerVisible(false);
     };
 
