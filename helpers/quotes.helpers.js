@@ -1,7 +1,8 @@
 export const getInitialBoxes = (
     navigation,
     randomQuote,
-    randomMotivationalQuote
+    randomMotivationalQuote,
+    openModal
 ) => [
     {
         title: 'Nothing to do?',
@@ -33,7 +34,7 @@ export const getInitialBoxes = (
                 title: 'Add a new person',
                 bgColor: '#fff',
                 textColor: '#000',
-                onPress: () => navigation.navigate('Circles')
+                onPress: () => openModal(true)
             }
         ],
         bgColor: '#FFE8D7',
