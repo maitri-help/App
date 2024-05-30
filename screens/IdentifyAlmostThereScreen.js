@@ -107,9 +107,10 @@ export default function IdentifyAlmostThereScreen({
                                                             'Welcome to Maitri!',
                                                             { type: 'success' }
                                                         );
-                                                        navigation.navigate(
-                                                            'SuppGreatNews'
-                                                        );
+                                                        navigation.reset({
+                                                            index: 0,
+                                                            routes: [{ name: 'SuppGreatNews' }]
+                                                        });
                                                         onClose();
                                                     })
                                                     .catch((error) => {
