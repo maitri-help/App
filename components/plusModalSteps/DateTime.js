@@ -95,7 +95,6 @@ export default function DateTime({
     };
 
     const handleStartTimeConfirm = (time) => {
-        console.log(time, 'time');
         const currentDate = startDate ? new Date(startDate) : new Date();
         const updatedDateTime = new Date(
             currentDate.setHours(time.getHours(), time.getMinutes())
@@ -308,6 +307,7 @@ export default function DateTime({
                             </TouchableOpacity>
                             <DateTimePickerModal
                                 mode="time"
+                                date={new Date(startTime)}
                                 isVisible={isStartTimePickerVisible}
                                 onConfirm={handleStartTimeConfirm}
                                 onCancel={hideStartTimePicker}
@@ -338,6 +338,7 @@ export default function DateTime({
                             </TouchableOpacity>
                             <DateTimePickerModal
                                 mode="time"
+                                date={new Date(endTime)}
                                 isVisible={isEndTimePickerVisible}
                                 onConfirm={handleEndTimeConfirm}
                                 onCancel={hideEndTimePicker}
