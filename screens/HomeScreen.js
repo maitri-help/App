@@ -23,6 +23,7 @@ import {
 import TaskModal from '../components/TaskModal';
 import { useFocusEffect } from '@react-navigation/native';
 import { motivationalQuotes, quotes } from '../constants/quotes';
+import { generateRandomQuote } from '../helpers';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
@@ -58,20 +59,9 @@ export default function HomeScreen({ navigation }) {
         useState(false);
 
     useEffect(() => {
-        const selectRandomQuote = () => {
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-            setRandomQuote(quotes[randomIndex]);
-        };
+        setRandomQuote(generateRandomQuote(quotes));
 
-        const selectRandomMotivationalQuote = () => {
-            const randomIndex = Math.floor(
-                Math.random() * motivationalQuotes.length
-            );
-            setRandomMotivationalQuote(motivationalQuotes[randomIndex]);
-        };
-
-        selectRandomQuote();
-        selectRandomMotivationalQuote();
+        setRandomMotivationalQuote(generateRandomQuote(motivationalQuotes));
     }, []);
 
     useEffect(() => {
