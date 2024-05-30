@@ -170,7 +170,10 @@ export default function FormFields({
                     {selectedService.title}
                 </Text>
             </View>
-            <ScrollView automaticallyAdjustKeyboardInsets={true}>
+            <ScrollView
+                automaticallyAdjustKeyboardInsets={true}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View
                     style={[styles.contentContainer, stylesFields.fieldsList]}
                 >
