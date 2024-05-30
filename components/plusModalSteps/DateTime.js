@@ -308,6 +308,7 @@ export default function DateTime({
                             </TouchableOpacity>
                             <DateTimePickerModal
                                 mode="time"
+                                themeVariant='light'
                                 isVisible={isStartTimePickerVisible}
                                 onConfirm={handleStartTimeConfirm}
                                 onCancel={hideStartTimePicker}
@@ -338,6 +339,7 @@ export default function DateTime({
                             </TouchableOpacity>
                             <DateTimePickerModal
                                 mode="time"
+                                themeVariant='light'
                                 isVisible={isEndTimePickerVisible}
                                 onConfirm={handleEndTimeConfirm}
                                 onCancel={hideEndTimePicker}
