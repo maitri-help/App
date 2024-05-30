@@ -28,6 +28,10 @@ const validationSchema = yup.object().shape({
             /^[a-zA-Z\s'‘’"”]+$/,
             'Full Name can only contain letters, spaces, and certain punctuation (e.g., \' " ‘ ’)'
         )
+        .matches(
+            /^[A-Za-z]+\s[A-Za-z][A-Za-z\s]*$/,
+            'Full Name should be at least 2 words long'
+        )
         .required('Full Name is required'),
     email: yup
         .string()

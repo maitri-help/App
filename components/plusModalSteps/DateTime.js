@@ -308,6 +308,7 @@ export default function DateTime({
                             <DateTimePickerModal
                                 mode="time"
                                 date={new Date(startTime)}
+                                themeVariant="light"
                                 isVisible={isStartTimePickerVisible}
                                 onConfirm={handleStartTimeConfirm}
                                 onCancel={hideStartTimePicker}
@@ -339,6 +340,7 @@ export default function DateTime({
                             <DateTimePickerModal
                                 mode="time"
                                 date={new Date(endTime)}
+                                themeVariant="light"
                                 isVisible={isEndTimePickerVisible}
                                 onConfirm={handleEndTimeConfirm}
                                 onCancel={hideEndTimePicker}

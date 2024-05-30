@@ -123,7 +123,7 @@ export default function HomeScreen({ navigation }) {
                 const hasUnreadPending = notificationsData.some(
                     (notification) =>
                         notification.isRead === false ||
-                        notification.type === 'pending_request'
+                        notification.type === 'pending_request' && notification.isRead === false
                 );
                 setHasUnreadPendingRequest(hasUnreadPending);
             } else {

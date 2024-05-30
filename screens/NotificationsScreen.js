@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Platform,
     View,
@@ -20,6 +20,7 @@ import {
     changeUserCircle
 } from '../hooks/api';
 import { formatDistanceToNow } from 'date-fns';
+import { useFocusEffect } from '@react-navigation/native';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -90,6 +91,42 @@ export default function NotificationsScreen({ navigation }) {
         setListHeight(nativeEvent.layout.height);
     };
 
+    const handleMarkAllAsRead = async () => {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const accessToken = userData.accessToken;
+
+                await Promise.all(
+                    notifications
+                        .filter((n) => !n.isRead && n.type !== 'pending_request')
+                        .map((n) => markAsRead(n.notificationId, accessToken))
+                );
+            }
+        } catch (error) {
+            console.error('Error marking all as read:', error.response.data);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            handleMarkAllAsRead()
+        })
+    );
+
+    const onNavigateBack = () => {
+        setNotifications(
+            notifications.map((n) => {
+                if (!n.isRead && n.type !== 'pending_request') {
+                    return { ...n, isRead: true };
+                } else {
+                    return n;
+                }
+            })
+        );
+        navigation.goBack();
+    };
+
     const renderNotifications = (filterFn, type) => {
         const filteredNotifications = notifications.filter(filterFn);
 
@@ -132,7 +169,7 @@ export default function NotificationsScreen({ navigation }) {
         <SafeAreaView style={styles.safeArea}>
             <View style={[styles.topBar, styles.topBarBack]}>
                 <TouchableOpacity
-                    onPress={() => navigation.goBack()}
+                    onPress={() => onNavigateBack()}
                     style={styles.backLinkInline}
                 >
                     <ArrowLeftIcon
