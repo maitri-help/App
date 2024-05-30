@@ -85,16 +85,17 @@ export default function GridCalendar({
             const isToday =
                 currentDate.toDateString() === new Date().toDateString();
 
-            const taskRange = tasks
-                .filter((task) => {
-                    const taskStartDate = new Date(task.startDateTime);
-                    const taskEndDate = new Date(task.endDateTime);
-                    return (
-                        currentDate >= taskStartDate &&
-                        currentDate <= taskEndDate
-                    );
-                })
-                .map((task) => new Date(task.startDateTime));
+            const daysTasks = tasks?.filter((task) => {
+                const taskStartDate = new Date(task?.startDateTime);
+                const taskEndDate = new Date(task?.endDateTime);
+                return (
+                    currentDate >= taskStartDate && currentDate <= taskEndDate
+                );
+            });
+
+            const taskRange = daysTasks?.map(
+                (task) => new Date(task.startDateTime)
+            );
 
             const singleDayTasks = tasks.filter((task) => {
                 const monthForI = currentMonthProp.toString().padStart(2, '0');
@@ -123,6 +124,16 @@ export default function GridCalendar({
                 );
             });
 
+            const isAllCompletedTaskRange =
+                daysTasks.length > 0
+                    ? daysTasks.every((task) => task.status === 'done')
+                    : false;
+
+            const isAllCompletedSingleDay =
+                singleDayTasks.length > 0
+                    ? singleDayTasks.every((task) => task.status === 'done')
+                    : false;
+
             currentMonthDays.push({
                 date: i,
                 selected: isSameDate && i === currentDay,
@@ -130,7 +141,9 @@ export default function GridCalendar({
                 hasTask: taskRange.length > 0 || singleDayTasks.length > 0,
                 isToday: isToday,
                 isUnassigned: isUnassigned,
-                taskRange: taskRange
+                taskRange: taskRange,
+                isAllCompleted:
+                    isAllCompletedTaskRange || isAllCompletedSingleDay
             });
         }
 
@@ -178,35 +191,42 @@ export default function GridCalendar({
         </View>
     );
 
-    const renderDates = ({ item }) => (
-        <View style={styles.dateWrapper}>
-            <TouchableOpacity
-                style={styles.dateContainer(item)}
-                onPress={() =>
-                    selectDate(
-                        `${currentYearProp}-${currentMonthProp}-${item.date}`
-                    )
-                }
-                disabled={item.disabled}
-            >
-                <Text
-                    style={[
-                        styles.date(item),
-                        item.disabled && styles.disabledDate,
-                        item.isToday && styles.dateToday
-                    ]}
+    const renderDates = ({ item }) => {
+        return (
+            <View style={styles.dateWrapper}>
+                <TouchableOpacity
+                    style={styles.dateContainer(item)}
+                    onPress={() =>
+                        selectDate(
+                            `${currentYearProp}-${currentMonthProp}-${item.date}`
+                        )
+                    }
+                    disabled={item.disabled}
                 >
-                    {item.date}
-                </Text>
-                {item.isUnassigned && item.hasTask && (
-                    <View style={[styles.dot, styles.dotRed]} />
-                )}
-                {!item.isUnassigned && item.hasTask && (
-                    <View style={styles.dot} />
-                )}
-            </TouchableOpacity>
-        </View>
-    );
+                    <Text
+                        style={[
+                            styles.date(item),
+                            item.disabled && styles.disabledDate,
+                            item.isToday && styles.dateToday
+                        ]}
+                    >
+                        {item?.date}
+                    </Text>
+
+                    {!item?.isAllCompleted && (
+                        <>
+                            {item.isUnassigned && item.hasTask && (
+                                <View style={[styles.dot, styles.dotRed]} />
+                            )}
+                            {!item.isUnassigned && item.hasTask && (
+                                <View style={styles.dot} />
+                            )}
+                        </>
+                    )}
+                </TouchableOpacity>
+            </View>
+        );
+    };
 
     return (
         <View style={styles.calendar}>
