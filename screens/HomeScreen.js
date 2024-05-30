@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
-import CustomBox from '../components/CustomBox';
 import TaskItem from '../components/TaskItem';
 import { getTasksForUser, getNotificationsForUser } from '../hooks/api';
 import {
@@ -22,16 +21,14 @@ import {
 } from '../authStorage';
 import TaskModal from '../components/TaskModal';
 import { useFocusEffect } from '@react-navigation/native';
-import { motivationalQuotes, quotes } from '../constants/quotes';
-import { generateRandomQuote } from '../helpers';
+import LeadBoxes from '../components/Lead/LeadBoxes';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
     const [firstName, setFirstName] = useState('');
     const [greetingText, setGreetingText] = useState('');
     const [tasks, setTasks] = useState([]);
-    const [randomQuote, setRandomQuote] = useState('');
-    const [randomMotivationalQuote, setRandomMotivationalQuote] = useState('');
+
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -57,12 +54,6 @@ export default function HomeScreen({ navigation }) {
     const [notifications, setNotifications] = useState([]);
     const [hasUnreadPendingRequest, setHasUnreadPendingRequest] =
         useState(false);
-
-    useEffect(() => {
-        setRandomQuote(generateRandomQuote(quotes));
-
-        setRandomMotivationalQuote(generateRandomQuote(motivationalQuotes));
-    }, []);
 
     useEffect(() => {
         async function fetchUserData() {
@@ -436,75 +427,7 @@ export default function HomeScreen({ navigation }) {
                         )}
                     </TouchableOpacity>
                 </View>
-                <View style={stylesHome.boxesContainer}>
-                    <ScrollView
-                        horizontal={true}
-                        style={stylesHome.boxesScroll}
-                    >
-                        <View style={{ marginLeft: 15 }} />
-                        {/* <CustomBox
-                        title="Rachel Green"
-                        subtitle="Has completed"
-                        largerText="Do the Laundry"
-                        buttons={[{ title: 'Say thank you!', bgColor: '#fff', textColor: '#000' }]}
-                        bgColor="#FFE8D7"
-                        bgImgColor="#FFD8BC"
-                    />
-                    <CustomBox
-                        title="You haven't approved"
-                        largerText="Phoebe Buffay"
-                        secondSubtitle="For a long time"
-                        buttons={[
-                            { title: 'Confirm', bgColor: '#D4EED0', textColor: '#000' },
-                            { title: 'Decline', bgColor: '#fff', textColor: '#000' }
-                        ]}
-                        bgColor="#E1D0FD"
-                        bgImg={3}
-                        bgImgColor="#EDE3FE"
-                    /> */}
-                        <CustomBox
-                            title="Nothing to do?"
-                            buttons={[
-                                {
-                                    title: 'Add a new task',
-                                    onPress: () =>
-                                        navigation.navigate('Assignments')
-                                }
-                            ]}
-                            bgColor="#E5F5E3"
-                            bgImgColor="#D6EFD2"
-                            bgImg={4}
-                        />
-                        <CustomBox
-                            title={randomQuote}
-                            bgColor="#D4E6E5"
-                            bgImgColor="#B7D6D3"
-                        />
-                        <CustomBox
-                            title={randomMotivationalQuote}
-                            bgColor="#E1D0FD"
-                            bgImgColor="#EDE3FE"
-                            bgImg={2}
-                        />
-                        <CustomBox
-                            title="Come add family & friends to your circles"
-                            buttons={[
-                                {
-                                    title: 'Add a new person',
-                                    bgColor: '#fff',
-                                    textColor: '#000',
-                                    onPress: () =>
-                                        navigation.navigate('Circles')
-                                }
-                            ]}
-                            bgColor="#FFE8D7"
-                            bgImgColor="#FFD8BC"
-                            bgImg={2}
-                        />
-                        <View style={{ marginRight: 15 }} />
-                    </ScrollView>
-                </View>
-
+                <LeadBoxes navigation={navigation} />
                 <View
                     style={[stylesHome.tabsContainer, styles.contentContainer]}
                 >
@@ -652,9 +575,7 @@ const stylesHome = StyleSheet.create({
         bottom: 4,
         right: 1
     },
-    boxesScroll: {
-        paddingVertical: 20
-    },
+
     tabsContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
