@@ -406,7 +406,9 @@ export default function AssignmentsScreen({ navigation }) {
                                     />
                                 </View>
                                 <Text style={stylesCal.calendarEmptyText}>
-                                    No tasks on this date
+                                    {!isLoading && tasks.length
+                                        ? 'No tasks on this date'
+                                        : 'Your list is empty'}
                                 </Text>
                                 <Text style={stylesCal.calendarEmptyTitle}>
                                     Click here to add your first task
