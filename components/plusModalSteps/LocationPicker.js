@@ -3,8 +3,9 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
 import CloseIcon from '../../assets/icons/close-icon.svg';
+import { GEOLOCATION_API_KEY } from '../../constants/config';
 
-Geocoder.init('AIzaSyAWwo2zm6v7Jwam7QGxAFGkCH1DhsgGB_Y');
+Geocoder.init(GEOLOCATION_API_KEY);
 
 export default function LocationPicker({
     onSelect,
