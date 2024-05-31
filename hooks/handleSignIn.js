@@ -24,8 +24,26 @@ export default function handleSignIn(values) {
                 });
             })
             .catch((error) => {
-                console.error('Sign In Error:', error);
-                reject(error);
+                const e = error.toJSON();
+                if (e.status) {
+                    switch (e.status) {
+                        case 404:
+                            reject(new Error(`Phone number doesn't exist`));
+                            break;
+                        case 500:
+                            reject(new Error('Server error'));
+                            break;
+                        default:
+                            reject(new Error('Unknown error'));
+                            break;
+                    }
+                } else if (!e.status && e.message) {
+                    reject(new Error(e.message));
+                } else {
+                    reject(new Error('Unknown error'));
+                }
+                /* console.error('Sign In Error:', error);
+                reject(error); */
             });
     });
 }
