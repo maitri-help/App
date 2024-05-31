@@ -127,7 +127,7 @@ export default function EditForm({
                 endDateTime: endDateTime
             };
 
-            const response = await updateTask(taskId, taskData, accessToken);
+            await updateTask(taskId, taskData, accessToken);
 
             toast.show('Task updated successfully', { type: 'success' });
 

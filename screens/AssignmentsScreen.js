@@ -56,8 +56,6 @@ export default function AssignmentsScreen({ navigation }) {
         useState('');
     const [taskModalStartDate, setTaskModalStartDate] = useState(null);
     const [taskModalEndDate, setTaskModalEndDate] = useState(null);
-    const [taskModalStartTime, setTaskModalStartTime] = useState(null);
-    const [taskModalEndTime, setTaskModalEndTime] = useState(null);
     const [plusModalStartDate, setPlusModalStartDate] = useState(null);
     const [plusModalEndDate, setPlusModalEndDate] = useState(null);
     const [plusModalStartTime, setPlusModalStartTime] = useState(null);
@@ -514,10 +512,6 @@ export default function AssignmentsScreen({ navigation }) {
                 setStartDate={setTaskModalStartDate}
                 endDate={taskModalEndDate}
                 setEndDate={setTaskModalEndDate}
-                startTime={taskModalStartTime}
-                setStartTime={setTaskModalStartTime}
-                endTime={taskModalEndTime}
-                setEndTime={setTaskModalEndTime}
                 handleDayPress={handleDayPressTask}
                 getDaysBetween={getDaysBetween}
                 handleDateTimeSelect={handleDateTimeSelectTask}
