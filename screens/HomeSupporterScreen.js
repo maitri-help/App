@@ -8,7 +8,8 @@ import {
     ScrollView,
     Image,
     ImageBackground,
-    Animated
+    Animated,
+    ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
@@ -25,40 +26,8 @@ import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal'
 import initalBackground from '../assets/img/welcome-bg.png';
 import { Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-
-const inspirationalQuotes = [
-    'In the middle of difficulty lies opportunity. - Albert Einstein',
-    'Difficult roads often lead to beautiful destinations. - Unknown',
-    'When everything seems to be going against you, remember that the airplane takes off against the wind, not with it. - Henry Ford',
-    'The only way to make sense out of change is to plunge into it, move with it, and join the dance. - Alan Watts',
-    'Tough times never last, but tough people do. - Robert H. Schuller',
-    "It's not the load that breaks you down, it's the way you carry it. - Lou Holtz",
-    "Believe you can and you're halfway there. - Theodore Roosevelt",
-    'The comeback is always stronger than the setback. - Unknown',
-    'Fall down seven times, stand up eight. - Japanese Proverb',
-    'Sometimes the darkest challenges bring the brightest blessings. - Unknown',
-    'Every storm runs out of rain. - Maya Angelou',
-    'Adversity introduces a man to himself. - Albert Einstein',
-    'Challenges are what make life interesting and overcoming them is what makes life meaningful. - Joshua J. Marine',
-    "Stars can't shine without darkness. - Unknown",
-    'The wound is the place where the light enters you. - Rumi',
-    'You were given this life because you are strong enough to live it. - Unknown',
-    'When you come out of the storm, you won’t be the same person who walked in. - Haruki Murakami',
-    'Even the darkest night will end and the sun will rise. - Victor Hugo',
-    'The human spirit is stronger than anything that can happen to it. - C.C. Scott',
-    'The gem cannot be polished without friction, nor man perfected without trials. - Chinese Proverb',
-    "Strength grows in the moments when you think you can't go on but you keep going anyway. - Unknown",
-    'The greatest glory in living lies not in never falling, but in rising every time we fall. - Nelson Mandela',
-    'What lies behind us and what lies before us are tiny matters compared to what lies within us. - Ralph Waldo Emerson',
-    'No matter how hard the past, you can always begin again. - Buddha',
-    'Out of difficulties grow miracles. - Jean de La Bruyère',
-    'The greater the obstacle, the more glory in overcoming it. - Molière',
-    "Life isn't about waiting for the storm to pass, it's about learning to dance in the rain. - Vivian Greene",
-    'A smooth sea never made a skilled sailor. - Franklin D. Roosevelt',
-    'Sometimes the bad things that happen in our lives put us directly on the path to the best things that will ever happen to us. - Unknown',
-    "Strength doesn't come from what you can do. It comes from overcoming the things you once thought you couldn't. - Rikki Rogers",
-    'Life is 10% what happens to us and 90% how we react to it. - Charles R. Swindoll'
-];
+import { inspirationalQuotes } from '../constants/quotes';
+import { generateRandomQuote } from '../helpers';
 
 export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
@@ -81,19 +50,15 @@ export default function HomeSupporterScreen({ navigation }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
-        const selectRandomInspirationalQuote = () => {
-            const randomIndex = Math.floor(
-                Math.random() * inspirationalQuotes.length
-            );
-            setRandomInspirationalQuote(inspirationalQuotes[randomIndex]);
-        };
+    const [isLoading, setIsLoading] = useState(false);
 
-        selectRandomInspirationalQuote();
+    useEffect(() => {
+        setRandomInspirationalQuote(generateRandomQuote(inspirationalQuotes));
     }, [tasks.length]);
 
     useEffect(() => {
         async function fetchUserData() {
+            setIsLoading(true);
             try {
                 const userData = await checkAuthentication();
                 if (userData) {
@@ -102,11 +67,13 @@ export default function HomeSupporterScreen({ navigation }) {
                     setColor(userData.color);
                     setEmoji(userData.emoji);
                 }
+                setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 clearUserData();
                 clearAccessToken();
                 navigation.navigate('Login');
+                setIsLoading(false);
             }
         }
         fetchUserData();
@@ -415,10 +382,24 @@ export default function HomeSupporterScreen({ navigation }) {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                {tasks.length > 0 && (
-                    <View style={stylesSuppHome.tabsContentContainer}>
-                        {renderTasks(tasks)}
+                {isLoading ? (
+                    <View
+                        style={{
+                            minHeight: 80,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <ActivityIndicator size="large" />
                     </View>
+                ) : (
+                    <>
+                        {tasks.length > 0 && (
+                            <View style={stylesSuppHome.tabsContentContainer}>
+                                {renderTasks(tasks)}
+                            </View>
+                        )}
+                    </>
                 )}
 
                 {(taskModalVisible || myTaskModalVisible) && (

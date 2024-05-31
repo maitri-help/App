@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Platform } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    ScrollView,
+    Modal,
+    Platform
+} from 'react-native';
 import ModalCustom from '../components/Modal';
 import styles from '../Styles';
 import EditIcon from '../assets/icons/edit-icon.svg';
@@ -11,14 +20,34 @@ import { deleteSupporterFromCircle, changeUserCircle } from '../hooks/api';
 import { getAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 
-export default function SupporterCardScreen({ visible, onClose, emoji, color, firstName, lastName, initialCircle, tasks = [], phoneNumber, email, circleId, supporterUserId, leadUserId, updateUsers }) {
-    const [selectedCircle, setSelectedCircle] = useState(initialCircle || 'First');
+export default function SupporterCardScreen({
+    visible,
+    onClose,
+    emoji,
+    color,
+    firstName,
+    lastName,
+    initialCircle,
+    tasks = [],
+    phoneNumber,
+    email,
+    circleId,
+    supporterUserId,
+    leadUserId,
+    updateUsers
+}) {
+    const [selectedCircle, setSelectedCircle] = useState(
+        initialCircle || 'First'
+    );
     const [showInnerModal, setShowInnerModal] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
     const toast = useToast();
 
     useEffect(() => {
-        if (initialCircle && ['First', 'Second', 'Third'].includes(initialCircle)) {
+        if (
+            initialCircle &&
+            ['First', 'Second', 'Third'].includes(initialCircle)
+        ) {
             setSelectedCircle(initialCircle);
         }
     }, [initialCircle]);
@@ -50,17 +79,23 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                 return;
             }
 
-            const response = await changeUserCircle(leadUserId, supporterUserId, newCircle, accessToken);
-            console.log("Circle changed:", response.data);
+            await changeUserCircle(
+                leadUserId,
+                supporterUserId,
+                newCircle,
+                accessToken
+            );
 
-            toast.show('Supporter circle changed successfully', { type: 'success' });
+            toast.show('Supporter circle changed successfully', {
+                type: 'success'
+            });
 
             setSelectedCircle(newCircle);
             setIsEditable(!isEditable);
             onClose();
             updateUsers();
         } catch (error) {
-            console.error("Error changing circle:", error);
+            console.error('Error changing circle:', error);
             toast.show('Unsuccessful circle change', { type: 'error' });
         }
     };
@@ -74,9 +109,11 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                 return;
             }
 
-            const response = await deleteSupporterFromCircle(circleId, supporterUserId, accessToken);
-
-            console.log("Supporter deleted from circle:", response.data);
+            const response = await deleteSupporterFromCircle(
+                circleId,
+                supporterUserId,
+                accessToken
+            );
 
             toast.show('Supporter deleted from circle', { type: 'success' });
 
@@ -84,9 +121,8 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
             setIsEditable(!isEditable);
             onClose();
             updateUsers();
-
         } catch (error) {
-            console.error("Error deleting supporter:", error);
+            console.error('Error deleting supporter:', error);
 
             toast.show('Unsuccessful supporter deletion', { type: 'error' });
         }
@@ -94,7 +130,13 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
 
     const formatDate = (date, includeTime = true) => {
         const options = includeTime
-            ? { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }
+            ? {
+                  month: 'long',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  hour12: true
+              }
             : { month: 'long', day: 'numeric' };
         return new Date(date).toLocaleDateString('en-US', options);
     };
@@ -109,36 +151,70 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
         if (startDate === endDate) {
             return formatDate(startTime);
         } else {
-            return `${formatDate(startTime, true)} - ${formatDate(endTime, true)}`;
+            return `${formatDate(startTime, true)} - ${formatDate(
+                endTime,
+                true
+            )}`;
         }
     };
 
     return (
-        <ModalCustom visible={visible} onClose={onClose} style={stylesSupporter} modalTopNav
+        <ModalCustom
+            visible={visible}
+            onClose={onClose}
+            style={stylesSupporter}
+            modalTopNav
             modalTopNavChildren={
                 <View style={stylesSupporter.supporterTop}>
                     <View style={stylesSupporter.supporterTopLeft}>
-                        <View style={[stylesSupporter.circleItemEmojiWrapper, color ? { borderColor: color } : null]}>
-                            {emoji && <Text style={stylesSupporter.circleItemEmoji}>
-                                {emoji}
-                            </Text>}
+                        <View
+                            style={[
+                                stylesSupporter.circleItemEmojiWrapper,
+                                color ? { borderColor: color } : null
+                            ]}
+                        >
+                            {emoji && (
+                                <Text style={stylesSupporter.circleItemEmoji}>
+                                    {emoji}
+                                </Text>
+                            )}
                         </View>
                         <View style={stylesSupporter.circleItemTextWrapper}>
-                            <Text style={stylesSupporter.circleItemName}>{firstName} {lastName}</Text>
+                            <Text style={stylesSupporter.circleItemName}>
+                                {firstName} {lastName}
+                            </Text>
                         </View>
                     </View>
-                    <TouchableOpacity style={stylesSupporter.editIconWrapper} onPress={toggleEditable}>
+                    <TouchableOpacity
+                        style={stylesSupporter.editIconWrapper}
+                        onPress={toggleEditable}
+                    >
                         {isEditable ? (
-                            <CheckIcon width={22} height={22} color={'#000'} style={stylesSupporter.checkIcon} />
+                            <CheckIcon
+                                width={22}
+                                height={22}
+                                color={'#000'}
+                                style={stylesSupporter.checkIcon}
+                            />
                         ) : (
-                            <EditIcon width={22} height={22} color={'#000'} style={stylesSupporter.editIcon} />
+                            <EditIcon
+                                width={22}
+                                height={22}
+                                color={'#000'}
+                                style={stylesSupporter.editIcon}
+                            />
                         )}
                     </TouchableOpacity>
                 </View>
             }
         >
-            <ScrollView contentContainerStyle={stylesSupporter.scrollContainer} automaticallyAdjustKeyboardInsets={true}>
-                <View style={[styles.contentContainer, stylesSupporter.container]}>
+            <ScrollView
+                contentContainerStyle={stylesSupporter.scrollContainer}
+                automaticallyAdjustKeyboardInsets={true}
+            >
+                <View
+                    style={[styles.contentContainer, stylesSupporter.container]}
+                >
                     <View style={stylesSupporter.supporterNickCircles}>
                         {/* <View style={stylesSupporter.supporterNickname}>
                             {isEditable ? (
@@ -159,28 +235,82 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                             {['First', 'Second', 'Third'].map((option) => (
                                 <TouchableOpacity
                                     key={option}
-                                    style={[stylesSupporter.supporterCircle, !isEditable && selectedCircle !== option ? stylesSupporter.supporterCircleHidden : '', selectedCircle === option && stylesSupporter.supporterCircleSelected]}
+                                    style={[
+                                        stylesSupporter.supporterCircle,
+                                        !isEditable && selectedCircle !== option
+                                            ? stylesSupporter.supporterCircleHidden
+                                            : '',
+                                        selectedCircle === option &&
+                                            stylesSupporter.supporterCircleSelected
+                                    ]}
                                     onPress={() => handleSelectCircle(option)}
                                     disabled={!isEditable}
                                 >
-                                    <Text style={[stylesSupporter.supporterCircleText, selectedCircle === option && stylesSupporter.supporterCircleTextSelected]}>{option} circle</Text>
+                                    <Text
+                                        style={[
+                                            stylesSupporter.supporterCircleText,
+                                            selectedCircle === option &&
+                                                stylesSupporter.supporterCircleTextSelected
+                                        ]}
+                                    >
+                                        {option} circle
+                                    </Text>
                                 </TouchableOpacity>
                             ))}
                         </View>
                     </View>
                     <View style={stylesSupporter.supporterTasks}>
                         <View style={stylesSupporter.supporterTasksTitle}>
-                            <Text style={stylesSupporter.supporterTasksTitleText}>Recently assigned tasks</Text>
+                            <Text
+                                style={stylesSupporter.supporterTasksTitleText}
+                            >
+                                Recently assigned tasks
+                            </Text>
                         </View>
                         <View style={stylesSupporter.supporterTasksList}>
                             {tasks.map((task, taskIndex) => (
-                                <View key={taskIndex} style={stylesSupporter.supporterTasksListItem}>
-                                    <View style={[stylesSupporter.supporterTasksListItemHalf, stylesSupporter.supporterTasksListItemLeft]}>
-                                        <Text style={stylesSupporter.supporterTasksListItemTask}>{task.title}</Text>
+                                <View
+                                    key={taskIndex}
+                                    style={
+                                        stylesSupporter.supporterTasksListItem
+                                    }
+                                >
+                                    <View
+                                        style={[
+                                            stylesSupporter.supporterTasksListItemHalf,
+                                            stylesSupporter.supporterTasksListItemLeft
+                                        ]}
+                                    >
+                                        <Text
+                                            style={
+                                                stylesSupporter.supporterTasksListItemTask
+                                            }
+                                        >
+                                            {task.title}
+                                        </Text>
                                     </View>
-                                    <View style={[stylesSupporter.supporterTasksListItemHalf, stylesSupporter.supporterTasksListItemRight]}>
-                                        <ClockIcon width={14} height={14} color={'#000'} style={stylesSupporter.clockIcon} />
-                                        <Text style={stylesSupporter.supporterTasksListItemTime}>{formatDateTime(task.startDateTime, task.endDateTime)}</Text>
+                                    <View
+                                        style={[
+                                            stylesSupporter.supporterTasksListItemHalf,
+                                            stylesSupporter.supporterTasksListItemRight
+                                        ]}
+                                    >
+                                        <ClockIcon
+                                            width={14}
+                                            height={14}
+                                            color={'#000'}
+                                            style={stylesSupporter.clockIcon}
+                                        />
+                                        <Text
+                                            style={
+                                                stylesSupporter.supporterTasksListItemTime
+                                            }
+                                        >
+                                            {formatDateTime(
+                                                task.startDateTime,
+                                                task.endDateTime
+                                            )}
+                                        </Text>
                                     </View>
                                 </View>
                             ))}
@@ -188,31 +318,59 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                     </View>
                     <View style={stylesSupporter.supporterContact}>
                         <View style={stylesSupporter.supporterContactInfo}>
-                            <View style={stylesSupporter.supporterContactInfoIconCircle}>
-                                <PhoneIcon width={14} height={14} color={'#1C4837'} />
+                            <View
+                                style={
+                                    stylesSupporter.supporterContactInfoIconCircle
+                                }
+                            >
+                                <PhoneIcon
+                                    width={14}
+                                    height={14}
+                                    color={'#1C4837'}
+                                />
                             </View>
                             {isEditable ? (
                                 <TextInput
-                                    style={[stylesSupporter.input, stylesSupporter.inputContact]}
+                                    style={[
+                                        stylesSupporter.input,
+                                        stylesSupporter.inputContact
+                                    ]}
                                     maxLength={16}
                                     keyboardType="numeric"
-                                    defaultValue={phoneNumber ? phoneNumber : ''}
+                                    defaultValue={
+                                        phoneNumber ? phoneNumber : ''
+                                    }
                                     placeholder={'Phone number'}
                                     placeholderTextColor="#787878"
                                 />
                             ) : (
-                                <Text style={stylesSupporter.supporterContactInfoText}>
+                                <Text
+                                    style={
+                                        stylesSupporter.supporterContactInfoText
+                                    }
+                                >
                                     {phoneNumber ? phoneNumber : 'Phone number'}
                                 </Text>
                             )}
                         </View>
                         <View style={stylesSupporter.supporterContactInfo}>
-                            <View style={stylesSupporter.supporterContactInfoIconCircle}>
-                                <EmailIcon width={14} height={14} color={'#1C4837'} />
+                            <View
+                                style={
+                                    stylesSupporter.supporterContactInfoIconCircle
+                                }
+                            >
+                                <EmailIcon
+                                    width={14}
+                                    height={14}
+                                    color={'#1C4837'}
+                                />
                             </View>
                             {isEditable ? (
                                 <TextInput
-                                    style={[stylesSupporter.input, stylesSupporter.inputContact]}
+                                    style={[
+                                        stylesSupporter.input,
+                                        stylesSupporter.inputContact
+                                    ]}
                                     maxLength={320}
                                     keyboardType="email-address"
                                     defaultValue={email ? email : ''}
@@ -220,7 +378,11 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                                     placeholderTextColor="#787878"
                                 />
                             ) : (
-                                <Text style={stylesSupporter.supporterContactInfoText}>
+                                <Text
+                                    style={
+                                        stylesSupporter.supporterContactInfoText
+                                    }
+                                >
                                     {email ? email : 'Email address'}
                                 </Text>
                             )}
@@ -228,8 +390,17 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
                     </View>
                     {isEditable && (
                         <View style={stylesSupporter.supporterDelete}>
-                            <TouchableOpacity style={stylesSupporter.supporterDeleteLink} onPress={openInnerModal}>
-                                <Text style={stylesSupporter.supporterDeleteLinkText}>Delete Supporter</Text>
+                            <TouchableOpacity
+                                style={stylesSupporter.supporterDeleteLink}
+                                onPress={openInnerModal}
+                            >
+                                <Text
+                                    style={
+                                        stylesSupporter.supporterDeleteLinkText
+                                    }
+                                >
+                                    Delete Supporter
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     )}
@@ -237,19 +408,60 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
             </ScrollView>
 
             {showInnerModal && (
-                <Modal visible={showInnerModal} animationType='fade' onRequestClose={closeInnerModal} transparent>
-                    <TouchableOpacity onPress={closeInnerModal} style={stylesSupporter.innerModalContainer}>
+                <Modal
+                    visible={showInnerModal}
+                    animationType="fade"
+                    onRequestClose={closeInnerModal}
+                    transparent
+                >
+                    <TouchableOpacity
+                        onPress={closeInnerModal}
+                        style={stylesSupporter.innerModalContainer}
+                    >
                         <View style={stylesSupporter.innerModalContent}>
                             <View style={stylesSupporter.innerModalTexts}>
-                                <Text style={stylesSupporter.innerModalTitle}>You are about to remove a supporter from your tribe</Text>
-                                <Text style={stylesSupporter.innerModalSubtitle}>This will not be visible to the supporter</Text>
+                                <Text style={stylesSupporter.innerModalTitle}>
+                                    You are about to remove a supporter from
+                                    your tribe
+                                </Text>
+                                <Text
+                                    style={stylesSupporter.innerModalSubtitle}
+                                >
+                                    This will not be visible to the supporter
+                                </Text>
                             </View>
                             <View style={stylesSupporter.innerModalButtons}>
-                                <TouchableOpacity style={[stylesSupporter.innerModalButton, stylesSupporter.innerModalButtonRed]} onPress={handleDelete}>
-                                    <Text style={[stylesSupporter.innerModalButtonText, stylesSupporter.innerModalButtonRedText]}>Remove</Text>
+                                <TouchableOpacity
+                                    style={[
+                                        stylesSupporter.innerModalButton,
+                                        stylesSupporter.innerModalButtonRed
+                                    ]}
+                                    onPress={handleDelete}
+                                >
+                                    <Text
+                                        style={[
+                                            stylesSupporter.innerModalButtonText,
+                                            stylesSupporter.innerModalButtonRedText
+                                        ]}
+                                    >
+                                        Remove
+                                    </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[stylesSupporter.innerModalButton, stylesSupporter.innerModalButtonWhite]} onPress={closeInnerModal}>
-                                    <Text style={[stylesSupporter.innerModalButtonText, stylesSupporter.innerModalButtonWhiteText]}>Cancel</Text>
+                                <TouchableOpacity
+                                    style={[
+                                        stylesSupporter.innerModalButton,
+                                        stylesSupporter.innerModalButtonWhite
+                                    ]}
+                                    onPress={closeInnerModal}
+                                >
+                                    <Text
+                                        style={[
+                                            stylesSupporter.innerModalButtonText,
+                                            stylesSupporter.innerModalButtonWhiteText
+                                        ]}
+                                    >
+                                        Cancel
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -262,24 +474,24 @@ export default function SupporterCardScreen({ visible, onClose, emoji, color, fi
 
 const stylesSupporter = StyleSheet.create({
     modalTopNav: {
-        alignItems: 'center',
+        alignItems: 'center'
     },
     innerModalContainer: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.5)',
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     innerModalContent: {
         backgroundColor: '#fff',
         borderRadius: 20,
         maxWidth: 350,
         paddingHorizontal: 20,
-        paddingVertical: 30,
+        paddingVertical: 30
     },
     innerModalTexts: {
-        marginBottom: 20,
+        marginBottom: 20
     },
     innerModalTitle: {
         color: '#000',
@@ -294,12 +506,12 @@ const stylesSupporter = StyleSheet.create({
         fontSize: 12,
         fontFamily: 'poppins-regular',
         lineHeight: 16,
-        textAlign: 'center',
+        textAlign: 'center'
     },
     innerModalButtons: {
         flexDirection: 'row',
         gap: 10,
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     innerModalButton: {
         alignItems: 'center',
@@ -307,46 +519,46 @@ const stylesSupporter = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 16,
-        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
-            height: 3,
+            height: 3
         },
         shadowOpacity: 0.1,
         shadowRadius: 6,
-        elevation: 8,
+        elevation: 8
     },
     innerModalButtonRed: {
-        backgroundColor: '#FF7070',
+        backgroundColor: '#FF7070'
     },
     innerModalButtonWhite: {
-        backgroundColor: '#fff',
+        backgroundColor: '#fff'
     },
     innerModalButtonText: {
         fontSize: 14,
         fontFamily: 'poppins-medium',
-        lineHeight: 18,
+        lineHeight: 18
     },
     innerModalButtonRedText: {
-        color: '#fff',
+        color: '#fff'
     },
     innerModalButtonWhiteText: {
-        color: '#000',
+        color: '#000'
     },
     modalContainer: {
-        height: '80%',
+        height: '80%'
     },
     supporterTop: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        flex: 1,
+        flex: 1
     },
     supporterTopLeft: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 15,
-        paddingLeft: 5,
+        paddingLeft: 5
     },
     circleItemEmojiWrapper: {
         width: 50,
@@ -355,22 +567,22 @@ const stylesSupporter = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#1C4837',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     circleItemEmoji: {
-        fontSize: (Platform.OS === 'android') ? 24 : 28,
-        textAlign: 'center',
+        fontSize: Platform.OS === 'android' ? 24 : 28,
+        textAlign: 'center'
     },
     circleItemTextWrapper: {
         flexShrink: 1,
-        gap: 3,
+        gap: 3
     },
     circleItemName: {
         color: '#1C4837',
         fontSize: 14,
         fontFamily: 'poppins-regular',
         lineHeight: 16,
-        marginBottom: 2,
+        marginBottom: 2
     },
     editIconWrapper: {
         width: 35,
@@ -378,16 +590,16 @@ const stylesSupporter = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginHorizontal: -7,
-        marginTop: -5,
+        marginTop: -5
     },
     editIcon: {
-        resizeMode: 'contain',
+        resizeMode: 'contain'
     },
     container: {
-        flex: 1,
+        flex: 1
     },
     supporterNickCircles: {
-        marginBottom: 20,
+        marginBottom: 20
     },
     input: {
         color: '#000',
@@ -401,28 +613,28 @@ const stylesSupporter = StyleSheet.create({
         fontFamily: 'poppins-regular',
         fontSize: 14,
         lineHeight: 18,
-        marginBottom: -2,
+        marginBottom: -2
     },
     inputContact: {
         fontSize: 13,
-        lineHeight: 18,
+        lineHeight: 18
     },
     nickname: {
         color: '#000',
         fontSize: 14,
         fontFamily: 'poppins-regular',
-        lineHeight: 18,
+        lineHeight: 18
     },
     supporterContactInfoText: {
         color: '#000',
         fontSize: 13,
         fontFamily: 'poppins-regular',
-        lineHeight: 18,
+        lineHeight: 18
     },
     supporterCircles: {
         flexDirection: 'row',
         gap: 8,
-        marginVertical: 15,
+        marginVertical: 15
     },
     supporterCircle: {
         paddingHorizontal: 12,
@@ -430,34 +642,34 @@ const stylesSupporter = StyleSheet.create({
         borderColor: '#1C4837',
         borderWidth: 1,
         borderRadius: 20,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     supporterCircleSelected: {
-        backgroundColor: '#1C4837',
+        backgroundColor: '#1C4837'
     },
     supporterCircleHidden: {
-        display: 'none',
+        display: 'none'
     },
     supporterCircleText: {
         color: '#1C4837',
         fontFamily: 'poppins-regular',
         fontSize: 12,
-        lineHeight: 16,
+        lineHeight: 16
     },
     supporterCircleTextSelected: {
-        color: '#fff',
+        color: '#fff'
     },
     supporterTasks: {
-        marginBottom: 40,
+        marginBottom: 40
     },
     supporterTasksTitle: {
-        marginBottom: 5,
+        marginBottom: 5
     },
     supporterTasksTitleText: {
         color: '#000',
         fontFamily: 'poppins-regular',
         fontSize: 18,
-        lineHeight: 22,
+        lineHeight: 22
     },
     supporterTasksListItem: {
         flexDirection: 'row',
@@ -465,20 +677,20 @@ const stylesSupporter = StyleSheet.create({
         gap: 15,
         borderBottomColor: '#ccc',
         borderBottomWidth: 1,
-        paddingVertical: 15,
+        paddingVertical: 15
     },
     supporterTasksListItemHalf: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
-        flex: 1,
+        flex: 1
     },
     supporterTasksListItemTask: {
         color: '#737373',
         fontSize: 13,
         fontFamily: 'poppins-regular',
         lineHeight: 16,
-        flexShrink: 1,
+        flexShrink: 1
     },
     clockIcon: {
         resizeMode: 'contain'
@@ -488,7 +700,7 @@ const stylesSupporter = StyleSheet.create({
         fontSize: 12,
         fontFamily: 'poppins-light',
         lineHeight: 16,
-        flexShrink: 1,
+        flexShrink: 1
     },
     supporterContact: {
         borderColor: '#ccc',
@@ -496,12 +708,12 @@ const stylesSupporter = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         gap: 20,
-        marginBottom: 10,
+        marginBottom: 10
     },
     supporterContactInfo: {
         flexDirection: 'row',
         gap: 12,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     supporterContactInfoIconCircle: {
         width: 28,
@@ -510,11 +722,11 @@ const stylesSupporter = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 15,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     supporterDelete: {
         paddingVertical: 25,
-        marginBottom: 30,
+        marginBottom: 30
     },
     supporterDeleteLinkText: {
         textAlign: 'center',

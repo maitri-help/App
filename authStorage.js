@@ -18,10 +18,9 @@ export const getUserData = async () => {
         const userDataString = await AsyncStorage.getItem('userData');
         if (userDataString !== null) {
             const userData = JSON.parse(userDataString);
-            console.log('User data retrieved successfully:', userData);
+
             return userData;
         } else {
-            console.log('No user data found');
             return null;
         }
     } catch (error) {
@@ -34,7 +33,6 @@ export const clearUserData = async () => {
     try {
         await AsyncStorage.removeItem('userData');
         await clearAccessToken();
-        console.log('User data cleared successfully');
     } catch (error) {
         console.error('Error clearing user data:', error);
     }
@@ -46,7 +44,6 @@ export const setOnboardingCompleted = async (isCompleted) => {
             'onboardingCompleted',
             JSON.stringify(isCompleted)
         );
-        console.log('Onboarding completion status stored successfully');
     } catch (error) {
         console.error('Error storing onboarding completion status:', error);
     }
@@ -59,13 +56,9 @@ export const getOnboardingCompleted = async () => {
         );
         if (onboardingCompletedString !== null) {
             const isCompleted = JSON.parse(onboardingCompletedString);
-            console.log(
-                'Onboarding completion status retrieved successfully:',
-                isCompleted
-            );
+
             return isCompleted;
         } else {
-            console.log('No onboarding completion status found');
             return false;
         }
     } catch (error) {
@@ -77,7 +70,6 @@ export const getOnboardingCompleted = async () => {
 export const clearOnboardingCompleted = async () => {
     try {
         await AsyncStorage.removeItem('onboardingCompleted');
-        console.log('Onboarding completion status cleared successfully');
     } catch (error) {
         console.error('Error clearing onboarding completion status:', error);
     }
@@ -109,7 +101,6 @@ export const getAccessToken = async () => {
 export const clearAccessToken = async () => {
     try {
         await AsyncStorage.removeItem('accessToken');
-        console.log('Access token cleared successfully');
     } catch (error) {
         console.error('Error clearing access token:', error);
     }
@@ -121,7 +112,6 @@ export const updateUserTypeInStorage = async (userType) => {
         if (userData) {
             const updatedUserData = { ...userData, userType };
             await storeUserData(updatedUserData);
-            console.log('User type updated successfully:', userType);
         } else {
             console.log('No user data found');
         }

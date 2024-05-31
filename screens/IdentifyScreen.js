@@ -68,7 +68,10 @@ export default function IdentifyScreen({ navigation, route }) {
                                         type: 'success'
                                     });
                                     updateUserTypeInStorage('Lead');
-                                    navigation.navigate('Main');
+                                    navigation.reset({
+                                        index: 0,
+                                        routes: [{ name: 'Main' }]
+                                    });
                                 })
                                 .catch((error) => {
                                     console.error(

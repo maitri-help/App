@@ -8,7 +8,8 @@ import {
     TouchableOpacity,
     Animated,
     FlatList,
-    Dimensions
+    Dimensions,
+    ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
 import CirclesView from '../components/CirclesView';
@@ -31,6 +32,7 @@ export default function CirclesScreen({ navigation }) {
     const [userId, setUserId] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
     const swiperRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const tabData = circlesTabs.map((tab) => ({ key: tab }));
     const { width: screenWidth } = Dimensions.get('window');
@@ -44,6 +46,7 @@ export default function CirclesScreen({ navigation }) {
 
     async function fetchCircleUsers() {
         try {
+            setIsLoading(true);
             const userData = await checkAuthentication();
             if (userData) {
                 setUserId(userData.userId);
@@ -68,8 +71,10 @@ export default function CirclesScreen({ navigation }) {
             } else {
                 console.error('No user data found');
             }
+            setIsLoading(false);
         } catch (error) {
             console.error('Error fetching circle users:', error);
+            setIsLoading(false);
         }
     }
 
@@ -83,22 +88,29 @@ export default function CirclesScreen({ navigation }) {
 
     const generateRandomCircleItems = () => {
         const circleItemsContent = [
-            { ...getRandomItem(tabContents.Third), circle: 'Third' } || {
-                firstName: 'Peer',
-                emoji: null,
-                circle: 'Third'
-            },
-            { ...getRandomItem(tabContents.Second), circle: 'Second' } || {
-                firstName: 'Friend',
-                emoji: null,
-                circle: 'Second'
-            },
-            { ...getRandomItem(tabContents.First), circle: 'First' } || {
-                firstName: 'Parent',
-                emoji: null,
-                circle: 'First'
-            }
+            tabContents?.Third.length
+                ? { ...getRandomItem(tabContents.Third), circle: 'Third' }
+                : {
+                      firstName: 'Peer',
+                      emoji: null,
+                      circle: 'Third'
+                  },
+            tabContents?.Second.length
+                ? { ...getRandomItem(tabContents.Second), circle: 'Second' }
+                : {
+                      firstName: 'Friend',
+                      emoji: null,
+                      circle: 'Second'
+                  },
+            tabContents?.First.length
+                ? { ...getRandomItem(tabContents.First), circle: 'First' }
+                : {
+                      firstName: 'Parent',
+                      emoji: null,
+                      circle: 'First'
+                  }
         ];
+
         setCircleItemsContent(circleItemsContent);
     };
 
@@ -125,16 +137,6 @@ export default function CirclesScreen({ navigation }) {
         }
     }, [sendInvitesModalVisible || supporterCardModalVisible]);
 
-    // const handleTabPress = (tab) => {
-    //     console.log(tab);
-    //     setActiveTab(tab);
-    //     const tabIndex = circlesTabs.indexOf(tab);
-    //     console.log(tabIndex);
-    //     swiperRef.current?.scrollBy(
-    //         tabIndex - swiperRef.current?.state?.index,
-    //         true
-    //     );
-    // };
     const handleTabPress = (tab) => {
         const tabIndex = circlesTabs.indexOf(tab);
         swiperRef.current.scrollToIndex({ index: tabIndex, animated: true });
@@ -329,6 +331,21 @@ export default function CirclesScreen({ navigation }) {
                         />
                     ))}
                 </View>
+                {isLoading && (
+                    <View
+                        style={{
+                            minHeight: 80,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            position: 'absolute',
+                            height: '100%',
+                            width: '100%',
+                            zIndex: 10
+                        }}
+                    >
+                        <ActivityIndicator size="large" />
+                    </View>
+                )}
                 <FlatList
                     data={tabData}
                     horizontal

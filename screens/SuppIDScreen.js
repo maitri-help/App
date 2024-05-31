@@ -75,12 +75,10 @@ export default function SuppIDScreen({ navigation }) {
     }, [selectedColor, selectedEmoji]);
 
     const handleColorSelect = (color) => {
-        console.log('Color selected:', color);
         setSelectedColor(color);
     };
 
     const handleEmojiSelect = (emoji) => {
-        console.log('Emoji selected:', emoji);
         setSelectedEmoji(emoji);
     };
 

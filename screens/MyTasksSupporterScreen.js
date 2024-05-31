@@ -1,12 +1,25 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Animated } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    SafeAreaView,
+    ScrollView,
+    Image,
+    Animated,
+    ActivityIndicator
+} from 'react-native';
 import styles from '../Styles';
 import MyTask from '../components/MyTask';
 import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
-import { checkAuthentication, clearUserData, clearAccessToken, getAccessToken } from '../authStorage';
+import {
+    checkAuthentication,
+    clearUserData,
+    clearAccessToken,
+    getAccessToken
+} from '../authStorage';
 import { getLeadUser } from '../hooks/api';
 import { useFocusEffect } from '@react-navigation/native';
-
 
 export default function MyTasksSupporterScreen({ navigation }) {
     const [myTaskModalVisible, setMyTaskModalVisible] = useState(false);
@@ -14,21 +27,25 @@ export default function MyTasksSupporterScreen({ navigation }) {
     const [tasks, setTasks] = useState([]);
     const [leadId, setLeadId] = useState('');
     const [userId, setUserId] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         async function fetchUserData() {
             try {
+                setIsLoading(true);
                 const userData = await checkAuthentication();
                 if (userData) {
                     setUserId(userData.userId);
                 }
+                setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 clearUserData();
                 clearAccessToken();
                 navigation.navigate('Login');
+                setIsLoading(false);
             }
         }
         fetchUserData();
@@ -77,13 +94,13 @@ export default function MyTasksSupporterScreen({ navigation }) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         } else {
             Animated.timing(overlayOpacity, {
                 toValue: 0,
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         }
     }, [myTaskModalVisible]);
@@ -97,23 +114,52 @@ export default function MyTasksSupporterScreen({ navigation }) {
     };
 
     const handleTaskStatusChange = () => {
-        fetchTasks(); 
+        fetchTasks();
     };
 
     const renderTasks = (tasks) => {
-        const myTasks = tasks.filter(task => task.assignedUserId && task.assignedUserId === userId);
+        const myTasks = tasks
+            .filter(
+                (task) => task.assignedUserId && task.assignedUserId === userId
+            )
+            .sort((a, b) =>
+                a.status === 'done' ? 1 : b.status === 'done' ? -1 : 0
+            );
 
         if (myTasks.length === 0) {
             return (
                 <View style={stylesSuppMT.tasksContainer}>
-                    <ScrollView contentContainerStyle={stylesSuppMT.tasksScrollEmpty}>
-                        <View style={[styles.contentContainer, stylesSuppMT.tasksEmpty]}>
+                    <ScrollView
+                        contentContainerStyle={stylesSuppMT.tasksScrollEmpty}
+                    >
+                        <View
+                            style={[
+                                styles.contentContainer,
+                                stylesSuppMT.tasksEmpty
+                            ]}
+                        >
                             <View style={stylesSuppMT.tasksTop}>
-                                <Text style={[styles.text, stylesSuppMT.tasksDescription, { marginBottom: 30 }]}>
+                                <Text
+                                    style={[
+                                        styles.text,
+                                        stylesSuppMT.tasksDescription,
+                                        { marginBottom: 30 }
+                                    ]}
+                                >
                                     Your task list is currently empty.
                                 </Text>
-                                <Text style={[styles.text, stylesSuppMT.tasksDescription, { marginBottom: 60, paddingHorizontal: 30 }]}>
-                                    Check the Open tasks to see where you can lend a hand.
+                                <Text
+                                    style={[
+                                        styles.text,
+                                        stylesSuppMT.tasksDescription,
+                                        {
+                                            marginBottom: 60,
+                                            paddingHorizontal: 30
+                                        }
+                                    ]}
+                                >
+                                    Check the Open tasks to see where you can
+                                    lend a hand.
                                 </Text>
                                 <Image
                                     source={require('../assets/img/mimi-illustration.png')}
@@ -129,13 +175,17 @@ export default function MyTasksSupporterScreen({ navigation }) {
         return (
             <View style={stylesSuppMT.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesSuppMT.tasksScroll}>
-                    {myTasks.map(task => (
+                    {myTasks.map((task) => (
                         <MyTask
                             key={task.taskId}
                             task={task}
                             title={task.title}
-                            firstName={task.assignee ? task.assignee.firstName : ''}
-                            lastName={task.assignee ? task.assignee.lastName : ''}
+                            firstName={
+                                task.assignee ? task.assignee.firstName : ''
+                            }
+                            lastName={
+                                task.assignee ? task.assignee.lastName : ''
+                            }
                             startTime={task.startDateTime}
                             endTime={task.endDateTime}
                             category={task.category}
@@ -153,32 +203,57 @@ export default function MyTasksSupporterScreen({ navigation }) {
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
-
-                <View style={[styles.topBar, { gap: 0, flexDirection: 'row', borderBottomWidth: 0 }]}>
-
-
-                    <View style={{ gap: 0, flexDirection: 'column', alignItems: 'baseline', borderBottomWidth: 0 }}>
+                <View
+                    style={[
+                        styles.topBar,
+                        { gap: 0, flexDirection: 'row', borderBottomWidth: 0 }
+                    ]}
+                >
+                    <View
+                        style={{
+                            gap: 0,
+                            flexDirection: 'column',
+                            alignItems: 'baseline',
+                            borderBottomWidth: 0
+                        }}
+                    >
                         <Text style={stylesSuppMT.greetingsText}>My Tasks</Text>
-                        <Text style={stylesSuppMT.thanksText}>Your help makes a difference.</Text>
+                        <Text style={stylesSuppMT.thanksText}>
+                            Your help makes a difference.
+                        </Text>
                     </View>
                 </View>
-                <View style={stylesSuppMT.tabsContentContainer}>
-                    {renderTasks(tasks)}
-                </View>
+                {isLoading ? (
+                    <View
+                        style={{
+                            minHeight: 80,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <ActivityIndicator size="large" />
+                    </View>
+                ) : (
+                    <View style={stylesSuppMT.tabsContentContainer}>
+                        {renderTasks(tasks)}
+                    </View>
+                )}
 
-                {(myTaskModalVisible) && (
-                    <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]} />
+                {myTaskModalVisible && (
+                    <Animated.View
+                        style={[styles.overlay, { opacity: overlayOpacity }]}
+                    />
                 )}
             </SafeAreaView>
 
-            {myTaskModalVisible &&
+            {myTaskModalVisible && (
                 <MyTaskDetailsModal
                     visible={myTaskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
                     updateTask={() => fetchTasks()}
                 />
-            }
+            )}
         </>
     );
 }
@@ -188,22 +263,22 @@ const stylesSuppMT = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'poppins-medium',
         lineHeight: 22,
-        marginBottom: 5,
+        marginBottom: 5
     },
     thanksText: {
         fontFamily: 'poppins-regular',
         fontSize: 12,
         lineHeight: 16,
-        color: '#737373',
+        color: '#737373'
     },
     rightImageStyle: {
         alignSelf: 'center',
         width: 150,
         height: 150,
-        resizeMode: 'contain',
+        resizeMode: 'contain'
     },
     tabsContentContainer: {
-        flex: 1,
+        flex: 1
     },
     tab: {
         paddingHorizontal: 10,
@@ -211,45 +286,45 @@ const stylesSuppMT = StyleSheet.create({
         borderColor: '#1C4837',
         borderWidth: 1,
         borderRadius: 20,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     tabsContentContainer: {
-        flex: 1,
+        flex: 1
     },
     tasksContainer: {
-        flex: 1,
+        flex: 1
     },
     tasksScroll: {
         gap: 15,
         paddingHorizontal: 25,
         paddingTop: 10,
-        paddingBottom: 30,
+        paddingBottom: 30
     },
     tasksScrollEmpty: {
         flex: 1,
         paddingTop: 10,
-        paddingHorizontal: 25,
+        paddingHorizontal: 25
     },
     tasksEmpty: {
         flex: 1,
         flexDirection: 'column',
-        paddingTop: 150,
+        paddingTop: 150
     },
     tasks: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-start'
     },
     tasksDescription: {
         textAlign: 'center',
         fontSize: 16,
         fontFamily: 'poppins-regular',
         lineHeight: 20,
-        marginBottom: 10,
+        marginBottom: 10
     },
     illustration: {
         width: 120,
         height: 120,
-        resizeMode: 'contain',
-    },
+        resizeMode: 'contain'
+    }
 });

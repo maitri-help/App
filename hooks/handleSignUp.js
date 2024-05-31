@@ -6,7 +6,6 @@ export default async function handleSignUp(values, navigation) {
     try {
         const existingUserResponse = await getUser(phoneNumber);
         if (existingUserResponse.data) {
-            console.log('User with phone number already exists:', phoneNumber);
             return { exists: true, userId: existingUserResponse.data.userId };
         }
 
@@ -19,8 +18,6 @@ export default async function handleSignUp(values, navigation) {
             email,
             phoneNumber
         });
-
-        console.log('User Created:', userResponse.data);
 
         const otpResponse = await sendOtp(phoneNumber);
 

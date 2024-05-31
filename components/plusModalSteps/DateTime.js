@@ -1,18 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    ScrollView,
+    Platform
+} from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import { useToast } from 'react-native-toast-notifications';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { CALENDAR_THEME_SETTINGS } from '../../constants/calendar';
 
-export default function DateTime({ currentStep, setCurrentStep, taskName, onBack, onDateTimeSelect, startDate: propStartDate, startTime: propStartTime, endDate: propEndDate, endTime: propEndTime, setStartTime, setEndTime, handleDayPress, getDaysBetween, reviewFormCurrentStep }) {
-    const [startDate, setStartDateLocal] = useState(propStartDate !== null ? propStartDate : null);
-    const [endDate, setEndDateLocal] = useState(propEndDate !== null ? propEndDate : null);
-    const [startTime, setStartTimeLocal] = useState(propStartTime !== null ? propStartTime : null);
-    const [endTime, setEndTimeLocal] = useState(propEndTime !== null ? propEndTime : null);
-    const [isStartTimePickerVisible, setStartTimePickerVisible] = useState(false);
+export default function DateTime({
+    currentStep,
+    setCurrentStep,
+    taskName,
+    onBack,
+    onDateTimeSelect,
+    startDate: propStartDate,
+    startTime: propStartTime,
+    endDate: propEndDate,
+    endTime: propEndTime,
+    setStartTime,
+    setEndTime,
+    handleDayPress,
+    getDaysBetween,
+    reviewFormCurrentStep
+}) {
+    const [startDate, setStartDateLocal] = useState(
+        propStartDate !== null ? propStartDate : null
+    );
+    const [endDate, setEndDateLocal] = useState(
+        propEndDate !== null ? propEndDate : null
+    );
+    const [startTime, setStartTimeLocal] = useState(
+        propStartTime !== null ? propStartTime : null
+    );
+    const [endTime, setEndTimeLocal] = useState(
+        propEndTime !== null ? propEndTime : null
+    );
+    const [isStartTimePickerVisible, setStartTimePickerVisible] =
+        useState(false);
     const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
     const [markedDates, setMarkedDates] = useState({});
     const toast = useToast();
@@ -37,8 +69,22 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
 
     useEffect(() => {
         setMarkedDates({
-            [formattedStartDate]: { startingDay: true, color: '#1C4837', textColor: '#fff', ...(formattedStartDate === formattedEndDate && { endingDay: true, }) },
-            [formattedEndDate]: { endingDay: true, color: '#1C4837', textColor: '#fff', ...(formattedStartDate === formattedEndDate && { startingDay: true, }) },
+            [formattedStartDate]: {
+                startingDay: true,
+                color: '#1C4837',
+                textColor: '#fff',
+                ...(formattedStartDate === formattedEndDate && {
+                    endingDay: true
+                })
+            },
+            [formattedEndDate]: {
+                endingDay: true,
+                color: '#1C4837',
+                textColor: '#fff',
+                ...(formattedStartDate === formattedEndDate && {
+                    startingDay: true
+                })
+            },
             ...getDaysBetween(formattedStartDate, formattedEndDate)
         });
     }, [startDate, endDate]);
@@ -49,18 +95,31 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
         }
     };
 
-    const handleStartTimeConfirm = (time) => {
+    const handleStartTimeConfirm = (_, time) => {
         const currentDate = startDate ? new Date(startDate) : new Date();
-        const updatedDateTime = new Date(currentDate.setHours(time.getHours(), time.getMinutes()));
-        setStartTime(updatedDateTime.toISOString());
+
+        const updatedDateTime = new Date(
+            currentDate.setHours(time.getHours(), time.getMinutes())
+        );
+
         setStartTimePickerVisible(false);
+        setStartTime(updatedDateTime.toISOString());
+        if (!endTime) {
+            setEndTime(updatedDateTime.toISOString());
+        }
     };
 
-    const handleEndTimeConfirm = (time) => {
-        const currentDate = endDate ? new Date(endDate) : (startDate ? new Date(startDate) : new Date());
-        const updatedDateTime = new Date(currentDate.setHours(time.getHours(), time.getMinutes()));
-        setEndTime(updatedDateTime.toISOString());
+    const handleEndTimeConfirm = (_, time) => {
+        const currentDate = endDate
+            ? new Date(endDate)
+            : startDate
+            ? new Date(startDate)
+            : new Date();
+        const updatedDateTime = new Date(
+            currentDate.setHours(time.getHours(), time.getMinutes())
+        );
         setEndTimePickerVisible(false);
+        setEndTime(updatedDateTime.toISOString());
     };
 
     const showStartTimePicker = () => {
@@ -91,11 +150,18 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
     const handleDateTimeSelect = () => {
         if (startDate) {
             if (!endDate && !startTime && !endTime) {
-                const formattedStartDateTime = new Date(startDate).toISOString();
+                const formattedStartDateTime = new Date(
+                    startDate
+                ).toISOString();
                 const formattedEndDateTime = new Date(startDate).toISOString();
 
-                onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
-                reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1);
+                onDateTimeSelect({
+                    startDateTime: formattedStartDateTime,
+                    endDateTime: formattedEndDateTime
+                });
+                reviewFormCurrentStep === 5
+                    ? setCurrentStep(5)
+                    : setCurrentStep(currentStep - 1);
 
                 const updatedStartDateTime = new Date(formattedStartDateTime);
                 updatedStartDateTime.setHours(0, 0, 0, 0);
@@ -105,36 +171,62 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
 
                 const formatLocalDateTime = (date) => {
                     const year = date.getFullYear();
-                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    const month = (date.getMonth() + 1)
+                        .toString()
+                        .padStart(2, '0');
                     const day = date.getDate().toString().padStart(2, '0');
                     const hours = date.getHours().toString().padStart(2, '0');
-                    const minutes = date.getMinutes().toString().padStart(2, '0');
-                    const seconds = date.getSeconds().toString().padStart(2, '0');
-                    const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+                    const minutes = date
+                        .getMinutes()
+                        .toString()
+                        .padStart(2, '0');
+                    const seconds = date
+                        .getSeconds()
+                        .toString()
+                        .padStart(2, '0');
+                    const milliseconds = date
+                        .getMilliseconds()
+                        .toString()
+                        .padStart(3, '0');
 
                     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-                }
+                };
 
-                const startDateTimeLocal = formatLocalDateTime(updatedStartDateTime);
-                const endDateTimeLocal = formatLocalDateTime(updatedEndDateTime);
+                const startDateTimeLocal =
+                    formatLocalDateTime(updatedStartDateTime);
+                const endDateTimeLocal =
+                    formatLocalDateTime(updatedEndDateTime);
 
                 setStartTime(startDateTimeLocal);
                 setEndTime(endDateTimeLocal);
             } else if (!endDate && startTime && endTime) {
-                const formattedStartDateTime = new Date(startDate).toISOString();
+                const formattedStartDateTime = new Date(
+                    startDate
+                ).toISOString();
                 const formattedEndDateTime = new Date(startDate).toISOString();
 
-                onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
+                onDateTimeSelect({
+                    startDateTime: formattedStartDateTime,
+                    endDateTime: formattedEndDateTime
+                });
             } else {
-                const formattedStartDateTime = new Date(startDate).toISOString();
-                const formattedEndDateTime = endDate ? new Date(endDate).toISOString() : null;
+                const formattedStartDateTime = new Date(
+                    startDate
+                ).toISOString();
+                const formattedEndDateTime = endDate
+                    ? new Date(endDate).toISOString()
+                    : null;
 
-                onDateTimeSelect({ startDateTime: formattedStartDateTime, endDateTime: formattedEndDateTime });
+                onDateTimeSelect({
+                    startDateTime: formattedStartDateTime,
+                    endDateTime: formattedEndDateTime
+                });
             }
 
-            reviewFormCurrentStep === 5 ? setCurrentStep(5) : setCurrentStep(currentStep - 1);
+            reviewFormCurrentStep === 5
+                ? setCurrentStep(5)
+                : setCurrentStep(currentStep - 1);
         } else {
-            console.log('Please select a start date');
             toast.show('Please select a start date', { type: 'error' });
         }
     };
@@ -142,8 +234,15 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
     return (
         <>
             <View style={[styles.modalTopNav, stylesDate.modalTopNav]}>
-                <TouchableOpacity onPress={handleBack} style={[styles.backLinkInline]}>
-                    <ArrowLeftIcon width={18} height={18} style={styles.backLinkIcon} />
+                <TouchableOpacity
+                    onPress={handleBack}
+                    style={[styles.backLinkInline]}
+                >
+                    <ArrowLeftIcon
+                        width={18}
+                        height={18}
+                        style={styles.backLinkIcon}
+                    />
                 </TouchableOpacity>
                 <Text style={[styles.topBarTitle, stylesDate.topBarTitle]}>
                     {taskName}
@@ -152,9 +251,7 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
             <ScrollView automaticallyAdjustKeyboardInsets={true}>
                 <View style={[styles.contentContainer, stylesDate.fieldsList]}>
                     <View style={stylesDate.label}>
-                        <Text style={stylesDate.labelText}>
-                            Date
-                        </Text>
+                        <Text style={stylesDate.labelText}>Date</Text>
                     </View>
                     <View style={stylesDate.calendarWrapper}>
                         <Calendar
@@ -165,71 +262,84 @@ export default function DateTime({ currentStep, setCurrentStep, taskName, onBack
                             markingType={'period'}
                             minDate={new Date().toISOString()}
                             disableAllTouchEventsForDisabledDays={true}
-                            theme={{
-                                textDayFontFamily: 'poppins-regular',
-                                textMonthFontFamily: 'poppins-medium',
-                                textDayHeaderFontFamily: 'poppins-regular',
-                                textDayFontSize: 14,
-                                textMonthFontSize: 18,
-                                textDayHeaderFontSize: 12,
-                                textDayFontColor: '#000',
-                                textMonthFontColor: '#000',
-                                textSectionTitleColor: '#A4A4A4',
-                                arrowColor: '#000',
-                                todayTextColor: '#000',
-                                selectedDayTextColor: '#fff',
-                                selectedDayBackgroundColor: '#1C4837',
-                                textDisabledColor: '#A4A4A4',
-                                weekVerticalMargin: 1,
-                                'stylesheet.calendar.header': {
-                                    header: {
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        marginBottom: -5,
-                                    },
-                                },
-                            }}
+                            theme={CALENDAR_THEME_SETTINGS}
                         />
                     </View>
                     <View style={stylesDate.fieldGroup}>
                         <View style={stylesDate.fieldGroupInner}>
-                            <Text style={stylesDate.fieldLabel} numberOfLines={1}>
+                            <Text
+                                style={stylesDate.fieldLabel}
+                                numberOfLines={1}
+                            >
                                 Starts
                             </Text>
                             <TouchableOpacity onPress={showStartTimePicker}>
                                 <Text style={stylesDate.field}>
-                                    {startTime ? new Date(startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Select Start Time'}
+                                    {startTime
+                                        ? new Date(
+                                              startTime
+                                          ).toLocaleTimeString([], {
+                                              hour: '2-digit',
+                                              minute: '2-digit',
+                                              hour12: true
+                                          })
+                                        : 'Select Start Time'}
                                 </Text>
                             </TouchableOpacity>
-                            <DateTimePickerModal
-                                mode="time"
-                                isVisible={isStartTimePickerVisible}
-                                onConfirm={handleStartTimeConfirm}
-                                onCancel={hideStartTimePicker}
-                            />
+                            {isStartTimePickerVisible && (
+                                <DateTimePicker
+                                    mode="time"
+                                    testID="startDateTimePicker"
+                                    value={new Date(startTime)}
+                                    themeVariant="light"
+                                    onChange={handleStartTimeConfirm}
+                                />
+                            )}
                         </View>
                     </View>
                     <View style={stylesDate.fieldGroup}>
                         <View style={stylesDate.fieldGroupInner}>
-                            <Text style={stylesDate.fieldLabel} numberOfLines={1}>
+                            <Text
+                                style={stylesDate.fieldLabel}
+                                numberOfLines={1}
+                            >
                                 Ends
                             </Text>
                             <TouchableOpacity onPress={showEndTimePicker}>
                                 <Text style={stylesDate.field}>
-                                    {endTime ? new Date(endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Select End Time'}
+                                    {endTime
+                                        ? new Date(endTime).toLocaleTimeString(
+                                              [],
+                                              {
+                                                  hour: '2-digit',
+                                                  minute: '2-digit',
+                                                  hour12: true
+                                              }
+                                          )
+                                        : 'Select End Time'}
                                 </Text>
                             </TouchableOpacity>
-                            <DateTimePickerModal
-                                mode="time"
-                                isVisible={isEndTimePickerVisible}
-                                onConfirm={handleEndTimeConfirm}
-                                onCancel={hideEndTimePicker}
-                            />
+                            {isEndTimePickerVisible && (
+                                <DateTimePicker
+                                    mode="time"
+                                    testID="endDateTimePicker"
+                                    value={new Date(endTime)}
+                                    themeVariant="light"
+                                    onChange={handleEndTimeConfirm}
+                                />
+                            )}
                         </View>
                     </View>
-                    <View style={[styles.submitButtonContainer, stylesDate.submitButtonContainer]}>
-                        <TouchableOpacity onPress={handleDateTimeSelect} style={styles.submitButton} >
+                    <View
+                        style={[
+                            styles.submitButtonContainer,
+                            stylesDate.submitButtonContainer
+                        ]}
+                    >
+                        <TouchableOpacity
+                            onPress={handleDateTimeSelect}
+                            style={styles.submitButton}
+                        >
                             <ArrowIcon width={18} height={18} color={'#fff'} />
                         </TouchableOpacity>
                     </View>
@@ -243,52 +353,52 @@ const stylesDate = StyleSheet.create({
     topBarTitle: {
         fontSize: 16,
         fontFamily: 'poppins-regular',
-        color: '#787878',
+        color: '#787878'
     },
     label: {
-        marginBottom: 10,
+        marginBottom: 10
     },
     labelText: {
         fontSize: 14,
         lineHeight: 18,
         fontFamily: 'poppins-medium',
-        color: '#787878',
+        color: '#787878'
     },
     calendarWrapper: {
-        marginBottom: 15,
+        marginBottom: 15
     },
     calendar: {
         minWidth: '100%',
         backgroundColor: '#fff',
         borderRadius: 20,
-        shadowColor: (Platform.OS === 'android') ? 'rgba(0,0,0,0.5)' : '#000',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0,0,0,0.5)' : '#000',
         shadowOffset: {
             width: 0,
-            height: 5,
+            height: 5
         },
         shadowOpacity: 0.09,
-        shadowRadius: 8.00,
+        shadowRadius: 8.0,
         elevation: 14,
-        paddingBottom: 8,
+        paddingBottom: 8
     },
     fieldGroup: {
         paddingVertical: 15,
         borderBottomColor: '#E5E5E5',
-        borderBottomWidth: 1,
+        borderBottomWidth: 1
     },
     fieldGroupFirst: {
         borderBottomWidth: 0,
         paddingTop: 0
     },
     fieldGroupLast: {
-        borderBottomWidth: 0,
+        borderBottomWidth: 0
     },
     fieldGroupInner: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexShrink: 1,
-        gap: 15,
+        gap: 15
     },
     field: {
         borderWidth: 0,
@@ -298,15 +408,15 @@ const stylesDate = StyleSheet.create({
         lineHeight: 18,
         fontFamily: 'poppins-regular',
         color: '#000',
-        flexShrink: 1,
+        flexShrink: 1
     },
     fieldLabel: {
         fontSize: 14,
         lineHeight: 24,
         fontFamily: 'poppins-regular',
-        color: '#000',
+        color: '#000'
     },
     submitButtonContainer: {
-        paddingTop: 30,
+        paddingTop: 30
     }
 });

@@ -48,8 +48,6 @@ export default function LoginScreen({ navigation }) {
     }, []);
 
     const handleFormSubmit = async (values) => {
-        console.log('Form values in handleFormSubmit:', values);
-
         try {
             const { userId, otpResponse } = await handleSignIn(values);
             console.log('userId:', userId);
@@ -65,7 +63,11 @@ export default function LoginScreen({ navigation }) {
             });
         } catch (error) {
             console.error('Sign in error:', error);
-            toast.show(`Phone number doesn't exist.`, { type: 'error' });
+            if (error.message) {
+                toast.show(error.message, { type: 'error' });
+            } else {
+                toast.show('Unknown error', { type: 'error' });
+            }
         }
     };
 

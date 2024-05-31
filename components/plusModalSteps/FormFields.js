@@ -15,6 +15,7 @@ import { createTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { isStartDateBeforeEndDate } from '../../helpers/date';
+import { circles } from '../../constants/variables';
 
 export default function FormFields({
     selectedService,
@@ -23,7 +24,6 @@ export default function FormFields({
     taskName,
     setTaskName,
     onBack,
-    circles,
     selectedCircle,
     setSelectedCircle,
     description,
@@ -94,6 +94,16 @@ export default function FormFields({
     };
 
     const handleSubmit = async () => {
+        const taskData = {
+            title: taskName,
+            description: description || null,
+            circles: selectedCircle,
+            location: selectedLocation || null,
+            startDateTime: startDateTime,
+            endDateTime: endDateTime || null,
+            category: selectedService.title
+        };
+
         if (!taskName || !startDateTime) {
             toast.show('Task name and start date are required.', {
                 type: 'error'
@@ -109,31 +119,21 @@ export default function FormFields({
                 return;
             }
 
-            const taskData = {
-                title: taskName,
-                description: description || null,
-                circles: selectedCircle,
-                location: selectedLocation || null,
-                startDateTime: startDateTime,
-                endDateTime: endDateTime || null,
-                category: selectedService.title
-            };
-            const isValidEndTime = isStartDateBeforeEndDate(
-                startDateTime,
-                endDateTime
-            );
+            if (startDateTime && endDateTime) {
+                const isValidEndTime = isStartDateBeforeEndDate(
+                    startDateTime,
+                    endDateTime
+                );
 
-            if (!isValidEndTime) {
-                toast.show('End time should be after start time', {
-                    type: 'error'
-                });
-                return;
+                if (!isValidEndTime) {
+                    toast.show('End time should be after start time', {
+                        type: 'error'
+                    });
+                    return;
+                }
             }
-            console.log('Task data:', taskData);
 
-            const response = await createTask(taskData, accessToken);
-
-            console.log('Task created successfully:', response.data);
+            await createTask(taskData, accessToken);
 
             toast.show('Task created successfully', { type: 'success' });
 
@@ -170,7 +170,10 @@ export default function FormFields({
                     {selectedService.title}
                 </Text>
             </View>
-            <ScrollView automaticallyAdjustKeyboardInsets={true}>
+            <ScrollView
+                automaticallyAdjustKeyboardInsets={true}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View
                     style={[styles.contentContainer, stylesFields.fieldsList]}
                 >

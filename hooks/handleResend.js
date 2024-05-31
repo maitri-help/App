@@ -1,10 +1,16 @@
 import { resendOtp } from './api';
 
-export function handleResend(phoneNumber, setCountdown, setResendClickable, toast) {
+export function handleResend(
+    phoneNumber,
+    setCountdown,
+    setResendClickable,
+    toast
+) {
     resendOtp(phoneNumber)
         .then((response) => {
-            console.log('OTP Resent:', response.data);
-            toast.show('Code sent successfully to: ' + phoneNumber, { type: 'success' });
+            toast.show('Code sent successfully to: ' + phoneNumber, {
+                type: 'success'
+            });
 
             setCountdown(30);
             setResendClickable(false);
@@ -21,6 +27,8 @@ export function handleResend(phoneNumber, setCountdown, setResendClickable, toas
         })
         .catch((error) => {
             console.error('OTP Resend Error:', error);
-            toast.show('Error in sending code to:' + phoneNumber, { type: 'error' });
+            toast.show('Error in sending code to:' + phoneNumber, {
+                type: 'error'
+            });
         });
 }
