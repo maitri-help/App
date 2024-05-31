@@ -155,3 +155,23 @@ export async function deleteUser(userId, accessToken) {
         }
     });
 }
+
+export async function getThankYouCardsForUser(userId, accessToken) {
+    return axios.get(`${baseUrl}/thankyoucard/${userId}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
+
+export async function sendThankYouCard(thankYouCardId, accessToken) {
+    return axios.patch(
+        `${baseUrl}/thankyoucard/${thankYouCardId}/send`,
+        null,
+        {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        }
+    );
+}

@@ -6,11 +6,15 @@ import { motivationalQuotes, quotes } from '../../constants/quotes';
 import { getInitialBoxes } from '../../helpers/quotes.helpers';
 import SendInviteScreen from '../../screens/SendInviteScreen';
 import Styles from '../../Styles';
+import { sendThankYouCard } from '../../hooks/api';
+import { checkAuthentication } from '../../authStorage';
+import { useToast } from 'react-native-toast-notifications';
 
-const LeadBoxes = ({ navigation }) => {
+const LeadBoxes = ({ navigation, thankYouCards = [], setThankYouCards }) => {
     const [randomQuote, setRandomQuote] = useState('');
     const [randomMotivationalQuote, setRandomMotivationalQuote] = useState('');
     const [boxes, setBoxes] = useState([]);
+    const [thankYouBoxes, setThankYouBoxes] = useState([]);
 
     const [sendInvitesModalVisible, setSendInvitesModalVisible] =
         useState(false);
@@ -53,10 +57,56 @@ const LeadBoxes = ({ navigation }) => {
         }
     }, [sendInvitesModalVisible]);
 
+    useEffect(() => {
+        if (thankYouCards.length > 0) {
+            const thankYouBoxes = thankYouCards.map((card) => ({
+                thankYouCardId: card.thankYouCardId,
+                supporterUserName: card.supporterUserName,
+                taskName: card.taskName,
+                buttons: [{ title: 'Say thank you!', bgColor: '#fff', textColor: '#000', onPress: () => { onThankYouPress(card.thankYouCardId) }, disabled: false}]
+            }));
+            setThankYouBoxes(thankYouBoxes);
+        }
+    }, [thankYouCards]);
+
+    const toast = useToast();
+
+    const onThankYouPress = async (cardId) => {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const accessToken = userData.accessToken;
+                const sendResponse = await sendThankYouCard(cardId, accessToken);
+                if (sendResponse.data && sendResponse.data.length >= 0) {
+                    toast.show('Thank you sent!', { type: 'success' });
+                    const newThankYouCards = sendResponse.data;
+                    setThankYouBoxes(thankYouBoxes.filter((box) => box.thankYouCardId !== cardId));
+                    setThankYouCards(newThankYouCards);
+                }
+            }
+        } catch (error) {
+            console.log('Error sending thank you card', error);
+        }        
+    };
+
     return (
         <View style={styles.boxesContainer}>
             <ScrollView horizontal={true} style={styles.boxesScroll}>
                 <View style={{ marginLeft: 15 }} />
+
+                {thankYouBoxes.length > 0 && (
+                    thankYouBoxes.map((box) => (
+                        <CustomBox
+                            key={box.thankYouCardId}
+                            title={box.supporterUserName}
+                            subtitle="Has completed"
+                            largerText={box.taskName}
+                            bgColor="#FFE8D7"
+                            bgImgColor="#FFD8BC"
+                            buttons={box.buttons}
+                        />
+                    ))
+                )}
 
                 {boxes.map((box, index) => (
                     <CustomBox

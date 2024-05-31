@@ -6,11 +6,11 @@ import BubblesImg3 from '../assets/img/bubbles-bg-3.svg';
 import BubblesImg4 from '../assets/img/bubbles-bg-4.svg';
 import AppButton from './Button';
 
-export default function CustomBox({ title, subtitle, largerText, secondSubtitle, buttons, bgColor, bgImg, bgImgColor }) {
+export default function CustomBox({ title, subtitle, largerText, secondSubtitle, buttons, bgColor, bgImg, bgImgColor, containerStyle = {}, onlyTextsStyle = {} }) {
     const hasContent = subtitle || largerText || secondSubtitle || (buttons && buttons.length > 0);
 
     return (
-        <View style={[stylesBox.container, { backgroundColor: bgColor }]}>
+        <View style={[stylesBox.container, { backgroundColor: bgColor }, containerStyle]}>
             {bgImgColor &&
                 <View style={stylesBox.bgImgWrapper}>
                     {bgImg ? (
@@ -37,12 +37,12 @@ export default function CustomBox({ title, subtitle, largerText, secondSubtitle,
             {hasContent ? (
                 <View style={stylesBox.content}>
                     <View style={stylesBox.topTexts}>
-                        <Text style={stylesBox.title}>{title}</Text>
+                        <Text style={[stylesBox.title, onlyTextsStyle]}>{title}</Text>
                         {subtitle && <Text style={stylesBox.subtitle}>{subtitle}</Text>}
                     </View>
                     {(largerText || secondSubtitle) && (
                         <View style={stylesBox.middleTexts}>
-                            <Text style={stylesBox.largerText}>{largerText}</Text>
+                            <Text style={[stylesBox.largerText, onlyTextsStyle]}>{largerText}</Text>
                             <Text style={stylesBox.subtitle}>{secondSubtitle}</Text>
                         </View>
                     )}
@@ -56,6 +56,7 @@ export default function CustomBox({ title, subtitle, largerText, secondSubtitle,
                                     textStyle={button.textColor ? { color: button.textColor } : null}
                                     title={button.title}
                                     onPress={button.onPress}
+                                    disabled={button.disabled ?? false}
                                 />
                             ))}
                         </View>

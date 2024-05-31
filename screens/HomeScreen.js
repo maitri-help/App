@@ -13,7 +13,7 @@ import {
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import TaskItem from '../components/TaskItem';
-import { getTasksForUser, getNotificationsForUser } from '../hooks/api';
+import { getTasksForUser, getNotificationsForUser, getThankYouCardsForUser } from '../hooks/api';
 import {
     checkAuthentication,
     clearUserData,
@@ -54,6 +54,8 @@ export default function HomeScreen({ navigation }) {
     const [notifications, setNotifications] = useState([]);
     const [hasUnreadPendingRequest, setHasUnreadPendingRequest] =
         useState(false);
+
+    const [thankYouCards, setThankYouCards] = useState([]);
 
     useEffect(() => {
         async function fetchUserData() {
@@ -138,10 +140,35 @@ export default function HomeScreen({ navigation }) {
         }
     }
 
+    async function fetchThankYouCards() {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const thankYouCardsResponse = await getThankYouCardsForUser(
+                    userData.userId,
+                    userData.accessToken
+                );
+                if (thankYouCardsResponse.data && thankYouCardsResponse.data.length > 0) {
+                    console.log('Thank you cards:', thankYouCardsResponse.data);
+                    setThankYouCards(thankYouCardsResponse.data);
+                }
+            } else {
+                console.error('No user data found');
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }]
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching thank you cards:', error);
+        }
+    }
+
     useFocusEffect(
         React.useCallback(() => {
             fetchTasks();
             fetchNotifications();
+            fetchThankYouCards();
         }, [])
     );
 
@@ -427,7 +454,7 @@ export default function HomeScreen({ navigation }) {
                         )}
                     </TouchableOpacity>
                 </View>
-                <LeadBoxes navigation={navigation} />
+                <LeadBoxes navigation={navigation} thankYouCards={thankYouCards} setThankYouCards={setThankYouCards} />
                 <View
                     style={[stylesHome.tabsContainer, styles.contentContainer]}
                 >
