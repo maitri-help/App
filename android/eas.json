@@ -1,0 +1,23 @@
+{
+  "cli": {
+    "version": ">= 9.0.7"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {},
+    "companyName": {}
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "companyName": "Maitri Help inc"
+      }
+    }
+  }
+}
