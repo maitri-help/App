@@ -1,7 +1,7 @@
 module.exports = {
     expo: {
-        name: 'Maitri',
-        slug: 'Maitri',
+        name: 'MaitriApp',
+        slug: 'MaitriApp',
         version: '1.0.9',
         orientation: 'portrait',
         icon: './assets/icon.png',
@@ -14,7 +14,7 @@ module.exports = {
         assetBundlePatterns: ['**/*'],
         ios: {
             supportsTablet: true,
-            bundleIdentifier: 'Maitri'
+            bundleIdentifier: 'MaitriApp'
         },
         android: {
             adaptiveIcon: {

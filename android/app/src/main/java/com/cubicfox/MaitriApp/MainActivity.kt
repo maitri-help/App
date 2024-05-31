@@ -1,4 +1,4 @@
-package com.cubicfox.MaitriApp
+package com.Maitri.MaitriApp
 
 import android.os.Build
 import android.os.Bundle
