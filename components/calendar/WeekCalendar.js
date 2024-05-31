@@ -13,17 +13,26 @@ export default function WeekCalendar({
     setDate,
     setWeekStartDate,
     weekSelectedDate,
-    tasks,
-    currentMonthProp,
-    currentYearProp
+    tasks
 }) {
     const [weekDates, setWeekDates] = useState([]);
     const [currentWeekIndex, setCurrentWeekIndex] = useState(2);
+    const [currentMonth, setCurrentMonth] = useState(defaultDate.getMonth());
     const scrollViewRef = useRef(null);
 
     useEffect(() => {
         updateWeekDates(defaultDate);
     }, [defaultDate, weekSelectedDate]);
+
+    useEffect(() => {
+        if (scrollViewRef.current) {
+            console.log(scrollViewRef.current);
+            scrollViewRef.current.scrollTo({
+                x: 350 * currentWeekIndex,
+                animated: true
+            });
+        }
+    }, []);
 
     const updateWeekDates = (currentDate) => {
         const weeks = [];
@@ -51,6 +60,7 @@ export default function WeekCalendar({
                 week.push({
                     date: day,
                     dayOfWeek: days[i],
+                    month: day.getMonth(),
                     selected:
                         day.toDateString() ===
                         new Date(weekSelectedDate).toDateString(),
@@ -82,22 +92,21 @@ export default function WeekCalendar({
     const handleScroll = (event) => {
         const offsetX = event.nativeEvent.contentOffset.x;
         const newWeekIndex = Math.round(offsetX / 350); // assuming each week view is 350px wide
+
         if (newWeekIndex !== currentWeekIndex) {
             setCurrentWeekIndex(newWeekIndex);
             const newDate = new Date(defaultDate);
             newDate.setDate(
                 defaultDate.getDate() + (newWeekIndex - currentWeekIndex) * 7
             );
-            updateWeekDates(newDate);
+
+            setCurrentMonth(newDate.getMonth());
         }
     };
 
     return (
         <>
-            <Text style={styles.monthHeading}>
-                {months[currentMonthProp - 1]} {currentYearProp}
-            </Text>
-
+            <Text style={styles.monthHeading}>{months[currentMonth]}</Text>
             <ScrollView
                 ref={scrollViewRef}
                 horizontal
@@ -127,6 +136,7 @@ export default function WeekCalendar({
                                 <Text style={styles.dayOfWeek(day.selected)}>
                                     {day.dayOfWeek}
                                 </Text>
+
                                 <Text style={styles.date(day.selected)}>
                                     {day.date.getDate()}
                                 </Text>
