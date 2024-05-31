@@ -6,14 +6,16 @@ import {
     TouchableOpacity,
     ScrollView
 } from 'react-native';
-import { days } from '../../constants/date';
+import { days, months } from '../../constants/date';
 
 export default function WeekCalendar({
     defaultDate,
     setDate,
     setWeekStartDate,
     weekSelectedDate,
-    tasks
+    tasks,
+    currentMonthProp,
+    currentYearProp
 }) {
     const [weekDates, setWeekDates] = useState([]);
     const [currentWeekIndex, setCurrentWeekIndex] = useState(2);
@@ -91,41 +93,52 @@ export default function WeekCalendar({
     };
 
     return (
-        <ScrollView
-            ref={scrollViewRef}
-            horizontal
-            pagingEnabled
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-            showsHorizontalScrollIndicator={false}
-            style={[styles.container, { maxWidth: 350, alignSelf: 'center' }]}
-            contentContainerStyle={styles.scrollViewContent}
-        >
-            {weekDates.map((week, weekIndex) => (
-                <View key={weekIndex} style={styles.weekContainer}>
-                    {week.map((day, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            onPress={() => handleDateSelection(day.date)}
-                            style={[
-                                styles.dateContainer,
-                                day.selected && { backgroundColor: '#1C4837' }
-                            ]}
-                        >
-                            <Text style={styles.dayOfWeek(day.selected)}>
-                                {day.dayOfWeek}
-                            </Text>
-                            <Text style={styles.date(day.selected)}>
-                                {day.date.getDate()}
-                            </Text>
-                            {(day.hasTask || day.hasStartTask) && (
-                                <View style={styles.dot} />
-                            )}
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            ))}
-        </ScrollView>
+        <>
+            <Text style={styles.monthHeading}>
+                {months[currentMonthProp - 1]} {currentYearProp}
+            </Text>
+
+            <ScrollView
+                ref={scrollViewRef}
+                horizontal
+                pagingEnabled
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+                showsHorizontalScrollIndicator={false}
+                style={[
+                    styles.container,
+                    { maxWidth: 350, alignSelf: 'center' }
+                ]}
+                contentContainerStyle={styles.scrollViewContent}
+            >
+                {weekDates.map((week, weekIndex) => (
+                    <View key={weekIndex} style={styles.weekContainer}>
+                        {week.map((day, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                onPress={() => handleDateSelection(day.date)}
+                                style={[
+                                    styles.dateContainer,
+                                    day.selected && {
+                                        backgroundColor: '#1C4837'
+                                    }
+                                ]}
+                            >
+                                <Text style={styles.dayOfWeek(day.selected)}>
+                                    {day.dayOfWeek}
+                                </Text>
+                                <Text style={styles.date(day.selected)}>
+                                    {day.date.getDate()}
+                                </Text>
+                                {(day.hasTask || day.hasStartTask) && (
+                                    <View style={styles.dot} />
+                                )}
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                ))}
+            </ScrollView>
+        </>
     );
 }
 
@@ -141,6 +154,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: 350, // Assuming each week container is 350px wide
         justifyContent: 'space-between'
+    },
+    monthHeading: {
+        fontFamily: 'poppins-medium',
+        fontSize: 18,
+        lineHeight: 24,
+        color: '#000',
+        marginLeft: 8
     },
     dateContainer: {
         height: 70,

@@ -381,6 +381,8 @@ export default function AssignmentsScreen({ navigation }) {
                                 setWeekSelectedDate={setWeekSelectedDate}
                                 tasks={tasks}
                                 scrollViewRef={scrollViewRef}
+                                currentYearProp={currentYear}
+                                currentMonthProp={currentMonth}
                             />
                         )}
                     </View>
