@@ -20,10 +20,6 @@ export default function TaskModal({
     setStartDate,
     endDate,
     setEndDate,
-    startTime,
-    setStartTime,
-    endTime,
-    setEndTime,
     handleDayPress,
     getDaysBetween,
     firstName,
@@ -42,14 +38,15 @@ export default function TaskModal({
     onTaskCreated
 }) {
     const [currentStep, setCurrentStep] = useState(5);
-    const circles = ['Personal', 'First', 'Second', 'Third'];
     const [reviewFormCurrentStep, setReviewFormCurrentStep] = useState(null);
 
     useEffect(() => {
         if (selectedTask) {
-            const circleLevels = selectedTask.circles.map(
-                (circle) => circle.circleLevel
-            );
+            const circleLevels = [
+                ...new Set(
+                    selectedTask.circles.map((circle) => circle.circleLevel)
+                )
+            ];
 
             setTaskId(selectedTask.taskId);
             setTaskName(selectedTask.title);
@@ -57,10 +54,8 @@ export default function TaskModal({
             setSelectedCircle(circleLevels);
             setSelectedLocation(selectedTask.location);
 
-            setStartDate(selectedTask.startDateTime.split('T')[0]);
-            setEndDate(selectedTask.endDateTime.split('T')[0]);
-            setStartTime(selectedTask.startDateTime);
-            setEndTime(selectedTask.endDateTime);
+            setStartDate(selectedTask.startDateTime);
+            setEndDate(selectedTask.endDateTime);
 
             setFirstName(
                 selectedTask.assignee ? selectedTask.assignee.firstName : ''
@@ -71,7 +66,7 @@ export default function TaskModal({
             setColor(selectedTask.assignee ? selectedTask.assignee.color : '');
             setEmoji(selectedTask.assignee ? selectedTask.assignee.emoji : '');
         }
-    }, [selectedTask, setStartDate, setEndDate, setStartTime, setEndTime]);
+    }, [selectedTask, setStartDate, setEndDate]);
 
     return (
         <Modal visible={visible} onClose={onClose} style={stylesPlus}>
@@ -86,10 +81,10 @@ export default function TaskModal({
                     }}
                     startDate={startDate}
                     endDate={endDate}
-                    setStartTime={setStartTime}
-                    setEndTime={setEndTime}
-                    startTime={startTime}
-                    endTime={endTime}
+                    setStartTime={setStartDate}
+                    setEndTime={setEndDate}
+                    startTime={startDate}
+                    endTime={endDate}
                     handleDayPress={handleDayPress}
                     getDaysBetween={getDaysBetween}
                     reviewFormCurrentStep={reviewFormCurrentStep}
@@ -106,11 +101,10 @@ export default function TaskModal({
                     currentStep={currentStep}
                     onClose={onClose}
                     setCurrentStep={setCurrentStep}
-                    circles={circles}
                     selectedCircle={selectedCircle}
                     setSelectedCircle={setSelectedCircle}
-                    startDateTime={startTime}
-                    endDateTime={endTime}
+                    startDateTime={startDate}
+                    endDateTime={endDate}
                     selectedLocation={selectedLocation}
                     setSelectedLocation={setSelectedLocation}
                     reviewFormCurrentStep={reviewFormCurrentStep}

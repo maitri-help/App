@@ -3,6 +3,7 @@ import axios from 'axios';
 import { API_URL } from './constants/config';
 
 const baseUrl = API_URL;
+// const baseUrl = 'http://localhost:3000';
 
 export const storeUserData = async (userData) => {
     try {
@@ -123,11 +124,13 @@ export const checkAuthentication = async () => {
     try {
         const accessToken = await getAccessToken();
         if (accessToken) {
+            console.log("CHECK AUTH", accessToken)
             const response = await axios.get(`${baseUrl}/users/me`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
             });
+            console.log("RESPONSE", response)
             const userData = response.data;
             userData.accessToken = accessToken;
             return userData;

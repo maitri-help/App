@@ -29,7 +29,9 @@ export default function GridCalendar({
         }
 
         const getFirstDayOfMonth = (year, month) => {
-            return new Date(year, month - 1, 1).getDay();
+            const firstDay = new Date(year, month - 1, 1).getDay();
+
+            return firstDay === 0 ? 6 : firstDay - 1;
         };
 
         const firstDayOfWeek = getFirstDayOfMonth(
@@ -53,6 +55,7 @@ export default function GridCalendar({
             currentYearProp,
             getLastMonth(currentYearProp, currentMonthProp)
         );
+
         const totalDaysInMonth = getLastDayOfMonth(
             currentYearProp,
             currentMonthProp
