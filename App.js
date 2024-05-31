@@ -33,6 +33,7 @@ import OpenIcon from './assets/icons/open-icon.svg';
 import MyTasksSupporterScreen from './screens/MyTasksSupporterScreen';
 import OpenTasksSupporterScreen from './screens/OpenTasksSupporterScreen';
 import ProfileSupporterScreen from './screens/ProfileSupporterScreen';
+import { LogLevel, OneSignal } from 'react-native-onesignal';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -146,6 +147,15 @@ export default function App() {
 
     checkAuthAndOnboarding();
   }, []);
+
+  useEffect(() => {
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+    OneSignal.initialize("1b855f1e-0e05-450c-99e8-34e4d6f7f642");
+    OneSignal.Notifications.requestPermission(true);
+    if (isLoggedIn) {
+      OneSignal.login(`${userData.userId}`); // OneSignal requires a string
+    }
+  }, [isLoggedIn]);
 
   if (!isReady || loading) {
     return <Image source={require('./assets/splash.png')} style={styles.splashImg} />;
