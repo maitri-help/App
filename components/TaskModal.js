@@ -42,7 +42,6 @@ export default function TaskModal({
     onTaskCreated
 }) {
     const [currentStep, setCurrentStep] = useState(5);
-    const circles = ['Personal', 'First', 'Second', 'Third'];
     const [reviewFormCurrentStep, setReviewFormCurrentStep] = useState(null);
 
     useEffect(() => {
@@ -106,7 +105,6 @@ export default function TaskModal({
                     currentStep={currentStep}
                     onClose={onClose}
                     setCurrentStep={setCurrentStep}
-                    circles={circles}
                     selectedCircle={selectedCircle}
                     setSelectedCircle={setSelectedCircle}
                     startDateTime={startTime}

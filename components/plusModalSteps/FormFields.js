@@ -15,6 +15,7 @@ import { createTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { isStartDateBeforeEndDate } from '../../helpers/date';
+import { circles } from '../../constants/variables';
 
 export default function FormFields({
     selectedService,
@@ -23,7 +24,6 @@ export default function FormFields({
     taskName,
     setTaskName,
     onBack,
-    circles,
     selectedCircle,
     setSelectedCircle,
     description,

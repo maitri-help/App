@@ -33,7 +33,6 @@ export default function PlusModal({
     deviceLocation
 }) {
     const [currentStep, setCurrentStep] = useState(1);
-    const circles = ['Personal', 'First', 'Second', 'Third'];
     const [selectedService, setSelectedService] = useState({
         id: null,
         title: '',
@@ -127,7 +126,6 @@ export default function PlusModal({
                     currentStep={currentStep}
                     onBack={() => setCurrentStep(currentStep - 1)}
                     setCurrentStep={setCurrentStep}
-                    circles={circles}
                     selectedCircle={selectedCircle}
                     setSelectedCircle={setSelectedCircle}
                     isOtherTask={isOtherTask}
