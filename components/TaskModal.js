@@ -42,13 +42,11 @@ export default function TaskModal({
 
     useEffect(() => {
         if (selectedTask) {
-            console.log(
-                'selectedTask',
-                JSON.stringify(selectedTask, undefined, 2)
-            );
-            const circleLevels = selectedTask.circles.map(
-                (circle) => circle.circleLevel
-            );
+            const circleLevels = [
+                ...new Set(
+                    selectedTask.circles.map((circle) => circle.circleLevel)
+                )
+            ];
 
             setTaskId(selectedTask.taskId);
             setTaskName(selectedTask.title);
@@ -58,8 +56,6 @@ export default function TaskModal({
 
             setStartDate(selectedTask.startDateTime);
             setEndDate(selectedTask.endDateTime);
-            // setStartTime(selectedTask.startDateTime);
-            // setEndTime(selectedTask.endDateTime);
 
             setFirstName(
                 selectedTask.assignee ? selectedTask.assignee.firstName : ''

@@ -94,17 +94,15 @@ export default function EditForm({
     };
 
     const handleSelectOption = (option) => {
-        if (option === 'Personal') {
-            setSelectedCircle([option]);
-        } else if (selectedCircle.includes('Personal')) {
+        if (option === 'Personal' || selectedCircle.includes('Personal')) {
             setSelectedCircle([option]);
         } else {
             if (selectedCircle.includes(option)) {
-                setSelectedCircle(
-                    selectedCircle.filter((item) => item !== option)
+                setSelectedCircle((prev) =>
+                    prev.filter((item) => item !== option)
                 );
             } else {
-                setSelectedCircle([...selectedCircle, option]);
+                setSelectedCircle((prev) => [...prev, option]);
             }
         }
     };
@@ -126,7 +124,7 @@ export default function EditForm({
                 startDateTime: startDateTime,
                 endDateTime: endDateTime
             };
-
+            console.log('taskData', taskData);
             await updateTask(taskId, taskData, accessToken);
 
             toast.show('Task updated successfully', { type: 'success' });
