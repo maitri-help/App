@@ -9,12 +9,13 @@ import {
     Image,
     ImageBackground,
     Animated,
-    ActivityIndicator
+    ActivityIndicator,
+    Modal
 } from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
 import MyTask from '../components/MyTask';
-import { getLeadUser } from '../hooks/api';
+import { getLeadUser, getNotificationsForUser } from '../hooks/api';
 import {
     checkAuthentication,
     clearUserData,
@@ -28,6 +29,8 @@ import { Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { inspirationalQuotes } from '../constants/quotes';
 import { generateRandomQuote } from '../helpers';
+import CustomBox from '../components/CustomBox';
+import ThankYouModal from '../components/supporter/ThankYouModal';
 
 export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
@@ -151,6 +154,59 @@ export default function HomeSupporterScreen({ navigation }) {
         setTaskModalVisible(false);
         setMyTaskModalVisible(false);
     };
+
+    const [thankYouNotifications, setThankYouNotifications] = useState([]);
+    const [thankYouModalVisible, setThankYouModalVisible] = useState(false);
+
+    async function fetchNotifications() {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const notificationsResponse = await getNotificationsForUser(
+                    userData.userId,
+                    userData.accessToken
+                );
+                const notificationsData = notificationsResponse.data;
+                if (notificationsData.length > 0) {
+                    const notificationsToShow = notificationsData.filter((n) => n.type === 'thankyou' && !n.isRead);
+                    if (notificationsToShow.length > 0) {
+                        setThankYouNotifications(notificationsToShow);
+                        setThankYouModalVisible(true);
+                    }
+                }
+            } else {
+                console.error('No user data found');
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }]
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotifications();
+        }, [])
+    );
+
+    useEffect(() => {
+        if (thankYouModalVisible) {
+            Animated.timing(overlayOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true
+            }).start();
+        } else {
+            Animated.timing(overlayOpacity, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true
+            }).start();
+        }
+    }, [thankYouModalVisible]);
 
     const renderTasks = (tasks = []) => {
         let filteredTasks = tasks;
@@ -424,6 +480,15 @@ export default function HomeSupporterScreen({ navigation }) {
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
                     updateTask={() => fetchTasks()}
+                />
+            )}
+
+            {thankYouModalVisible && (
+                <ThankYouModal 
+                    visible={thankYouModalVisible}
+                    setVisible={setThankYouModalVisible}
+                    thankYouNotifications={thankYouNotifications}
+                    setThankYouNotifications={setThankYouNotifications}
                 />
             )}
         </>
