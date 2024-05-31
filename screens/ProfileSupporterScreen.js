@@ -174,6 +174,27 @@ export default function ProfileSupporterScreen({ navigation }) {
                                     </Text>
                                 </TouchableOpacity>
                             </View>
+                                <View style={stylesProfile.linksWrapper}>
+                                <TouchableOpacity style={stylesProfile.link}>
+                                    <Text style={stylesProfile.linkText} 
+                                onPress={() =>
+                                        Linking.openURL(
+                                            'https://www.maitrihelp.com/privacy-policy'
+                                        )
+                                    }>
+                                    Privacy Policy
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={stylesProfile.link} onPress={() =>
+                                    Linking.openURL(
+                                        'https://www.maitrihelp.com/terms-conditions'
+                                    )
+                                }>
+                                    <Text style={stylesProfile.linkText}>
+                                        Terms & Conditions
+                                    </Text>
+                                </TouchableOpacity>
+                                </View>
                         </View>
                     </View>
                 </View>

@@ -8,11 +8,11 @@ import {
     Platform
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import { useToast } from 'react-native-toast-notifications';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function DateTime({
     currentStep,
@@ -94,16 +94,21 @@ export default function DateTime({
         }
     };
 
-    const handleStartTimeConfirm = (time) => {
+    const handleStartTimeConfirm = (_, time) => {
         const currentDate = startDate ? new Date(startDate) : new Date();
+
         const updatedDateTime = new Date(
             currentDate.setHours(time.getHours(), time.getMinutes())
         );
-        setStartTime(updatedDateTime.toISOString());
+
         setStartTimePickerVisible(false);
+        setStartTime(updatedDateTime.toISOString());
+        if (!endTime) {
+            setEndTime(updatedDateTime.toISOString());
+        }
     };
 
-    const handleEndTimeConfirm = (time) => {
+    const handleEndTimeConfirm = (_, time) => {
         const currentDate = endDate
             ? new Date(endDate)
             : startDate
@@ -112,8 +117,8 @@ export default function DateTime({
         const updatedDateTime = new Date(
             currentDate.setHours(time.getHours(), time.getMinutes())
         );
-        setEndTime(updatedDateTime.toISOString());
         setEndTimePickerVisible(false);
+        setEndTime(updatedDateTime.toISOString());
     };
 
     const showStartTimePicker = () => {
@@ -304,12 +309,15 @@ export default function DateTime({
                                         : 'Select Start Time'}
                                 </Text>
                             </TouchableOpacity>
-                            <DateTimePickerModal
-                                mode="time"
-                                isVisible={isStartTimePickerVisible}
-                                onConfirm={handleStartTimeConfirm}
-                                onCancel={hideStartTimePicker}
-                            />
+                            {isStartTimePickerVisible && (
+                                <DateTimePicker
+                                    mode="time"
+                                    testID="startDateTimePicker"
+                                    value={new Date(startTime)}
+                                    themeVariant="light"
+                                    onChange={handleStartTimeConfirm}
+                                />
+                            )}
                         </View>
                     </View>
                     <View style={stylesDate.fieldGroup}>
@@ -334,12 +342,15 @@ export default function DateTime({
                                         : 'Select End Time'}
                                 </Text>
                             </TouchableOpacity>
-                            <DateTimePickerModal
-                                mode="time"
-                                isVisible={isEndTimePickerVisible}
-                                onConfirm={handleEndTimeConfirm}
-                                onCancel={hideEndTimePicker}
-                            />
+                            {isEndTimePickerVisible && (
+                                <DateTimePicker
+                                    mode="time"
+                                    testID="endDateTimePicker"
+                                    value={new Date(endTime)}
+                                    themeVariant="light"
+                                    onChange={handleEndTimeConfirm}
+                                />
+                            )}
                         </View>
                     </View>
                     <View

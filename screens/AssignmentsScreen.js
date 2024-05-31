@@ -381,6 +381,8 @@ export default function AssignmentsScreen({ navigation }) {
                                 setWeekSelectedDate={setWeekSelectedDate}
                                 tasks={tasks}
                                 scrollViewRef={scrollViewRef}
+                                currentYearProp={currentYear}
+                                currentMonthProp={currentMonth}
                             />
                         )}
                     </View>
@@ -406,7 +408,9 @@ export default function AssignmentsScreen({ navigation }) {
                                     />
                                 </View>
                                 <Text style={stylesCal.calendarEmptyText}>
-                                    Your list is empty
+                                    {!isLoading && tasks.length
+                                        ? 'No tasks on this date'
+                                        : 'Your list is empty'}
                                 </Text>
                                 <Text style={stylesCal.calendarEmptyTitle}>
                                     Click here to add your first task

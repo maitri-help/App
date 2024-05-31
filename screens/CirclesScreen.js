@@ -88,22 +88,29 @@ export default function CirclesScreen({ navigation }) {
 
     const generateRandomCircleItems = () => {
         const circleItemsContent = [
-            { ...getRandomItem(tabContents.Third), circle: 'Third' } || {
-                firstName: 'Peer',
-                emoji: null,
-                circle: 'Third'
-            },
-            { ...getRandomItem(tabContents.Second), circle: 'Second' } || {
-                firstName: 'Friend',
-                emoji: null,
-                circle: 'Second'
-            },
-            { ...getRandomItem(tabContents.First), circle: 'First' } || {
-                firstName: 'Parent',
-                emoji: null,
-                circle: 'First'
-            }
+            tabContents?.Third.length
+                ? { ...getRandomItem(tabContents.Third), circle: 'Third' }
+                : {
+                      firstName: 'Peer',
+                      emoji: null,
+                      circle: 'Third'
+                  },
+            tabContents?.Second.length
+                ? { ...getRandomItem(tabContents.Second), circle: 'Second' }
+                : {
+                      firstName: 'Friend',
+                      emoji: null,
+                      circle: 'Second'
+                  },
+            tabContents?.First.length
+                ? { ...getRandomItem(tabContents.First), circle: 'First' }
+                : {
+                      firstName: 'Parent',
+                      emoji: null,
+                      circle: 'First'
+                  }
         ];
+
         setCircleItemsContent(circleItemsContent);
     };
 
