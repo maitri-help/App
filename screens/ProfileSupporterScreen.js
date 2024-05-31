@@ -18,6 +18,7 @@ import {
 import LogoutModal from '../components/profileModals/LogoutModal';
 import DeleteModal from '../components/profileModals/DeleteModal';
 import { Platform } from 'react-native';
+import { OneSignal } from 'react-native-onesignal';
 
 export default function ProfileSupporterScreen({ navigation }) {
     const [userData, setUserData] = useState(null);
@@ -54,6 +55,7 @@ export default function ProfileSupporterScreen({ navigation }) {
         try {
             await clearUserData();
             await clearAccessToken();
+            OneSignal.logout();
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Login' }]
