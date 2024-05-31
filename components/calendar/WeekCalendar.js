@@ -7,6 +7,7 @@ import {
     ScrollView
 } from 'react-native';
 import { days, months } from '../../constants/date';
+import { CALENDAR_WEEK_VIEW_WIDTH } from '../../constants/variables';
 
 export default function WeekCalendar({
     defaultDate,
@@ -26,9 +27,8 @@ export default function WeekCalendar({
 
     useEffect(() => {
         if (scrollViewRef.current) {
-            console.log(scrollViewRef.current);
             scrollViewRef.current.scrollTo({
-                x: 350 * currentWeekIndex,
+                x: CALENDAR_WEEK_VIEW_WIDTH * currentWeekIndex,
                 animated: true
             });
         }
@@ -91,7 +91,7 @@ export default function WeekCalendar({
 
     const handleScroll = (event) => {
         const offsetX = event.nativeEvent.contentOffset.x;
-        const newWeekIndex = Math.round(offsetX / 350); // assuming each week view is 350px wide
+        const newWeekIndex = Math.round(offsetX / CALENDAR_WEEK_VIEW_WIDTH); // assuming each week view is 350px wide
 
         if (newWeekIndex !== currentWeekIndex) {
             setCurrentWeekIndex(newWeekIndex);
@@ -116,7 +116,10 @@ export default function WeekCalendar({
                 showsHorizontalScrollIndicator={false}
                 style={[
                     styles.container,
-                    { maxWidth: 350, alignSelf: 'center' }
+                    {
+                        maxWidth: CALENDAR_WEEK_VIEW_WIDTH,
+                        alignSelf: 'center'
+                    }
                 ]}
                 contentContainerStyle={styles.scrollViewContent}
             >
