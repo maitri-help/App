@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
-import AppButton from '../compontents/Button';
+import AppButton from '../components/Button';
 import styles from '../Styles';
+import { setOnboardingCompleted } from '../authStorage';
 
-export default function OnboardingScreen({ navigation }) {
+export default function OnboardingScreen() {
     const [currentStep, setCurrentStep] = useState(0);
     const swiperRef = useRef(null);
+
+    const navigation = useNavigation();
 
     const onboardingData = [
         {
@@ -26,26 +30,38 @@ export default function OnboardingScreen({ navigation }) {
         },
     ];
 
+    useEffect(() => {
+        if (swiperRef.current) {
+            swiperRef.current.onIndexChanged = (index) => setCurrentStep(index);
+        }
+    }, []);
+
     const handleSkip = () => {
-        setCurrentStep(onboardingData.length - 1);
-        swiperRef.current.scrollBy(1);
+        if (currentStep < onboardingData.length - 1) {
+            setCurrentStep(onboardingData.length - 1);
+            swiperRef.current.scrollBy(onboardingData.length - 1 - currentStep);
+        }
     };
 
-    useEffect(() => {
-        if (swiperRef.current && currentStep !== swiperRef.current.state.index) {
-            swiperRef.current.scrollBy(currentStep - swiperRef.current.state.index);
-        }
-    }, [currentStep]);
+    const handleCreateAccount = async () => {
+        await setOnboardingCompleted(true);
+        navigation.navigate('Register');
+    };
+
+    const handleLogin = async () => {
+        await setOnboardingCompleted(true);
+        navigation.navigate('Login');
+    };
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: '#fff' }}>
             <Swiper
                 ref={swiperRef}
                 loop={false}
                 index={currentStep}
-                onIndexChanged={(index) => setCurrentStep(index)}
                 showsButtons={false}
                 showsPagination={false}
+                onIndexChanged={(index) => setCurrentStep(index)}
             >
                 {onboardingData.map((step, index) => (
                     <View key={index} style={styles.container}>
@@ -54,33 +70,32 @@ export default function OnboardingScreen({ navigation }) {
                             <Text style={styles.title}>{step.title}</Text>
                             <Text style={[styles.text, stylesOnboard.onboardingText]}>{step.text}</Text>
                         </View>
-                        {index < onboardingData.length - 1 && (
-                            <TouchableOpacity onPress={handleSkip} style={stylesOnboard.skipButton}>
-                                <Text style={stylesOnboard.skipButtonText}>Skip</Text>
-                            </TouchableOpacity>
+                        {index === onboardingData.length - 1 && (
+                            <View style={stylesOnboard.onboardingButtonsContainer}>
+                                <View style={styles.buttonContainer}>
+                                    <AppButton
+                                        onPress={handleCreateAccount}
+                                        title="Create Account"
+                                        buttonStyle={stylesOnboard.buttonStyle}
+                                    />
+                                </View>
+                                <TouchableOpacity onPress={handleLogin}>
+                                    <Text style={stylesOnboard.haveAccountText}>Already have an account? <Text style={stylesOnboard.loginText}>Log in</Text></Text>
+                                </TouchableOpacity>
+                            </View>
                         )}
                     </View>
                 ))}
             </Swiper>
-            {currentStep === onboardingData.length - 1 && (
-                <View style={stylesOnboard.onboardingButtonsContainer}>
-                    <View style={styles.buttonContainer}>
-                        <AppButton
-                            onPress={() => navigation.navigate('Register')}
-                            title="Create Account"
-                            buttonStyle={stylesOnboard.buttonStyle}
-                        />
-                    </View>
-                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                        <Text style={stylesOnboard.haveAccountText}>Already have an account? <Text style={stylesOnboard.loginText}>Log in</Text></Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+            <TouchableOpacity onPress={handleSkip} style={stylesOnboard.fixedSkipButton}>
+                <Text style={stylesOnboard.skipButtonText}>Skip</Text>
+            </TouchableOpacity>
             <View style={stylesOnboard.dotsContainer}>
                 {onboardingData.map((_, index) => (
-                    <View
+                    <TouchableOpacity
                         key={index}
                         style={[stylesOnboard.dot, index === currentStep && stylesOnboard.activeDot]}
+                        onPress={() => swiperRef.current.scrollTo(index)}
                     />
                 ))}
             </View>
@@ -124,13 +139,14 @@ const stylesOnboard = StyleSheet.create({
     onboardingText: {
         textAlign: 'center',
     },
-    skipButton: {
+    fixedSkipButton: {
         position: 'absolute',
         top: 70,
         right: 25,
+        zIndex: 1,
     },
     skipButtonText: {
-        fontWeight: '600',
+        fontFamily: 'poppins-semibold',
         textDecorationLine: 'underline',
         fontSize: 14,
         padding: 5,
@@ -148,10 +164,10 @@ const stylesOnboard = StyleSheet.create({
     },
     haveAccountText: {
         textDecorationLine: 'underline',
-        fontSize: 15,
+        fontSize: 14,
+        fontFamily: 'poppins-regular',
     },
     loginText: {
-        fontWeight: '600',
         fontFamily: 'poppins-semibold',
     }
 });
