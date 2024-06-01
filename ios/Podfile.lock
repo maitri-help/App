@@ -1404,7 +1404,7 @@ DEPENDENCIES:
   - React-jsitracing (from `../node_modules/react-native/ReactCommon/hermes/executor/`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
-  - react-native-google-maps (from `../node_modules/react-native-maps`)
+  - react-native-google-maps (from `../node_modules/react-native-maps/react-native-google-maps.podspec`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -1528,7 +1528,7 @@ EXTERNAL SOURCES:
   React-Mapbuffer:
     :path: "../node_modules/react-native/ReactCommon"
   react-native-google-maps:
-    :path: "../node_modules/react-native-maps"
+    :path: "../node_modules/react-native-maps/react-native-google-maps.podspec"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-onesignal:
@@ -1673,6 +1673,6 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: b9a182ab00cf25926e7f79657d08c5d23c2d03b0
 
-PODFILE CHECKSUM: 87f9a7858c7fd5e681bc3c6f5dd3e1d99de56047
+PODFILE CHECKSUM: b14602cccb6649454f023d1885e1e00f174e8aab
 
 COCOAPODS: 1.15.2

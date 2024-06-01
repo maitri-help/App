@@ -10,13 +10,13 @@ import {
 import Modal from '../components/Modal';
 import styles from '../Styles';
 import ShareIcon from '../assets/icons/share-icon.svg';
-import { checkAuthentication } from '../authStorage';
+import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
 
 export default function SendInviteScreen({ visible, onClose, navigation }) {
     const [userTribeCode, setUserTribeCode] = useState('');
 
     useEffect(() => {
-        async function tribeCode() {
+        async function fetchTribeCode() {
             try {
                 const userData = await checkAuthentication();
                 if (userData) {
@@ -29,7 +29,7 @@ export default function SendInviteScreen({ visible, onClose, navigation }) {
                 navigation.navigate('Login');
             }
         }
-        tribeCode();
+        fetchTribeCode();
     }, []);
 
     const shareTribeCode = async () => {
@@ -37,12 +37,12 @@ export default function SendInviteScreen({ visible, onClose, navigation }) {
             await Share.share({
                 message: `Hey! This is a personal invite to join my tribe on Maitri - A new way to ask for help.
 
-                After you download the app, use my unique invite code to find me.
-                
-                [apple app store link]
-                [android app store link]
-                
-                ${userTribeCode}`
+After you download the app, use my unique invite code to find me.
+
+[apple app store link]
+[android app store link]
+
+${userTribeCode}`
             });
         } catch (error) {
             console.error('Error sharing tribe code:', error);
@@ -64,9 +64,13 @@ export default function SendInviteScreen({ visible, onClose, navigation }) {
             <View style={[styles.contentContainer, stylesInvite.container]}>
                 <View style={stylesInvite.topTextContainer}>
                     <Text style={stylesInvite.text}>
-                        Invite family, friends, loved ones and peers to your
+                        Invite family, friends, loved ones, and peers to your
                         support circle by sharing your unique invite code
                     </Text>
+                </View>
+                <View style={stylesInvite.tribeCodeContainer}>
+                    <Text style={stylesInvite.tribeCodeLabel}>Your Tribe Code:</Text>
+                    <Text style={stylesInvite.tribeCode}>{userTribeCode}</Text>
                 </View>
                 <View style={stylesInvite.sendInviteWrapper}>
                     <View style={stylesInvite.sendInvite}>
@@ -111,7 +115,7 @@ const stylesInvite = StyleSheet.create({
     },
     topTextContainer: {
         paddingHorizontal: 15,
-        marginBottom: 60
+        marginBottom: 20
     },
     text: {
         color: '#787878',
@@ -119,6 +123,25 @@ const stylesInvite = StyleSheet.create({
         fontSize: 13,
         lineHeight: 20,
         textAlign: 'center'
+    },
+    tribeCodeContainer: {
+        alignItems: 'center',
+        marginVertical: 20
+    },
+    tribeCodeLabel: {
+        color: '#000',
+        fontFamily: 'poppins-semibold',
+        fontSize: 14,
+        marginBottom: 5
+    },
+    tribeCode: {
+        color: '#1C4837',
+        fontFamily: 'poppins-bold',
+        fontSize: 18
+    },
+    sendInviteWrapper: {
+        alignItems: 'center',
+        marginVertical: 20
     },
     sendInvite: {
         borderWidth: 1,
