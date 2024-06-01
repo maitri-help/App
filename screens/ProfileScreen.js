@@ -48,9 +48,9 @@ export default function ProfileScreen({ navigation }) {
 
     const handleLogout = async () => {
         try {
+            OneSignal.logout();
             await clearUserData();
             await clearAccessToken();
-            OneSignal.logout();
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Login' }]

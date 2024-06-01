@@ -65,6 +65,30 @@ PODS:
   - FBLazyVector (0.74.1)
   - fmt (9.1.0)
   - glog (0.3.5)
+  - Google-Maps-iOS-Utils (4.2.2):
+    - Google-Maps-iOS-Utils/Clustering (= 4.2.2)
+    - Google-Maps-iOS-Utils/Geometry (= 4.2.2)
+    - Google-Maps-iOS-Utils/GeometryUtils (= 4.2.2)
+    - Google-Maps-iOS-Utils/Heatmap (= 4.2.2)
+    - Google-Maps-iOS-Utils/QuadTree (= 4.2.2)
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/Clustering (4.2.2):
+    - Google-Maps-iOS-Utils/QuadTree
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/Geometry (4.2.2):
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/GeometryUtils (4.2.2):
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/Heatmap (4.2.2):
+    - Google-Maps-iOS-Utils/QuadTree
+    - GoogleMaps (~> 7.3)
+  - Google-Maps-iOS-Utils/QuadTree (4.2.2):
+    - GoogleMaps (~> 7.3)
+  - GoogleMaps (7.4.0):
+    - GoogleMaps/Maps (= 7.4.0)
+  - GoogleMaps/Base (7.4.0)
+  - GoogleMaps/Maps (7.4.0):
+    - GoogleMaps/Base
   - hermes-engine (0.74.1):
     - hermes-engine/Pre-built (= 0.74.1)
   - hermes-engine/Pre-built (0.74.1)
@@ -1042,7 +1066,11 @@ PODS:
   - React-Mapbuffer (0.74.1):
     - glog
     - React-debug
-  - react-native-maps (1.14.0):
+  - react-native-google-maps (1.15.6):
+    - Google-Maps-iOS-Utils (= 4.2.2)
+    - GoogleMaps (= 7.4.0)
+    - React-Core
+  - react-native-maps (1.15.6):
     - React-Core
   - react-native-onesignal (5.2.0):
     - OneSignalXCFramework (= 5.2.0)
@@ -1346,6 +1374,8 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - Google-Maps-iOS-Utils (= 4.2.2)
+  - GoogleMaps (= 7.4.0)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - OneSignalXCFramework (< 6.0, >= 5.0)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -1374,6 +1404,7 @@ DEPENDENCIES:
   - React-jsitracing (from `../node_modules/react-native/ReactCommon/hermes/executor/`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
+  - react-native-google-maps (from `../node_modules/react-native-maps`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-onesignal (from `../node_modules/react-native-onesignal`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -1408,7 +1439,9 @@ DEPENDENCIES:
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  trunk:
+  https://github.com/CocoaPods/Specs.git:
+    - Google-Maps-iOS-Utils
+    - GoogleMaps
     - OneSignalXCFramework
     - SocketRocket
 
@@ -1494,6 +1527,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   React-Mapbuffer:
     :path: "../node_modules/react-native/ReactCommon"
+  react-native-google-maps:
+    :path: "../node_modules/react-native-maps"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-onesignal:
@@ -1575,6 +1610,8 @@ SPEC CHECKSUMS:
   FBLazyVector: 898d14d17bf19e2435cafd9ea2a1033efe445709
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
+  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   hermes-engine: 16b8530de1b383cdada1476cf52d1b52f0692cbc
   OneSignalXCFramework: bdf74fdc06888f9466dc21e826fe1549ed143095
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
@@ -1601,7 +1638,8 @@ SPEC CHECKSUMS:
   React-jsitracing: 233d1a798fe0ff33b8e630b8f00f62c4a8115fbc
   React-logger: 7e7403a2b14c97f847d90763af76b84b152b6fce
   React-Mapbuffer: 11029dcd47c5c9e057a4092ab9c2a8d10a496a33
-  react-native-maps: cbf2f03bfeebfd7ec45966b066db13a075fd2af3
+  react-native-google-maps: 7ca1d252585c9ee2bbe2a3f64e4c061801b43d64
+  react-native-maps: 7b2c2cee95271592a92ba485eea1dec66a363a6e
   react-native-onesignal: 8211393e9f200a055fdefbeaaa3322880ed48059
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
   React-nativeconfig: b0073a590774e8b35192fead188a36d1dca23dec
@@ -1633,8 +1671,8 @@ SPEC CHECKSUMS:
   RNScreens: b32a9ff15bea7fcdbe5dff6477bc503f792b1208
   RNSVG: 43b64ed39c14ce830d840903774154ca0c1f27ec
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Yoga: 348f8b538c3ed4423eb58a8e5730feec50bce372
+  Yoga: b9a182ab00cf25926e7f79657d08c5d23c2d03b0
 
-PODFILE CHECKSUM: 357a878cd50584b85ff6a2eb99fd3bd2a8408cf5
+PODFILE CHECKSUM: 87f9a7858c7fd5e681bc3c6f5dd3e1d99de56047
 
 COCOAPODS: 1.15.2

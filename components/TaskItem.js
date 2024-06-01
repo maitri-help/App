@@ -30,14 +30,26 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox,
     }
   };
 
-  const formatDateTime = (task) => {
-    const formattedStartDateTime = formatDate(task.startDateTime);
-    const formattedEndDateTime = formatDate(task.endDateTime);
-    return `${formattedStartDateTime} - ${formattedEndDateTime}`;
+  const formatDateTime = (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start.getTime() === end.getTime()) {
+      return formatDateOnly(startDate);
+    } else {
+      const formattedStartDate = formatDate(startDate);
+      const formattedEndDate = formatDate(endDate);
+      return `${formattedStartDate} - ${formattedEndDate}`;
+    }
   };
 
   const formatDate = (date) => {
     const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+    return new Date(date).toLocaleDateString('en-US', options);
+  };
+
+  const formatDateOnly = (date) => {
+    const options = { month: 'long', day: 'numeric' };
     return new Date(date).toLocaleDateString('en-US', options);
   };
 
@@ -51,7 +63,15 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox,
     return service ? service.icon : null;
   };
 
-  const isDue = new Date(task.endDateTime) < new Date() && task.status === 'undone';
+  const isDue = () => {
+    const endDate = new Date(task.endDateTime);
+    const today = new Date();
+    const nextDay = new Date(endDate);
+    nextDay.setDate(endDate.getDate() + 1);
+
+    return task.status === 'undone' && today >= nextDay;
+  };
+
   const icon = findIcon();
   const isPersonal = task.circles && task.circles.length === 1 && task.circles[0].circleLevel === 'Personal';
 
@@ -71,18 +91,18 @@ export default function TaskItem({ task, taskModal, onTaskItemClick, isCheckbox,
         </View>
 
         <View style={styles.textContainer}>
-          <Text style={[styles.title, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue && styles.dueText]}>{task.title}</Text>
+          <Text style={[styles.title, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue() && styles.dueText]}>{task.title}</Text>
           {isPersonal ? (
-            <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue && styles.dueText]}>Just Me</Text>
+            <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue() && styles.dueText]}>Just Me</Text>
           ) : (
             task.assignee && (
-              <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue && styles.dueText]}>
+              <Text style={[styles.assignee, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue() && styles.dueText]}>
                 {`${task.assignee.firstName} ${task.assignee.lastName}`}
               </Text>
             )
           )}
-          {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue && styles.dueText]}>
-            {formatDateTime(task)}
+          {(task.startDateTime && task.endDateTime) && <Text style={[styles.time, isChecked ? styles.textStriked : '', isChecked && styles.greyedOut, isDue() && styles.dueText]}>
+            {formatDateTime(task.startDateTime, task.endDateTime)}
           </Text>}
         </View>
       </View>

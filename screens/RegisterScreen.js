@@ -25,11 +25,11 @@ const validationSchema = yup.object().shape({
     fullName: yup
         .string()
         .matches(
-            /^[a-zA-Z\s'‘’"”]+$/,
+            /^[\p{L}\s'‘’"”]+$/u,
             'Full Name can only contain letters, spaces, and certain punctuation (e.g., \' " ‘ ’)'
         )
         .matches(
-            /^[A-Za-z]+\s[A-Za-z][A-Za-z\s]*$/,
+            /^[\p{L}]+\s[\p{L}][\p{L}\s]*$/u,
             'Full Name should be at least 2 words long'
         )
         .required('Full Name is required'),
@@ -51,6 +51,7 @@ const validationSchema = yup.object().shape({
             'You must accept the Privacy Policy and Terms & Conditions'
         )
 });
+
 
 export default function RegisterScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);

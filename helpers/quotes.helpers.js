@@ -5,7 +5,7 @@ export const getInitialBoxes = (
     openModal
 ) => [
     {
-        title: 'Nothing to do?',
+        title: 'No tasks yet?',
         buttons: [
             {
                 title: 'Add a new task',
