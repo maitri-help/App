@@ -391,7 +391,7 @@ export default function HomeScreen({ navigation }) {
             case 'Unassigned':
                 filteredTasks = tasks.filter(
                     (task) =>
-                        (!task?.assignee || task?.status === 'undone') &&
+                        (!task?.assignee) &&
                         !task.circles.some(
                             (circle) => circle.circleLevel === 'Personal'
                         )
