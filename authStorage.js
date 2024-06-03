@@ -124,13 +124,12 @@ export const checkAuthentication = async () => {
     try {
         const accessToken = await getAccessToken();
         if (accessToken) {
-            console.log("CHECK AUTH", accessToken)
             const response = await axios.get(`${baseUrl}/users/me`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
             });
-            console.log("RESPONSE", response)
+
             const userData = response.data;
             userData.accessToken = accessToken;
             return userData;

@@ -50,8 +50,7 @@ export default function LoginScreen({ navigation }) {
     const handleFormSubmit = async (values) => {
         try {
             const { userId, otpResponse } = await handleSignIn(values);
-            console.log('userId:', userId);
-            console.log('OTP response:', otpResponse);
+
             OneSignal.login(`${userId}`); // OneSignal requires a string
 
             toast.show('Code is sent to: ' + values.phoneNumber, {
