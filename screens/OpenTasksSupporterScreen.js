@@ -164,8 +164,8 @@ export default function OpenTasksSupporterScreen({ navigation }) {
 
         // Filter tasks based on selected filters
         const filtered = tasks.filter((task) => {
-            const start = new Date(task.startDateTime);
-            const end = new Date(task.endDateTime);
+            const start = new Date(task.startDate);
+            const end = new Date(task.endDate);
 
             const duration = (end - start) / (1000 * 60 * 60 * 24);
 
@@ -241,29 +241,6 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         const openTasks = tasks.filter(
             (task) => task.status === 'undone' && !task.assignedUserId
         );
-
-        /* if (openTasks.length === 0) {
-            return (
-                <View style={stylesSuppOT.tasksContainer}>
-                    <ScrollView contentContainerStyle={stylesSuppOT.tasksScrollEmpty}>
-                        <View style={[styles.contentContainer, stylesSuppOT.tasksEmpty]}>
-                            <View style={stylesSuppOT.tasksTop}>
-                                <Text style={[styles.text, stylesSuppOT.tasksDescription, { marginBottom: 30 }]}>
-                                    No open tasks yet.
-                                </Text>
-                                <Text style={[styles.text, stylesSuppOT.tasksDescription, { marginBottom: 60, paddingHorizontal: 30 }]}>
-                                    Check back in later!
-                                </Text>
-                                <Image
-                                    source={require('../assets/img/mimi-illustration.png')}
-                                    style={stylesSuppOT.rightImageStyle}
-                                />
-                            </View>
-                        </View>
-                    </ScrollView>
-                </View>
-            );
-        } */
 
         return (
             <>
@@ -403,10 +380,6 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                             <OpenTask
                                 key={task.taskId}
                                 task={task}
-                                title={task.title}
-                                startTime={task.startDateTime}
-                                endTime={task.endDateTime}
-                                category={task.category}
                                 taskModal={() => setTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
                             />

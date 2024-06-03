@@ -179,16 +179,12 @@ export default function MyTasksSupporterScreen({ navigation }) {
                         <MyTask
                             key={task.taskId}
                             task={task}
-                            title={task.title}
                             firstName={
                                 task.assignee ? task.assignee.firstName : ''
                             }
                             lastName={
                                 task.assignee ? task.assignee.lastName : ''
                             }
-                            startTime={task.startDateTime}
-                            endTime={task.endDateTime}
-                            category={task.category}
                             taskModal={() => setMyTaskModalVisible(true)}
                             onTaskItemClick={handleTaskItemClick}
                             isCheckbox={true}

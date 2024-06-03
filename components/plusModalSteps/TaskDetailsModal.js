@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
@@ -9,6 +9,7 @@ import { useToast } from 'react-native-toast-notifications';
 import Modal from '../Modal';
 import Button from '../Button';
 import { ScrollView } from 'react-native-gesture-handler';
+import { generateDateString } from '../../helpers/date';
 
 export default function TaskDetailsModal({
     visible,
@@ -16,45 +17,7 @@ export default function TaskDetailsModal({
     onClose,
     updateTask
 }) {
-    const [dateTimeText, setDateTimeText] = useState(null);
     const toast = useToast();
-
-    const [taskId, setTaskId] = useState(null);
-    const [taskName, setTaskName] = useState(null);
-    const [description, setDescription] = useState(null);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [startDateTime, setStartDateTime] = useState(null);
-    const [endDateTime, setEndDateTime] = useState(null);
-
-    useEffect(() => {
-        if (selectedTask) {
-            setTaskId(selectedTask.taskId);
-            setTaskName(selectedTask.title);
-            setDescription(selectedTask.description);
-            setSelectedLocation(selectedTask.location);
-
-            setStartDateTime(selectedTask.startDateTime);
-            setEndDateTime(selectedTask.endDateTime);
-        }
-    }, [selectedTask, setStartDateTime, setEndDateTime]);
-
-    useEffect(() => {
-        if (startDateTime && endDateTime) {
-            const options = {
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            };
-            const start = new Date(startDateTime).toLocaleString(
-                'en-US',
-                options
-            );
-            const end = new Date(endDateTime).toLocaleString('en-US', options);
-            setDateTimeText(`${start} - ${end}`);
-        }
-    }, [startDateTime, endDateTime]);
 
     const handleSubmit = async () => {
         try {
@@ -68,7 +31,7 @@ export default function TaskDetailsModal({
                 return;
             }
 
-            await assingUserToTask(taskId, accessToken);
+            await assingUserToTask(selectedTask?.taskId, accessToken);
 
             toast.show('Assigned to task successfully', { type: 'success' });
 
@@ -96,13 +59,15 @@ export default function TaskDetailsModal({
                         />
                     </TouchableOpacity>
                     <Text style={[stylesModal.field, stylesModal.fieldTask]}>
-                        {taskName}
+                        {selectedTask?.title}
                     </Text>
                 </View>
             </View>
             <View style={[styles.contentContainer, stylesModal.topDescription]}>
                 <View style={stylesModal.topDescription}>
-                    <Text style={[styles.text]}>{description}</Text>
+                    <Text style={[styles.text]}>
+                        {selectedTask?.description}
+                    </Text>
                 </View>
             </View>
             <View style={{ flex: 1 }}>
@@ -119,7 +84,12 @@ export default function TaskDetailsModal({
                             </Text>
                             <View style={stylesModal.fieldWrapper}>
                                 <Text style={stylesModal.fieldText}>
-                                    {dateTimeText}
+                                    {generateDateString(
+                                        selectedTask?.startDate,
+                                        selectedTask?.endDate,
+                                        selectedTask?.startTime,
+                                        selectedTask?.endTime
+                                    )}
                                 </Text>
                             </View>
                         </View>
@@ -134,7 +104,7 @@ export default function TaskDetailsModal({
                             <Text style={stylesModal.groupTitle}>Location</Text>
                             <View style={stylesModal.fieldWrapper}>
                                 <LocationPicker
-                                    selectedLocation={selectedLocation}
+                                    selectedLocation={selectedTask?.location}
                                     disabled
                                 />
                             </View>

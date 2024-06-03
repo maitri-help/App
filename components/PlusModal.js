@@ -14,21 +14,11 @@ import ServiceItemSelection from './plusModalSteps/ServiceItemSelection';
 import TaskSelection from './plusModalSteps/TaskSelection';
 import FormFields from './plusModalSteps/FormFields';
 import DateTime from './plusModalSteps/DateTime';
+import { defaultTask } from '../constants/task';
 
 export default function PlusModal({
     visible,
     onClose,
-    handleDateTimeSelect,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    startTime,
-    setStartTime,
-    endTime,
-    setEndTime,
-    handleDayPress,
-    getDaysBetween,
     onTaskCreated,
     deviceLocation
 }) {
@@ -38,11 +28,10 @@ export default function PlusModal({
         title: '',
         icon: null
     });
-    const [selectedCircle, setSelectedCircle] = useState('Personal');
-    const [taskName, setTaskName] = useState('');
+
     const [isOtherTask, setIsOtherTask] = useState(false);
-    const [description, setDescription] = useState('');
-    const [selectedLocation, setSelectedLocation] = useState('');
+
+    const [task, setTask] = useState(defaultTask);
 
     const [confirmationVisible, setConfirmationVisible] = useState(false);
 
@@ -56,15 +45,8 @@ export default function PlusModal({
         setConfirmationVisible(false);
         setCurrentStep(1);
         setSelectedService({ id: null, title: '', icon: null });
-        setSelectedCircle('Personal');
-        setTaskName('');
+        setTask(defaultTask);
         setIsOtherTask(false);
-        setDescription('');
-        setSelectedLocation('');
-        setStartDate(null);
-        setEndDate(null);
-        setStartTime(null);
-        setEndTime(null);
     };
 
     const handleCancel = () => {
@@ -108,7 +90,7 @@ export default function PlusModal({
                     selectedService={selectedService}
                     modalServiceTasks={modalServiceTasks}
                     onTaskSelect={(taskName) => {
-                        setTaskName(taskName);
+                        setTask((prev) => ({ ...prev, title: taskName }));
                         setCurrentStep(3);
                     }}
                     currentStep={currentStep}
@@ -121,20 +103,12 @@ export default function PlusModal({
                 <FormFields
                     selectedService={selectedService}
                     modalServiceTasks={modalServiceTasks}
-                    taskName={taskName}
-                    setTaskName={setTaskName}
                     currentStep={currentStep}
                     onBack={() => setCurrentStep(currentStep - 1)}
                     setCurrentStep={setCurrentStep}
-                    selectedCircle={selectedCircle}
-                    setSelectedCircle={setSelectedCircle}
                     isOtherTask={isOtherTask}
-                    description={description}
-                    setDescription={setDescription}
-                    selectedLocation={selectedLocation}
-                    setSelectedLocation={setSelectedLocation}
-                    startDateTime={startTime || startDate}
-                    endDateTime={endTime || endDate}
+                    setTask={setTask}
+                    task={task}
                     onClose={onClose}
                     onTaskCreated={() => {
                         onTaskCreated();
@@ -145,21 +119,11 @@ export default function PlusModal({
             )}
             {currentStep === 4 && (
                 <DateTime
-                    taskName={taskName}
                     currentStep={currentStep}
-                    onBack={() => setCurrentStep(currentStep - 1)}
                     setCurrentStep={setCurrentStep}
-                    onDateTimeSelect={handleDateTimeSelect}
-                    startDate={startDate}
-                    setStartDate={setStartDate}
-                    endDate={endDate}
-                    setEndDate={setEndDate}
-                    startTime={startTime}
-                    setStartTime={setStartTime}
-                    endTime={endTime}
-                    setEndTime={setEndTime}
-                    handleDayPress={handleDayPress}
-                    getDaysBetween={getDaysBetween}
+                    onBack={() => setCurrentStep(currentStep - 1)}
+                    setTask={setTask}
+                    task={task}
                 />
             )}
             {confirmationVisible && (

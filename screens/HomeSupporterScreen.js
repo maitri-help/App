@@ -29,7 +29,6 @@ import { Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { inspirationalQuotes } from '../constants/quotes';
 import { generateRandomQuote } from '../helpers';
-import CustomBox from '../components/CustomBox';
 import ThankYouModal from '../components/supporter/ThankYouModal';
 
 export default function HomeSupporterScreen({ navigation }) {
@@ -168,7 +167,9 @@ export default function HomeSupporterScreen({ navigation }) {
                 );
                 const notificationsData = notificationsResponse.data;
                 if (notificationsData.length > 0) {
-                    const notificationsToShow = notificationsData.filter((n) => n.type === 'thankyou' && !n.isRead);
+                    const notificationsToShow = notificationsData.filter(
+                        (n) => n.type === 'thankyou' && !n.isRead
+                    );
                     if (notificationsToShow.length > 0) {
                         setThankYouNotifications(notificationsToShow);
                         setThankYouModalVisible(true);
@@ -210,6 +211,7 @@ export default function HomeSupporterScreen({ navigation }) {
 
     const renderTasks = (tasks = []) => {
         let filteredTasks = tasks;
+
         if (activeTab === 'Open') {
             filteredTasks = tasks.filter(
                 (task) => task.status === 'undone' && !task.assignedUserId
@@ -271,10 +273,6 @@ export default function HomeSupporterScreen({ navigation }) {
                             <OpenTask
                                 key={task.taskId}
                                 task={task}
-                                title={task.title}
-                                startTime={task.startDateTime}
-                                endTime={task.endDateTime}
-                                category={task.category}
                                 taskModal={() => setTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
                             />
@@ -282,16 +280,12 @@ export default function HomeSupporterScreen({ navigation }) {
                             <MyTask
                                 key={task.taskId}
                                 task={task}
-                                title={task.title}
                                 firstName={
                                     task.assignee ? task.assignee.firstName : ''
                                 }
                                 lastName={
                                     task.assignee ? task.assignee.lastName : ''
                                 }
-                                startTime={task.startDateTime}
-                                endTime={task.endDateTime}
-                                category={task.category}
                                 taskModal={() => setMyTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
                                 isCheckbox={true}
@@ -484,7 +478,7 @@ export default function HomeSupporterScreen({ navigation }) {
             )}
 
             {thankYouModalVisible && (
-                <ThankYouModal 
+                <ThankYouModal
                     visible={thankYouModalVisible}
                     setVisible={setThankYouModalVisible}
                     thankYouNotifications={thankYouNotifications}

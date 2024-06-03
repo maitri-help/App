@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -24,6 +24,8 @@ import PlusIcon from '../assets/icons/plus-icon.svg';
 import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication } from '../authStorage';
 import * as Location from 'expo-location';
+import { stripCircles } from '../helpers/task.helpers';
+import { isDateInRange } from '../helpers/date';
 
 export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
@@ -47,20 +49,6 @@ export default function AssignmentsScreen({ navigation }) {
     const [tasks, setTasks] = useState([]);
     const [userId, setUserId] = useState(null);
 
-    const [taskModalSelectedCircle, setTaskModalSelectedCircle] =
-        useState('Personal');
-    const [taskModalTaskName, setTaskModalTaskName] = useState('');
-    const [taskModalTaskId, setTaskModalTaskId] = useState('');
-    const [taskModaldescription, setTaskModalDescription] = useState('');
-    const [taskModalSelectedLocation, setTaskModalSelectedLocation] =
-        useState('');
-    const [taskModalStartDate, setTaskModalStartDate] = useState(null);
-    const [taskModalEndDate, setTaskModalEndDate] = useState(null);
-    const [plusModalStartDate, setPlusModalStartDate] = useState(null);
-    const [plusModalEndDate, setPlusModalEndDate] = useState(null);
-    const [plusModalStartTime, setPlusModalStartTime] = useState(null);
-    const [plusModalEndTime, setPlusModalEndTime] = useState(null);
-
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [color, setColor] = useState('');
@@ -74,72 +62,12 @@ export default function AssignmentsScreen({ navigation }) {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleTaskItemClick = async (task) => {
-        setSelectedTask(task);
-    };
-
-    const handleDateTimeSelectPlus = ({ startDateTime, endDateTime }) => {
-        setPlusModalStartDate(startDateTime);
-        setPlusModalEndDate(endDateTime);
-    };
-
-    const handleDateTimeSelectTask = ({ startDateTime, endDateTime }) => {
-        setTaskModalStartDate(startDateTime);
-        setTaskModalEndDate(endDateTime);
+        const newSelectedTask = stripCircles(task);
+        setSelectedTask(newSelectedTask);
     };
 
     const handleTaskStatusChange = () => {
         fetchTasks();
-    };
-
-    const handleDayPressPlus = (day) => {
-        if (plusModalStartDate && plusModalEndDate) {
-            setPlusModalStartDate(day.dateString);
-            setPlusModalEndDate(null);
-        } else if (plusModalStartDate && !plusModalEndDate) {
-            const startDate = new Date(plusModalStartDate);
-            const endDate = new Date(day.dateString);
-
-            if (startDate <= endDate) {
-                setPlusModalEndDate(day.dateString);
-            } else {
-                setPlusModalStartDate(day.dateString);
-                setPlusModalEndDate(null);
-            }
-        } else {
-            setPlusModalStartDate(day.dateString);
-        }
-    };
-
-    const handleDayPressTask = (day) => {
-        if (taskModalStartDate && taskModalEndDate) {
-            setTaskModalStartDate(day.dateString);
-            setTaskModalEndDate(null);
-        } else if (taskModalStartDate && !taskModalEndDate) {
-            const startDate = new Date(taskModalStartDate);
-            const endDate = new Date(day.dateString);
-
-            if (startDate <= endDate) {
-                setTaskModalEndDate(day.dateString);
-            } else {
-                setTaskModalStartDate(day.dateString);
-                setTaskModalEndDate(null);
-            }
-        } else {
-            setTaskModalStartDate(day.dateString);
-        }
-    };
-
-    const getDaysBetween = (start, end) => {
-        let currentDate = new Date(start);
-        const endDate = new Date(end);
-        let markedDates = {};
-        currentDate.setDate(currentDate.getDate() + 1);
-        while (currentDate < endDate) {
-            const dateString = currentDate.toISOString().split('T')[0];
-            markedDates[dateString] = { color: '#1C4837', textColor: '#fff' };
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return markedDates;
     };
 
     useEffect(() => {
@@ -221,21 +149,10 @@ export default function AssignmentsScreen({ navigation }) {
         fetchTasks();
     }, []);
 
-    const isDateInRange = (date, startDate, endDate) => {
-        const d = new Date(date).setHours(0, 0, 0, 0);
-        const start = new Date(startDate).setHours(0, 0, 0, 0);
-        const end = new Date(endDate).setHours(0, 0, 0, 0);
-        return d >= start && d <= end;
-    };
-
     const filteredTasks =
         activeTab === 'Month'
             ? tasks.filter((task) =>
-                  isDateInRange(
-                      selectedDate,
-                      task.startDateTime,
-                      task.endDateTime
-                  )
+                  isDateInRange(selectedDate, task.startDate, task.endDate)
               )
             : tasks;
 
@@ -480,17 +397,6 @@ export default function AssignmentsScreen({ navigation }) {
             <PlusModal
                 visible={plusModalVisible}
                 onClose={handlePlusModalClose}
-                startDate={plusModalStartDate}
-                setStartDate={setPlusModalStartDate}
-                endDate={plusModalEndDate}
-                setEndDate={setPlusModalEndDate}
-                startTime={plusModalStartTime}
-                setStartTime={setPlusModalStartTime}
-                endTime={plusModalEndTime}
-                setEndTime={setPlusModalEndTime}
-                handleDayPress={handleDayPressPlus}
-                getDaysBetween={getDaysBetween}
-                handleDateTimeSelect={handleDateTimeSelectPlus}
                 onTaskCreated={() => fetchTasks()}
                 deviceLocation={deviceLocation}
             />
@@ -498,24 +404,8 @@ export default function AssignmentsScreen({ navigation }) {
             <TaskModal
                 visible={taskModalVisible}
                 onClose={handleTaskModalClose}
-                selectedCircle={taskModalSelectedCircle}
-                setSelectedCircle={setTaskModalSelectedCircle}
-                taskId={taskModalTaskId}
-                setTaskId={setTaskModalTaskId}
-                taskName={taskModalTaskName}
-                setTaskName={setTaskModalTaskName}
-                description={taskModaldescription}
-                setDescription={setTaskModalDescription}
-                selectedLocation={taskModalSelectedLocation}
-                setSelectedLocation={setTaskModalSelectedLocation}
-                startDate={taskModalStartDate}
-                setStartDate={setTaskModalStartDate}
-                endDate={taskModalEndDate}
-                setEndDate={setTaskModalEndDate}
-                handleDayPress={handleDayPressTask}
-                getDaysBetween={getDaysBetween}
-                handleDateTimeSelect={handleDateTimeSelectTask}
                 selectedTask={selectedTask}
+                setSelectedTask={setSelectedTask}
                 firstName={firstName}
                 setFirstName={setFirstName}
                 lastName={lastName}
