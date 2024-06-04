@@ -14,58 +14,26 @@ import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import { useToast } from 'react-native-toast-notifications';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { CALENDAR_THEME_SETTINGS } from '../../constants/calendar';
+import { formatDate, getDaysBetween } from '../../helpers/date';
 
 export default function DateTime({
     currentStep,
     setCurrentStep,
-    taskName,
     onBack,
-    onDateTimeSelect,
-    startDate: propStartDate,
-    startTime: propStartTime,
-    endDate: propEndDate,
-    endTime: propEndTime,
-    setStartTime,
-    setEndTime,
-    handleDayPress,
-    getDaysBetween,
-    reviewFormCurrentStep
+    reviewFormCurrentStep,
+    task,
+    setTask
 }) {
-    const [startDate, setStartDateLocal] = useState(
-        propStartDate !== null ? propStartDate : null
-    );
-    const [endDate, setEndDateLocal] = useState(
-        propEndDate !== null ? propEndDate : null
-    );
-    const [startTime, setStartTimeLocal] = useState(
-        propStartTime !== null ? propStartTime : null
-    );
-    const [endTime, setEndTimeLocal] = useState(
-        propEndTime !== null ? propEndTime : null
-    );
     const [isStartTimePickerVisible, setStartTimePickerVisible] =
         useState(false);
     const [isEndTimePickerVisible, setEndTimePickerVisible] = useState(false);
     const [markedDates, setMarkedDates] = useState({});
     const toast = useToast();
 
-    useEffect(() => {
-        if (propStartDate) {
-            setStartDateLocal(propStartDate);
-        }
-        if (propEndDate) {
-            setEndDateLocal(propEndDate);
-        }
-        if (propStartTime) {
-            setStartTimeLocal(propStartTime);
-        }
-        if (propEndTime) {
-            setEndTimeLocal(propEndTime);
-        }
-    }, [propStartDate, propEndDate, propStartTime, propEndTime]);
-
-    const formattedStartDate = startDate ? startDate.split('T')[0] : null;
-    const formattedEndDate = endDate ? endDate.split('T')[0] : null;
+    const formattedStartDate = task?.startDate
+        ? task.startDate.split('T')[0]
+        : null;
+    const formattedEndDate = task?.endDate ? task.endDate.split('T')[0] : null;
 
     useEffect(() => {
         setMarkedDates({
@@ -87,7 +55,7 @@ export default function DateTime({
             },
             ...getDaysBetween(formattedStartDate, formattedEndDate)
         });
-    }, [startDate, endDate]);
+    }, [task]);
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -96,138 +64,58 @@ export default function DateTime({
     };
 
     const handleStartTimeConfirm = (_, time) => {
-        const currentDate = startDate ? new Date(startDate) : new Date();
-
-        const updatedDateTime = new Date(
-            currentDate.setHours(time.getHours(), time.getMinutes())
-        );
-
+        const formattedTime = formatDate(time, { formatString: 'HH:mm' });
         setStartTimePickerVisible(false);
-        setStartTime(updatedDateTime.toISOString());
-        if (!endTime) {
-            setEndTime(updatedDateTime.toISOString());
-        }
+        setTask((prev) => ({ ...prev, startTime: formattedTime }));
     };
 
     const handleEndTimeConfirm = (_, time) => {
-        const currentDate = endDate
-            ? new Date(endDate)
-            : startDate
-            ? new Date(startDate)
-            : new Date();
-        const updatedDateTime = new Date(
-            currentDate.setHours(time.getHours(), time.getMinutes())
-        );
+        const formattedTime = formatDate(time, { formatString: 'HH:mm' });
         setEndTimePickerVisible(false);
-        setEndTime(updatedDateTime.toISOString());
+        setTask((prev) => ({ ...prev, endTime: formattedTime }));
     };
 
-    const showStartTimePicker = () => {
-        setStartTimePickerVisible(true);
-    };
-
-    const showEndTimePicker = () => {
-        setEndTimePickerVisible(true);
-    };
-
-    const hideStartTimePicker = () => {
-        setStartTimePickerVisible(false);
-    };
-
-    const hideEndTimePicker = () => {
-        setEndTimePickerVisible(false);
-    };
-
-    useEffect(() => {
-        if (propStartDate) {
-            setStartDateLocal(propStartDate);
+    const handleDayPress = (day) => {
+        const date = new Date(day.dateString).toISOString();
+        if (task?.startDate && task?.endDate) {
+            setTask((prev) => ({
+                ...prev,
+                startDate: date,
+                endDate: null
+            }));
+        } else if (task?.startDate && !task?.endDate) {
+            const endDate = date;
+            setTask((prev) => ({
+                ...prev,
+                endDate
+            }));
+            if (new Date(task.startDate) <= new Date(endDate)) {
+                setTask((prev) => ({
+                    ...prev,
+                    endDate: date
+                }));
+            } else {
+                setTask((prev) => ({
+                    ...prev,
+                    startDate: date,
+                    endDate: null
+                }));
+            }
+        } else {
+            setTask((prev) => ({
+                ...prev,
+                startDate: date
+            }));
         }
-        if (propEndDate) {
-            setEndDateLocal(propEndDate);
-        }
-    }, [propStartDate, propEndDate]);
+    };
 
     const handleDateTimeSelect = () => {
-        if (startDate) {
-            if (!endDate && !startTime && !endTime) {
-                const formattedStartDateTime = new Date(
-                    startDate
-                ).toISOString();
-                const formattedEndDateTime = new Date(startDate).toISOString();
-
-                onDateTimeSelect({
-                    startDateTime: formattedStartDateTime,
-                    endDateTime: formattedEndDateTime
-                });
-                reviewFormCurrentStep === 5
-                    ? setCurrentStep(5)
-                    : setCurrentStep(currentStep - 1);
-
-                const updatedStartDateTime = new Date(formattedStartDateTime);
-                updatedStartDateTime.setHours(0, 0, 0, 0);
-
-                const updatedEndDateTime = new Date(formattedEndDateTime);
-                updatedEndDateTime.setHours(0, 0, 0, 0);
-
-                const formatLocalDateTime = (date) => {
-                    const year = date.getFullYear();
-                    const month = (date.getMonth() + 1)
-                        .toString()
-                        .padStart(2, '0');
-                    const day = date.getDate().toString().padStart(2, '0');
-                    const hours = date.getHours().toString().padStart(2, '0');
-                    const minutes = date
-                        .getMinutes()
-                        .toString()
-                        .padStart(2, '0');
-                    const seconds = date
-                        .getSeconds()
-                        .toString()
-                        .padStart(2, '0');
-                    const milliseconds = date
-                        .getMilliseconds()
-                        .toString()
-                        .padStart(3, '0');
-
-                    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-                };
-
-                const startDateTimeLocal =
-                    formatLocalDateTime(updatedStartDateTime);
-                const endDateTimeLocal =
-                    formatLocalDateTime(updatedEndDateTime);
-
-                setStartTime(startDateTimeLocal);
-                setEndTime(endDateTimeLocal);
-            } else if (!endDate && startTime && endTime) {
-                const formattedStartDateTime = new Date(
-                    startDate
-                ).toISOString();
-                const formattedEndDateTime = new Date(startDate).toISOString();
-
-                onDateTimeSelect({
-                    startDateTime: formattedStartDateTime,
-                    endDateTime: formattedEndDateTime
-                });
-            } else {
-                const formattedStartDateTime = new Date(
-                    startDate
-                ).toISOString();
-                const formattedEndDateTime = endDate
-                    ? new Date(endDate).toISOString()
-                    : null;
-
-                onDateTimeSelect({
-                    startDateTime: formattedStartDateTime,
-                    endDateTime: formattedEndDateTime
-                });
-            }
-
+        if (!task?.startDate) {
+            toast.show('Please select a start date', { type: 'error' });
+        } else {
             reviewFormCurrentStep === 5
                 ? setCurrentStep(5)
                 : setCurrentStep(currentStep - 1);
-        } else {
-            toast.show('Please select a start date', { type: 'error' });
         }
     };
 
@@ -245,7 +133,7 @@ export default function DateTime({
                     />
                 </TouchableOpacity>
                 <Text style={[styles.topBarTitle, stylesDate.topBarTitle]}>
-                    {taskName}
+                    {task?.title}
                 </Text>
             </View>
             <ScrollView automaticallyAdjustKeyboardInsets={true}>
@@ -273,24 +161,25 @@ export default function DateTime({
                             >
                                 Starts
                             </Text>
-                            <TouchableOpacity onPress={showStartTimePicker}>
+                            <TouchableOpacity
+                                onPress={() => setStartTimePickerVisible(true)}
+                            >
                                 <Text style={stylesDate.field}>
-                                    {startTime
-                                        ? new Date(
-                                              startTime
-                                          ).toLocaleTimeString([], {
-                                              hour: '2-digit',
-                                              minute: '2-digit',
-                                              hour12: true
-                                          })
+                                    {task?.startTime
+                                        ? task.startTime
                                         : 'Select Start Time'}
                                 </Text>
                             </TouchableOpacity>
+
                             {isStartTimePickerVisible && (
                                 <DateTimePicker
                                     mode="time"
                                     testID="startDateTimePicker"
-                                    value={new Date(startTime)}
+                                    value={
+                                        task?.startTime
+                                            ? new Date(task?.startTime)
+                                            : new Date()
+                                    }
                                     themeVariant="light"
                                     onChange={handleStartTimeConfirm}
                                 />
@@ -305,17 +194,12 @@ export default function DateTime({
                             >
                                 Ends
                             </Text>
-                            <TouchableOpacity onPress={showEndTimePicker}>
+                            <TouchableOpacity
+                                onPress={() => setEndTimePickerVisible(true)}
+                            >
                                 <Text style={stylesDate.field}>
-                                    {endTime
-                                        ? new Date(endTime).toLocaleTimeString(
-                                              [],
-                                              {
-                                                  hour: '2-digit',
-                                                  minute: '2-digit',
-                                                  hour12: true
-                                              }
-                                          )
+                                    {task?.endTime
+                                        ? task.endTime
                                         : 'Select End Time'}
                                 </Text>
                             </TouchableOpacity>
@@ -323,7 +207,11 @@ export default function DateTime({
                                 <DateTimePicker
                                     mode="time"
                                     testID="endDateTimePicker"
-                                    value={new Date(endTime)}
+                                    value={
+                                        task?.endTime
+                                            ? new Date(task?.endTime)
+                                            : new Date()
+                                    }
                                     themeVariant="light"
                                     onChange={handleEndTimeConfirm}
                                 />

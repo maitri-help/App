@@ -9,24 +9,21 @@ import {
     Modal,
     Linking
 } from 'react-native';
-import { modalServices } from '../data/ModalServices';
 import AddToCalICon from '../assets/icons/add-to-cal-icon.svg';
 import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { useToast } from 'react-native-toast-notifications';
 import * as Calendar from 'expo-calendar';
+import { findIcon } from '../helpers/task.helpers';
+import { formatTaskItemDate } from '../helpers/date';
 
 export default function Task({
     task,
-    title,
     firstName,
     lastName,
-    startTime,
-    endTime,
     taskModal,
     onTaskItemClick,
-    category,
     isCheckbox,
     onTaskStatusChange
 }) {
@@ -53,31 +50,7 @@ export default function Task({
         }
     };
 
-    const formatDateTime = () => {
-        const formattedStartDateTime = formatDate(startTime);
-        const formattedEndDateTime = formatDate(endTime);
-        return `${formattedStartDateTime} - ${formattedEndDateTime}`;
-    };
-
-    const formatDate = (date) => {
-        const options = {
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        };
-        return new Date(date).toLocaleDateString('en-US', options);
-    };
-
-    const findIcon = () => {
-        const service = modalServices.find(
-            (service) => service.title === category
-        );
-        return service ? service.icon : null;
-    };
-
-    const icon = findIcon();
+    const icon = findIcon(task);
 
     const handleClick = () => {
         onTaskItemClick(task);
@@ -116,9 +89,9 @@ export default function Task({
         }
 
         const event = {
-            title: task.title,
-            startDate: new Date(task.startDateTime),
-            endDate: new Date(task.endDateTime),
+            title: task?.title,
+            startDate: new Date(task.startDate),
+            endDate: new Date(task.endDate),
             notes: task.description
         };
 
@@ -181,7 +154,7 @@ export default function Task({
                                 isChecked && stylesTask.greyedOut
                             ]}
                         >
-                            {title}
+                            {task?.title}
                         </Text>
                         {firstName && lastName && (
                             <Text style={stylesTask.taskAssignee}>
@@ -195,7 +168,7 @@ export default function Task({
                                 isChecked && stylesTask.greyedOut
                             ]}
                         >
-                            {formatDateTime()}
+                            {formatTaskItemDate(task)}
                         </Text>
                     </View>
                 </View>

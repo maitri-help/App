@@ -19,6 +19,7 @@ import EmailIcon from '../assets/icons/mail-icon.svg';
 import { deleteSupporterFromCircle, changeUserCircle } from '../hooks/api';
 import { getAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
+import { formatTaskItemDate } from '../helpers/date';
 
 export default function SupporterCardScreen({
     visible,
@@ -125,36 +126,6 @@ export default function SupporterCardScreen({
             console.error('Error deleting supporter:', error);
 
             toast.show('Unsuccessful supporter deletion', { type: 'error' });
-        }
-    };
-
-    const formatDate = (date, includeTime = true) => {
-        const options = includeTime
-            ? {
-                  month: 'long',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: true
-              }
-            : { month: 'long', day: 'numeric' };
-        return new Date(date).toLocaleDateString('en-US', options);
-    };
-
-    const formatDateTime = (startTime, endTime) => {
-        const start = new Date(startTime);
-        const end = new Date(endTime);
-
-        const startDate = start.toDateString();
-        const endDate = end.toDateString();
-
-        if (startDate === endDate) {
-            return formatDate(startTime);
-        } else {
-            return `${formatDate(startTime, true)} - ${formatDate(
-                endTime,
-                true
-            )}`;
         }
     };
 
@@ -306,10 +277,7 @@ export default function SupporterCardScreen({
                                                 stylesSupporter.supporterTasksListItemTime
                                             }
                                         >
-                                            {formatDateTime(
-                                                task.startDateTime,
-                                                task.endDateTime
-                                            )}
+                                            {formatTaskItemDate(task)}
                                         </Text>
                                     </View>
                                 </View>

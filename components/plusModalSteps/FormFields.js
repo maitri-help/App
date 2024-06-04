@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -14,74 +14,21 @@ import LocationPicker from './LocationPicker';
 import { createTask } from '../../hooks/api';
 import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
-import { isStartDateBeforeEndDate } from '../../helpers/date';
-import { circles } from '../../constants/variables';
+import { generateDateString } from '../../helpers/date';
+import SelectCircles from './SelectCircles';
 
 export default function FormFields({
     selectedService,
     currentStep,
     setCurrentStep,
-    taskName,
-    setTaskName,
     onBack,
-    selectedCircle,
-    setSelectedCircle,
-    description,
-    setDescription,
-    selectedLocation,
-    setSelectedLocation,
-    startDateTime,
-    endDateTime,
     onClose,
     onTaskCreated,
+    task,
+    setTask,
     deviceLocation
 }) {
-    const [dateTimeText, setDateTimeText] = useState('Fill time and date');
     const toast = useToast();
-
-    useEffect(() => {
-        if (startDateTime && endDateTime) {
-            const options = {
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            };
-            const start = new Date(startDateTime).toLocaleString(
-                'en-US',
-                options
-            );
-            const end = new Date(endDateTime).toLocaleString('en-US', options);
-            setDateTimeText(`${start} - ${end}`);
-        }
-    }, [startDateTime, endDateTime]);
-
-    useEffect(() => {
-        if (!Array.isArray(selectedCircle)) {
-            setSelectedCircle(['Personal']);
-        }
-    }, []);
-
-    const handleSelectOption = (option) => {
-        let updatedCircles;
-
-        if (option === 'Personal') {
-            updatedCircles = [option];
-        } else if (selectedCircle.includes('Personal')) {
-            updatedCircles = [option];
-        } else {
-            if (selectedCircle.includes(option)) {
-                updatedCircles = selectedCircle.filter(
-                    (item) => item !== option
-                );
-            } else {
-                updatedCircles = [...selectedCircle, option];
-            }
-        }
-
-        setSelectedCircle(updatedCircles);
-    };
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -94,21 +41,22 @@ export default function FormFields({
     };
 
     const handleSubmit = async () => {
-        const taskData = {
-            title: taskName,
-            description: description || null,
-            circles: selectedCircle,
-            location: selectedLocation || null,
-            startDateTime: startDateTime,
-            endDateTime: endDateTime || null,
-            category: selectedService.title
-        };
+        const taskData = { ...task, category: selectedService.title };
 
-        if (!taskName || !startDateTime) {
+        if (!task?.title || !task?.startDate) {
             toast.show('Task name and start date are required.', {
                 type: 'error'
             });
             return;
+        }
+        const isSameDay = +new Date(task.startDate) === +new Date(task.endDate);
+        if (isSameDay) {
+            if (task.startTime > task.endTime) {
+                toast.show('End time must be after start time.', {
+                    type: 'error'
+                });
+                return;
+            }
         }
 
         try {
@@ -119,21 +67,7 @@ export default function FormFields({
                 return;
             }
 
-            if (startDateTime && endDateTime) {
-                const isValidEndTime = isStartDateBeforeEndDate(
-                    startDateTime,
-                    endDateTime
-                );
-
-                if (!isValidEndTime) {
-                    toast.show('End time should be after start time', {
-                        type: 'error'
-                    });
-                    return;
-                }
-            }
-
-            await createTask(taskData, accessToken);
+            const res = await createTask(taskData, accessToken);
 
             toast.show('Task created successfully', { type: 'success' });
 
@@ -191,8 +125,10 @@ export default function FormFields({
                                 ]}
                                 placeholder="Task name"
                                 placeholderTextColor="#737373"
-                                onChangeText={setTaskName}
-                                value={taskName}
+                                onChangeText={(text) =>
+                                    setTask({ ...task, title: text })
+                                }
+                                value={task?.title}
                             />
                         </View>
                         <View style={stylesFields.fieldGroup}>
@@ -201,50 +137,14 @@ export default function FormFields({
                                 multiline
                                 placeholder="Description"
                                 placeholderTextColor="#737373"
-                                onChangeText={setDescription}
-                                value={description}
+                                onChangeText={(text) =>
+                                    setTask({ ...task, description: text })
+                                }
+                                value={task?.description}
                             />
                         </View>
-                        <View style={stylesFields.fieldGroup}>
-                            <View style={stylesFields.fieldGroupInner}>
-                                <Text style={stylesFields.fieldLabel}>
-                                    Circles
-                                </Text>
+                        <SelectCircles task={task} setTask={setTask} />
 
-                                <View style={stylesFields.circleItems}>
-                                    {circles.map((option) => (
-                                        <TouchableOpacity
-                                            key={option}
-                                            style={[
-                                                stylesFields.circleItem,
-                                                selectedCircle.includes(
-                                                    option
-                                                ) &&
-                                                    stylesFields.circleItemSelected
-                                            ]}
-                                            onPress={() =>
-                                                handleSelectOption(option)
-                                            }
-                                        >
-                                            <Text
-                                                style={[
-                                                    stylesFields.circleItemText,
-                                                    selectedCircle.includes(
-                                                        option
-                                                    ) &&
-                                                        stylesFields.circleItemTextSelected
-                                                ]}
-                                            >
-                                                {option}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </View>
-                            </View>
-                            <Text style={stylesFields.fieldDescription}>
-                                Supporter will only see tasks in their circle
-                            </Text>
-                        </View>
                         <View style={stylesFields.fieldGroup}>
                             <View style={stylesFields.fieldGroupInner}>
                                 <Text style={stylesFields.fieldLabel}>
@@ -255,7 +155,14 @@ export default function FormFields({
                                     style={stylesFields.fieldLink}
                                 >
                                     <Text style={stylesFields.fieldLinkText}>
-                                        {dateTimeText}
+                                        {task?.startDate
+                                            ? generateDateString(
+                                                  task?.startDate,
+                                                  task?.endDate,
+                                                  task?.startTime,
+                                                  task?.endTime
+                                              )
+                                            : 'Fill time and date'}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -274,8 +181,8 @@ export default function FormFields({
                                     Location
                                 </Text>
                                 <LocationPicker
-                                    onSelect={setSelectedLocation}
-                                    selectedLocation={selectedLocation}
+                                    onSelect={setTask}
+                                    selectedLocation={task?.location}
                                     deviceLocation={deviceLocation}
                                 />
                             </View>
@@ -360,39 +267,8 @@ const stylesFields = StyleSheet.create({
         color: '#737373',
         textDecorationLine: 'underline'
     },
-    fieldDescription: {
-        color: '#737373',
-        fontSize: 12,
-        lineHeight: 16,
-        fontFamily: 'poppins-regular',
-        textAlign: 'center',
-        paddingTop: 20
-    },
+
     submitButtonContainer: {
         paddingTop: 10
-    },
-    circleItems: {
-        flexDirection: 'row',
-        gap: 6
-    },
-    circleItem: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderColor: '#1C4837',
-        borderWidth: 1,
-        borderRadius: 20,
-        alignItems: 'center'
-    },
-    circleItemSelected: {
-        backgroundColor: '#1C4837'
-    },
-    circleItemText: {
-        color: '#1C4837',
-        fontFamily: 'poppins-regular',
-        fontSize: 12,
-        lineHeight: 16
-    },
-    circleItemTextSelected: {
-        color: '#fff'
     }
 });

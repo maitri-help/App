@@ -73,12 +73,12 @@ export default function LocationPicker({
                 latitudeDelta: 0.002,
                 longitudeDelta: 0.002
             }));
-            onSelect(deviceLocation);
+            onSelect((prev) => ({ ...prev, location: deviceLocation }));
         }
     }, [selectedLocation, deviceLocation]);
 
     const handleLocationSelect = (location) => {
-        onSelect(location);
+        onSelect((prev) => ({ ...prev, location }));
         setShowMap(false);
     };
 

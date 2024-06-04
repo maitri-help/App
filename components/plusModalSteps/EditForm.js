@@ -23,22 +23,14 @@ import { useToast } from 'react-native-toast-notifications';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Calendar from 'expo-calendar';
 import { circles } from '../../constants/variables';
+import { generateDateString } from '../../helpers/date';
+import { getSelectedCircles } from '../../helpers/task.helpers';
 
 export default function EditForm({
     currentStep,
     setCurrentStep,
-    taskName,
-    setTaskName,
-    selectedCircle,
-    setSelectedCircle,
-    description,
-    setDescription,
-    selectedLocation,
-    setSelectedLocation,
     onBack,
     setReviewFormCurrentStep,
-    startDateTime,
-    endDateTime,
     firstName,
     lastName,
     color,
@@ -46,10 +38,10 @@ export default function EditForm({
     onClose,
     isEditable,
     setIsEditable,
-    taskId,
-    onTaskCreated
+    onTaskCreated,
+    task,
+    setTask
 }) {
-    const [dateTimeText, setDateTimeText] = useState('Fill time and date');
     const toast = useToast();
 
     const [confirmationVisible, setConfirmationVisible] = useState(false);
@@ -59,24 +51,6 @@ export default function EditForm({
     const handleCancel = () => {
         setConfirmationVisible(false);
     };
-
-    useEffect(() => {
-        if (startDateTime && endDateTime) {
-            const options = {
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            };
-            const start = new Date(startDateTime).toLocaleString(
-                'en-US',
-                options
-            );
-            const end = new Date(endDateTime).toLocaleString('en-US', options);
-            setDateTimeText(`${start} - ${end}`);
-        }
-    }, [startDateTime, endDateTime]);
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -92,19 +66,10 @@ export default function EditForm({
     const toggleEditable = () => {
         setIsEditable(!isEditable);
     };
-
     const handleSelectOption = (option) => {
-        if (option === 'Personal' || selectedCircle.includes('Personal')) {
-            setSelectedCircle([option]);
-        } else {
-            if (selectedCircle.includes(option)) {
-                setSelectedCircle((prev) =>
-                    prev.filter((item) => item !== option)
-                );
-            } else {
-                setSelectedCircle((prev) => [...prev, option]);
-            }
-        }
+        const updatedCircles = getSelectedCircles(task, option);
+
+        setTask((prev) => ({ ...prev, circles: updatedCircles }));
     };
 
     const handleSubmit = async () => {
@@ -117,15 +82,20 @@ export default function EditForm({
             }
 
             const taskData = {
-                title: taskName,
-                description: description,
-                circles: selectedCircle,
-                location: selectedLocation,
-                startDateTime: startDateTime,
-                endDateTime: endDateTime
+                title: task?.title,
+                description: task?.description,
+                circles: task?.circles,
+                location: task?.location,
+                startDate: task?.startDate,
+                startTime: task?.startTime,
+                endDate: task?.endDate,
+                endTime: task?.endTime,
+                assigneeId: task?.assignedUserId,
+                status: task?.status,
+                category: task?.category
             };
-            console.log('taskData', taskData);
-            await updateTask(taskId, taskData, accessToken);
+
+            await updateTask(task?.taskId, taskData, accessToken);
 
             toast.show('Task updated successfully', { type: 'success' });
 
@@ -133,7 +103,7 @@ export default function EditForm({
             onTaskCreated();
             setIsEditable(!isEditable);
         } catch (error) {
-            console.error('Error updating task:', error);
+            console.error('Error updating task:', error.response.data.message);
 
             toast.show('Unsuccessful task update', { type: 'error' });
         }
@@ -148,7 +118,7 @@ export default function EditForm({
                 return;
             }
 
-            await deleteTask(taskId, accessToken);
+            await deleteTask(task?.taskId, accessToken);
 
             toast.show('Task deleted successfully', { type: 'success' });
 
@@ -198,10 +168,10 @@ export default function EditForm({
         }
 
         const event = {
-            title: taskName,
-            startDate: new Date(startDateTime),
-            endDate: new Date(endDateTime),
-            notes: description
+            title: task?.title,
+            startDate: new Date(task?.startDate),
+            endDate: new Date(task?.endDate),
+            notes: task?.description
         };
 
         await Calendar.createEventAsync(defaultCalendar.id, event)
@@ -237,8 +207,10 @@ export default function EditForm({
                         style={[stylesReview.field, stylesReview.fieldTask]}
                         placeholder="Task name"
                         placeholderTextColor="#737373"
-                        onChangeText={setTaskName}
-                        value={taskName}
+                        onChangeText={(text) =>
+                            setTask((prev) => ({ ...prev, title: text }))
+                        }
+                        value={task?.title}
                         editable={isEditable}
                     />
                 </View>
@@ -287,13 +259,16 @@ export default function EditForm({
                         multiline
                         placeholder="Description"
                         placeholderTextColor="#737373"
-                        onChangeText={setDescription}
-                        value={description}
+                        onChangeText={(text) =>
+                            setTask((prev) => ({ ...prev, description: text }))
+                        }
+                        value={task?.description}
                         editable={isEditable}
                     />
                 </View>
             </View>
             <ScrollView>
+                {/* <SelectCircles task={task} setTask={setTask} /> */}
                 <View style={[stylesReview.group, stylesReview.groupFirst]}>
                     <View
                         style={[
@@ -309,10 +284,10 @@ export default function EditForm({
                                     style={[
                                         stylesReview.circle,
                                         !isEditable &&
-                                        !selectedCircle.includes(option)
+                                        !task?.circles?.includes(option)
                                             ? stylesReview.circleHidden
                                             : '',
-                                        selectedCircle.includes(option) &&
+                                        task?.circles?.includes(option) &&
                                             stylesReview.circleSelected
                                     ]}
                                     onPress={() => handleSelectOption(option)}
@@ -321,7 +296,7 @@ export default function EditForm({
                                     <Text
                                         style={[
                                             stylesReview.circleText,
-                                            selectedCircle.includes(option) &&
+                                            task?.circles?.includes(option) &&
                                                 stylesReview.circleTextSelected
                                         ]}
                                     >
@@ -351,7 +326,14 @@ export default function EditForm({
                                     isEditable && stylesReview.fieldLinkText
                                 ]}
                             >
-                                {dateTimeText}
+                                {task?.startDate
+                                    ? generateDateString(
+                                          task?.startDate,
+                                          task?.endDate,
+                                          task?.startTime,
+                                          task?.endTime
+                                      )
+                                    : 'Fill time and date'}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -365,8 +347,8 @@ export default function EditForm({
                     >
                         <Text style={stylesReview.groupTitle}>Location </Text>
                         <LocationPicker
-                            onSelect={setSelectedLocation}
-                            selectedLocation={selectedLocation}
+                            onSelect={setTask}
+                            selectedLocation={task?.location}
                             disabled={!isEditable}
                         />
                     </View>

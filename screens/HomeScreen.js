@@ -13,7 +13,11 @@ import {
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import TaskItem from '../components/TaskItem';
-import { getTasksForUser, getNotificationsForUser, getThankYouCardsForUser } from '../hooks/api';
+import {
+    getTasksForUser,
+    getNotificationsForUser,
+    getThankYouCardsForUser
+} from '../hooks/api';
 import {
     checkAuthentication,
     clearUserData,
@@ -22,6 +26,7 @@ import {
 import TaskModal from '../components/TaskModal';
 import { useFocusEffect } from '@react-navigation/native';
 import LeadBoxes from '../components/Lead/LeadBoxes';
+import { stripCircles } from '../helpers/task.helpers';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
@@ -32,17 +37,6 @@ export default function HomeScreen({ navigation }) {
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
-    const [taskModalSelectedCircle, setTaskModalSelectedCircle] =
-        useState('Personal');
-    const [taskModalTaskName, setTaskModalTaskName] = useState('');
-    const [taskModalTaskId, setTaskModalTaskId] = useState('');
-    const [taskModaldescription, setTaskModalDescription] = useState('');
-    const [taskModalSelectedLocation, setTaskModalSelectedLocation] =
-        useState('');
-    const [taskModalStartDate, setTaskModalStartDate] = useState(null);
-    const [taskModalEndDate, setTaskModalEndDate] = useState(null);
-    const [taskModalStartTime, setTaskModalStartTime] = useState(null);
-    const [taskModalEndTime, setTaskModalEndTime] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [assigneeFirstName, setAssigneeFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -125,7 +119,8 @@ export default function HomeScreen({ navigation }) {
                 const hasUnreadPending = notificationsData.some(
                     (notification) =>
                         notification.isRead === false ||
-                        notification.type === 'pending_request' && notification.isRead === false
+                        (notification.type === 'pending_request' &&
+                            notification.isRead === false)
                 );
                 setHasUnreadPendingRequest(hasUnreadPending);
             } else {
@@ -148,8 +143,10 @@ export default function HomeScreen({ navigation }) {
                     userData.userId,
                     userData.accessToken
                 );
-                if (thankYouCardsResponse.data && thankYouCardsResponse.data.length > 0) {
-                    console.log('Thank you cards:', thankYouCardsResponse.data);
+                if (
+                    thankYouCardsResponse.data &&
+                    thankYouCardsResponse.data.length > 0
+                ) {
                     setThankYouCards(thankYouCardsResponse.data);
                 }
             } else {
@@ -194,48 +191,12 @@ export default function HomeScreen({ navigation }) {
     };
 
     const handleTaskItemClick = async (task) => {
-        setSelectedTask(task);
+        const newSelectedTask = stripCircles(task);
+        setSelectedTask(newSelectedTask);
     };
 
     const handleTaskModalClose = () => {
         setTaskModalVisible(false);
-    };
-
-    const handleDateTimeSelectTask = ({ startDateTime, endDateTime }) => {
-        setTaskModalStartDate(startDateTime);
-        setTaskModalEndDate(endDateTime);
-    };
-
-    const handleDayPressTask = (day) => {
-        if (taskModalStartDate && taskModalEndDate) {
-            setTaskModalStartDate(day.dateString);
-            setTaskModalEndDate(null);
-        } else if (taskModalStartDate && !taskModalEndDate) {
-            const startDate = new Date(taskModalStartDate);
-            const endDate = new Date(day.dateString);
-
-            if (startDate <= endDate) {
-                setTaskModalEndDate(day.dateString);
-            } else {
-                setTaskModalStartDate(day.dateString);
-                setTaskModalEndDate(null);
-            }
-        } else {
-            setTaskModalStartDate(day.dateString);
-        }
-    };
-
-    const getDaysBetween = (start, end) => {
-        let currentDate = new Date(start);
-        const endDate = new Date(end);
-        let markedDates = {};
-        currentDate.setDate(currentDate.getDate() + 1);
-        while (currentDate < endDate) {
-            const dateString = currentDate.toISOString().split('T')[0];
-            markedDates[dateString] = { color: '#1C4837', textColor: '#fff' };
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return markedDates;
     };
 
     const renderTasks = (tasks) => {
@@ -391,7 +352,7 @@ export default function HomeScreen({ navigation }) {
             case 'Unassigned':
                 filteredTasks = tasks.filter(
                     (task) =>
-                        (!task?.assignee) &&
+                        !task?.assignee &&
                         !task.circles.some(
                             (circle) => circle.circleLevel === 'Personal'
                         )
@@ -454,7 +415,11 @@ export default function HomeScreen({ navigation }) {
                         )}
                     </TouchableOpacity>
                 </View>
-                <LeadBoxes navigation={navigation} thankYouCards={thankYouCards} setThankYouCards={setThankYouCards} />
+                <LeadBoxes
+                    navigation={navigation}
+                    thankYouCards={thankYouCards}
+                    setThankYouCards={setThankYouCards}
+                />
                 <View
                     style={[stylesHome.tabsContainer, styles.contentContainer]}
                 >
@@ -536,28 +501,8 @@ export default function HomeScreen({ navigation }) {
             <TaskModal
                 visible={taskModalVisible}
                 onClose={handleTaskModalClose}
-                selectedCircle={taskModalSelectedCircle}
-                setSelectedCircle={setTaskModalSelectedCircle}
-                taskId={taskModalTaskId}
-                setTaskId={setTaskModalTaskId}
-                taskName={taskModalTaskName}
-                setTaskName={setTaskModalTaskName}
-                description={taskModaldescription}
-                setDescription={setTaskModalDescription}
-                selectedLocation={taskModalSelectedLocation}
-                setSelectedLocation={setTaskModalSelectedLocation}
-                startDate={taskModalStartDate}
-                setStartDate={setTaskModalStartDate}
-                endDate={taskModalEndDate}
-                setEndDate={setTaskModalEndDate}
-                startTime={taskModalStartTime}
-                setStartTime={setTaskModalStartTime}
-                endTime={taskModalEndTime}
-                setEndTime={setTaskModalEndTime}
-                handleDayPress={handleDayPressTask}
-                getDaysBetween={getDaysBetween}
-                handleDateTimeSelect={handleDateTimeSelectTask}
                 selectedTask={selectedTask}
+                setSelectedTask={setSelectedTask}
                 firstName={assigneeFirstName}
                 setFirstName={setAssigneeFirstName}
                 lastName={lastName}

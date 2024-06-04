@@ -40,177 +40,251 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function MainNavigator() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
-          if (route.name === 'Home') {
-            return <HomeIcon color={color} width={19} height={19} />;
-          } else if (route.name === 'Assignments') {
-            return <AssignmentsCheckIcon color={color} width={19} height={19} />;
-          } else if (route.name === 'Circles') {
-            return <CirclesIcon color={color} width={21} height={21} />;
-          } else if (route.name === 'Profile') {
-            return <ProfileIcon color={color} width={19} height={19} />;
-          }
-        },
-        tabBarActiveTintColor: '#1C4837',
-        tabBarInactiveTintColor: '#C7C7C7',
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: '#F5F5F5',
-        },
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Assignments" component={AssignmentsScreen} />
-      <Tab.Screen name="Circles" component={CirclesScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
-  );
+    return (
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({ color }) => {
+                    if (route.name === 'Home') {
+                        return (
+                            <HomeIcon color={color} width={19} height={19} />
+                        );
+                    } else if (route.name === 'Assignments') {
+                        return (
+                            <AssignmentsCheckIcon
+                                color={color}
+                                width={19}
+                                height={19}
+                            />
+                        );
+                    } else if (route.name === 'Circles') {
+                        return (
+                            <CirclesIcon color={color} width={21} height={21} />
+                        );
+                    } else if (route.name === 'Profile') {
+                        return (
+                            <ProfileIcon color={color} width={19} height={19} />
+                        );
+                    }
+                },
+                tabBarActiveTintColor: '#1C4837',
+                tabBarInactiveTintColor: '#C7C7C7',
+                tabBarShowLabel: false,
+                tabBarStyle: {
+                    backgroundColor: '#F5F5F5'
+                },
+                headerShown: false
+            })}
+        >
+            <Tab.Screen name="Home" component={HomeScreen} />
+            <Tab.Screen name="Assignments" component={AssignmentsScreen} />
+            <Tab.Screen name="Circles" component={CirclesScreen} />
+            <Tab.Screen name="Profile" component={ProfileScreen} />
+        </Tab.Navigator>
+    );
 }
 
 function SuppNavigator() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
-          if (route.name === 'Home') {
-            return <HomeIcon color={color} width={19} height={19} />;
-          } else if (route.name === 'MyTasks') {
-            return <AssignmentsCheckIcon color={color} width={19} height={19} />;
-          } else if (route.name === 'OpenTasks') {
-            return <OpenIcon color={color} width={21} height={21} />;
-          } else if (route.name === 'Profile') {
-            return <ProfileIcon color={color} width={19} height={19} />;
-          }
-        },
-        tabBarActiveTintColor: '#1C4837',
-        tabBarInactiveTintColor: '#C7C7C7',
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: '#F5F5F5',
-        },
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeSupporterScreen} />
-      <Tab.Screen name="MyTasks" component={MyTasksSupporterScreen} />
-      <Tab.Screen name="OpenTasks" component={OpenTasksSupporterScreen} />
-      <Tab.Screen name="Profile" component={ProfileSupporterScreen} />
-    </Tab.Navigator>
-  );
+    return (
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({ color }) => {
+                    if (route.name === 'Home') {
+                        return (
+                            <HomeIcon color={color} width={19} height={19} />
+                        );
+                    } else if (route.name === 'MyTasks') {
+                        return (
+                            <AssignmentsCheckIcon
+                                color={color}
+                                width={19}
+                                height={19}
+                            />
+                        );
+                    } else if (route.name === 'OpenTasks') {
+                        return (
+                            <OpenIcon color={color} width={21} height={21} />
+                        );
+                    } else if (route.name === 'Profile') {
+                        return (
+                            <ProfileIcon color={color} width={19} height={19} />
+                        );
+                    }
+                },
+                tabBarActiveTintColor: '#1C4837',
+                tabBarInactiveTintColor: '#C7C7C7',
+                tabBarShowLabel: false,
+                tabBarStyle: {
+                    backgroundColor: '#F5F5F5'
+                },
+                headerShown: false
+            })}
+        >
+            <Tab.Screen name="Home" component={HomeSupporterScreen} />
+            <Tab.Screen name="MyTasks" component={MyTasksSupporterScreen} />
+            <Tab.Screen name="OpenTasks" component={OpenTasksSupporterScreen} />
+            <Tab.Screen name="Profile" component={ProfileSupporterScreen} />
+        </Tab.Navigator>
+    );
 }
 
 export default function App() {
-  const [isReady, setIsReady] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const toast = useToast();
+    const [isReady, setIsReady] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+    const [userData, setUserData] = useState(null);
+    const toast = useToast();
 
-  useEffect(() => {
-    async function loadAppResources() {
-      try {
-        await SplashScreen.preventAutoHideAsync();
-        await useFonts();
-        await SplashScreen.hideAsync();
-        setIsReady(true);
-      } catch (e) {
-        console.warn(e);
-      }
-    }
-    loadAppResources();
-  }, []);
-
-  useEffect(() => {
-    const checkAuthAndOnboarding = async () => {
-      try {
-        const userData = await checkAuthentication();
-        setUserData(userData);
-        setIsLoggedIn(userData !== null);
-
-        const completedOnboarding = await getOnboardingCompleted();
-        setHasCompletedOnboarding(completedOnboarding);
-
-        setLoading(false);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          toast.show('Authentication failed. Please login again.', { type: 'error' });
-        } else {
-          console.error('Error checking authentication:', error);
+    useEffect(() => {
+        async function loadAppResources() {
+            try {
+                await SplashScreen.preventAutoHideAsync();
+                await useFonts();
+                await SplashScreen.hideAsync();
+                setIsReady(true);
+            } catch (e) {
+                console.warn(e);
+            }
         }
-        setLoading(false);
-      }
-    };
+        loadAppResources();
+    }, []);
 
-    checkAuthAndOnboarding();
-  }, []);
+    useEffect(() => {
+        const checkAuthAndOnboarding = async () => {
+            try {
+                const userData = await checkAuthentication();
+                setUserData(userData);
+                setIsLoggedIn(userData !== null);
 
-  useEffect(() => {
-    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-    if (ONESIGNAL_APP_ID === undefined) {
-      console.error('Please set ONESIGNAL_APP_ID in .env file');
-      return;
+                const completedOnboarding = await getOnboardingCompleted();
+                setHasCompletedOnboarding(completedOnboarding);
+
+                setLoading(false);
+            } catch (error) {
+                if (error.response && error.response.status === 401) {
+                    toast.show('Authentication failed. Please login again.', {
+                        type: 'error'
+                    });
+                } else {
+                    console.error('Error checking authentication:', error);
+                }
+                setLoading(false);
+            }
+        };
+
+        checkAuthAndOnboarding();
+    }, []);
+
+    useEffect(() => {
+        OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+        OneSignal.initialize('1b855f1e-0e05-450c-99e8-34e4d6f7f642');
+        OneSignal.Notifications.requestPermission(true);
+        if (isLoggedIn) {
+            OneSignal.login(`${userData.userId}`); // OneSignal requires a string
+        }
+    }, [isLoggedIn]);
+
+    if (!isReady || loading) {
+        return (
+            <Image
+                source={require('./assets/splash.png')}
+                style={styles.splashImg}
+            />
+        );
     }
-    OneSignal.initialize(ONESIGNAL_APP_ID);
-    OneSignal.Notifications.requestPermission(true);
-    if (isLoggedIn) {
-      OneSignal.login(`${userData.userId}`); // OneSignal requires a string
-    }
-  }, [isLoggedIn]);
 
-  if (!isReady || loading) {
-    return <Image source={require('./assets/splash.png')} style={styles.splashImg} />;
-  }
-
-  return (
-    <ToastProvider
-      placement="top"
-      offsetTop={30}
-      renderType={{
-        error: (toast) => (
-          <View style={[styles.toast, styles.toastError]}>
-            <Text style={styles.toastText}>{toast.message}</Text>
-          </View>
-        ),
-        success: (toast) => (
-          <View style={[styles.toast, styles.toastSuccess]}>
-            <Text style={styles.toastText}>{toast.message}</Text>
-          </View>
-        )
-      }}
-    >
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={
-            !isLoggedIn ? (
-              hasCompletedOnboarding ? 'Login' : 'Onboarding'
-            ) : (
-              userData && userData.userType === 'Supporter' ? 'MainSupporter' : 'Main'
-            )
-          }
-          screenOptions={{ headerShown: false }}
+    return (
+        <ToastProvider
+            placement="top"
+            offsetTop={30}
+            renderType={{
+                error: (toast) => (
+                    <View style={[styles.toast, styles.toastError]}>
+                        <Text style={styles.toastText}>{toast.message}</Text>
+                    </View>
+                ),
+                success: (toast) => (
+                    <View style={[styles.toast, styles.toastSuccess]}>
+                        <Text style={styles.toastText}>{toast.message}</Text>
+                    </View>
+                )
+            }}
         >
-          {!isLoggedIn || !hasCompletedOnboarding ? (
-            <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ gestureEnabled: false }} />
-          ) : null}
-          <Stack.Screen name="Main" component={MainNavigator} options={{ gestureEnabled: false }} />
-          <Stack.Screen name="MainSupporter" component={SuppNavigator} options={{ gestureEnabled: false }} />
-          <Stack.Screen name="Login" component={LoginScreen} options={{ gestureEnabled: !isLoggedIn }} />
-          <Stack.Screen name="Register" component={RegisterScreen} options={{ gestureEnabled: !isLoggedIn }} />
-          <Stack.Screen name="VerifyNumber" component={VerifyNumberScreen} options={{ gestureEnabled: !isLoggedIn }} />
-          <Stack.Screen name="AlmostThere" component={AlmostThereScreen} options={{ gestureEnabled: !isLoggedIn }} />
-          <Stack.Screen name="Success" component={SuccessScreen} options={{ gestureEnabled: !isLoggedIn }} />
-          <Stack.Screen name="Identify" component={IdentifyScreen} options={{ gestureEnabled: false }} />
-          <Stack.Screen name="Notifications" component={NotificationsScreen} />
-          <Stack.Screen name="PendingRequest" component={PendingRequestScreen} />
-          <Stack.Screen name="SuppGreatNews" component={SuppGreatNewsScreen} />
-          <Stack.Screen name="SuppID" component={SuppIDScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </ToastProvider>
-  );
+            <NavigationContainer>
+                <Stack.Navigator
+                    initialRouteName={
+                        !isLoggedIn
+                            ? hasCompletedOnboarding
+                                ? 'Login'
+                                : 'Onboarding'
+                            : userData && userData.userType === 'Supporter'
+                            ? 'MainSupporter'
+                            : 'Main'
+                    }
+                    screenOptions={{ headerShown: false }}
+                >
+                    {!isLoggedIn || !hasCompletedOnboarding ? (
+                        <Stack.Screen
+                            name="Onboarding"
+                            component={OnboardingScreen}
+                            options={{ gestureEnabled: false }}
+                        />
+                    ) : null}
+                    <Stack.Screen
+                        name="Main"
+                        component={MainNavigator}
+                        options={{ gestureEnabled: false }}
+                    />
+                    <Stack.Screen
+                        name="MainSupporter"
+                        component={SuppNavigator}
+                        options={{ gestureEnabled: false }}
+                    />
+                    <Stack.Screen
+                        name="Login"
+                        component={LoginScreen}
+                        options={{ gestureEnabled: !isLoggedIn }}
+                    />
+                    <Stack.Screen
+                        name="Register"
+                        component={RegisterScreen}
+                        options={{ gestureEnabled: !isLoggedIn }}
+                    />
+                    <Stack.Screen
+                        name="VerifyNumber"
+                        component={VerifyNumberScreen}
+                        options={{ gestureEnabled: !isLoggedIn }}
+                    />
+                    <Stack.Screen
+                        name="AlmostThere"
+                        component={AlmostThereScreen}
+                        options={{ gestureEnabled: !isLoggedIn }}
+                    />
+                    <Stack.Screen
+                        name="Success"
+                        component={SuccessScreen}
+                        options={{ gestureEnabled: !isLoggedIn }}
+                    />
+                    <Stack.Screen
+                        name="Identify"
+                        component={IdentifyScreen}
+                        options={{ gestureEnabled: false }}
+                    />
+                    <Stack.Screen
+                        name="Notifications"
+                        component={NotificationsScreen}
+                    />
+                    <Stack.Screen
+                        name="PendingRequest"
+                        component={PendingRequestScreen}
+                    />
+                    <Stack.Screen
+                        name="SuppGreatNews"
+                        component={SuppGreatNewsScreen}
+                    />
+                    <Stack.Screen name="SuppID" component={SuppIDScreen} />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </ToastProvider>
+    );
 }

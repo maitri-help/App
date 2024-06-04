@@ -49,12 +49,12 @@ export default function WeekCalendar({
                 const day = new Date(weekStartDate);
                 day.setDate(weekStartDate.getDate() + i);
                 const hasTask = tasks.some((task) => {
-                    const taskStartDate = new Date(task.startDateTime);
-                    const taskEndDate = new Date(task.endDateTime);
+                    const taskStartDate = new Date(task.startDate);
+                    const taskEndDate = new Date(task.endDate);
                     return day >= taskStartDate && day <= taskEndDate;
                 });
                 const hasStartTask = tasks.some((task) => {
-                    const taskStartDate = new Date(task.startDateTime);
+                    const taskStartDate = new Date(task.startDate);
                     return day.toDateString() === taskStartDate.toDateString();
                 });
                 week.push({
