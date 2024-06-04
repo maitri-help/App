@@ -8,6 +8,7 @@ import { verifyOtp, getUser } from '../hooks/api';
 import { storeUserData, storeAccessToken, clearUserData, clearAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { handleResend } from '../hooks/handleResend';
+import { OneSignal } from 'react-native-onesignal';
 
 const OTP_LENGTH = 6;
 
@@ -67,6 +68,7 @@ export default function AlmostThereScreen({ route, navigation }) {
             .then((response) => {
                 const accessToken = response.data.accessToken;
                 storeAccessToken(accessToken);
+                OneSignal.login(`${userId}`); // OneSignal requires a string
 
                 getUser(phoneNumber)
                     .then(response => {

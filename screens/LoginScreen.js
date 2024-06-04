@@ -18,7 +18,6 @@ import styles from '../Styles';
 import handleSignIn from '../hooks/handleSignIn';
 import { useToast } from 'react-native-toast-notifications';
 import { checkAuthentication } from '../authStorage';
-import { OneSignal } from 'react-native-onesignal';
 
 const validationSchema = yup.object().shape({
     phoneNumber: yup
@@ -50,8 +49,6 @@ export default function LoginScreen({ navigation }) {
     const handleFormSubmit = async (values) => {
         try {
             const { userId, otpResponse } = await handleSignIn(values);
-
-            OneSignal.login(`${userId}`); // OneSignal requires a string
 
             toast.show('Code is sent to: ' + values.phoneNumber, {
                 type: 'success'

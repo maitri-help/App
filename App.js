@@ -34,6 +34,7 @@ import MyTasksSupporterScreen from './screens/MyTasksSupporterScreen';
 import OpenTasksSupporterScreen from './screens/OpenTasksSupporterScreen';
 import ProfileSupporterScreen from './screens/ProfileSupporterScreen';
 import { LogLevel, OneSignal } from 'react-native-onesignal';
+import { ONESIGNAL_APP_ID } from '@env';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -150,7 +151,11 @@ export default function App() {
 
   useEffect(() => {
     OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-    OneSignal.initialize("1b855f1e-0e05-450c-99e8-34e4d6f7f642");
+    if (ONESIGNAL_APP_ID === undefined) {
+      console.error('Please set ONESIGNAL_APP_ID in .env file');
+      return;
+    }
+    OneSignal.initialize(ONESIGNAL_APP_ID);
     OneSignal.Notifications.requestPermission(true);
     if (isLoggedIn) {
       OneSignal.login(`${userData.userId}`); // OneSignal requires a string
