@@ -118,3 +118,14 @@ export function mergeDateAndTime(startDate, time) {
     date.setMinutes(minutes);
     return date;
 }
+
+export const isWithinTimeframe = (date, range) => {
+    const hours = date.getHours();
+
+    if (range.start <= range.end) {
+        return hours >= range.start && hours < range.end;
+    } else {
+        // Handles the wrap-around for night timeframe
+        return hours >= range.start || hours < range.end;
+    }
+};

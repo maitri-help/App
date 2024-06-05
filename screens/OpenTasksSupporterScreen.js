@@ -12,18 +12,15 @@ import {
 } from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
-import {
-    checkAuthentication,
-    clearUserData,
-    clearAccessToken,
-    getAccessToken
-} from '../authStorage';
+import { checkAuthentication, getAccessToken } from '../authStorage';
 import { getLeadUser } from '../hooks/api';
 import FilterIcon from '../assets/icons/filter-icon.svg';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import TaskFilterModal from '../components/plusModalSteps/TaskFilterModal';
 import Button from '../components/Button';
 import { useFocusEffect } from '@react-navigation/native';
+import { isWithinTimeframe, mergeDateAndTime } from '../helpers/date';
+import { isWeekend } from 'date-fns';
 
 const TIME_FILTER_HOURS = {
     Morning: { start: 6, end: 12 },
@@ -131,27 +128,6 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         setIsFilterOpen(false);
     };
 
-    const isWithinTimeframe = (date, range) => {
-        const hours = date.getHours();
-
-        if (range.start <= range.end) {
-            return hours >= range.start && hours < range.end;
-        } else {
-            // Handles the wrap-around for night timeframe
-            return hours >= range.start || hours < range.end;
-        }
-    };
-
-    const isWeekend = (date) => {
-        const day = date.getDay();
-        return day === 0 || day === 6;
-    };
-
-    const isWeekday = (date) => {
-        const day = date.getDay();
-        return day >= 1 && day <= 5;
-    };
-
     const filterTasks = () => {
         // Reset list if no filters are selected
         if (TimeFilterList.length === 0 && TypeFilterList.length === 0) {
@@ -161,8 +137,19 @@ export default function OpenTasksSupporterScreen({ navigation }) {
 
         // Filter tasks based on selected filters
         const filtered = tasks.filter((task) => {
-            const start = new Date(task.startDate);
-            const end = new Date(task.endDate);
+            let start;
+            let end;
+            if (task?.startTime) {
+                start = mergeDateAndTime(task?.startDate, task?.startTime);
+            } else {
+                start = new Date(task.startDate);
+            }
+
+            if (task?.endTime) {
+                end = mergeDateAndTime(task?.endDate, task?.endTime);
+            } else {
+                end = new Date(task.endDate);
+            }
 
             const duration = (end - start) / (1000 * 60 * 60 * 24);
 
@@ -200,7 +187,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                     if (filter === 'Weekend') {
                         return isWeekend(start) && isWeekend(end);
                     } else if (filter === 'Weekday') {
-                        return isWeekday(start) && isWeekday(end);
+                        return !isWeekend(start) && !isWeekend(end);
                     }
                     return false;
                 });
