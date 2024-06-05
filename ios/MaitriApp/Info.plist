@@ -43,19 +43,19 @@
 		<true/>
 	</dict>
 	<key>NSCalendarsFullAccessUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your calendars</string>
+	<string>Allow $(PRODUCT_NAME) to access your calendars, in order to be able to export your in app events to your device's calendar. We do not use your existing data, we only create new events for you.</string>
 	<key>NSCalendarsUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your calendars</string>
+	<string>Allow $(PRODUCT_NAME) to access your calendars, in order to be able to export your in app events to your device's calendar. We do not use your existing data, we only create new events for you.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your location</string>
+	<string>Allow $(PRODUCT_NAME) to access your location, so we can help you with adding inital location to your tasks. We do not use your location for any other purposes.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your location</string>
+	<string>Allow $(PRODUCT_NAME) to access your location, so we can help you with adding inital location to your tasks. We do not use your location for any other purposes.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your location</string>
+	<string>Allow $(PRODUCT_NAME) to access your location, so we can help you with adding inital location to your tasks. We do not use your location for any other purposes.</string>
 	<key>NSRemindersFullAccessUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your reminders</string>
+	<string>Allow $(PRODUCT_NAME) to access your reminders, in order to be able to export your in app events to your device's calendar. We do not use your existing data, we only create new events for you.</string>
 	<key>NSRemindersUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to access your reminders</string>
+	<string>Allow $(PRODUCT_NAME) to access your reminders, in order to be able to export your in app events to your device's calendar. We do not use your existing data, we only create new events for you.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
