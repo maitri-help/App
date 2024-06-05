@@ -65,16 +65,13 @@ export const formatTaskItemDate = (task) => {
 
     const formatOptions = (options) => formatDate(task?.startDate, options);
 
-    if (isSameDay) {
+    if (
+        task?.startDate &&
+        !task?.startTime &&
+        !task?.endDate &&
+        !task?.endTime
+    ) {
         return formatOptions({ formatString: 'MMMM dd' });
-    }
-
-    if (task?.startTime && !task?.endDate) {
-        const options = { formatString: "MMMM d 'at' p" };
-        return `${formatOptions(options)} - ${formatDate(
-            task?.endDate,
-            options
-        )}`;
     }
 
     if (task?.startTime && task?.endTime) {
@@ -88,6 +85,15 @@ export const formatTaskItemDate = (task) => {
             mergedEndDate,
             options
         )}`;
+    }
+
+    if (isSameDay) {
+        return formatOptions({ formatString: 'MMMM dd' });
+    }
+
+    if (task?.startTime && !task?.endDate) {
+        const options = { formatString: "MMMM d 'at' p" };
+        return formatOptions(options);
     }
 
     if (!task?.startTime && !task?.endTime) {
