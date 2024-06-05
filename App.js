@@ -12,7 +12,6 @@ import { ONESIGNAL_APP_ID } from '@env';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { registerRootComponent } from 'expo';
 import StackNavigator from './components/Navigators/StackNavigator';
-import { ONESIGNAL_APP_ID } from '@env';
 
 export default function App() {
     const [isReady, setIsReady] = useState(false);
