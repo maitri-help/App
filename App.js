@@ -70,7 +70,7 @@ export default function App() {
         }
         OneSignal.initialize(ONESIGNAL_APP_ID);
         //OneSignal.initialize('1b855f1e-0e05-450c-99e8-34e4d6f7f642'); // dev onesignal id, new one is in .env
-        OneSignal.Notifications.requestPermission(true);
+        //OneSignal.Notifications.requestPermission(true); // onesignal sends automatically if Push Permission Prompt is enabled on the website
         if (isLoggedIn) {
             OneSignal.login(`${userData.userId}`); // OneSignal requires a string
         }
