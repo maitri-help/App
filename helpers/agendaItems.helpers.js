@@ -47,8 +47,6 @@ export function getMarkedDates(agendaItems) {
         // NOTE: only mark dates with data
         if (item.data && item.data.length > 0 && !isEmpty(item.data[0])) {
             marked[item.title] = { marked: true };
-        } else {
-            marked[item.title] = { disabled: true };
         }
     });
     return marked;

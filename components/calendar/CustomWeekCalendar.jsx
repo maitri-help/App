@@ -1,5 +1,5 @@
-import React, { useRef, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import {
     ExpandableCalendar,
     AgendaList,
@@ -25,6 +25,19 @@ export default function CustomWeekCalendar({
 
     const marked = useRef(getMarkedDates(agendaItems));
 
+    const [currentMonth, setCurrentMonth] = useState('');
+    const [selectedDate, setSelectedDate] = useState('');
+
+    const onDayPress = (day) => {
+        setSelectedDate(day.dateString);
+    };
+
+    useEffect(() => {
+        const todayDate = new Date();
+        const month = todayDate.toLocaleString('default', { month: 'long' });
+        setCurrentMonth(month);
+    }, []);
+
     const renderItem = useCallback(({ item }) => {
         return (
             <AgendaItem
@@ -43,12 +56,27 @@ export default function CustomWeekCalendar({
                 showTodayButton
                 theme={CALENDAR_THEME_SETTINGS}
             >
+                <View style={{ paddingHorizontal: 25 }}>
+                    <Text style={styles.monthHeading}>{currentMonth}</Text>
+                </View>
                 {weekView ? (
-                    <WeekCalendar firstDay={1} markedDates={marked.current} />
+                    <WeekCalendar
+                        firstDay={1}
+                        style={styles.calendar}
+                        theme={CALENDAR_THEME_SETTINGS}
+                        markedDates={{
+                            ...marked.current,
+                            [selectedDate]: {
+                                selected: true,
+                                selectedColor: '#1C4837'
+                            }
+                        }}
+                        numberOfDays={7}
+                        onDayPress={onDayPress}
+                    />
                 ) : (
                     <ExpandableCalendar
                         hideArrows
-                        headerStyle={styles.header}
                         theme={CALENDAR_THEME_SETTINGS}
                         firstDay={1}
                         markedDates={marked.current}
@@ -65,11 +93,14 @@ export default function CustomWeekCalendar({
 }
 const styles = StyleSheet.create({
     calendar: {
-        paddingLeft: 20,
-        paddingRight: 20
+        paddingLeft: 10,
+        paddingRight: 10
     },
-    header: {
-        backgroundColor: 'red'
+    monthHeading: {
+        fontFamily: 'poppins-medium',
+        fontSize: 18,
+        lineHeight: 24,
+        color: '#000'
     },
     section: {
         backgroundColor: '#fff',
