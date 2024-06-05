@@ -12,6 +12,7 @@ import { ONESIGNAL_APP_ID } from '@env';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { registerRootComponent } from 'expo';
 import StackNavigator from './components/Navigators/StackNavigator';
+import { ONESIGNAL_APP_ID } from '@env';
 
 export default function App() {
     const [isReady, setIsReady] = useState(false);
@@ -63,7 +64,12 @@ export default function App() {
 
     useEffect(() => {
         OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-        OneSignal.initialize('1b855f1e-0e05-450c-99e8-34e4d6f7f642');
+        if (ONESIGNAL_APP_ID === undefined) {
+            console.error('Please set ONESIGNAL_APP_ID in .env file');
+            return;
+        }
+        OneSignal.initialize(ONESIGNAL_APP_ID);
+        //OneSignal.initialize('1b855f1e-0e05-450c-99e8-34e4d6f7f642'); // dev onesignal id, new one is in .env
         OneSignal.Notifications.requestPermission(true);
         if (isLoggedIn) {
             OneSignal.login(`${userData.userId}`); // OneSignal requires a string
