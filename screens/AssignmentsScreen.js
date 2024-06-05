@@ -1,55 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
     SafeAreaView,
     TouchableOpacity,
     Animated,
     Platform,
-    Image,
-    FlatList,
-    Modal,
     Linking,
     AppState,
     ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
-import TaskItem from '../components/TaskItem';
 import PlusModal from '../components/PlusModal';
 import TaskModal from '../components/TaskModal';
-import GridCalendar from '../components/calendar/GridCalendar';
-import WeekCalendar from '../components/calendar/WeekCalendar';
+import CustomWeekCalendar from '../components/calendar/CustomWeekCalendar';
 import PlusIcon from '../assets/icons/plus-icon.svg';
 import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication } from '../authStorage';
 import * as Location from 'expo-location';
 import { stripCircles } from '../helpers/task.helpers';
-import { isDateInRange } from '../helpers/date';
-//import BottomSheet from '@gorhom/bottom-sheet';
+import { formatDate } from '../helpers/date';
+import MonthView from '../components/calendar/MonthView';
+import LocationPermissionModal from '../components/Modals/LocationPermissionModal';
+import Tab from '../components/common/Tab';
 
 export default function AssignmentsScreen({ navigation }) {
-    const [activeTab, setActiveTab] = useState('Month');
+    const [activeTab, setActiveTab] = useState('Week');
     const [plusModalVisible, setPlusModalVisible] = useState(false);
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
     const currentDate = new Date();
-    const formattedDay = String(currentDate.getDate()).padStart(2, '0');
-    const formattedMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const formattedYear = currentDate.getFullYear();
 
-    const defaultSelectedDate = `${formattedYear}-${formattedMonth}-${formattedDay}`;
+    const defaultSelectedDate = formatDate(currentDate, {
+        formatString: 'yyyy-MM-dd'
+    });
     const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
-    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
-    const [defaultWeekDate, setDefaultWeekDate] = useState(new Date());
-    const [weekStartDate, setWeekStartDate] = useState(new Date());
-    const [weekSelectedDate, setWeekSelectedDate] = useState(selectedDate);
 
     const [tasks, setTasks] = useState([]);
-    const [userId, setUserId] = useState(null);
-
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [color, setColor] = useState('');
@@ -57,14 +45,7 @@ export default function AssignmentsScreen({ navigation }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
 
-    const flatListRef = useRef();
-    const scrollViewRef = useRef();
-    const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
-
-    // const bottomSheetRef = useRef(null);
-
-    // const snapPoints = useMemo(() => ['25%', '50%'], []);
 
     const handleTaskItemClick = async (task) => {
         const newSelectedTask = stripCircles(task);
@@ -91,34 +72,8 @@ export default function AssignmentsScreen({ navigation }) {
         }
     }, [plusModalVisible, taskModalVisible]);
 
-    const handleTodayPress = () => {
-        const today = new Date();
-        const formattedDay = String(today.getDate()).padStart(2, '0');
-        const formattedMonth = String(today.getMonth() + 1).padStart(2, '0');
-        const formattedYear = today.getFullYear();
-        const todayFormatted = `${formattedYear}-${formattedMonth}-${formattedDay}`;
-
-        setSelectedDate(todayFormatted);
-        setCurrentMonth(today.getMonth() + 1);
-        setCurrentYear(today.getFullYear());
-        setDefaultWeekDate(today);
-    };
-
-    const handleDateSelection = (date) => {
-        const formattedDate = new Date(date);
-        const year = formattedDate.getFullYear();
-        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');
-        const day = String(formattedDate.getDate()).padStart(2, '0');
-        setSelectedDate(`${year}-${month}-${day}`);
-        setWeekSelectedDate(`${year}-${month}-${day}`);
-    };
-
     const handleTabChange = (tab) => {
         setActiveTab(tab);
-        if (tab === 'Week') {
-            setWeekSelectedDate(selectedDate);
-            setDefaultWeekDate(new Date(selectedDate));
-        }
     };
 
     const handlePlusModalClose = () => {
@@ -138,7 +93,7 @@ export default function AssignmentsScreen({ navigation }) {
                     userData.userId,
                     userData.accessToken
                 );
-                setUserId(userData.userId);
+
                 setTasks(tasksResponse.data);
             } else {
                 console.error('No user data found');
@@ -153,20 +108,6 @@ export default function AssignmentsScreen({ navigation }) {
     useEffect(() => {
         fetchTasks();
     }, []);
-
-    const filteredTasks =
-        activeTab === 'Month'
-            ? tasks.filter((task) =>
-                  isDateInRange(selectedDate, task.startDate, task.endDate)
-              )
-            : tasks;
-
-    // Sort tasks to ensure done tasks are at the bottom
-    const sortedTasks = [...filteredTasks].sort((a, b) => {
-        if (a.status === 'done' && b.status !== 'done') return 1;
-        if (a.status !== 'done' && b.status === 'done') return -1;
-        return 0;
-    });
 
     const [locationPermissionNeeded, setLocationPermissionNeeded] =
         useState(false);
@@ -221,166 +162,66 @@ export default function AssignmentsScreen({ navigation }) {
         <>
             <SafeAreaView style={styles.safeArea}>
                 <View style={stylesCal.calendarContainer}>
-                    <View style={stylesCal.whiteSpace}></View>
-                    <View
-                        style={[
-                            styles.contentContainer,
-                            stylesCal.calendarWrapper
-                        ]}
-                    >
+                    <View style={[stylesCal.calendarWrapper]}>
                         <View style={stylesCal.tabs}>
-                            <TouchableOpacity
-                                activeOpacity={0.5}
-                                onPress={() => handleTabChange('Month')}
-                                style={[
-                                    stylesCal.tab,
-                                    activeTab === 'Month'
-                                        ? stylesCal.tabActive
-                                        : ''
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        stylesCal.tabText,
-                                        activeTab === 'Month'
-                                            ? stylesCal.tabActiveText
-                                            : ''
-                                    ]}
-                                >
-                                    Month
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                activeOpacity={0.5}
-                                onPress={() => handleTabChange('Week')}
-                                style={[
-                                    stylesCal.tab,
-                                    activeTab === 'Week'
-                                        ? stylesCal.tabActive
-                                        : ''
-                                ]}
-                            >
-                                <Text
-                                    style={[
-                                        stylesCal.tabText,
-                                        activeTab === 'Week'
-                                            ? stylesCal.tabActiveText
-                                            : ''
-                                    ]}
-                                >
-                                    Week
-                                </Text>
-                            </TouchableOpacity>
+                            <Tab
+                                clickHandler={() => handleTabChange('Month')}
+                                label={'Month'}
+                                isActive={activeTab === 'Month'}
+                            />
+                            <Tab
+                                clickHandler={() => handleTabChange('Week')}
+                                label={'Week'}
+                                isActive={activeTab === 'Week'}
+                            />
                         </View>
-
-                        <TouchableOpacity
-                            onPress={handleTodayPress}
-                            style={stylesCal.todayWrapper}
-                        >
-                            <Text style={stylesCal.today}>Today</Text>
-                        </TouchableOpacity>
-
-                        {activeTab === 'Month' ? (
-                            <GridCalendar
-                                setDate={handleDateSelection}
-                                selectedDate={selectedDate}
-                                currentYearProp={currentYear}
-                                currentMonthProp={currentMonth}
-                                setCurrentYear={setCurrentYear}
-                                setCurrentMonth={setCurrentMonth}
-                                setWeekStartDate={setWeekStartDate}
-                                tasks={tasks}
-                            />
-                        ) : (
-                            <WeekCalendar
-                                setDate={handleDateSelection}
-                                selectedDate={selectedDate}
-                                defaultDate={defaultWeekDate}
-                                setWeekStartDate={setWeekStartDate}
-                                weekSelectedDate={weekSelectedDate}
-                                setWeekSelectedDate={setWeekSelectedDate}
-                                tasks={tasks}
-                                scrollViewRef={scrollViewRef}
-                            />
-                        )}
-                    </View>
-                </View>
-                {isLoading ? (
-                    <View
-                        style={{
-                            minHeight: 80,
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <ActivityIndicator size="large" />
-                    </View>
-                ) : (
-                    <>
-                        {filteredTasks.length === 0 ? (
-                            <View style={stylesCal.calendarEmpty}>
-                                <View style={stylesCal.calendarEmptyImgWrapper}>
-                                    <Image
-                                        source={require('../assets/img/tasks-placeholder.png')}
-                                        style={stylesCal.calendarEmptyImg}
-                                    />
-                                </View>
-                                <Text style={stylesCal.calendarEmptyText}>
-                                    {!isLoading && tasks.length
-                                        ? 'No tasks on this date'
-                                        : 'Your list is empty'}
-                                </Text>
-                                <Text style={stylesCal.calendarEmptyTitle}>
-                                    Click here to add your first task
-                                </Text>
-                                <Image
-                                    source={require('../assets/img/purple-arrow-right.png')}
-                                    style={stylesCal.calendarEmptyArrow}
-                                />
+                        {isLoading ? (
+                            <View
+                                style={{
+                                    minHeight: 80,
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <ActivityIndicator size="large" />
                             </View>
                         ) : (
-                            <FlatList
-                                contentContainerStyle={[
-                                    styles.contentContainer,
-                                    stylesCal.tasksWrapper
-                                ]}
-                                data={sortedTasks}
-                                keyExtractor={(item) => item.taskId}
-                                ref={flatListRef}
-                                renderItem={({ item }) => (
-                                    <TaskItem
-                                        key={item.taskId}
-                                        task={item}
-                                        taskModal={() =>
-                                            setTaskModalVisible(true)
+                            <>
+                                {activeTab === 'Month' ? (
+                                    <MonthView
+                                        tasks={tasks}
+                                        selectedDate={selectedDate}
+                                        setSelectedDate={setSelectedDate}
+                                        setTaskModalVisible={
+                                            setTaskModalVisible
                                         }
-                                        onTaskItemClick={handleTaskItemClick}
-                                        isCheckbox={true}
-                                        onTaskStatusChange={
+                                        handleTaskStatusChange={
+                                            handleTaskStatusChange
+                                        }
+                                        handleTaskItemClick={
+                                            handleTaskItemClick
+                                        }
+                                        activeTab={activeTab}
+                                        isLoading={isLoading}
+                                    />
+                                ) : (
+                                    <CustomWeekCalendar
+                                        tasks={tasks}
+                                        handleTaskItemClick={
+                                            handleTaskItemClick
+                                        }
+                                        setTaskModalVisible={
+                                            setTaskModalVisible
+                                        }
+                                        handleTaskStatusChange={
                                             handleTaskStatusChange
                                         }
                                     />
                                 )}
-                                onScrollBeginDrag={() =>
-                                    setIsProgrammaticScroll(false)
-                                }
-                                onScrollToIndexFailed={(info) => {
-                                    const wait = new Promise((resolve) =>
-                                        setTimeout(resolve, 100)
-                                    );
-                                    wait.then(() => {
-                                        if (info.index < sortedTasks.length) {
-                                            flatListRef.current?.scrollToIndex({
-                                                index: info.index,
-                                                animated: true
-                                            });
-                                        }
-                                    });
-                                }}
-                            />
+                            </>
                         )}
-                    </>
-                )}
+                    </View>
+                </View>
 
                 <View style={stylesCal.floatingButtonWrapper}>
                     <TouchableOpacity
@@ -423,54 +264,12 @@ export default function AssignmentsScreen({ navigation }) {
                 setIsEditable={setIsEditable}
                 onTaskCreated={() => fetchTasks()}
             />
-            {/* <BottomSheet ref={bottomSheetRef} index={0} snapPoints={snapPoints}>
-                <View style={styles.contentContainer}>
-                    <Text>Awesome 🎉</Text>
-                </View>
-            </BottomSheet> */}
+
             {locationPermissionNeeded && (
-                <Modal
-                    visible={locationPermissionNeeded}
-                    onRequestClose={() => console.log('close')}
-                    animationType="fade"
-                    transparent
-                >
-                    <TouchableOpacity
-                        onPress={() => console.log('close')}
-                        style={stylesCal.innerModalContainer}
-                    >
-                        <View style={stylesCal.innerModalContent}>
-                            <View style={stylesCal.innerModalTexts}>
-                                <Text style={stylesCal.innerModalTitle}>
-                                    Please provide access for this app to the
-                                    device's location.
-                                </Text>
-                                <Text style={stylesCal.innerModalSubtitle}>
-                                    We need your location to position the map
-                                    the closest to you as possible.
-                                </Text>
-                            </View>
-                            <View style={stylesCal.innerModalButtons}>
-                                <TouchableOpacity
-                                    style={[
-                                        stylesCal.innerModalButton,
-                                        stylesCal.innerModalButtonRed
-                                    ]}
-                                    onPress={handleGoToSettings}
-                                >
-                                    <Text
-                                        style={[
-                                            stylesCal.innerModalButtonText,
-                                            stylesCal.innerModalButtonRedText
-                                        ]}
-                                    >
-                                        Go to Settings
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                </Modal>
+                <LocationPermissionModal
+                    locationPermissionNeeded={locationPermissionNeeded}
+                    handleGoToSettings={handleGoToSettings}
+                />
             )}
         </>
     );
@@ -479,7 +278,8 @@ export default function AssignmentsScreen({ navigation }) {
 const stylesCal = StyleSheet.create({
     calendarContainer: {
         position: 'relative',
-        zIndex: 2
+        zIndex: 2,
+        flex: 1
     },
     whiteSpace: {
         position: 'absolute',
@@ -506,7 +306,8 @@ const stylesCal = StyleSheet.create({
         },
         shadowOpacity: 0.08,
         shadowRadius: 8,
-        elevation: 14
+        elevation: 14,
+        flex: 1
     },
     tabs: {
         flexDirection: 'row',
@@ -517,25 +318,6 @@ const stylesCal = StyleSheet.create({
         gap: 15,
         paddingTop: 20,
         paddingBottom: 18
-    },
-    tab: {
-        borderWidth: 1,
-        borderColor: '#1C4837',
-        paddingHorizontal: 12,
-        paddingVertical: 4,
-        borderRadius: 20
-    },
-    tabActive: {
-        backgroundColor: '#1C4837'
-    },
-    tabText: {
-        color: '#1C4837',
-        fontFamily: 'poppins-regular',
-        fontSize: 13,
-        lineHeight: 18
-    },
-    tabActiveText: {
-        color: '#fff'
     },
     todayWrapper: {
         flexDirection: 'row',
@@ -549,11 +331,6 @@ const stylesCal = StyleSheet.create({
         lineHeight: 18,
         textDecorationLine: 'underline'
     },
-    tasksWrapper: {
-        paddingTop: 20,
-        paddingBottom: 30,
-        gap: 15
-    },
     floatingButtonWrapper: {
         position: 'absolute',
         bottom: 0,
@@ -561,112 +338,5 @@ const stylesCal = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',
         zIndex: 5
-    },
-    calendarEmpty: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        position: 'relative',
-        paddingBottom: 35
-    },
-    calendarEmptyImgWrapper: {
-        marginVertical: 20
-    },
-    calendarEmptyImg: {
-        width: 180,
-        height: 150,
-        resizeMode: 'contain',
-        alignSelf: 'center'
-    },
-    calendarEmptyText: {
-        textAlign: 'center',
-        color: '#000',
-        fontFamily: 'poppins-regular',
-        fontSize: 14,
-        lineHeight: 18,
-        marginBottom: 5
-    },
-    calendarEmptyTitle: {
-        textAlign: 'center',
-        color: '#000',
-        fontFamily: 'poppins-medium',
-        fontSize: 14,
-        lineHeight: 18
-    },
-    calendarEmptyArrow: {
-        position: 'absolute',
-        bottom: 11,
-        right: 71,
-        width: 60,
-        height: 15,
-        resizeMode: 'contain'
-    },
-    innerModalContainer: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    innerModalContent: {
-        backgroundColor: '#fff',
-        borderRadius: 20,
-        maxWidth: 350,
-        paddingHorizontal: 20,
-        paddingVertical: 30
-    },
-    innerModalTexts: {
-        marginBottom: 20
-    },
-    innerModalTitle: {
-        color: '#000',
-        fontSize: 14,
-        fontFamily: 'poppins-regular',
-        lineHeight: 16,
-        textAlign: 'center',
-        marginBottom: 5
-    },
-    innerModalSubtitle: {
-        color: '#000',
-        fontSize: 12,
-        fontFamily: 'poppins-regular',
-        lineHeight: 16,
-        textAlign: 'center'
-    },
-    innerModalButtons: {
-        flexDirection: 'row',
-        gap: 10,
-        justifyContent: 'center'
-    },
-    innerModalButton: {
-        alignItems: 'center',
-        minWidth: 125,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 16,
-        shadowColor: Platform.OS === 'android' ? 'rgba(0,0,0,0.5)' : '#000',
-        shadowOffset: {
-            width: 0,
-            height: 3
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 8
-    },
-    innerModalButtonRed: {
-        backgroundColor: '#FF7070'
-    },
-    innerModalButtonWhite: {
-        backgroundColor: '#fff'
-    },
-    innerModalButtonText: {
-        fontSize: 14,
-        fontFamily: 'poppins-medium',
-        lineHeight: 18
-    },
-    innerModalButtonRedText: {
-        color: '#fff'
-    },
-    innerModalButtonWhiteText: {
-        color: '#000'
     }
 });

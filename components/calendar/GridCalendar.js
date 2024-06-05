@@ -18,7 +18,6 @@ export default function GridCalendar({
     currentMonthProp,
     setCurrentYear,
     setCurrentMonth,
-    setWeekStartDate,
     tasks
 }) {
     const [monthDates, setMonthDates] = useState([]);
@@ -162,8 +161,6 @@ export default function GridCalendar({
             ...currentMonthDays,
             ...nextMonthDays
         ]);
-
-        setWeekStartDate(weekStartDate);
     }, [currentYearProp, currentMonthProp, selectedDate, tasks]);
 
     const nextMonth = () => {

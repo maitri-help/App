@@ -3,7 +3,6 @@ import axios from 'axios';
 import { API_URL } from './constants/config';
 
 const baseUrl = API_URL;
-// const baseUrl = 'http://localhost:3000';
 
 export const storeUserData = async (userData) => {
     try {
