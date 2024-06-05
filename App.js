@@ -9,8 +9,6 @@ import { checkAuthentication, getOnboardingCompleted } from './authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { LogLevel, OneSignal } from 'react-native-onesignal';
 import { ONESIGNAL_APP_ID } from '@env';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { registerRootComponent } from 'expo';
 import StackNavigator from './components/Navigators/StackNavigator';
 
 export default function App() {
@@ -111,11 +109,3 @@ export default function App() {
         </ToastProvider>
     );
 }
-
-// const Main = () => (
-//     <GestureHandlerRootView style={{ flex: 1 }}>
-//         <App />
-//     </GestureHandlerRootView>
-// );
-
-// registerRootComponent(Main);
