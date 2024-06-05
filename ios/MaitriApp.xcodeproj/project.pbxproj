@@ -490,6 +490,7 @@
 					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = MaitriApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Maitri;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -502,7 +503,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = MaitriApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maitrihelp.maitri;
 				PRODUCT_NAME = MaitriApp;
 				SWIFT_OBJC_BRIDGING_HEADER = "MaitriApp/MaitriApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -522,6 +523,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 83BVYMYD82;
 				INFOPLIST_FILE = MaitriApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Maitri;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -534,7 +536,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = MaitriApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maitrihelp.maitri;
 				PRODUCT_NAME = MaitriApp;
 				SWIFT_OBJC_BRIDGING_HEADER = "MaitriApp/MaitriApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -691,7 +693,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = MaitriApp.OneSignalNotificationServiceExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maitrihelp.maitri.OneSignalNotificationServiceExtension;
 				PRODUCT_NAME = OneSignalNotificationServiceExtension;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -717,7 +719,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = MaitriApp.OneSignalNotificationServiceExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.maitrihelp.maitri.OneSignalNotificationServiceExtension;
 				PRODUCT_NAME = OneSignalNotificationServiceExtension;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
