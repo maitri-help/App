@@ -26,6 +26,7 @@ import { checkAuthentication } from '../authStorage';
 import * as Location from 'expo-location';
 import { stripCircles } from '../helpers/task.helpers';
 import { isDateInRange } from '../helpers/date';
+//import BottomSheet from '@gorhom/bottom-sheet';
 
 export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
@@ -60,6 +61,10 @@ export default function AssignmentsScreen({ navigation }) {
     const scrollViewRef = useRef();
     const [isProgrammaticScroll, setIsProgrammaticScroll] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+
+    // const bottomSheetRef = useRef(null);
+
+    // const snapPoints = useMemo(() => ['25%', '50%'], []);
 
     const handleTaskItemClick = async (task) => {
         const newSelectedTask = stripCircles(task);
@@ -418,7 +423,11 @@ export default function AssignmentsScreen({ navigation }) {
                 setIsEditable={setIsEditable}
                 onTaskCreated={() => fetchTasks()}
             />
-
+            {/* <BottomSheet ref={bottomSheetRef} index={0} snapPoints={snapPoints}>
+                <View style={styles.contentContainer}>
+                    <Text>Awesome 🎉</Text>
+                </View>
+            </BottomSheet> */}
             {locationPermissionNeeded && (
                 <Modal
                     visible={locationPermissionNeeded}

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.1",
+    "@gorhom/bottom-sheet": "^4.6.3",
     "@raasz/customisable-react-native-emoji-selector": "^1.0.5",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-community/datetimepicker": "^8.0.1",
@@ -44,7 +45,8 @@
     "react-native-swiper": "^1.6.0",
     "react-native-toast-notifications": "^3.4.0",
     "react-native-web": "~0.19.6",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "react-native-reanimated": "~3.10.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

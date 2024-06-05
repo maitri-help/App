@@ -11,7 +11,8 @@ module.exports = {
                 safe: false,
                 allowUndefined: true
             }
-        ]
+        ],
+        'react-native-reanimated/plugin'
     ],
     overrides: [
         // this plugins crashes react native maps markers
