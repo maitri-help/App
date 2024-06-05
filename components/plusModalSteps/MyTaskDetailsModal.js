@@ -158,7 +158,7 @@ export default function MyTaskDetailsModal({
                             </Text>
                             <View style={stylesModal.fieldWrapper}>
                                 <Text style={stylesModal.fieldText}>
-                                    {formatTaskItemDate(task)}
+                                    {formatTaskItemDate(selectedTask)}
                                 </Text>
                             </View>
                         </View>
