@@ -7,11 +7,10 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import { useLocation } from '../../context/LocationContext';
 
-const LocationPermissionModal = ({
-    locationPermissionNeeded,
-    handleGoToSettings
-}) => {
+const LocationPermissionModal = () => {
+    const { locationPermissionNeeded } = useLocation();
     return (
         <Modal
             visible={locationPermissionNeeded}

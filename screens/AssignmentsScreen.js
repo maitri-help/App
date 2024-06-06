@@ -3,11 +3,8 @@ import {
     View,
     StyleSheet,
     SafeAreaView,
-    TouchableOpacity,
     Animated,
     Platform,
-    Linking,
-    AppState,
     ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
@@ -17,18 +14,20 @@ import CustomWeekCalendar from '../components/calendar/CustomWeekCalendar';
 import PlusIcon from '../assets/icons/plus-icon.svg';
 import { getTasksForUser } from '../hooks/api';
 import { checkAuthentication } from '../authStorage';
-import * as Location from 'expo-location';
 import { stripCircles } from '../helpers/task.helpers';
 import { formatDate } from '../helpers/date';
 import MonthView from '../components/calendar/MonthView';
-import LocationPermissionModal from '../components/Modals/LocationPermissionModal';
 import Tab from '../components/common/Tab';
+import Fab from '../components/common/Fab';
+import { useLocation } from '../context/LocationContext';
 
 export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
     const [plusModalVisible, setPlusModalVisible] = useState(false);
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+    const { deviceLocation } = useLocation();
 
     const currentDate = new Date();
 
@@ -109,55 +108,6 @@ export default function AssignmentsScreen({ navigation }) {
         fetchTasks();
     }, []);
 
-    const [locationPermissionNeeded, setLocationPermissionNeeded] =
-        useState(false);
-
-    const requestLocation = async () => {
-        const permission = await Location.requestForegroundPermissionsAsync();
-
-        if (!permission.granted && !permission.canAskAgain) {
-            setLocationPermissionNeeded(true);
-
-            return;
-        }
-
-        const location = await Location.getCurrentPositionAsync({});
-        setDeviceLocation(
-            `${location.coords.latitude},${location.coords.longitude}`
-        );
-    };
-
-    useEffect(() => {
-        requestLocation();
-    }, []);
-
-    const handleGoToSettings = () => {
-        Linking.openSettings();
-        setLocationPermissionNeeded(false);
-    };
-
-    const appState = useRef(AppState.currentState);
-    const [deviceLocation, setDeviceLocation] = useState(null);
-
-    useEffect(() => {
-        const subscription = AppState.addEventListener(
-            'change',
-            (nextAppState) => {
-                if (
-                    appState.current.match(/inactive|background/) &&
-                    nextAppState === 'active'
-                ) {
-                    requestLocation();
-                }
-                appState.current = nextAppState;
-            }
-        );
-
-        return () => {
-            subscription.remove();
-        };
-    }, []);
-
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
@@ -222,16 +172,10 @@ export default function AssignmentsScreen({ navigation }) {
                         )}
                     </View>
                 </View>
-
-                <View style={stylesCal.floatingButtonWrapper}>
-                    <TouchableOpacity
-                        onPress={() => setPlusModalVisible(true)}
-                        style={styles.floatingButton}
-                        activeOpacity={1}
-                    >
-                        <PlusIcon color={'#fff'} width={28} height={28} />
-                    </TouchableOpacity>
-                </View>
+                <Fab
+                    pressHandler={() => setPlusModalVisible(true)}
+                    icon={<PlusIcon color={'#fff'} width={28} height={28} />}
+                />
             </SafeAreaView>
 
             {(plusModalVisible || taskModalVisible) && (
@@ -264,13 +208,6 @@ export default function AssignmentsScreen({ navigation }) {
                 setIsEditable={setIsEditable}
                 onTaskCreated={() => fetchTasks()}
             />
-
-            {locationPermissionNeeded && (
-                <LocationPermissionModal
-                    locationPermissionNeeded={locationPermissionNeeded}
-                    handleGoToSettings={handleGoToSettings}
-                />
-            )}
         </>
     );
 }
@@ -330,13 +267,5 @@ const stylesCal = StyleSheet.create({
         fontSize: 13,
         lineHeight: 18,
         textDecorationLine: 'underline'
-    },
-    floatingButtonWrapper: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        zIndex: 5
     }
 });

@@ -28,12 +28,16 @@ import { useFocusEffect } from '@react-navigation/native';
 import LeadBoxes from '../components/Lead/LeadBoxes';
 import { stripCircles } from '../helpers/task.helpers';
 import { StatusBar } from 'expo-status-bar';
+import PlusModal from '../components/PlusModal';
+import LocationPermissionModal from '../components/Modals/LocationPermissionModal';
+import { useLocation } from '../context/LocationContext';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
     const [firstName, setFirstName] = useState('');
     const [greetingText, setGreetingText] = useState('');
     const [tasks, setTasks] = useState([]);
+    const [plusModalVisible, setPlusModalVisible] = useState(false);
 
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
@@ -51,6 +55,8 @@ export default function HomeScreen({ navigation }) {
         useState(false);
 
     const [thankYouCards, setThankYouCards] = useState([]);
+
+    const { locationPermissionNeeded } = useLocation();
 
     useEffect(() => {
         async function fetchUserData() {
@@ -171,7 +177,7 @@ export default function HomeScreen({ navigation }) {
     );
 
     useEffect(() => {
-        if (taskModalVisible) {
+        if (taskModalVisible || plusModalVisible) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
@@ -184,7 +190,7 @@ export default function HomeScreen({ navigation }) {
                 useNativeDriver: true
             }).start();
         }
-    }, [taskModalVisible]);
+    }, [taskModalVisible, plusModalVisible]);
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
@@ -421,6 +427,7 @@ export default function HomeScreen({ navigation }) {
                     navigation={navigation}
                     thankYouCards={thankYouCards}
                     setThankYouCards={setThankYouCards}
+                    onAddNewTask={() => setPlusModalVisible(true)}
                 />
                 <View
                     style={[stylesHome.tabsContainer, styles.contentContainer]}
@@ -493,12 +500,18 @@ export default function HomeScreen({ navigation }) {
                     </View>
                 )}
             </SafeAreaView>
-
-            {taskModalVisible && (
+            {(taskModalVisible || plusModalVisible) && (
                 <Animated.View
                     style={[styles.overlay, { opacity: overlayOpacity }]}
                 />
             )}
+            <PlusModal
+                visible={plusModalVisible}
+                onClose={() => setPlusModalVisible(false)}
+                onTaskCreated={() => fetchTasks()}
+            />
+
+            {locationPermissionNeeded && <LocationPermissionModal />}
 
             <TaskModal
                 visible={taskModalVisible}

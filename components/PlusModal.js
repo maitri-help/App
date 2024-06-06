@@ -16,12 +16,7 @@ import FormFields from './plusModalSteps/FormFields';
 import DateTime from './plusModalSteps/DateTime';
 import { defaultTask } from '../constants/task';
 
-export default function PlusModal({
-    visible,
-    onClose,
-    onTaskCreated,
-    deviceLocation
-}) {
+export default function PlusModal({ visible, onClose, onTaskCreated }) {
     const [currentStep, setCurrentStep] = useState(1);
     const [selectedService, setSelectedService] = useState({
         id: null,
@@ -114,7 +109,6 @@ export default function PlusModal({
                         onTaskCreated();
                         resetModalState();
                     }}
-                    deviceLocation={deviceLocation}
                 />
             )}
             {currentStep === 4 && (

@@ -1,5 +1,5 @@
 export const getInitialBoxes = (
-    navigation,
+    onAddNewTask,
     randomQuote,
     randomMotivationalQuote,
     openModal
@@ -9,7 +9,7 @@ export const getInitialBoxes = (
         buttons: [
             {
                 title: 'Add a new task',
-                onPress: () => navigation.navigate('Assignments')
+                onPress: () => onAddNewTask()
             }
         ],
         bgColor: '#E5F5E3',

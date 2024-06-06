@@ -10,7 +10,12 @@ import { sendThankYouCard } from '../../hooks/api';
 import { checkAuthentication } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 
-const LeadBoxes = ({ navigation, thankYouCards = [], setThankYouCards }) => {
+const LeadBoxes = ({
+    navigation,
+    thankYouCards = [],
+    setThankYouCards,
+    onAddNewTask
+}) => {
     const [randomQuote, setRandomQuote] = useState('');
     const [randomMotivationalQuote, setRandomMotivationalQuote] = useState('');
     const [boxes, setBoxes] = useState([]);
@@ -30,14 +35,14 @@ const LeadBoxes = ({ navigation, thankYouCards = [], setThankYouCards }) => {
     useEffect(() => {
         if (randomQuote && randomMotivationalQuote) {
             const initialBoxes = getInitialBoxes(
-                navigation,
+                onAddNewTask,
                 randomQuote,
                 randomMotivationalQuote,
                 setSendInvitesModalVisible
             );
             setBoxes(shuffleArray(initialBoxes));
         }
-    }, [randomQuote, randomMotivationalQuote, navigation]);
+    }, [randomQuote, randomMotivationalQuote]);
 
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
@@ -63,7 +68,17 @@ const LeadBoxes = ({ navigation, thankYouCards = [], setThankYouCards }) => {
                 thankYouCardId: card.thankYouCardId,
                 supporterUserName: card.supporterUserName,
                 taskName: card.taskName,
-                buttons: [{ title: 'Say thank you!', bgColor: '#fff', textColor: '#000', onPress: () => { onThankYouPress(card.thankYouCardId) }, disabled: false}]
+                buttons: [
+                    {
+                        title: 'Say thank you!',
+                        bgColor: '#fff',
+                        textColor: '#000',
+                        onPress: () => {
+                            onThankYouPress(card.thankYouCardId);
+                        },
+                        disabled: false
+                    }
+                ]
             }));
             setThankYouBoxes(thankYouBoxes);
         }
@@ -76,17 +91,24 @@ const LeadBoxes = ({ navigation, thankYouCards = [], setThankYouCards }) => {
             const userData = await checkAuthentication();
             if (userData) {
                 const accessToken = userData.accessToken;
-                const sendResponse = await sendThankYouCard(cardId, accessToken);
+                const sendResponse = await sendThankYouCard(
+                    cardId,
+                    accessToken
+                );
                 if (sendResponse.data && sendResponse.data.length >= 0) {
                     toast.show('Thank you sent!', { type: 'success' });
                     const newThankYouCards = sendResponse.data;
-                    setThankYouBoxes(thankYouBoxes.filter((box) => box.thankYouCardId !== cardId));
+                    setThankYouBoxes(
+                        thankYouBoxes.filter(
+                            (box) => box.thankYouCardId !== cardId
+                        )
+                    );
                     setThankYouCards(newThankYouCards);
                 }
             }
         } catch (error) {
             console.log('Error sending thank you card', error);
-        }        
+        }
     };
 
     return (
@@ -94,7 +116,7 @@ const LeadBoxes = ({ navigation, thankYouCards = [], setThankYouCards }) => {
             <ScrollView horizontal={true} style={styles.boxesScroll}>
                 <View style={{ marginLeft: 15 }} />
 
-                {thankYouBoxes.length > 0 && (
+                {thankYouBoxes.length > 0 &&
                     thankYouBoxes.map((box) => (
                         <CustomBox
                             key={box.thankYouCardId}
@@ -105,8 +127,7 @@ const LeadBoxes = ({ navigation, thankYouCards = [], setThankYouCards }) => {
                             bgImgColor="#FFD8BC"
                             buttons={box.buttons}
                         />
-                    ))
-                )}
+                    ))}
 
                 {boxes.map((box, index) => (
                     <CustomBox

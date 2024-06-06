@@ -25,8 +25,7 @@ export default function FormFields({
     onClose,
     onTaskCreated,
     task,
-    setTask,
-    deviceLocation
+    setTask
 }) {
     const toast = useToast();
 
@@ -183,7 +182,6 @@ export default function FormFields({
                                 <LocationPicker
                                     onSelect={setTask}
                                     selectedLocation={task?.location}
-                                    deviceLocation={deviceLocation}
                                 />
                             </View>
                         </View>
