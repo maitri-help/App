@@ -177,7 +177,7 @@ export default function DateTime({
                                     testID="startDateTimePicker"
                                     value={
                                         task?.startTime
-                                            ? new Date(task?.startTime)
+                                            ? new Date("1970-01-01T" + task?.startTime + ":00") // picker requires a full date
                                             : new Date()
                                     }
                                     themeVariant="light"
@@ -209,7 +209,7 @@ export default function DateTime({
                                     testID="endDateTimePicker"
                                     value={
                                         task?.endTime
-                                            ? new Date(task?.endTime)
+                                            ? new Date("1970-01-01T" + task?.endTime + ":00")
                                             : new Date()
                                     }
                                     themeVariant="light"
