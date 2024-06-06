@@ -38,11 +38,6 @@ export default function CustomWeekCalendar({
         setCurrentMonth(month);
     }, []);
 
-    const handleMonthChange = (months) => {
-        console.log('triggered');
-        console.log('Months changed', months);
-    };
-
     const renderItem = useCallback(({ item }) => {
         return (
             <AgendaItem

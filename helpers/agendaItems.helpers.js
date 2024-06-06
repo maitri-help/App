@@ -1,8 +1,13 @@
 import isEmpty from 'lodash/isEmpty';
+import {
+    FUTURE_DAYS,
+    ONE_DAY_IN_MILLISECONDS,
+    PAST_DAYS
+} from '../constants/variables';
 
 const today = new Date().toISOString().split('T')[0];
-const fastDate = getPastDate(3);
-const futureDates = getFutureDates(60);
+const fastDate = getPastDate(PAST_DAYS);
+const futureDates = getFutureDates(FUTURE_DAYS);
 const dates = [fastDate, today].concat(futureDates);
 
 function getFutureDates(numberOfDays) {
@@ -14,14 +19,14 @@ function getFutureDates(numberOfDays) {
             const newMonth = new Date(d).getMonth() + 1;
             d = new Date(d).setMonth(newMonth);
         }
-        const date = new Date(d + 864e5 * index); // 864e5 == 86400000 == 24*60*60*1000
+        const date = new Date(d + ONE_DAY_IN_MILLISECONDS * index);
         const dateString = date.toISOString().split('T')[0];
         array.push(dateString);
     }
     return array;
 }
 function getPastDate(numberOfDays) {
-    return new Date(Date.now() - 864e5 * numberOfDays)
+    return new Date(Date.now() - ONE_DAY_IN_MILLISECONDS * numberOfDays)
         .toISOString()
         .split('T')[0];
 }
@@ -46,30 +51,25 @@ export function getMarkedDates(agendaItems) {
     agendaItems.forEach((item) => {
         // NOTE: only mark dates with data
         if (item.data && item.data.length > 0 && !isEmpty(item.data[0])) {
-            //set dot color
-            marked[item.title] = { marked: true };
+            const isAllCompleted = item.data.every(
+                (task) => task.status === 'done'
+            );
 
-            // getDayTasks(item.data, item.title);
+            if (isAllCompleted) {
+                marked[item.title] = { marked: false };
+            } else {
+                marked[item.title] = { marked: true };
 
-            // {!item?.isAllCompleted && (
-            //         <>
-            //         {item.isUnassigned && item.hasTask && (
-            //             <View style={[styles.dot, styles.dotRed]} />
-            //         )}
-            //         {!item.isUnassigned && item.hasTask && (
-            //             <View style={styles.dot} />
-            //         )}
-            //     </>
-            // )}
+                const isUnassigned = item.data.every(
+                    (task) => task.assignedUserId === null
+                );
+                if (isUnassigned) {
+                    marked[item.title] = { marked: true, dotColor: '#B22525' };
+                } else {
+                    marked[item.title] = { marked: true, dotColor: '#D5D5D5' };
+                }
+            }
         }
     });
     return marked;
 }
-
-export const getDayTasks = (tasks, date) => {
-    return tasks?.filter((task) => {
-        const taskStartDate = new Date(task?.startDate);
-        const taskEndDate = new Date(task?.endDate);
-        return date >= taskStartDate && date <= taskEndDate;
-    });
-};
