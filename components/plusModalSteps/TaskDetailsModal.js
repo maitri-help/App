@@ -63,13 +63,20 @@ export default function TaskDetailsModal({
                     </Text>
                 </View>
             </View>
-            <View style={[styles.contentContainer, stylesModal.topDescription]}>
-                <View style={stylesModal.topDescription}>
-                    <Text style={[styles.text]}>
-                        {selectedTask?.description}
-                    </Text>
+            {selectedTask?.description && (
+                <View
+                    style={[
+                        styles.contentContainer,
+                        stylesModal.topDescription
+                    ]}
+                >
+                    <View style={stylesModal.topDescription}>
+                        <Text style={[styles.text]}>
+                            {selectedTask?.description}
+                        </Text>
+                    </View>
                 </View>
-            </View>
+            )}
             <View style={{ flex: 1 }}>
                 <ScrollView>
                     <View style={[stylesModal.group, stylesModal.groupFirst]}>
@@ -94,30 +101,28 @@ export default function TaskDetailsModal({
                             </View>
                         </View>
                     </View>
-                    <View style={stylesModal.group}>
-                        <View
-                            style={[
-                                styles.contentContainer,
-                                stylesModal.groupInner
-                            ]}
-                        >
-                            <Text style={stylesModal.groupTitle}>Location</Text>
-                            <View style={stylesModal.fieldWrapper}>
-                                <LocationPicker
-                                    selectedLocation={selectedTask?.location}
-                                    disabled
-                                />
+                    {selectedTask?.location && (
+                        <View style={stylesModal.group}>
+                            <View
+                                style={[
+                                    styles.contentContainer,
+                                    stylesModal.groupInner
+                                ]}
+                            >
+                                <Text style={stylesModal.groupTitle}>
+                                    Location
+                                </Text>
+                                <View style={stylesModal.fieldWrapper}>
+                                    <LocationPicker
+                                        selectedLocation={
+                                            selectedTask?.location
+                                        }
+                                        disabled
+                                    />
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    {/* <View style={[stylesModal.group, { borderBottomWidth: 0 }]}>
-                        <View style={[styles.contentContainer, stylesModal.groupInner]}>
-                            <Text style={[stylesModal.groupTitle]}>Notes</Text>
-                            <Text style={stylesModal.fieldText}>
-                                {description}
-                            </Text>
-                        </View>
-                    </View> */}
+                    )}
                 </ScrollView>
             </View>
 
