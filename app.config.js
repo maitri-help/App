@@ -1,6 +1,6 @@
 module.exports = {
     expo: {
-        name: 'MaitriApp',
+        name: 'Maitri',
         slug: 'MaitriApp',
         version: '1.0.8',
         orientation: 'portrait',
