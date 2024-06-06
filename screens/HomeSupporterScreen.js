@@ -30,6 +30,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { inspirationalQuotes } from '../constants/quotes';
 import { generateRandomQuote } from '../helpers';
 import ThankYouModal from '../components/supporter/ThankYouModal';
+import { StatusBar } from 'expo-status-bar';
 
 export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
@@ -318,6 +319,7 @@ export default function HomeSupporterScreen({ navigation }) {
 
     return (
         <>
+            <StatusBar style="dark" translucent={true} hidden={false} />
             <SafeAreaView style={styles.safeArea}>
                 <View style={stylesSuppHome.topBar}>
                     <View

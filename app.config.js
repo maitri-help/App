@@ -21,6 +21,12 @@ module.exports = {
                 foregroundImage: './assets/adaptive-icon.png',
                 backgroundColor: '#ffffff'
             },
+            androidStatusBar: {
+                backgroundColor: '#ffffff',
+                barStyle: 'dark-content',
+                translucent: true,
+                hidden: false
+            },
             package: 'com.Maitri.MaitriApp',
             config: {
                 googleMaps: {

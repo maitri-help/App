@@ -27,6 +27,7 @@ import TaskModal from '../components/TaskModal';
 import { useFocusEffect } from '@react-navigation/native';
 import LeadBoxes from '../components/Lead/LeadBoxes';
 import { stripCircles } from '../helpers/task.helpers';
+import { StatusBar } from 'expo-status-bar';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
@@ -400,6 +401,7 @@ export default function HomeScreen({ navigation }) {
 
     return (
         <>
+            <StatusBar style="dark" translucent={true} hidden={false} />
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.topBar}>
                     <Text style={stylesHome.greetingsText}>
