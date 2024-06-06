@@ -64,9 +64,15 @@ export function getMarkedDates(agendaItems) {
                     (task) => task.assignedUserId === null
                 );
                 if (isUnassigned) {
-                    marked[item.title] = { marked: true, dotColor: '#B22525' };
+                    marked[item.title] = {
+                        marked: true,
+                        dotColor: '#B22525'
+                    };
                 } else {
-                    marked[item.title] = { marked: true, dotColor: '#D5D5D5' };
+                    marked[item.title] = {
+                        marked: true,
+                        dotColor: '#D5D5D5'
+                    };
                 }
             }
         }

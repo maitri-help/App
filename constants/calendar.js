@@ -15,6 +15,7 @@ export const CALENDAR_THEME_SETTINGS = {
     textDisabledColor: '#A4A4A4',
     weekVerticalMargin: 1,
     dotStyle: { marginTop: -2 },
+    todayButtonTextColor: '#1C4837',
     selectedDotColor: 'white',
     'stylesheet.calendar.header': {
         header: {

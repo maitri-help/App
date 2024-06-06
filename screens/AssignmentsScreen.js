@@ -25,7 +25,7 @@ import LocationPermissionModal from '../components/Modals/LocationPermissionModa
 import Tab from '../components/common/Tab';
 
 export default function AssignmentsScreen({ navigation }) {
-    const [activeTab, setActiveTab] = useState('Week');
+    const [activeTab, setActiveTab] = useState('Month');
     const [plusModalVisible, setPlusModalVisible] = useState(false);
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;

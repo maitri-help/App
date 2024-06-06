@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState, useEffect } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
     ExpandableCalendar,
@@ -18,17 +18,9 @@ export default function CustomWeekCalendar({
     setTaskModalVisible,
     handleTaskStatusChange
 }) {
-    //const weekView = false;
-
     const agendaItems = generateAgendaItems(tasks);
 
     const marked = useRef(getMarkedDates(agendaItems));
-
-    const [selectedDate, setSelectedDate] = useState('');
-
-    const onDayPress = (day) => {
-        setSelectedDate(day.dateString);
-    };
 
     const renderItem = useCallback(({ item }) => {
         return (
@@ -54,14 +46,8 @@ export default function CustomWeekCalendar({
                     firstDay={1}
                     markedDates={{
                         ...marked.current
-                        // [selectedDate]: {
-                        //     selected: true,
-                        //     selectedColor: '#1C4837',
-                        //     dotColor: 'white'
-                        // }
                     }}
                     hideKnob
-                    onDayPress={onDayPress}
                 />
 
                 <AgendaList
