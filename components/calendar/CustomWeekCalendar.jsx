@@ -38,6 +38,11 @@ export default function CustomWeekCalendar({
         setCurrentMonth(month);
     }, []);
 
+    const handleMonthChange = (months) => {
+        console.log('triggered');
+        console.log('Months changed', months);
+    };
+
     const renderItem = useCallback(({ item }) => {
         return (
             <AgendaItem
@@ -56,7 +61,7 @@ export default function CustomWeekCalendar({
                 showTodayButton
                 theme={CALENDAR_THEME_SETTINGS}
             >
-                <View style={{ paddingHorizontal: 25 }}>
+                <View style={{ paddingHorizontal: 25, paddingVertical: 5 }}>
                     <Text style={styles.monthHeading}>{currentMonth}</Text>
                 </View>
                 {weekView ? (
@@ -71,7 +76,13 @@ export default function CustomWeekCalendar({
                                 selectedColor: '#1C4837'
                             }
                         }}
-                        numberOfDays={7}
+                        staticHeader={false}
+                        showWeekNumbers
+                        // onVisibleMonthsChange={(months) =>
+                        //     handleMonthChange(months)
+                        // }
+                        //onMonthChange={(month) => handleMonthChange(month)}
+                        //numberOfDays={7}
                         onDayPress={onDayPress}
                     />
                 ) : (

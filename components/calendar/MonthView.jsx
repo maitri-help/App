@@ -60,7 +60,7 @@ const MonthView = ({
     });
 
     return (
-        <View>
+        <View style={stylesCal.container}>
             <View style={{ paddingHorizontal: 25 }}>
                 <TouchableOpacity
                     onPress={handleTodayPress}
@@ -142,6 +142,9 @@ const MonthView = ({
 export default MonthView;
 
 const stylesCal = StyleSheet.create({
+    container: {
+        flex: 1
+    },
     todayWrapper: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
@@ -158,12 +161,13 @@ const stylesCal = StyleSheet.create({
         paddingTop: 20,
         paddingBottom: 30,
         gap: 15,
-        flex: 1,
-        height: '100%'
+        flexGrow: 1
     },
     calendarEmpty: {
         position: 'relative',
-        paddingBottom: 35
+        paddingBottom: 35,
+        flexGrow: 1,
+        justifyContent: 'flex-end'
     },
     calendarEmptyImgWrapper: {
         marginVertical: 20

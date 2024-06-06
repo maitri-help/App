@@ -46,8 +46,30 @@ export function getMarkedDates(agendaItems) {
     agendaItems.forEach((item) => {
         // NOTE: only mark dates with data
         if (item.data && item.data.length > 0 && !isEmpty(item.data[0])) {
+            //set dot color
             marked[item.title] = { marked: true };
+
+            // getDayTasks(item.data, item.title);
+
+            // {!item?.isAllCompleted && (
+            //         <>
+            //         {item.isUnassigned && item.hasTask && (
+            //             <View style={[styles.dot, styles.dotRed]} />
+            //         )}
+            //         {!item.isUnassigned && item.hasTask && (
+            //             <View style={styles.dot} />
+            //         )}
+            //     </>
+            // )}
         }
     });
     return marked;
 }
+
+export const getDayTasks = (tasks, date) => {
+    return tasks?.filter((task) => {
+        const taskStartDate = new Date(task?.startDate);
+        const taskEndDate = new Date(task?.endDate);
+        return date >= taskStartDate && date <= taskEndDate;
+    });
+};
