@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-    View,
-    Text,
-    Image,
-    StyleSheet,
-    TouchableOpacity,
-    SafeAreaView,
-    Animated
-} from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Animated } from 'react-native';
 import { Formik } from 'formik';
 import styles from '../Styles';
 import { useToast } from 'react-native-toast-notifications';
@@ -15,6 +7,7 @@ import IdentifyAlmostThereScreen from './IdentifyAlmostThereScreen';
 import ThankYouScreen from './ThankYouScreen';
 import { joinTribe, updateUserType } from '../hooks/api';
 import { updateUserTypeInStorage, checkAuthentication } from '../authStorage';
+import RoleSelector from '../components/RoleSelector';
 
 export default function IdentifyScreen({ navigation, route }) {
     const toast = useToast();
@@ -23,6 +16,7 @@ export default function IdentifyScreen({ navigation, route }) {
     const [thankYouModalVisible, setThankYouModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
+    const [isLoading, setIsLoading] = useState(false);
     const { userId } = route.params;
 
     useEffect(() => {
@@ -61,6 +55,7 @@ export default function IdentifyScreen({ navigation, route }) {
                 <Formik
                     initialValues={{ role: '' }}
                     onSubmit={(values) => {
+                        setIsLoading(true);
                         if (values.role === 'Lead') {
                             updateUserType(userId, values.role)
                                 .then(() => {
@@ -74,6 +69,7 @@ export default function IdentifyScreen({ navigation, route }) {
                                     });
                                 })
                                 .catch((error) => {
+                                    setIsLoading(false);
                                     console.error(
                                         'Error updating user type:',
                                         error
@@ -89,6 +85,7 @@ export default function IdentifyScreen({ navigation, route }) {
                         } else if (values.role === 'Supporter') {
                             setAlmostThereModalVisible(true);
                         } else {
+                            setIsLoading(false);
                             toast.show('Please select a role', {
                                 type: 'error',
                                 duration: 3000
@@ -135,86 +132,32 @@ export default function IdentifyScreen({ navigation, route }) {
                                 </Text>
                             </View>
                             <View style={stylesIdentify.formContainer}>
-                                <TouchableOpacity
-                                    onPress={() => {
+                                <RoleSelector
+                                    pressHnadler={() => {
                                         setFieldValue('role', 'Lead');
                                         handleSubmit();
                                     }}
-                                    style={[
-                                        stylesIdentify.optionButton,
-                                        values.role === 'Lead' &&
-                                            stylesIdentify.activeOption
-                                    ]}
-                                >
-                                    <View
-                                        style={[
-                                            stylesIdentify.optionButtonBorder,
-                                            values.role === 'Lead' &&
-                                                stylesIdentify.optionButtonBorderActive
-                                        ]}
-                                    ></View>
-                                    <View
-                                        style={stylesIdentify.optionButtonTop}
-                                    >
-                                        <Image
-                                            source={require('../assets/emojis/lead-icon.png')}
-                                            style={stylesIdentify.emoji}
-                                        />
-                                        <Text
-                                            style={
-                                                stylesIdentify.optionButtonTitle
-                                            }
-                                        >
-                                            Lead
-                                        </Text>
-                                    </View>
-                                    <Text
-                                        style={stylesIdentify.optionButtonText}
-                                    >
-                                        I'm experiencing a situation of need and
-                                        am looking for support
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => {
+                                    role={'Lead'}
+                                    values={values}
+                                    disabled={isLoading}
+                                    imageSrc={require('../assets/emojis/lead-icon.png')}
+                                    description={
+                                        "I'm experiencing a situation of need and am looking for support"
+                                    }
+                                />
+                                <RoleSelector
+                                    pressHnadler={() => {
                                         setFieldValue('role', 'Supporter');
                                         handleSubmit();
                                     }}
-                                    style={[
-                                        stylesIdentify.optionButton,
-                                        values.role === 'Supporter' &&
-                                            stylesIdentify.activeOption
-                                    ]}
-                                >
-                                    <View
-                                        style={[
-                                            stylesIdentify.optionButtonBorder,
-                                            values.role === 'Supporter' &&
-                                                stylesIdentify.optionButtonBorderActive
-                                        ]}
-                                    ></View>
-                                    <View
-                                        style={stylesIdentify.optionButtonTop}
-                                    >
-                                        <Image
-                                            source={require('../assets/emojis/rock-icon.png')}
-                                            style={stylesIdentify.emoji}
-                                        />
-                                        <Text
-                                            style={
-                                                stylesIdentify.optionButtonTitle
-                                            }
-                                        >
-                                            Supporter
-                                        </Text>
-                                    </View>
-                                    <Text
-                                        style={stylesIdentify.optionButtonText}
-                                    >
-                                        I've been invited to join a support
-                                        circle and lend a helping hand
-                                    </Text>
-                                </TouchableOpacity>
+                                    role={'Supporter'}
+                                    values={values}
+                                    disabled={isLoading}
+                                    imageSrc={require('../assets/emojis/rock-icon.png')}
+                                    description={
+                                        "I've been invited to join a support circle and lend a helping hand"
+                                    }
+                                />
                             </View>
                         </View>
                     )}
@@ -260,57 +203,5 @@ const stylesIdentify = StyleSheet.create({
         paddingHorizontal: 30,
         alignItems: 'center',
         gap: 30
-    },
-    optionButton: {
-        width: 310,
-        height: 100,
-        paddingVertical: 15,
-        paddingHorizontal: 30,
-        backgroundColor: '#fff',
-        borderRadius: 50,
-        borderColor: '#737373',
-        borderWidth: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative'
-    },
-    activeOption: {
-        borderColor: 'transparent'
-    },
-    optionButtonBorder: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        minWidth: '100%',
-        width: 310,
-        height: 100,
-        borderColor: '#1C4837',
-        borderRadius: 50,
-        borderWidth: 6,
-        backgroundColor: 'transparent',
-        opacity: 0
-    },
-    optionButtonBorderActive: {
-        opacity: 1
-    },
-    optionButtonTop: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        gap: 10,
-        marginBottom: 5
-    },
-    optionButtonTitle: {
-        fontSize: 16,
-        fontFamily: 'poppins-medium'
-    },
-    emoji: {
-        width: 22,
-        height: 22
-    },
-    optionButtonText: {
-        color: '#7A7A7A',
-        fontSize: 13,
-        fontFamily: 'poppins-regular',
-        textAlign: 'center'
     }
 });
