@@ -31,6 +31,7 @@ import { inspirationalQuotes } from '../constants/quotes';
 import { generateRandomQuote } from '../helpers';
 import ThankYouModal from '../components/supporter/ThankYouModal';
 import { StatusBar } from 'expo-status-bar';
+import Tab from '../components/common/Tab';
 
 export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
@@ -404,40 +405,16 @@ export default function HomeSupporterScreen({ navigation }) {
                         styles.contentContainer
                     ]}
                 >
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('Open')}
-                        style={[
-                            stylesSuppHome.tab,
-                            activeTab === 'Open' && stylesSuppHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesSuppHome.tabText,
-                                activeTab === 'Open' &&
-                                    stylesSuppHome.activeTabText
-                            ]}
-                        >
-                            Open tasks
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('My')}
-                        style={[
-                            stylesSuppHome.tab,
-                            activeTab === 'My' && stylesSuppHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesSuppHome.tabText,
-                                activeTab === 'My' &&
-                                    stylesSuppHome.activeTabText
-                            ]}
-                        >
-                            My tasks
-                        </Text>
-                    </TouchableOpacity>
+                    <Tab
+                        clickHandler={() => handleTabPress('Open')}
+                        label={'Open tasks'}
+                        isActive={activeTab === 'Open'}
+                    />
+                    <Tab
+                        clickHandler={() => handleTabPress('My')}
+                        label={'My tasks'}
+                        isActive={activeTab === 'My'}
+                    />
                 </View>
                 {leadUser?.awaitingApproval && (
                     <View
@@ -581,26 +558,6 @@ const stylesSuppHome = StyleSheet.create({
         justifyContent: 'center',
         gap: 15,
         marginVertical: 10
-    },
-    tab: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderColor: '#1C4837',
-        borderWidth: 1,
-        borderRadius: 20,
-        alignItems: 'center'
-    },
-    activeTab: {
-        backgroundColor: '#1C4837'
-    },
-    tabText: {
-        color: '#000',
-        fontFamily: 'poppins-regular',
-        fontSize: 13,
-        lineHeight: 17
-    },
-    activeTabText: {
-        color: '#fff'
     },
     tabsContentContainer: {
         flex: 1
