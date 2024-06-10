@@ -23,7 +23,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Calendar from 'expo-calendar';
 import { circles } from '../../constants/variables';
-import { generateDateString } from '../../helpers/date';
+import { generateDateString, mergeDateAndTime } from '../../helpers/date';
 import { getSelectedCircles } from '../../helpers/task.helpers';
 
 export default function EditForm({
@@ -134,6 +134,7 @@ export default function EditForm({
 
     const requestCalendarPermission = async () => {
         const permission = await Calendar.requestCalendarPermissionsAsync();
+
         if (!permission.granted) {
             setCalendarPermissionNeeded(true);
             return false;
@@ -143,6 +144,7 @@ export default function EditForm({
 
     const handleOpenCalendar = async () => {
         const permissionGranted = await requestCalendarPermission();
+
         if (!permissionGranted) {
             return;
         }
@@ -167,15 +169,31 @@ export default function EditForm({
             return;
         }
 
+        const isAllDay = !task?.startTime && !task?.endTime && !task?.endDate;
+
+        let endDate;
+
+        const startDate = task?.startTime
+            ? mergeDateAndTime(task?.startDate, task?.startTime)
+            : new Date(task?.startDate);
+
+        if (task?.endDate) {
+            endDate = task?.endTime
+                ? mergeDateAndTime(task?.endDate, task?.endTime)
+                : new Date(task?.endDate);
+        }
+
         const event = {
             title: task?.title,
-            startDate: new Date(task?.startDate),
-            endDate: new Date(task?.endDate),
-            notes: task?.description
+            startDate: startDate,
+            endDate: endDate ? endDate : startDate,
+            notes: task?.description,
+            allDay: isAllDay
         };
 
         await Calendar.createEventAsync(defaultCalendar.id, event)
             .then((event) => {
+                console.log('Event added to calendar:', event);
                 toast.show('Event added to calendar', { type: 'success' });
             })
             .catch((error) => {

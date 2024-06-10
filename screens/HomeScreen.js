@@ -164,7 +164,7 @@ export default function HomeScreen({ navigation }) {
                 });
             }
         } catch (error) {
-            console.error('Error fetching thank you cards:', error);
+            console.error('Error fetching thank you cards:', error.response.data);
         }
     }
 
