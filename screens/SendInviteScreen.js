@@ -10,7 +10,12 @@ import {
 import Modal from '../components/Modal';
 import styles from '../Styles';
 import ShareIcon from '../assets/icons/share-icon.svg';
-import { checkAuthentication, clearUserData, clearAccessToken } from '../authStorage';
+import {
+    checkAuthentication,
+    clearUserData,
+    clearAccessToken
+} from '../authStorage';
+import { APPLE_STORE_URL, GOOGLE_STORE_URL } from '../constants/config';
 
 export default function SendInviteScreen({ visible, onClose, navigation }) {
     const [userTribeCode, setUserTribeCode] = useState('');
@@ -39,8 +44,8 @@ export default function SendInviteScreen({ visible, onClose, navigation }) {
 
 After you download the app, use my unique invite code to find me.
 
-[apple app store link]
-[android app store link]
+${APPLE_STORE_URL}
+${GOOGLE_STORE_URL}
 
 ${userTribeCode}`
             });
@@ -69,7 +74,9 @@ ${userTribeCode}`
                     </Text>
                 </View>
                 <View style={stylesInvite.tribeCodeContainer}>
-                    <Text style={stylesInvite.tribeCodeLabel}>Your Tribe Code:</Text>
+                    <Text style={stylesInvite.tribeCodeLabel}>
+                        Your Tribe Code:
+                    </Text>
                     <Text style={stylesInvite.tribeCode}>{userTribeCode}</Text>
                 </View>
                 <View style={stylesInvite.sendInviteWrapper}>
