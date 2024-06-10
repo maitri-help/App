@@ -41,6 +41,7 @@ export default function HomeSupporterScreen({ navigation }) {
     const [leadId, setLeadId] = useState('');
     const [leadFirstName, setLeadFirstName] = useState('Lead');
     const [leadLastName, setLeadLastName] = useState('name');
+    const [leadUser, setLeadUser] = useState({});
     const [isViewActive, setIsViewActive] = useState(true);
     const [showAllOpenTasks, setShowAllOpenTasks] = useState(false);
     const [showAllMyTasks, setShowAllMyTasks] = useState(false);
@@ -92,6 +93,7 @@ export default function HomeSupporterScreen({ navigation }) {
                 setLeadFirstName(userData.data[0].firstName);
                 setLeadLastName(userData.data[0].lastName);
                 setLeadId(userData.data[0].userId);
+                setLeadUser(userData.data[0]);
             } catch (error) {
                 console.error('Error fetching lead user data:', error);
             }
@@ -100,6 +102,9 @@ export default function HomeSupporterScreen({ navigation }) {
         fetchLeadUserData();
     }, []);
 
+    const leadUserName = `${leadUser?.firstName || 'Lead'} ${
+        leadUser?.lastName || 'Name'
+    }`;
     async function fetchTasks() {
         try {
             if (leadId) {
@@ -339,7 +344,7 @@ export default function HomeSupporterScreen({ navigation }) {
                         <Text style={stylesSuppHome.thanksText}>
                             Thanks for being here for{' '}
                             <Text style={stylesSuppHome.nameText}>
-                                {leadFirstName} {leadLastName}!
+                                {leadUserName}!
                             </Text>
                         </Text>
                     </View>
@@ -434,6 +439,20 @@ export default function HomeSupporterScreen({ navigation }) {
                         </Text>
                     </TouchableOpacity>
                 </View>
+                {leadUser?.awaitingApproval && (
+                    <View
+                        style={{
+                            maxWidth: '80%',
+                            marginHorizontal: 'auto',
+                            marginTop: 50
+                        }}
+                    >
+                        <Text style={stylesSuppHome.tasksDescription}>
+                            We are waiting for {leadUserName} to approve you in
+                            to their circle.
+                        </Text>
+                    </View>
+                )}
                 {isLoading ? (
                     <View
                         style={{
