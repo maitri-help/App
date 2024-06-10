@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     StyleSheet,
     Text,
@@ -11,22 +11,23 @@ import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';
 import { useToast } from 'react-native-toast-notifications';
-import { calcIsDue, findIcon } from '../helpers/task.helpers';
+import {
+    calcIsDue,
+    findIcon,
+    sortTasksByStartDate
+} from '../helpers/task.helpers';
 import { formatTaskItemDate } from '../helpers/date';
+import { useTask } from '../context/TaskContext';
 
 export default function TaskItem({
     task,
     taskModal,
     onTaskItemClick,
-    isCheckbox,
-    onTaskStatusChange
+    isCheckbox
 }) {
-    const [isChecked, setIsChecked] = useState(task.status === 'done');
+    const isChecked = task.status === 'done' ? true : false;
     const toast = useToast();
-
-    useEffect(() => {
-        setIsChecked(task.status === 'done');
-    }, [task.status]);
+    const { setTasks } = useTask();
 
     const handleToggleCheckbox = async () => {
         const newStatus = isChecked ? 'undone' : 'done';
@@ -34,10 +35,21 @@ export default function TaskItem({
 
         try {
             const accessToken = await getAccessToken();
-            await updateTask(task.taskId, updatedTask, accessToken);
-            setIsChecked(!isChecked);
+            const res = await updateTask(task.taskId, updatedTask, accessToken);
+
+            setTasks((prev) => {
+                //remove the updated task from the list
+                const filteredTasks = prev.filter(
+                    (task) => task.taskId !== res?.data.taskId
+                );
+                const newTasks = sortTasksByStartDate([
+                    res?.data,
+                    ...filteredTasks
+                ]);
+                return newTasks;
+            });
+
             toast.show(`Task is set to: ${newStatus}`, { type: 'success' });
-            onTaskStatusChange();
         } catch (error) {
             toast.show('Error updating task status', { type: 'error' });
             console.error('Error updating task:', error);
@@ -99,7 +111,7 @@ export default function TaskItem({
                             isDue && styles.dueText
                         ]}
                     >
-                        {task.title}
+                        {task.title} {`${task.status}`} {`${isChecked}`}
                     </Text>
                     {isPersonal ? (
                         <Text

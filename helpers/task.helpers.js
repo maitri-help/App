@@ -45,3 +45,17 @@ export const calcIsDue = (task) => {
 
     return isDue;
 };
+export const sortTasksByStartDate = (tasks) => {
+    return tasks.sort((a, b) => {
+        if (a.status === 'done' && b.status !== 'done') {
+            return 1;
+        } else if (a.status !== 'done' && b.status === 'done') {
+            return -1;
+        } else {
+            return (
+                new Date(a.startDate).getTime() -
+                new Date(b.startDate).getTime()
+            );
+        }
+    });
+};

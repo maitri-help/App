@@ -15,8 +15,7 @@ import {
 export default function CustomWeekCalendar({
     tasks,
     handleTaskItemClick,
-    setTaskModalVisible,
-    handleTaskStatusChange
+    setTaskModalVisible
 }) {
     const agendaItems = generateAgendaItems(tasks);
 
@@ -28,7 +27,6 @@ export default function CustomWeekCalendar({
                 item={item}
                 handleTaskItemClick={handleTaskItemClick}
                 setTaskModalVisible={setTaskModalVisible}
-                handleTaskStatusChange={handleTaskStatusChange}
             />
         );
     }, []);

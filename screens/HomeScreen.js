@@ -22,7 +22,7 @@ import {
 import TaskModal from '../components/TaskModal';
 import { useFocusEffect } from '@react-navigation/native';
 import LeadBoxes from '../components/Lead/LeadBoxes';
-import { stripCircles } from '../helpers/task.helpers';
+import { sortTasksByStartDate, stripCircles } from '../helpers/task.helpers';
 import { StatusBar } from 'expo-status-bar';
 import PlusModal from '../components/PlusModal';
 import LocationPermissionModal from '../components/Modals/LocationPermissionModal';
@@ -146,7 +146,6 @@ export default function HomeScreen({ navigation }) {
 
     useFocusEffect(
         React.useCallback(() => {
-            //fetchTasks();
             fetchNotifications();
             fetchThankYouCards();
         }, [])
@@ -324,12 +323,8 @@ export default function HomeScreen({ navigation }) {
             }
         }
 
-        let filteredTasks = tasks?.sort((taskA, taskB) => {
-            return (
-                new Date(taskA.startTime).getTime() -
-                new Date(taskB.startTime).getTime()
-            );
-        });
+        let filteredTasks = sortTasksByStartDate(tasks);
+
         switch (activeTab) {
             case 'Unassigned':
                 filteredTasks = tasks?.filter(
@@ -351,18 +346,7 @@ export default function HomeScreen({ navigation }) {
                 break;
         }
 
-        filteredTasks = filteredTasks.sort((a, b) => {
-            if (a.status === 'done' && b.status !== 'done') {
-                return 1;
-            } else if (a.status !== 'done' && b.status === 'done') {
-                return -1;
-            } else {
-                return (
-                    new Date(a.startTime).getTime() -
-                    new Date(b.startTime).getTime()
-                );
-            }
-        });
+        filteredTasks = sortTasksByStartDate(filteredTasks);
 
         return (
             <View style={stylesHome.tasksContainer}>
@@ -448,7 +432,6 @@ export default function HomeScreen({ navigation }) {
             <PlusModal
                 visible={plusModalVisible}
                 onClose={() => setPlusModalVisible(false)}
-                onTaskCreated={() => fetchTasks()}
             />
 
             {locationPermissionNeeded && <LocationPermissionModal />}
@@ -468,7 +451,6 @@ export default function HomeScreen({ navigation }) {
                 setEmoji={setEmoji}
                 isEditable={isEditable}
                 setIsEditable={setIsEditable}
-                onTaskCreated={() => fetchTasks()}
             />
         </>
     );

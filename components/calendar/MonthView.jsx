@@ -17,7 +17,6 @@ const MonthView = ({
     selectedDate,
     setSelectedDate,
     setTaskModalVisible,
-    handleTaskStatusChange,
     handleTaskItemClick,
     activeTab,
     isLoading
@@ -117,7 +116,6 @@ const MonthView = ({
                             taskModal={() => setTaskModalVisible(true)}
                             onTaskItemClick={handleTaskItemClick}
                             isCheckbox
-                            onTaskStatusChange={handleTaskStatusChange}
                         />
                     )}
                     onScrollToIndexFailed={(info) => {

@@ -12,8 +12,6 @@ import PlusModal from '../components/PlusModal';
 import TaskModal from '../components/TaskModal';
 import CustomWeekCalendar from '../components/calendar/CustomWeekCalendar';
 import PlusIcon from '../assets/icons/plus-icon.svg';
-import { getTasksForUser } from '../hooks/api';
-import { checkAuthentication } from '../authStorage';
 import { stripCircles } from '../helpers/task.helpers';
 import { formatDate } from '../helpers/date';
 import MonthView from '../components/calendar/MonthView';
@@ -37,7 +35,6 @@ export default function AssignmentsScreen({ navigation }) {
     });
     const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
 
-    // const [tasks, setTasks] = useState([]);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [color, setColor] = useState('');
@@ -46,16 +43,10 @@ export default function AssignmentsScreen({ navigation }) {
     const [isEditable, setIsEditable] = useState(false);
 
     const { tasks, isLoading } = useTask();
-    // const [isLoading, setIsLoading] = useState(false);
 
     const handleTaskItemClick = async (task) => {
         const newSelectedTask = stripCircles(task);
         setSelectedTask(newSelectedTask);
-    };
-
-    const handleTaskStatusChange = () => {
-        //TODO:_ handle task status change
-        // fetchTasks();
     };
 
     useEffect(() => {
@@ -85,31 +76,6 @@ export default function AssignmentsScreen({ navigation }) {
     const handleTaskModalClose = () => {
         setTaskModalVisible(false);
     };
-
-    // async function fetchTasks() {
-    //     try {
-    //         setIsLoading(true);
-    //         const userData = await checkAuthentication();
-    //         if (userData) {
-    //             const tasksResponse = await getTasksForUser(
-    //                 userData.userId,
-    //                 userData.accessToken
-    //             );
-
-    //             setTasks(tasksResponse.data);
-    //         } else {
-    //             console.error('No user data found');
-    //         }
-    //         setIsLoading(false);
-    //     } catch (error) {
-    //         console.error('Error fetching tasks:', error);
-    //         setIsLoading(false);
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     fetchTasks();
-    // }, []);
 
     return (
         <>
@@ -148,9 +114,6 @@ export default function AssignmentsScreen({ navigation }) {
                                         setTaskModalVisible={
                                             setTaskModalVisible
                                         }
-                                        handleTaskStatusChange={
-                                            handleTaskStatusChange
-                                        }
                                         handleTaskItemClick={
                                             handleTaskItemClick
                                         }
@@ -165,9 +128,6 @@ export default function AssignmentsScreen({ navigation }) {
                                         }
                                         setTaskModalVisible={
                                             setTaskModalVisible
-                                        }
-                                        handleTaskStatusChange={
-                                            handleTaskStatusChange
                                         }
                                     />
                                 )}
@@ -190,7 +150,6 @@ export default function AssignmentsScreen({ navigation }) {
             <PlusModal
                 visible={plusModalVisible}
                 onClose={handlePlusModalClose}
-                onTaskCreated={() => fetchTasks()}
                 deviceLocation={deviceLocation}
             />
 
@@ -209,7 +168,6 @@ export default function AssignmentsScreen({ navigation }) {
                 setEmoji={setEmoji}
                 isEditable={isEditable}
                 setIsEditable={setIsEditable}
-                onTaskCreated={() => fetchTasks()}
             />
         </>
     );

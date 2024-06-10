@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -24,7 +24,11 @@ import { ScrollView } from 'react-native-gesture-handler';
 import * as Calendar from 'expo-calendar';
 import { circles } from '../../constants/variables';
 import { generateDateString, mergeDateAndTime } from '../../helpers/date';
-import { getSelectedCircles } from '../../helpers/task.helpers';
+import {
+    getSelectedCircles,
+    sortTasksByStartDate
+} from '../../helpers/task.helpers';
+import { useTask } from '../../context/TaskContext';
 
 export default function EditForm({
     currentStep,
@@ -38,7 +42,6 @@ export default function EditForm({
     onClose,
     isEditable,
     setIsEditable,
-    onTaskCreated,
     task,
     setTask
 }) {
@@ -47,6 +50,8 @@ export default function EditForm({
     const [confirmationVisible, setConfirmationVisible] = useState(false);
     const [calendarPermissionNeeded, setCalendarPermissionNeeded] =
         useState(false);
+
+    const { setTasks } = useTask();
 
     const handleCancel = () => {
         setConfirmationVisible(false);
@@ -95,12 +100,24 @@ export default function EditForm({
                 category: task?.category
             };
 
-            await updateTask(task?.taskId, taskData, accessToken);
+            const res = await updateTask(task?.taskId, taskData, accessToken);
+
+            setTasks((prev) => {
+                //remove the updated task from the list
+                const filteredTasks = prev.filter(
+                    (task) => task.taskId !== res?.data.taskId
+                );
+                const newTasks = sortTasksByStartDate([
+                    res?.data,
+                    ...filteredTasks
+                ]);
+                return newTasks;
+            });
 
             toast.show('Task updated successfully', { type: 'success' });
 
             onClose();
-            onTaskCreated();
+
             setIsEditable(!isEditable);
         } catch (error) {
             console.error('Error updating task:', error.response.data.message);
@@ -120,11 +137,12 @@ export default function EditForm({
 
             await deleteTask(task?.taskId, accessToken);
 
+            setTasks((prev) => prev.filter((t) => t.taskId !== task?.taskId));
+
             toast.show('Task deleted successfully', { type: 'success' });
 
             handleCancel();
             onClose();
-            onTaskCreated();
         } catch (error) {
             console.error('Error deleting task:', error);
 

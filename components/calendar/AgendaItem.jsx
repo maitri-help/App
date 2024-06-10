@@ -4,12 +4,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import TaskItem from '../TaskItem';
 
 const AgendaItem = (props) => {
-    const {
-        item,
-        setTaskModalVisible,
-        handleTaskItemClick,
-        handleTaskStatusChange
-    } = props;
+    const { item, setTaskModalVisible, handleTaskItemClick } = props;
 
     if (isEmpty(item)) {
         return (
@@ -28,7 +23,6 @@ const AgendaItem = (props) => {
                 taskModal={() => setTaskModalVisible(true)}
                 onTaskItemClick={handleTaskItemClick}
                 isCheckbox
-                onTaskStatusChange={handleTaskStatusChange}
             />
         </View>
     );

@@ -16,6 +16,8 @@ import { getAccessToken } from '../../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { generateDateString } from '../../helpers/date';
 import SelectCircles from './SelectCircles';
+import { useTask } from '../../context/TaskContext';
+import { sortTasksByStartDate } from '../../helpers/task.helpers';
 
 export default function FormFields({
     selectedService,
@@ -23,7 +25,6 @@ export default function FormFields({
     setCurrentStep,
     onBack,
     onClose,
-    onTaskCreated,
     task,
     setTask
 }) {
@@ -38,6 +39,8 @@ export default function FormFields({
     const handleDateTime = () => {
         setCurrentStep(4);
     };
+
+    const { setTasks } = useTask();
 
     const handleSubmit = async () => {
         const taskData = { ...task, category: selectedService.title };
@@ -68,11 +71,14 @@ export default function FormFields({
 
             const res = await createTask(taskData, accessToken);
 
+            setTasks((prev) => {
+                const newTasks = sortTasksByStartDate([res?.data, ...prev]);
+
+                return newTasks;
+            });
             toast.show('Task created successfully', { type: 'success' });
 
             onClose();
-
-            onTaskCreated();
         } catch (error) {
             console.error('Error creating task:', error);
 

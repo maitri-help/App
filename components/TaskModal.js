@@ -16,7 +16,6 @@ export default function TaskModal({
     setIsEditable,
     taskId,
     setTaskId,
-    onTaskCreated,
     setSelectedTask
 }) {
     const [currentStep, setCurrentStep] = useState(5);
@@ -49,7 +48,6 @@ export default function TaskModal({
                     emoji={emoji}
                     isEditable={isEditable}
                     setIsEditable={setIsEditable}
-                    onTaskCreated={onTaskCreated}
                     task={selectedTask}
                     setTask={setSelectedTask}
                 />

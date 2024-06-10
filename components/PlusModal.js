@@ -5,8 +5,7 @@ import {
     TouchableOpacity,
     View,
     Text,
-    Platform,
-    Linking
+    Platform
 } from 'react-native';
 import ModalCustom from '../components/Modal';
 import { modalServiceTasks } from '../data/ModalServiceTasks';
@@ -16,7 +15,7 @@ import FormFields from './plusModalSteps/FormFields';
 import DateTime from './plusModalSteps/DateTime';
 import { defaultTask } from '../constants/task';
 
-export default function PlusModal({ visible, onClose, onTaskCreated }) {
+export default function PlusModal({ visible, onClose }) {
     const [currentStep, setCurrentStep] = useState(1);
     const [selectedService, setSelectedService] = useState({
         id: null,
@@ -106,7 +105,6 @@ export default function PlusModal({ visible, onClose, onTaskCreated }) {
                     task={task}
                     onClose={onClose}
                     onTaskCreated={() => {
-                        onTaskCreated();
                         resetModalState();
                     }}
                 />
