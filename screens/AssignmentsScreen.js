@@ -20,6 +20,7 @@ import MonthView from '../components/calendar/MonthView';
 import Tab from '../components/common/Tab';
 import Fab from '../components/common/Fab';
 import { useLocation } from '../context/LocationContext';
+import { useTask } from '../context/TaskContext';
 
 export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
@@ -36,7 +37,7 @@ export default function AssignmentsScreen({ navigation }) {
     });
     const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
 
-    const [tasks, setTasks] = useState([]);
+    // const [tasks, setTasks] = useState([]);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [color, setColor] = useState('');
@@ -44,7 +45,8 @@ export default function AssignmentsScreen({ navigation }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
 
-    const [isLoading, setIsLoading] = useState(false);
+    const { tasks, isLoading } = useTask();
+    // const [isLoading, setIsLoading] = useState(false);
 
     const handleTaskItemClick = async (task) => {
         const newSelectedTask = stripCircles(task);
@@ -52,7 +54,8 @@ export default function AssignmentsScreen({ navigation }) {
     };
 
     const handleTaskStatusChange = () => {
-        fetchTasks();
+        //TODO:_ handle task status change
+        // fetchTasks();
     };
 
     useEffect(() => {
@@ -83,30 +86,30 @@ export default function AssignmentsScreen({ navigation }) {
         setTaskModalVisible(false);
     };
 
-    async function fetchTasks() {
-        try {
-            setIsLoading(true);
-            const userData = await checkAuthentication();
-            if (userData) {
-                const tasksResponse = await getTasksForUser(
-                    userData.userId,
-                    userData.accessToken
-                );
+    // async function fetchTasks() {
+    //     try {
+    //         setIsLoading(true);
+    //         const userData = await checkAuthentication();
+    //         if (userData) {
+    //             const tasksResponse = await getTasksForUser(
+    //                 userData.userId,
+    //                 userData.accessToken
+    //             );
 
-                setTasks(tasksResponse.data);
-            } else {
-                console.error('No user data found');
-            }
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error fetching tasks:', error);
-            setIsLoading(false);
-        }
-    }
+    //             setTasks(tasksResponse.data);
+    //         } else {
+    //             console.error('No user data found');
+    //         }
+    //         setIsLoading(false);
+    //     } catch (error) {
+    //         console.error('Error fetching tasks:', error);
+    //         setIsLoading(false);
+    //     }
+    // }
 
-    useEffect(() => {
-        fetchTasks();
-    }, []);
+    // useEffect(() => {
+    //     fetchTasks();
+    // }, []);
 
     return (
         <>
