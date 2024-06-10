@@ -28,6 +28,7 @@ import PlusModal from '../components/PlusModal';
 import LocationPermissionModal from '../components/Modals/LocationPermissionModal';
 import { useLocation } from '../context/LocationContext';
 import { useTask } from '../context/TaskContext';
+import Tab from '../components/common/Tab';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
@@ -406,56 +407,21 @@ export default function HomeScreen({ navigation }) {
                 <View
                     style={[stylesHome.tabsContainer, styles.contentContainer]}
                 >
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('All')}
-                        style={[
-                            stylesHome.tab,
-                            activeTab === 'All' && stylesHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesHome.tabText,
-                                activeTab === 'All' && stylesHome.activeTabText
-                            ]}
-                        >
-                            All tasks
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('Unassigned')}
-                        style={[
-                            stylesHome.tab,
-                            activeTab === 'Unassigned' && stylesHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesHome.tabText,
-                                activeTab === 'Unassigned' &&
-                                    stylesHome.activeTabText
-                            ]}
-                        >
-                            Unassigned
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('Personal')}
-                        style={[
-                            stylesHome.tab,
-                            activeTab === 'Personal' && stylesHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesHome.tabText,
-                                activeTab === 'Personal' &&
-                                    stylesHome.activeTabText
-                            ]}
-                        >
-                            Personal
-                        </Text>
-                    </TouchableOpacity>
+                    <Tab
+                        clickHandler={() => handleTabPress('All')}
+                        label={'All tasks'}
+                        isActive={activeTab === 'All'}
+                    />
+                    <Tab
+                        clickHandler={() => handleTabPress('Unassigned')}
+                        label={'Unassigned'}
+                        isActive={activeTab === 'Unassigned'}
+                    />
+                    <Tab
+                        clickHandler={() => handleTabPress('Personal')}
+                        label={'Personal'}
+                        isActive={activeTab === 'Personal'}
+                    />
                 </View>
 
                 {isLoading ? (
@@ -542,26 +508,6 @@ const stylesHome = StyleSheet.create({
         justifyContent: 'center',
         gap: 15,
         marginVertical: 10
-    },
-    tab: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderColor: '#1C4837',
-        borderWidth: 1,
-        borderRadius: 20,
-        alignItems: 'center'
-    },
-    activeTab: {
-        backgroundColor: '#1C4837'
-    },
-    tabText: {
-        color: '#000',
-        fontFamily: 'poppins-regular',
-        fontSize: 13,
-        lineHeight: 17
-    },
-    activeTabText: {
-        color: '#fff'
     },
     tabsContentContainer: {
         flex: 1
