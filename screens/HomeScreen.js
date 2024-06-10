@@ -13,11 +13,7 @@ import {
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import TaskItem from '../components/TaskItem';
-import {
-    getTasksForUser,
-    getNotificationsForUser,
-    getThankYouCardsForUser
-} from '../hooks/api';
+import { getNotificationsForUser, getThankYouCardsForUser } from '../hooks/api';
 import {
     checkAuthentication,
     clearUserData,
@@ -31,18 +27,19 @@ import { StatusBar } from 'expo-status-bar';
 import PlusModal from '../components/PlusModal';
 import LocationPermissionModal from '../components/Modals/LocationPermissionModal';
 import { useLocation } from '../context/LocationContext';
+import { useTask } from '../context/TaskContext';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
     const [firstName, setFirstName] = useState('');
     const [greetingText, setGreetingText] = useState('');
-    const [tasks, setTasks] = useState([]);
+
+    const { tasks, isLoading } = useTask();
     const [plusModalVisible, setPlusModalVisible] = useState(false);
 
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
 
-    const [isLoading, setIsLoading] = useState(false);
     const [assigneeFirstName, setAssigneeFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [color, setColor] = useState('');
@@ -86,31 +83,6 @@ export default function HomeScreen({ navigation }) {
         }
         fetchUserData();
     }, []);
-
-    async function fetchTasks() {
-        try {
-            setIsLoading(true);
-            const userData = await checkAuthentication();
-            if (userData) {
-                const tasksResponse = await getTasksForUser(
-                    userData?.userId,
-                    userData?.accessToken
-                );
-
-                setTasks(tasksResponse?.data);
-            } else {
-                console.error('No user data found');
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }]
-                });
-            }
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error fetching tasks:', error);
-            setIsLoading(false);
-        }
-    }
 
     async function fetchNotifications() {
         try {
@@ -164,13 +136,16 @@ export default function HomeScreen({ navigation }) {
                 });
             }
         } catch (error) {
-            console.error('Error fetching thank you cards:', error.response.data);
+            console.error(
+                'Error fetching thank you cards:',
+                error.response.data
+            );
         }
     }
 
     useFocusEffect(
         React.useCallback(() => {
-            fetchTasks();
+            //fetchTasks();
             fetchNotifications();
             fetchThankYouCards();
         }, [])
@@ -194,7 +169,6 @@ export default function HomeScreen({ navigation }) {
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
-        fetchTasks();
     };
 
     const handleTaskItemClick = async (task) => {
@@ -207,7 +181,7 @@ export default function HomeScreen({ navigation }) {
     };
 
     const renderTasks = (tasks) => {
-        if (tasks.length === 0) {
+        if (tasks?.length === 0) {
             switch (activeTab) {
                 case 'All':
                     return (
@@ -357,17 +331,17 @@ export default function HomeScreen({ navigation }) {
         });
         switch (activeTab) {
             case 'Unassigned':
-                filteredTasks = tasks.filter(
+                filteredTasks = tasks?.filter(
                     (task) =>
                         !task?.assignee &&
-                        !task.circles.some(
+                        !task?.circles.some(
                             (circle) => circle.circleLevel === 'Personal'
                         )
                 );
                 break;
             case 'Personal':
-                filteredTasks = tasks.filter((task) =>
-                    task.circles.some(
+                filteredTasks = tasks?.filter((task) =>
+                    task?.circles.some(
                         (circle) => circle.circleLevel === 'Personal'
                     )
                 );
@@ -392,9 +366,9 @@ export default function HomeScreen({ navigation }) {
         return (
             <View style={stylesHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesHome.tasksScroll}>
-                    {filteredTasks.map((task) => (
+                    {filteredTasks?.map((task) => (
                         <TaskItem
-                            key={task.taskId}
+                            key={task?.taskId}
                             task={task}
                             taskModal={() => setTaskModalVisible(true)}
                             onTaskItemClick={handleTaskItemClick}

@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { LocationProvider } from './LocationProvider';
 import { ToastProvider } from 'react-native-toast-notifications';
 import styles from '../Styles';
+import { TaskProvider } from './TaskProvider';
 
 export function Providers({ children }) {
     return (
@@ -21,7 +22,9 @@ export function Providers({ children }) {
                 )
             }}
         >
-            <LocationProvider>{children}</LocationProvider>
+            <TaskProvider>
+                <LocationProvider>{children}</LocationProvider>
+            </TaskProvider>
         </ToastProvider>
     );
 }
