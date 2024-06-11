@@ -10,14 +10,13 @@ import Modal from '../Modal';
 import Button from '../Button';
 import { ScrollView } from 'react-native-gesture-handler';
 import { generateDateString } from '../../helpers/date';
+import { useTask } from '../../context/TaskContext';
+import { sortTasksByStartDate } from '../../helpers/task.helpers';
 
-export default function TaskDetailsModal({
-    visible,
-    selectedTask,
-    onClose,
-    updateTask
-}) {
+export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
     const toast = useToast();
+
+    const { setTasks } = useTask();
 
     const handleSubmit = async () => {
         try {
@@ -31,12 +30,27 @@ export default function TaskDetailsModal({
                 return;
             }
 
-            await assingUserToTask(selectedTask?.taskId, accessToken);
+            const res = await assingUserToTask(
+                selectedTask?.taskId,
+                accessToken
+            );
+
+            setTasks((prev) => {
+                //remove the updated task from the list
+                const filteredTasks = prev.filter(
+                    (task) => task.taskId !== res.data?.taskId
+                );
+
+                const newTasks = sortTasksByStartDate([
+                    res.data,
+                    ...filteredTasks
+                ]);
+                return newTasks;
+            });
 
             toast.show('Assigned to task successfully', { type: 'success' });
 
             onClose();
-            updateTask();
         } catch (error) {
             console.error('Error updating task:', error);
 

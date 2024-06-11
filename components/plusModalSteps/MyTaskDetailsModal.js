@@ -19,16 +19,14 @@ import * as Calendar from 'expo-calendar';
 import { formatTaskItemDate } from '../../helpers/date';
 import RejectTaskModal from '../Modals/RejectTaskModal';
 import CalendarPermissionModal from '../Modals/CalendarPermissionModal';
+import { useTask } from '../../context/TaskContext';
+import { sortTasksByStartDate } from '../../helpers/task.helpers';
 
-export default function MyTaskDetailsModal({
-    visible,
-    selectedTask,
-    onClose,
-    updateTask
-}) {
+export default function MyTaskDetailsModal({ visible, selectedTask, onClose }) {
     const toast = useToast();
 
     const [showInnerModal, setShowInnerModal] = useState(false);
+    const { setTasks } = useTask();
 
     const openInnerModal = () => {
         setShowInnerModal(true);
@@ -50,14 +48,29 @@ export default function MyTaskDetailsModal({
                 return;
             }
 
-            await unassingUserToTask(selectedTask?.taskId, accessToken);
+            const res = await unassingUserToTask(
+                selectedTask?.taskId,
+                accessToken
+            );
+
+            setTasks((prev) => {
+                //remove the updated task from the list
+                const filteredTasks = prev.filter(
+                    (task) => task.taskId !== res.data?.taskId
+                );
+
+                const newTasks = sortTasksByStartDate([
+                    res.data,
+                    ...filteredTasks
+                ]);
+                return newTasks;
+            });
 
             toast.show('Unassigned from task successfully', {
                 type: 'success'
             });
 
             onClose();
-            updateTask();
         } catch (error) {
             console.error('Error updating task:', error);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -12,82 +12,16 @@ import {
 import styles from '../Styles';
 import MyTask from '../components/MyTask';
 import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
-import {
-    checkAuthentication,
-    clearUserData,
-    clearAccessToken,
-    getAccessToken
-} from '../authStorage';
-import { getLeadUser } from '../hooks/api';
-import { useFocusEffect } from '@react-navigation/native';
+import { useTask } from '../context/TaskContext';
+import { useUser } from '../context/UserContext';
 
-export default function MyTasksSupporterScreen({ navigation }) {
+export default function MyTasksSupporterScreen() {
     const [myTaskModalVisible, setMyTaskModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
-    const [tasks, setTasks] = useState([]);
-    const [leadId, setLeadId] = useState('');
-    const [userId, setUserId] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
 
+    const { tasks, isLoading } = useTask();
+    const { userData } = useUser();
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        async function fetchUserData() {
-            try {
-                setIsLoading(true);
-                const userData = await checkAuthentication();
-                if (userData) {
-                    setUserId(userData.userId);
-                }
-                setIsLoading(false);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-                navigation.navigate('Login');
-                setIsLoading(false);
-            }
-        }
-        fetchUserData();
-    }, []);
-
-    useEffect(() => {
-        const fetchLeadUserData = async () => {
-            try {
-                const accessToken = await getAccessToken();
-
-                const userData = await getLeadUser(accessToken);
-
-                setLeadId(userData.data[0].userId);
-            } catch (error) {
-                console.error('Error fetching lead user data:', error);
-            }
-        };
-
-        fetchLeadUserData();
-    }, []);
-
-    async function fetchTasks() {
-        try {
-            if (leadId) {
-                const accessToken = await getAccessToken();
-
-                const tasksResponse = await getLeadUser(accessToken);
-
-                setTasks(tasksResponse.data[0].tasks);
-            } else {
-                console.error('No user data found or leadId not available');
-            }
-        } catch (error) {
-            console.error('Error fetching tasks:', error);
-        }
-    }
-
-    useFocusEffect(
-        useCallback(() => {
-            if (leadId) fetchTasks();
-        }, [leadId])
-    );
 
     useEffect(() => {
         if (myTaskModalVisible) {
@@ -113,20 +47,18 @@ export default function MyTasksSupporterScreen({ navigation }) {
         setMyTaskModalVisible(false);
     };
 
-    const handleTaskStatusChange = () => {
-        fetchTasks();
-    };
-
     const renderTasks = (tasks) => {
         const myTasks = tasks
-            .filter(
-                (task) => task.assignedUserId && task.assignedUserId === userId
+            ?.filter(
+                (task) =>
+                    task?.assignedUserId &&
+                    task?.assignedUserId === userData?.userId
             )
             .sort((a, b) =>
                 a.status === 'done' ? 1 : b.status === 'done' ? -1 : 0
             );
 
-        if (myTasks.length === 0) {
+        if (myTasks?.length === 0) {
             return (
                 <View style={stylesSuppMT.tasksContainer}>
                     <ScrollView
@@ -175,20 +107,13 @@ export default function MyTasksSupporterScreen({ navigation }) {
         return (
             <View style={stylesSuppMT.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesSuppMT.tasksScroll}>
-                    {myTasks.map((task) => (
+                    {myTasks?.map((task) => (
                         <MyTask
                             key={task.taskId}
                             task={task}
-                            firstName={
-                                task.assignee ? task.assignee.firstName : ''
-                            }
-                            lastName={
-                                task.assignee ? task.assignee.lastName : ''
-                            }
                             taskModal={() => setMyTaskModalVisible(true)}
                             onTaskItemClick={handleTaskItemClick}
                             isCheckbox={true}
-                            onTaskStatusChange={handleTaskStatusChange}
                         />
                     ))}
                 </ScrollView>
@@ -247,7 +172,6 @@ export default function MyTasksSupporterScreen({ navigation }) {
                     visible={myTaskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
-                    updateTask={() => fetchTasks()}
                 />
             )}
         </>

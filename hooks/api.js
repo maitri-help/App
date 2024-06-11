@@ -182,6 +182,7 @@ export const fetchTasks = async (userData) => {
         );
         return res.data;
     } else {
-        return await getLeadUser(userData.accessToken);
+        const res = await getLeadUser(userData?.accessToken);
+        return res.data[0].tasks;
     }
 };

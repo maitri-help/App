@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -12,15 +12,13 @@ import {
 } from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
-import { checkAuthentication, getAccessToken } from '../authStorage';
-import { getLeadUser } from '../hooks/api';
 import FilterIcon from '../assets/icons/filter-icon.svg';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import TaskFilterModal from '../components/plusModalSteps/TaskFilterModal';
 import Button from '../components/Button';
-import { useFocusEffect } from '@react-navigation/native';
 import { isWithinTimeframe, mergeDateAndTime } from '../helpers/date';
 import { isWeekend } from 'date-fns';
+import { useTask } from '../context/TaskContext';
 
 const TIME_FILTER_HOURS = {
     Morning: { start: 6, end: 12 },
@@ -29,60 +27,19 @@ const TIME_FILTER_HOURS = {
     Night: { start: 22, end: 6 }
 };
 
-export default function OpenTasksSupporterScreen({ navigation }) {
+export default function OpenTasksSupporterScreen() {
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [TimeFilterList, setTimeFilterList] = useState([]);
     const [TypeFilterList, setTypeFilterList] = useState([]);
-    const [tasks, setTasks] = useState([]);
+
     const [filteredTasks, setFilteredTasks] = useState([]);
     const [taskRemoval, setTaskRemoval] = useState(0);
-    const [leadId, setLeadId] = useState('');
 
-    const [isLoading, setIsLoading] = useState(false);
+    const { tasks, isLoading } = useTask();
+
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        async function fetchUserData() {
-            try {
-                const userData = await checkAuthentication();
-                if (userData) {
-                    const accessToken = await getAccessToken();
-                    const leadUserData = await getLeadUser(accessToken);
-                    setLeadId(leadUserData.data[0].userId);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        }
-        fetchUserData();
-    }, []);
-
-    async function fetchTasks() {
-        try {
-            setIsLoading(true);
-            if (leadId) {
-                const accessToken = await getAccessToken();
-                const tasksResponse = await getLeadUser(accessToken);
-
-                setTasks(tasksResponse.data[0].tasks);
-                setFilteredTasks(tasksResponse.data[0].tasks);
-            } else {
-                console.error('No user data found or leadId not available');
-            }
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error fetching tasks:', error);
-            setIsLoading(false);
-        }
-    }
-
-    useFocusEffect(
-        useCallback(() => {
-            if (leadId) fetchTasks();
-        }, [leadId])
-    );
 
     const handleRemoveFilter = (filter, setSelectedFilters) => {
         setSelectedFilters((selectedFilters) =>
@@ -222,7 +179,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
     };
 
     const renderTasks = (tasks) => {
-        const openTasks = tasks.filter(
+        const openTasks = tasks?.filter(
             (task) => task.status === 'undone' && !task.assignedUserId
         );
 
@@ -456,7 +413,6 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                     visible={taskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
-                    updateTask={() => fetchTasks()}
                 />
             )}
         </>

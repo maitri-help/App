@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -15,24 +15,19 @@ import { updateTask } from '../hooks/api';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { useToast } from 'react-native-toast-notifications';
 import * as Calendar from 'expo-calendar';
-import { findIcon } from '../helpers/task.helpers';
+import { findIcon, sortTasksByStartDate } from '../helpers/task.helpers';
 import { formatTaskItemDate } from '../helpers/date';
+import { useTask } from '../context/TaskContext';
 
-export default function Task({
+export default function MyTask({
     task,
-    firstName,
-    lastName,
     taskModal,
     onTaskItemClick,
-    isCheckbox,
-    onTaskStatusChange
+    isCheckbox
 }) {
-    const [isChecked, setIsChecked] = useState(task.status === 'done');
+    const isChecked = task.status === 'done' ? true : false;
     const toast = useToast();
-
-    useEffect(() => {
-        setIsChecked(task.status === 'done');
-    }, [task.status]);
+    const { setTasks } = useTask();
 
     const handleToggleCheckbox = async () => {
         const newStatus = isChecked ? 'undone' : 'done';
@@ -40,10 +35,19 @@ export default function Task({
 
         try {
             const accessToken = await getAccessToken();
-            await updateTask(task.taskId, updatedTask, accessToken);
-            setIsChecked(!isChecked);
+            const res = await updateTask(task.taskId, updatedTask, accessToken);
+            setTasks((prev) => {
+                //remove the updated task from the list
+                const filteredTasks = prev.filter(
+                    (task) => task.taskId !== res?.data.taskId
+                );
+                const newTasks = sortTasksByStartDate([
+                    res?.data,
+                    ...filteredTasks
+                ]);
+                return newTasks;
+            });
             toast.show(`Task is set to: ${newStatus}`, { type: 'success' });
-            onTaskStatusChange();
         } catch (error) {
             toast.show('Error updating task status', { type: 'error' });
             console.error('Error updating task:', error);
@@ -156,11 +160,13 @@ export default function Task({
                         >
                             {task?.title}
                         </Text>
-                        {firstName && lastName && (
-                            <Text style={stylesTask.taskAssignee}>
-                                {firstName} {lastName}
-                            </Text>
-                        )}
+                        {task?.assignee?.firstName &&
+                            task?.assignee?.lastName && (
+                                <Text style={stylesTask.taskAssignee}>
+                                    {task?.assignee?.firstName}{' '}
+                                    {task?.assignee?.lastName}
+                                </Text>
+                            )}
                         <Text
                             style={[
                                 stylesTask.taskTime,
