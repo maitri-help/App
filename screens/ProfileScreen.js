@@ -11,46 +11,28 @@ import {
     ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
-import {
-    checkAuthentication,
-    clearUserData,
-    clearAccessToken
-} from '../authStorage';
+import { clearUserData, clearAccessToken } from '../authStorage';
 import LogoutModal from '../components/profileModals/LogoutModal';
 import DeleteModal from '../components/profileModals/DeleteModal';
 import { OneSignal } from 'react-native-onesignal';
+import { useUser } from '../context/UserContext';
+import { useTask } from '../context/TaskContext';
 
 export default function ProfileScreen({ navigation }) {
-    const [userData, setUserData] = useState(null);
     const [logoutModalVisible, setLogoutModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-    const [isLoading, setIsLoading] = useState(true);
-    useEffect(() => {
-        async function fetchUserData() {
-            try {
-                setIsLoading(true);
-                const userData = await checkAuthentication();
-                if (userData) {
-                    setUserData(userData);
-                }
-                setIsLoading(false);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-                navigation.navigate('Login');
-                setIsLoading(false);
-            }
-        }
-        fetchUserData();
-    }, []);
+
+    const { userData, loading, setUserData } = useUser();
+    const { setTasks } = useTask();
 
     const handleLogout = async () => {
         try {
             OneSignal.logout();
             await clearUserData();
             await clearAccessToken();
+            setUserData({});
+            setTasks([]);
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Login' }]
@@ -84,7 +66,7 @@ export default function ProfileScreen({ navigation }) {
         <>
             <SafeAreaView style={styles.safeArea}>
                 <View style={[styles.container, stylesProfile.container]}>
-                    {isLoading ? (
+                    {loading ? (
                         <View
                             style={{
                                 minHeight: 135,
@@ -97,14 +79,14 @@ export default function ProfileScreen({ navigation }) {
                     ) : (
                         <View style={stylesProfile.topContent}>
                             <Text style={stylesProfile.topContentName}>
-                                {userData.firstName} {userData.lastName} (
-                                {userData.userType})
+                                {userData?.firstName} {userData?.lastName} (
+                                {userData?.userType})
                             </Text>
                             <Text style={stylesProfile.topContentText}>
-                                {userData.email}
+                                {userData?.email}
                             </Text>
                             <Text style={stylesProfile.topContentText}>
-                                {userData.phoneNumber}
+                                {userData?.phoneNumber}
                             </Text>
                         </View>
                     )}
@@ -158,20 +140,25 @@ export default function ProfileScreen({ navigation }) {
                             </View>
                             <View style={stylesProfile.linksWrapper}>
                                 <TouchableOpacity style={stylesProfile.link}>
-                                    <Text style={stylesProfile.linkText} 
-                                onPress={() =>
-                                        Linking.openURL(
-                                            'https://www.maitrihelp.com/privacy-policy'
-                                        )
-                                    }>
-                                    Privacy Policy
+                                    <Text
+                                        style={stylesProfile.linkText}
+                                        onPress={() =>
+                                            Linking.openURL(
+                                                'https://www.maitrihelp.com/privacy-policy'
+                                            )
+                                        }
+                                    >
+                                        Privacy Policy
                                     </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={stylesProfile.link} onPress={() =>
-                                    Linking.openURL(
-                                        'https://www.maitrihelp.com/terms-conditions'
-                                    )
-                                }>
+                                <TouchableOpacity
+                                    style={stylesProfile.link}
+                                    onPress={() =>
+                                        Linking.openURL(
+                                            'https://www.maitrihelp.com/terms-conditions'
+                                        )
+                                    }
+                                >
                                     <Text style={stylesProfile.linkText}>
                                         Terms & Conditions
                                     </Text>

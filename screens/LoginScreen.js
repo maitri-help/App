@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -10,52 +10,30 @@ import {
     Keyboard
 } from 'react-native';
 import { Formik } from 'formik';
-import * as yup from 'yup';
 import PhoneIcon from '../assets/icons/phone-icon.svg';
 import ExclamationIcon from '../assets/icons/exclamation-icon.svg';
 import ArrowIcon from '../assets/icons/arrow-icon.svg';
 import styles from '../Styles';
 import handleSignIn from '../hooks/handleSignIn';
 import { useToast } from 'react-native-toast-notifications';
-import { checkAuthentication } from '../authStorage';
-
-const validationSchema = yup.object().shape({
-    phoneNumber: yup
-        .string()
-        .matches(
-            /^(?:(?:\+|00)(?:[1-9]\d{0,2}))?(?:\s*\d{7,})$/,
-            'Enter a valid phone number - No spaces or any special characters only "+" allowed.'
-        )
-        .required('Phone Number is required')
-});
+import { loginValidationSchema } from '../utils/validationSchemas';
+import { useUser } from '../context/UserContext';
 
 export default function LoginScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const toast = useToast();
-
-    useEffect(() => {
-        async function fetchUserData() {
-            try {
-                const userData = await checkAuthentication();
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-            }
-        }
-        fetchUserData();
-    }, []);
+    const { setUserData } = useUser();
 
     const handleFormSubmit = async (values) => {
         try {
-            const { userId, otpResponse } = await handleSignIn(values);
-
+            const userData = await handleSignIn(values);
+            setUserData(userData);
             toast.show('Code is sent to: ' + values.phoneNumber, {
                 type: 'success'
             });
             navigation.navigate('AlmostThere', {
                 phoneNumber: values.phoneNumber,
-                userId
+                userId: userData?.userId
             });
         } catch (error) {
             console.error('Sign in error:', error);
@@ -72,14 +50,14 @@ export default function LoginScreen({ navigation }) {
             <Formik
                 initialValues={{ phoneNumber: '' }}
                 onSubmit={handleFormSubmit}
-                validationSchema={validationSchema}
+                validationSchema={loginValidationSchema}
                 validateOnChange={true}
                 validateOnBlur={false}
                 validateOnMount={false}
                 initialErrors={{}}
                 enableReinitialize={true}
                 validate={(values) => {
-                    validationSchema
+                    loginValidationSchema
                         .validate(values, { abortEarly: false })
                         .then(() => {
                             setIsFormValid(true);

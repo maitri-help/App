@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { api } from '../lib/axios';
-import { checkAuthentication } from '../authStorage';
 
 const useFetch = (url) => {
+    if (!url) return;
+
     // Loading state
     const [isLoading, setIsLoading] = useState(true);
     // Error state
@@ -13,33 +14,20 @@ const useFetch = (url) => {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            //TODO: improve userdata fetching
-            const userData = await checkAuthentication();
 
-            if (userData) {
-                try {
-                    const response = await api.get(
-                        `${url}/${userData?.userId}`,
-                        {
-                            headers: {
-                                //TODO: improve authorization header
-                                Authorization: `Bearer ${userData?.accessToken}`
-                            }
-                        }
-                    );
-                    setData(response?.data);
-                } catch (error) {
-                    // TODO: Add toast notification
-                    // toast.show(error.response.data.message, {
-                    //     type: 'error'
-                    // });
-                    setIsError(true);
-                } finally {
-                    setIsLoading(false);
-                }
+            try {
+                const response = await api.get(`${url}`);
+                setData(response?.data);
+            } catch (error) {
+                // TODO: Add toast notification
+                // toast.show(error.response.data.message, {
+                //     type: 'error'
+                // });
+                setIsError(true);
+            } finally {
+                setIsLoading(false);
             }
         };
-
         fetchData();
     }, [url]);
 

@@ -14,11 +14,7 @@ import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import TaskItem from '../components/TaskItem';
 import { getNotificationsForUser, getThankYouCardsForUser } from '../hooks/api';
-import {
-    checkAuthentication,
-    clearUserData,
-    clearAccessToken
-} from '../authStorage';
+import { checkAuthentication } from '../authStorage';
 import TaskModal from '../components/TaskModal';
 import { useFocusEffect } from '@react-navigation/native';
 import LeadBoxes from '../components/Lead/LeadBoxes';
@@ -29,22 +25,18 @@ import LocationPermissionModal from '../components/Modals/LocationPermissionModa
 import { useLocation } from '../context/LocationContext';
 import { useTask } from '../context/TaskContext';
 import Tab from '../components/common/Tab';
+import { generateGreetings } from '../helpers';
+import { useUser } from '../context/UserContext';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
-    const [firstName, setFirstName] = useState('');
-    const [greetingText, setGreetingText] = useState('');
 
     const { tasks, isLoading } = useTask();
     const [plusModalVisible, setPlusModalVisible] = useState(false);
 
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-
-    const [assigneeFirstName, setAssigneeFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [color, setColor] = useState('');
-    const [emoji, setEmoji] = useState('');
+    const { userData } = useUser();
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
 
@@ -55,35 +47,6 @@ export default function HomeScreen({ navigation }) {
     const [thankYouCards, setThankYouCards] = useState([]);
 
     const { locationPermissionNeeded } = useLocation();
-
-    useEffect(() => {
-        async function fetchUserData() {
-            try {
-                const userData = await checkAuthentication();
-                if (userData) {
-                    setFirstName(userData.firstName);
-
-                    const currentHour = new Date().getHours();
-                    if (currentHour < 12) {
-                        setGreetingText('Good morning');
-                    } else if (currentHour < 18) {
-                        setGreetingText('Good afternoon');
-                    } else {
-                        setGreetingText('Good evening');
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }]
-                });
-            }
-        }
-        fetchUserData();
-    }, []);
 
     async function fetchNotifications() {
         try {
@@ -370,7 +333,7 @@ export default function HomeScreen({ navigation }) {
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.topBar}>
                     <Text style={stylesHome.greetingsText}>
-                        {greetingText} {firstName}!
+                        {generateGreetings()} {userData?.firstName}!
                     </Text>
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Notifications')}
@@ -441,14 +404,6 @@ export default function HomeScreen({ navigation }) {
                 onClose={handleTaskModalClose}
                 selectedTask={selectedTask}
                 setSelectedTask={setSelectedTask}
-                firstName={assigneeFirstName}
-                setFirstName={setAssigneeFirstName}
-                lastName={lastName}
-                setLastName={setLastName}
-                color={color}
-                setColor={setColor}
-                emoji={emoji}
-                setEmoji={setEmoji}
                 isEditable={isEditable}
                 setIsEditable={setIsEditable}
             />
