@@ -11,7 +11,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
-import { clearUserData, clearAccessToken } from '../authStorage';
+import { clearUserData } from '../authStorage';
 import LogoutModal from '../components/profileModals/LogoutModal';
 import DeleteModal from '../components/profileModals/DeleteModal';
 import { OneSignal } from 'react-native-onesignal';
@@ -30,7 +30,6 @@ export default function ProfileScreen({ navigation }) {
         try {
             OneSignal.logout();
             await clearUserData();
-            await clearAccessToken();
             setUserData({});
             setTasks([]);
             navigation.reset({

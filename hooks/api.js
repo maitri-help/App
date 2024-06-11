@@ -171,3 +171,17 @@ export async function sendThankYouCard(thankYouCardId, accessToken) {
         }
     });
 }
+
+export const fetchTasks = async (userData) => {
+    if (!userData) return [];
+
+    if (userData.userType === 'Lead') {
+        const res = await getTasksForUser(
+            userData.userId,
+            userData.accessToken
+        );
+        return res.data;
+    } else {
+        return await getLeadUser(userData.accessToken);
+    }
+};

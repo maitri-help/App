@@ -46,7 +46,7 @@ export const calcIsDue = (task) => {
     return isDue;
 };
 export const sortTasksByStartDate = (tasks) => {
-    return tasks.sort((a, b) => {
+    return tasks?.sort((a, b) => {
         if (a.status === 'done' && b.status !== 'done') {
             return 1;
         } else if (a.status !== 'done' && b.status === 'done') {
