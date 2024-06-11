@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     TouchableOpacity,
@@ -11,34 +11,20 @@ import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import styles from '../Styles';
 import EmojiSelector from '@raasz/customisable-react-native-emoji-selector';
 import { updateUser } from '../hooks/api';
-import { checkAuthentication, getAccessToken } from '../authStorage';
+import { getAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
+import { useUser } from '../context/UserContext';
 
 export default function EmojiPickerModal({
     visible,
     onClose,
     onEmojiSelect,
-    selectedEmoji,
     selectedColor
 }) {
-    const [userId, setUserId] = useState(null);
     const [pressedItem, setPressedItem] = useState(null);
     const toast = useToast();
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const userData = await checkAuthentication();
-                if (userData) {
-                    setUserId(userData.userId);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
-    }, []);
+    const { userData } = useUser();
 
     const handlePress = async (emoji) => {
         setPressedItem(emoji);
@@ -49,7 +35,7 @@ export default function EmojiPickerModal({
             const userDataToUpdate = {
                 emoji: emoji
             };
-            await updateUser(userId, userDataToUpdate, accessToken);
+            await updateUser(userData?.userId, userDataToUpdate, accessToken);
             toast.show('Emoji changed successfully', { type: 'success' });
 
             onClose();

@@ -15,17 +15,8 @@ import { verifyOtp } from '../hooks/api';
 import { storeAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { handleResend } from '../hooks/handleResend';
-
-const OTP_LENGTH = 6;
-
-const validationSchema = yup.object().shape({
-    otp: yup
-        .string()
-        .required('Code is required')
-        .matches(/^\d+$/, 'Code must be numeric')
-        .min(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`)
-        .max(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`)
-});
+import { otpValidationSchema } from '../utils/validationSchemas';
+import { OTP_LENGTH } from '../constants/variables';
 
 export default function VerifyNumberScreen({ route, navigation }) {
     const { phoneNumber, userId } = route.params;
@@ -91,7 +82,7 @@ export default function VerifyNumberScreen({ route, navigation }) {
             <Formik
                 initialValues={{ otp: '' }}
                 onSubmit={() => {}}
-                validationSchema={validationSchema}
+                validationSchema={otpValidationSchema}
             >
                 {({ handleChange, setErrors, errors, touched }) => (
                     <View style={[styles.container, styles.authContainer]}>

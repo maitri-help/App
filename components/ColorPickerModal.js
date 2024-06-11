@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
     View,
     TouchableOpacity,
@@ -11,8 +11,10 @@ import Modal from '../components/Modal';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import styles from '../Styles';
 import { updateUser } from '../hooks/api';
-import { checkAuthentication, getAccessToken } from '../authStorage';
+import { getAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
+import { useUser } from '../context/UserContext';
+import { COLORS } from '../constants/variables';
 
 export default function ColorPickerModal({
     visible,
@@ -20,31 +22,9 @@ export default function ColorPickerModal({
     onColorSelect,
     selectedColor
 }) {
-    const colors = [
-        '#A3C0FC',
-        '#AC7AFC',
-        '#9EDE73',
-        '#6CD3CE',
-        '#FF9A00',
-        '#FF4E92'
-    ];
-    const [userId, setUserId] = useState(null);
     const toast = useToast();
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const userData = await checkAuthentication();
-                if (userData) {
-                    setUserId(userData.userId);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
-    }, []);
+    const { userData } = useUser();
 
     const handlePress = async (color) => {
         onColorSelect(color);
@@ -54,7 +34,7 @@ export default function ColorPickerModal({
             const userDataToUpdate = {
                 color: color
             };
-            await updateUser(userId, userDataToUpdate, accessToken);
+            await updateUser(userData?.userId, userDataToUpdate, accessToken);
             toast.show('Color changed successfully', { type: 'success' });
 
             onClose();
@@ -94,7 +74,7 @@ export default function ColorPickerModal({
             <FlatList
                 style={stylesColor.colorListWrapper}
                 contentContainerStyle={stylesColor.colorListContent}
-                data={colors}
+                data={COLORS}
                 numColumns={3}
                 keyExtractor={(color) => color}
                 renderItem={({ item: color }) => (

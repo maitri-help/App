@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -10,32 +10,12 @@ import {
 import Modal from '../components/Modal';
 import styles from '../Styles';
 import ShareIcon from '../assets/icons/share-icon.svg';
-import {
-    checkAuthentication,
-    clearUserData,
-    clearAccessToken
-} from '../authStorage';
+
 import { APPLE_STORE_URL, GOOGLE_STORE_URL } from '../constants/config';
+import { useUser } from '../context/UserContext';
 
-export default function SendInviteScreen({ visible, onClose, navigation }) {
-    const [userTribeCode, setUserTribeCode] = useState('');
-
-    useEffect(() => {
-        async function fetchTribeCode() {
-            try {
-                const userData = await checkAuthentication();
-                if (userData) {
-                    setUserTribeCode(userData.tribeCode);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-                navigation.navigate('Login');
-            }
-        }
-        fetchTribeCode();
-    }, []);
+export default function SendInviteScreen({ visible, onClose }) {
+    const { userData } = useUser();
 
     const shareTribeCode = async () => {
         try {
@@ -47,7 +27,7 @@ After you download the app, use my unique invite code to find me.
 ${APPLE_STORE_URL}
 ${GOOGLE_STORE_URL}
 
-${userTribeCode}`
+${userData?.tribeCode}`
             });
         } catch (error) {
             console.error('Error sharing tribe code:', error);
@@ -77,7 +57,9 @@ ${userTribeCode}`
                     <Text style={stylesInvite.tribeCodeLabel}>
                         Your Tribe Code:
                     </Text>
-                    <Text style={stylesInvite.tribeCode}>{userTribeCode}</Text>
+                    <Text style={stylesInvite.tribeCode}>
+                        {userData?.tribeCode}
+                    </Text>
                 </View>
                 <View style={stylesInvite.sendInviteWrapper}>
                     <View style={stylesInvite.sendInvite}>

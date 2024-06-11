@@ -6,7 +6,7 @@ import { useToast } from 'react-native-toast-notifications';
 import IdentifyAlmostThereScreen from './IdentifyAlmostThereScreen';
 import ThankYouScreen from './ThankYouScreen';
 import { joinTribe, updateUserType } from '../hooks/api';
-import { updateUserTypeInStorage, checkAuthentication } from '../authStorage';
+import { updateUserTypeInStorage } from '../authStorage';
 import RoleSelector from '../components/RoleSelector';
 
 export default function IdentifyScreen({ navigation, route }) {
@@ -18,20 +18,6 @@ export default function IdentifyScreen({ navigation, route }) {
 
     const [isLoading, setIsLoading] = useState(false);
     const { userId } = route.params;
-
-    useEffect(() => {
-        async function fetchUserData() {
-            try {
-                const userData = await checkAuthentication();
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-                navigation.navigate('Login');
-            }
-        }
-        fetchUserData();
-    }, []);
 
     useEffect(() => {
         if (almostThereModalVisible || thankYouModalVisible) {

@@ -150,7 +150,6 @@ const LeadBoxes = ({
             <SendInviteScreen
                 visible={sendInvitesModalVisible}
                 onClose={() => setSendInvitesModalVisible(false)}
-                navigation={navigation}
             />
         </View>
     );

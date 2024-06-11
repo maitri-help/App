@@ -208,7 +208,6 @@ export default function SuppIDScreen({ navigation }) {
                 visible={emojiModalVisible}
                 onClose={() => setEmojiModalVisible(false)}
                 onEmojiSelect={handleEmojiSelect}
-                selectedEmoji={selectedEmoji}
                 selectedColor={selectedColor}
             />
         </>
