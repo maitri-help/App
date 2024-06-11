@@ -35,10 +35,6 @@ export default function EditForm({
     setCurrentStep,
     onBack,
     setReviewFormCurrentStep,
-    firstName,
-    lastName,
-    color,
-    emoji,
     onClose,
     isEditable,
     setIsEditable,
@@ -397,26 +393,31 @@ export default function EditForm({
                         ]}
                     >
                         <Text style={stylesReview.groupTitle}>Assignee</Text>
-                        {firstName && lastName && (
-                            <View style={stylesReview.assignee}>
-                                <View
-                                    style={[
-                                        stylesReview.emojiWrapper,
-                                        { borderColor: color }
-                                    ]}
-                                >
-                                    <Text style={stylesReview.emoji}>
-                                        {emoji}
-                                    </Text>
-                                </View>
+                        {task?.assignee?.firstName &&
+                            task?.assignee?.lastName && (
+                                <View style={stylesReview.assignee}>
+                                    <View
+                                        style={[
+                                            stylesReview.emojiWrapper,
+                                            {
+                                                borderColor:
+                                                    task?.assignee?.color
+                                            }
+                                        ]}
+                                    >
+                                        <Text style={stylesReview.emoji}>
+                                            {task?.assignee?.emoji}
+                                        </Text>
+                                    </View>
 
-                                <View style={stylesReview.nameWrapper}>
-                                    <Text style={stylesReview.name}>
-                                        {firstName} {lastName}
-                                    </Text>
+                                    <View style={stylesReview.nameWrapper}>
+                                        <Text style={stylesReview.name}>
+                                            {task?.assignee?.firstName}{' '}
+                                            {task?.assignee?.lastName}
+                                        </Text>
+                                    </View>
                                 </View>
-                            </View>
-                        )}
+                            )}
                     </View>
                 </View>
                 {isEditable && (

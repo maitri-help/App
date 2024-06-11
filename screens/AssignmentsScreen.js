@@ -35,10 +35,6 @@ export default function AssignmentsScreen({ navigation }) {
     });
     const [selectedDate, setSelectedDate] = useState(defaultSelectedDate);
 
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [color, setColor] = useState('');
-    const [emoji, setEmoji] = useState('');
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
 
@@ -158,14 +154,6 @@ export default function AssignmentsScreen({ navigation }) {
                 onClose={handleTaskModalClose}
                 selectedTask={selectedTask}
                 setSelectedTask={setSelectedTask}
-                firstName={firstName}
-                setFirstName={setFirstName}
-                lastName={lastName}
-                setLastName={setLastName}
-                color={color}
-                setColor={setColor}
-                emoji={emoji}
-                setEmoji={setEmoji}
                 isEditable={isEditable}
                 setIsEditable={setIsEditable}
             />

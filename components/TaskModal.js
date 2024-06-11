@@ -7,10 +7,6 @@ import EditForm from './plusModalSteps/EditForm';
 export default function TaskModal({
     visible,
     onClose,
-    firstName,
-    lastName,
-    color,
-    emoji,
     selectedTask,
     isEditable,
     setIsEditable,
@@ -42,10 +38,6 @@ export default function TaskModal({
                     setCurrentStep={setCurrentStep}
                     reviewFormCurrentStep={reviewFormCurrentStep}
                     setReviewFormCurrentStep={setReviewFormCurrentStep}
-                    firstName={firstName}
-                    lastName={lastName}
-                    color={color}
-                    emoji={emoji}
                     isEditable={isEditable}
                     setIsEditable={setIsEditable}
                     task={selectedTask}
