@@ -111,7 +111,7 @@ export default function TaskItem({
                             isDue && styles.dueText
                         ]}
                     >
-                        {task.title} {`${task.status}`} {`${isChecked}`}
+                        {task.title}
                     </Text>
                     {isPersonal ? (
                         <Text

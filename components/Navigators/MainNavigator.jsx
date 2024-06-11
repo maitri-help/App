@@ -1,58 +1,100 @@
+import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import HomeIcon from '../../assets/icons/home-icon.svg';
-import AssignmentsCheckIcon from '../../assets/icons/assignments-check-icon.svg';
-import CirclesIcon from '../../assets/icons/circles-icon.svg';
-import ProfileIcon from '../../assets/icons/profile-icon.svg';
-import HomeScreen from '../../screens/HomeScreen';
-import AssignmentsScreen from '../../screens/AssignmentsScreen';
-import CirclesScreen from '../../screens/CirclesScreen';
-import ProfileScreen from '../../screens/ProfileScreen';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import NotificationsScreen from '../../screens/NotificationsScreen';
+import PendingRequestScreen from '../../screens/PendingRequestScreen';
+import LoginScreen from '../../screens/LoginScreen';
+import RegisterScreen from '../../screens/RegisterScreen';
+import VerifyNumberScreen from '../../screens/VerifyNumberScreen';
+import AlmostThereScreen from '../../screens/AlmostThereScreen';
+import SuccessScreen from '../../screens/SuccessScreen';
+import OnboardingScreen from '../../screens/OnboardingScreen';
+import IdentifyScreen from '../../screens/IdentifyScreen';
+import SuppGreatNewsScreen from '../../screens/SuppGreatNewsScreen';
+import SuppIDScreen from '../../screens/SuppIDScreen';
+import SuppNavigator from './SuppNavigator';
+import LeadNavigator from './LeadNavigator';
+import { useUser } from '../../context/UserContext';
 
-const Tab = createBottomTabNavigator();
-
-function MainNavigator() {
+const Stack = createStackNavigator();
+const MainNavigator = () => {
+    const { userData, isLoggedIn, hasCompletedOnboarding } = useUser();
     return (
-        <Tab.Navigator
-            screenOptions={({ route }) => ({
-                tabBarIcon: ({ color }) => {
-                    if (route.name === 'Home') {
-                        return (
-                            <HomeIcon color={color} width={19} height={19} />
-                        );
-                    } else if (route.name === 'Assignments') {
-                        return (
-                            <AssignmentsCheckIcon
-                                color={color}
-                                width={19}
-                                height={19}
-                            />
-                        );
-                    } else if (route.name === 'Circles') {
-                        return (
-                            <CirclesIcon color={color} width={21} height={21} />
-                        );
-                    } else if (route.name === 'Profile') {
-                        return (
-                            <ProfileIcon color={color} width={19} height={19} />
-                        );
-                    }
-                },
-                tabBarActiveTintColor: '#1C4837',
-                tabBarInactiveTintColor: '#C7C7C7',
-                tabBarShowLabel: false,
-                tabBarStyle: {
-                    backgroundColor: '#F5F5F5'
-                },
-                headerShown: false
-            })}
-        >
-            <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Assignments" component={AssignmentsScreen} />
-            <Tab.Screen name="Circles" component={CirclesScreen} />
-            <Tab.Screen name="Profile" component={ProfileScreen} />
-        </Tab.Navigator>
+        <>
+            <Stack.Navigator
+                initialRouteName={
+                    !isLoggedIn
+                        ? hasCompletedOnboarding
+                            ? 'Login'
+                            : 'Onboarding'
+                        : userData && userData?.userType === 'Supporter'
+                        ? 'MainSupporter'
+                        : 'Main'
+                }
+                screenOptions={{ headerShown: false }}
+            >
+                {!isLoggedIn || !hasCompletedOnboarding ? (
+                    <Stack.Screen
+                        name="Onboarding"
+                        component={OnboardingScreen}
+                        options={{ gestureEnabled: false }}
+                    />
+                ) : null}
+                <Stack.Screen
+                    name="Main"
+                    component={LeadNavigator}
+                    options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen
+                    name="MainSupporter"
+                    component={SuppNavigator}
+                    options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen
+                    name="Login"
+                    component={LoginScreen}
+                    options={{ gestureEnabled: !isLoggedIn }}
+                />
+                <Stack.Screen
+                    name="Register"
+                    component={RegisterScreen}
+                    options={{ gestureEnabled: !isLoggedIn }}
+                />
+                <Stack.Screen
+                    name="VerifyNumber"
+                    component={VerifyNumberScreen}
+                    options={{ gestureEnabled: !isLoggedIn }}
+                />
+                <Stack.Screen
+                    name="AlmostThere"
+                    component={AlmostThereScreen}
+                    options={{ gestureEnabled: !isLoggedIn }}
+                />
+                <Stack.Screen
+                    name="Success"
+                    component={SuccessScreen}
+                    options={{ gestureEnabled: !isLoggedIn }}
+                />
+                <Stack.Screen
+                    name="Identify"
+                    component={IdentifyScreen}
+                    options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen
+                    name="Notifications"
+                    component={NotificationsScreen}
+                />
+                <Stack.Screen
+                    name="PendingRequest"
+                    component={PendingRequestScreen}
+                />
+                <Stack.Screen
+                    name="SuppGreatNews"
+                    component={SuppGreatNewsScreen}
+                />
+                <Stack.Screen name="SuppID" component={SuppIDScreen} />
+            </Stack.Navigator>
+        </>
     );
-}
+};
 
 export default MainNavigator;

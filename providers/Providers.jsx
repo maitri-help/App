@@ -3,6 +3,7 @@ import { LocationProvider } from './LocationProvider';
 import { ToastProvider } from 'react-native-toast-notifications';
 import styles from '../Styles';
 import { TaskProvider } from './TaskProvider';
+import { UserProvider } from './UserProvider';
 
 export function Providers({ children }) {
     return (
@@ -22,9 +23,11 @@ export function Providers({ children }) {
                 )
             }}
         >
-            <TaskProvider>
-                <LocationProvider>{children}</LocationProvider>
-            </TaskProvider>
+            <UserProvider>
+                <TaskProvider>
+                    <LocationProvider>{children}</LocationProvider>
+                </TaskProvider>
+            </UserProvider>
         </ToastProvider>
     );
 }
