@@ -8,7 +8,6 @@ import {
     SafeAreaView
 } from 'react-native';
 import { Formik } from 'formik';
-import * as yup from 'yup';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import { verifyOtp, getUser } from '../hooks/api';
@@ -23,6 +22,7 @@ import { handleResend } from '../hooks/handleResend';
 import { OneSignal } from 'react-native-onesignal';
 import { OTP_LENGTH } from '../constants/variables';
 import { otpValidationSchema } from '../utils/validationSchemas';
+import { useUser } from '../context/UserContext';
 
 export default function AlmostThereScreen({ route, navigation }) {
     const { phoneNumber, userId } = route.params;
@@ -33,6 +33,7 @@ export default function AlmostThereScreen({ route, navigation }) {
     const [countdown, setCountdown] = useState(30);
     const [resendClickable, setResendClickable] = useState(false);
 
+    const { setUserData } = useUser();
     useEffect(() => {
         const timer = setInterval(() => {
             setCountdown((prevCount) => {
@@ -78,6 +79,7 @@ export default function AlmostThereScreen({ route, navigation }) {
                         const userData = response.data;
                         const userType = userData.userType;
 
+                        setUserData({ ...userData, accessToken });
                         if (userType === 'default') {
                             navigation.navigate('Identify', { userId });
                         } else if (userType === 'Supporter') {

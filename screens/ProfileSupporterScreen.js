@@ -33,7 +33,7 @@ export default function ProfileSupporterScreen({ navigation }) {
     const handleLogout = async () => {
         try {
             await clearUserData();
-            setUserData({});
+            setUserData(null);
             setTasks([]);
             OneSignal.logout();
             navigation.reset({

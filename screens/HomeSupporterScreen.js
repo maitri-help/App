@@ -49,7 +49,7 @@ export default function HomeSupporterScreen({ navigation }) {
 
     useEffect(() => {
         setRandomInspirationalQuote(generateRandomQuote(inspirationalQuotes));
-    }, [tasks.length]);
+    }, [tasks?.length]);
 
     useEffect(() => {
         const fetchLeadUserData = async () => {
@@ -170,7 +170,7 @@ export default function HomeSupporterScreen({ navigation }) {
             );
         }
 
-        if (filteredTasks.length === 0) {
+        if (filteredTasks?.length === 0) {
             return (
                 <View style={stylesSuppHome.tasksContainer}>
                     <ScrollView
@@ -210,7 +210,7 @@ export default function HomeSupporterScreen({ navigation }) {
 
         const displayedTasks = filteredTasks.slice(
             0,
-            showAllOpenTasks || showAllMyTasks ? filteredTasks.length : 3
+            showAllOpenTasks || showAllMyTasks ? filteredTasks?.length : 3
         );
 
         return (
@@ -234,10 +234,10 @@ export default function HomeSupporterScreen({ navigation }) {
                             />
                         )
                     )}
-                    {(filteredTasks.length > 3 &&
+                    {(filteredTasks?.length > 3 &&
                         !showAllOpenTasks &&
                         activeTab === 'Open') ||
-                    (filteredTasks.length > 3 &&
+                    (filteredTasks?.length > 3 &&
                         !showAllMyTasks &&
                         activeTab === 'My') ? (
                         <TouchableOpacity
@@ -304,7 +304,7 @@ export default function HomeSupporterScreen({ navigation }) {
                                     paddingRight: 10
                                 }}
                             >
-                                {tasks.length > 0 ? (
+                                {tasks?.length > 0 ? (
                                     <Text
                                         style={
                                             stylesSuppHome.inspirationalQuoteText
@@ -376,7 +376,7 @@ export default function HomeSupporterScreen({ navigation }) {
                     </View>
                 ) : (
                     <>
-                        {tasks.length > 0 && (
+                        {tasks?.length > 0 && (
                             <View style={stylesSuppHome.tabsContentContainer}>
                                 {renderTasks(tasks)}
                             </View>

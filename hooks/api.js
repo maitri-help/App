@@ -176,13 +176,12 @@ export const fetchTasks = async (userData) => {
     if (!userData) return [];
 
     if (userData.userType === 'Lead') {
-        const res = await getTasksForUser(
-            userData.userId,
-            userData.accessToken
-        );
-        return res.data;
+        return await getTasksForUser(userData.userId, userData.accessToken)
+            .then((res) => res.data)
+            .catch((err) => console.log(err.response.data.message));
     } else {
-        const res = await getLeadUser(userData?.accessToken);
-        return res.data[0].tasks;
+        return await getLeadUser(userData?.accessToken)
+            .then((res) => res.data[0].tasks)
+            .catch((err) => console.log(err.response.data.message));
     }
 };

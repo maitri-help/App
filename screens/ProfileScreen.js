@@ -30,7 +30,7 @@ export default function ProfileScreen({ navigation }) {
         try {
             OneSignal.logout();
             await clearUserData();
-            setUserData({});
+            setUserData(null);
             setTasks([]);
             navigation.reset({
                 index: 0,

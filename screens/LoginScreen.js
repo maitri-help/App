@@ -17,17 +17,15 @@ import styles from '../Styles';
 import handleSignIn from '../hooks/handleSignIn';
 import { useToast } from 'react-native-toast-notifications';
 import { loginValidationSchema } from '../utils/validationSchemas';
-import { useUser } from '../context/UserContext';
 
 export default function LoginScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const toast = useToast();
-    const { setUserData } = useUser();
 
     const handleFormSubmit = async (values) => {
         try {
             const userData = await handleSignIn(values);
-            setUserData(userData);
+
             toast.show('Code is sent to: ' + values.phoneNumber, {
                 type: 'success'
             });
