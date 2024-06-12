@@ -50,7 +50,7 @@ export default function OpenTasksSupporterScreen() {
 
     useEffect(() => {
         filterTasks();
-    }, [taskRemoval]);
+    }, [taskRemoval, tasks]);
 
     useEffect(() => {
         if (taskModalVisible || isFilterOpen) {
