@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     TouchableOpacity,
@@ -11,9 +11,8 @@ import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import styles from '../Styles';
 import EmojiSelector from '@raasz/customisable-react-native-emoji-selector';
 import { updateUser } from '../hooks/api';
-import { getAccessToken } from '../authStorage';
+import { checkAuthentication, getAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
-import { useUser } from '../context/UserContext';
 
 export default function EmojiPickerModal({
     visible,
@@ -24,7 +23,22 @@ export default function EmojiPickerModal({
     const [pressedItem, setPressedItem] = useState(null);
     const toast = useToast();
 
-    const { userData } = useUser();
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const userData = await checkAuthentication();
+                if (userData) {
+                    setUserData(userData);
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, []);
 
     const handlePress = async (emoji) => {
         setPressedItem(emoji);
