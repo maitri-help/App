@@ -173,6 +173,18 @@ export default function ProfileSupporterScreen({ navigation }) {
                                     style={stylesProfile.link}
                                     onPress={() =>
                                         Linking.openURL(
+                                            'https://docs.google.com/forms/d/19ZBmxPhj-EFbeM-HVExMkpEcQPfajSOBh2MXulrcNUI/edit'
+                                        )
+                                    }
+                                >
+                                    <Text style={stylesProfile.linkText}>
+                                        Report an issue
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={stylesProfile.link}
+                                    onPress={() =>
+                                        Linking.openURL(
                                             'https://www.maitrihelp.com/terms-conditions'
                                         )
                                     }
