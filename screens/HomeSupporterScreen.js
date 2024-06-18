@@ -122,7 +122,6 @@ export default function HomeSupporterScreen({ navigation }) {
                     }
                 }
             } else {
-                console.error('No user data found');
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'Login' }]

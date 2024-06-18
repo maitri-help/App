@@ -67,7 +67,6 @@ export default function HomeScreen({ navigation }) {
                 );
                 setHasUnreadPendingRequest(hasUnreadPending);
             } else {
-                console.error('No user data found');
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'Login' }]

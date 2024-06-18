@@ -78,7 +78,6 @@ export default function AlmostThereScreen({ route, navigation }) {
                     .then((response) => {
                         const userData = response.data;
                         const userType = userData.userType;
-
                         setUserData({ ...userData, accessToken });
                         if (userType === 'default') {
                             navigation.navigate('Identify', { userId });

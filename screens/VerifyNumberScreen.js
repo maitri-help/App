@@ -8,19 +8,20 @@ import {
     SafeAreaView
 } from 'react-native';
 import { Formik } from 'formik';
-import * as yup from 'yup';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
-import { verifyOtp } from '../hooks/api';
-import { storeAccessToken } from '../authStorage';
+import { getUser, verifyOtp } from '../hooks/api';
+import { clearUserData, storeAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { handleResend } from '../hooks/handleResend';
 import { otpValidationSchema } from '../utils/validationSchemas';
 import { OTP_LENGTH } from '../constants/variables';
+import { useUser } from '../context/UserContext';
 
 export default function VerifyNumberScreen({ route, navigation }) {
     const { phoneNumber, userId } = route.params;
     const toast = useToast();
+    const { setUserData } = useUser();
 
     const otpInputRef = useRef([]);
     const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
@@ -66,6 +67,16 @@ export default function VerifyNumberScreen({ route, navigation }) {
                 const accessToken = response.data.accessToken;
                 storeAccessToken(accessToken);
 
+                getUser(phoneNumber)
+                    .then((response) => {
+                        const userData = response.data;
+                        setUserData({ ...userData, accessToken });
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching user data:', error);
+                        clearUserData();
+                        navigation.navigate('Login');
+                    });
                 navigation.navigate('Success', { userId });
                 toast.show('Signed in successfully', { type: 'success' });
             })
