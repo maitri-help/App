@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
     TouchableOpacity,
     StyleSheet,
-    Platform,
-    Modal,
-    Linking
+    Platform
 } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
@@ -18,53 +16,17 @@ import ModalCustom from '../Modal';
 import { ScrollView } from 'react-native-gesture-handler';
 import CalendarIcon from '../../assets/icons/calendar-icon.svg';
 import * as Calendar from 'expo-calendar';
+import { formatTaskItemDate } from '../../helpers/date';
+import RejectTaskModal from '../Modals/RejectTaskModal';
+import CalendarPermissionModal from '../Modals/CalendarPermissionModal';
+import { useTask } from '../../context/TaskContext';
+import { sortTasksByStartDate } from '../../helpers/task.helpers';
 
-export default function TaskDetailsModal({
-    visible,
-    selectedTask,
-    onClose,
-    updateTask
-}) {
-    const [dateTimeText, setDateTimeText] = useState(null);
+export default function MyTaskDetailsModal({ visible, selectedTask, onClose }) {
     const toast = useToast();
 
-    const [taskId, setTaskId] = useState(null);
-    const [taskName, setTaskName] = useState(null);
-    const [description, setDescription] = useState(null);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [startDateTime, setStartDateTime] = useState(null);
-    const [endDateTime, setEndDateTime] = useState(null);
     const [showInnerModal, setShowInnerModal] = useState(false);
-
-    useEffect(() => {
-        if (selectedTask) {
-            setTaskId(selectedTask.taskId);
-            setTaskName(selectedTask.title);
-            setDescription(selectedTask.description);
-            setSelectedLocation(selectedTask.location);
-
-            setStartDateTime(selectedTask.startDateTime);
-            setEndDateTime(selectedTask.endDateTime);
-        }
-    }, [selectedTask, setStartDateTime, setEndDateTime]);
-
-    useEffect(() => {
-        if (startDateTime && endDateTime) {
-            const options = {
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            };
-            const start = new Date(startDateTime).toLocaleString(
-                'en-US',
-                options
-            );
-            const end = new Date(endDateTime).toLocaleString('en-US', options);
-            setDateTimeText(`${start} - ${end}`);
-        }
-    }, [startDateTime, endDateTime]);
+    const { setTasks } = useTask();
 
     const openInnerModal = () => {
         setShowInnerModal(true);
@@ -86,14 +48,29 @@ export default function TaskDetailsModal({
                 return;
             }
 
-            await unassingUserToTask(taskId, accessToken);
+            const res = await unassingUserToTask(
+                selectedTask?.taskId,
+                accessToken
+            );
+
+            setTasks((prev) => {
+                //remove the updated task from the list
+                const filteredTasks = prev.filter(
+                    (task) => task.taskId !== res.data?.taskId
+                );
+
+                const newTasks = sortTasksByStartDate([
+                    res.data,
+                    ...filteredTasks
+                ]);
+                return newTasks;
+            });
 
             toast.show('Unassigned from task successfully', {
                 type: 'success'
             });
 
             onClose();
-            updateTask();
         } catch (error) {
             console.error('Error updating task:', error);
 
@@ -133,10 +110,10 @@ export default function TaskDetailsModal({
         }
 
         const event = {
-            title: taskName,
-            startDate: new Date(startDateTime),
-            endDate: new Date(endDateTime),
-            notes: description
+            title: selectedTask?.title,
+            startDate: new Date(selectedTask?.startDate),
+            endDate: new Date(selectedTask?.endDate),
+            notes: selectedTask?.description
         };
 
         await Calendar.createEventAsync(defaultCalendar.id, event)
@@ -147,11 +124,6 @@ export default function TaskDetailsModal({
                 console.error('Error adding event to calendar:', error);
                 toast.show('Error adding event to calendar', { type: 'error' });
             });
-    };
-
-    const handleGoToSettings = () => {
-        Linking.openSettings();
-        setCalendarPermissionNeeded(false);
     };
 
     return (
@@ -169,15 +141,24 @@ export default function TaskDetailsModal({
                         />
                     </TouchableOpacity>
                     <Text style={[stylesModal.field, stylesModal.fieldTask]}>
-                        {taskName}
+                        {selectedTask?.title}
                     </Text>
                 </View>
             </View>
-            <View style={[styles.contentContainer, stylesModal.topDescription]}>
-                <View style={stylesModal.topDescription}>
-                    <Text style={[styles.text]}>{description}</Text>
+            {selectedTask?.description && (
+                <View
+                    style={[
+                        styles.contentContainer,
+                        stylesModal.topDescription
+                    ]}
+                >
+                    <View style={stylesModal.topDescription}>
+                        <Text style={[styles.text]}>
+                            {selectedTask?.description}
+                        </Text>
+                    </View>
                 </View>
-            </View>
+            )}
             <View style={{ flex: 1 }}>
                 <ScrollView>
                     <View style={[stylesModal.group, stylesModal.groupFirst]}>
@@ -192,35 +173,33 @@ export default function TaskDetailsModal({
                             </Text>
                             <View style={stylesModal.fieldWrapper}>
                                 <Text style={stylesModal.fieldText}>
-                                    {dateTimeText}
+                                    {formatTaskItemDate(selectedTask)}
                                 </Text>
                             </View>
                         </View>
                     </View>
-                    <View style={stylesModal.group}>
-                        <View
-                            style={[
-                                styles.contentContainer,
-                                stylesModal.groupInner
-                            ]}
-                        >
-                            <Text style={stylesModal.groupTitle}>Location</Text>
-                            <View style={stylesModal.fieldWrapper}>
-                                <LocationPicker
-                                    selectedLocation={selectedLocation}
-                                    disabled
-                                />
+                    {selectedTask?.location && (
+                        <View style={stylesModal.group}>
+                            <View
+                                style={[
+                                    styles.contentContainer,
+                                    stylesModal.groupInner
+                                ]}
+                            >
+                                <Text style={stylesModal.groupTitle}>
+                                    Location
+                                </Text>
+                                <View style={stylesModal.fieldWrapper}>
+                                    <LocationPicker
+                                        selectedLocation={
+                                            selectedTask?.location
+                                        }
+                                        disabled
+                                    />
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    {/* <View style={[stylesModal.group, { borderBottomWidth: 0 }]}>
-                        <View style={[styles.contentContainer, stylesModal.groupInner]}>
-                            <Text style={[stylesModal.groupTitle]}>Notes</Text>
-                            <Text style={stylesModal.fieldText}>
-                                {description}
-                            </Text>
-                        </View>
-                    </View> */}
+                    )}
                 </ScrollView>
             </View>
 
@@ -255,105 +234,18 @@ export default function TaskDetailsModal({
             </View>
 
             {showInnerModal && (
-                <Modal
-                    visible={showInnerModal}
-                    animationType="fade"
-                    onRequestClose={closeInnerModal}
-                    transparent
-                >
-                    <TouchableOpacity
-                        onPress={closeInnerModal}
-                        style={stylesModal.innerModalContainer}
-                    >
-                        <View style={stylesModal.innerModalContent}>
-                            <View style={stylesModal.innerModalTexts}>
-                                <Text style={stylesModal.innerModalTitle}>
-                                    You are about to remove this task from your
-                                    list
-                                </Text>
-                            </View>
-                            <View style={stylesModal.innerModalButtons}>
-                                <TouchableOpacity
-                                    style={[
-                                        stylesModal.innerModalButton,
-                                        stylesModal.innerModalButtonGreen
-                                    ]}
-                                    onPress={handleSubmit}
-                                >
-                                    <Text
-                                        style={[
-                                            stylesModal.innerModalButtonText,
-                                            stylesModal.innerModalButtonGreenText
-                                        ]}
-                                    >
-                                        Remove
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[
-                                        stylesModal.innerModalButton,
-                                        stylesModal.innerModalButtonWhite
-                                    ]}
-                                    onPress={closeInnerModal}
-                                >
-                                    <Text
-                                        style={[
-                                            stylesModal.innerModalButtonText,
-                                            stylesModal.innerModalButtonWhiteText
-                                        ]}
-                                    >
-                                        Cancel
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                </Modal>
+                <RejectTaskModal
+                    showInnerModal={showInnerModal}
+                    closeInnerModal={closeInnerModal}
+                    handleSubmit={handleSubmit}
+                />
             )}
 
             {calendarPermissionNeeded && (
-                <Modal
-                    visible={calendarPermissionNeeded}
-                    onRequestClose={() => console.log('close')}
-                    animationType="fade"
-                    transparent
-                >
-                    <TouchableOpacity
-                        onPress={() => console.log('close')}
-                        style={stylesModal.innerModalContainer}
-                    >
-                        <View style={stylesModal.innerModalContent}>
-                            <View style={stylesModal.innerModalTexts}>
-                                <Text style={stylesModal.innerModalTitle}>
-                                    Please provide access for this app to your
-                                    calendar.
-                                </Text>
-                                <Text style={stylesModal.innerModalSubtitle}>
-                                    Without acces we cannot export this event to
-                                    your calendar.
-                                </Text>
-                            </View>
-                            <View style={stylesModal.innerModalButtons}>
-                                <TouchableOpacity
-                                    style={[
-                                        stylesModal.innerModalButton,
-                                        stylesModal.innerModalButtonRed
-                                    ]}
-                                    onPress={handleGoToSettings}
-                                >
-                                    <Text
-                                        style={[
-                                            stylesModal.innerModalButtonText,
-                                            stylesModal.innerModalButtonRedText
-                                        ]}
-                                    >
-                                        Go to Settings
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                </Modal>
+                <CalendarPermissionModal
+                    calendarPermissionNeeded={calendarPermissionNeeded}
+                    setCalendarPermissionNeeded={setCalendarPermissionNeeded}
+                />
             )}
         </ModalCustom>
     );
@@ -438,75 +330,6 @@ const stylesModal = StyleSheet.create({
         textDecorationLine: 'underline',
         textAlign: 'center'
     },
-    innerModalContainer: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    innerModalContent: {
-        backgroundColor: '#fff',
-        borderRadius: 20,
-        maxWidth: 350,
-        paddingHorizontal: 20,
-        paddingVertical: 30
-    },
-    innerModalTexts: {
-        marginBottom: 20
-    },
-    innerModalTitle: {
-        color: '#000',
-        fontSize: 14,
-        fontFamily: 'poppins-regular',
-        lineHeight: 16,
-        textAlign: 'center',
-        marginBottom: 5
-    },
-    innerModalSubtitle: {
-        color: '#000',
-        fontSize: 12,
-        fontFamily: 'poppins-regular',
-        lineHeight: 16,
-        textAlign: 'center'
-    },
-    innerModalButtons: {
-        flexDirection: 'row',
-        gap: 10,
-        justifyContent: 'center'
-    },
-    innerModalButton: {
-        alignItems: 'center',
-        minWidth: 125,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 16,
-        shadowColor: Platform.OS === 'android' ? 'rgba(0,0,0,0.5)' : '#000',
-        shadowOffset: {
-            width: 0,
-            height: 3
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 8
-    },
-    innerModalButtonGreen: {
-        backgroundColor: '#1C4837'
-    },
-    innerModalButtonWhite: {
-        backgroundColor: '#fff'
-    },
-    innerModalButtonText: {
-        fontSize: 14,
-        fontFamily: 'poppins-medium',
-        lineHeight: 18
-    },
-    innerModalButtonGreenText: {
-        color: '#fff'
-    },
-    innerModalButtonWhiteText: {
-        color: '#000'
-    },
     calendarButtonContainer: {
         marginTop: 70,
         marginHorizontal: 35
@@ -534,74 +357,5 @@ const stylesModal = StyleSheet.create({
         fontFamily: 'poppins-regular',
         lineHeight: 18,
         color: '#fff'
-    },
-    innerModalContainer: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    innerModalContent: {
-        backgroundColor: '#fff',
-        borderRadius: 20,
-        maxWidth: 350,
-        paddingHorizontal: 20,
-        paddingVertical: 30
-    },
-    innerModalTexts: {
-        marginBottom: 20
-    },
-    innerModalTitle: {
-        color: '#000',
-        fontSize: 14,
-        fontFamily: 'poppins-regular',
-        lineHeight: 16,
-        textAlign: 'center',
-        marginBottom: 5
-    },
-    innerModalSubtitle: {
-        color: '#000',
-        fontSize: 12,
-        fontFamily: 'poppins-regular',
-        lineHeight: 16,
-        textAlign: 'center'
-    },
-    innerModalButtons: {
-        flexDirection: 'row',
-        gap: 10,
-        justifyContent: 'center'
-    },
-    innerModalButton: {
-        alignItems: 'center',
-        minWidth: 125,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 16,
-        shadowColor: Platform.OS === 'android' ? 'rgba(0,0,0,0.5)' : '#000',
-        shadowOffset: {
-            width: 0,
-            height: 3
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 8
-    },
-    innerModalButtonRed: {
-        backgroundColor: '#FF7070'
-    },
-    innerModalButtonWhite: {
-        backgroundColor: '#fff'
-    },
-    innerModalButtonText: {
-        fontSize: 14,
-        fontFamily: 'poppins-medium',
-        lineHeight: 18
-    },
-    innerModalButtonRedText: {
-        color: '#fff'
-    },
-    innerModalButtonWhiteText: {
-        color: '#000'
     }
 });

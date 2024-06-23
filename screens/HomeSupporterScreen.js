@@ -14,13 +14,8 @@ import {
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
 import MyTask from '../components/MyTask';
-import { getLeadUser } from '../hooks/api';
-import {
-    checkAuthentication,
-    clearUserData,
-    clearAccessToken,
-    getAccessToken
-} from '../authStorage';
+import { getLeadUser, getNotificationsForUser } from '../hooks/api';
+import { checkAuthentication, getAccessToken } from '../authStorage';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
 import initalBackground from '../assets/img/welcome-bg.png';
@@ -28,20 +23,20 @@ import { Platform } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { inspirationalQuotes } from '../constants/quotes';
 import { generateRandomQuote } from '../helpers';
+import ThankYouModal from '../components/supporter/ThankYouModal';
+import { StatusBar } from 'expo-status-bar';
+import Tab from '../components/common/Tab';
+import { useTask } from '../context/TaskContext';
+import { useUser } from '../context/UserContext';
 
 export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
-    const [firstName, setFirstName] = useState('');
-    const [userId, setUserId] = useState('');
-    const [color, setColor] = useState('');
-    const [emoji, setEmoji] = useState('');
-    const [leadId, setLeadId] = useState('');
-    const [leadFirstName, setLeadFirstName] = useState('Lead');
-    const [leadLastName, setLeadLastName] = useState('name');
+
+    const [leadUser, setLeadUser] = useState({});
     const [isViewActive, setIsViewActive] = useState(true);
     const [showAllOpenTasks, setShowAllOpenTasks] = useState(false);
     const [showAllMyTasks, setShowAllMyTasks] = useState(false);
-    const [tasks, setTasks] = useState([]);
+
     const [randomInspirationalQuote, setRandomInspirationalQuote] =
         useState('');
 
@@ -49,35 +44,12 @@ export default function HomeSupporterScreen({ navigation }) {
     const [myTaskModalVisible, setMyTaskModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-
-    const [isLoading, setIsLoading] = useState(false);
+    const { tasks, isLoading } = useTask();
+    const { userData } = useUser();
 
     useEffect(() => {
         setRandomInspirationalQuote(generateRandomQuote(inspirationalQuotes));
-    }, [tasks.length]);
-
-    useEffect(() => {
-        async function fetchUserData() {
-            setIsLoading(true);
-            try {
-                const userData = await checkAuthentication();
-                if (userData) {
-                    setUserId(userData.userId);
-                    setFirstName(userData.firstName);
-                    setColor(userData.color);
-                    setEmoji(userData.emoji);
-                }
-                setIsLoading(false);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-                navigation.navigate('Login');
-                setIsLoading(false);
-            }
-        }
-        fetchUserData();
-    }, []);
+    }, [tasks?.length]);
 
     useEffect(() => {
         const fetchLeadUserData = async () => {
@@ -86,9 +58,7 @@ export default function HomeSupporterScreen({ navigation }) {
 
                 const userData = await getLeadUser(accessToken);
 
-                setLeadFirstName(userData.data[0].firstName);
-                setLeadLastName(userData.data[0].lastName);
-                setLeadId(userData.data[0].userId);
+                setLeadUser(userData.data[0]);
             } catch (error) {
                 console.error('Error fetching lead user data:', error);
             }
@@ -97,34 +67,12 @@ export default function HomeSupporterScreen({ navigation }) {
         fetchLeadUserData();
     }, []);
 
-    async function fetchTasks() {
-        try {
-            if (leadId) {
-                const accessToken = await getAccessToken();
-
-                const tasksResponse = await getLeadUser(accessToken);
-
-                setTasks(tasksResponse.data[0].tasks);
-            } else {
-                console.error('No user data found or leadId not available');
-            }
-        } catch (error) {
-            console.error('Error fetching tasks:', error);
-        }
-    }
-
-    useFocusEffect(
-        useCallback(() => {
-            if (leadId) fetchTasks();
-        }, [leadId])
-    );
+    const leadUserName = `${leadUser?.firstName || 'Lead'} ${
+        leadUser?.lastName || 'Name'
+    }`;
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
-    };
-
-    const handleTaskStatusChange = () => {
-        fetchTasks();
     };
 
     useEffect(() => {
@@ -152,19 +100,76 @@ export default function HomeSupporterScreen({ navigation }) {
         setMyTaskModalVisible(false);
     };
 
+    const [thankYouNotifications, setThankYouNotifications] = useState([]);
+    const [thankYouModalVisible, setThankYouModalVisible] = useState(false);
+
+    async function fetchNotifications() {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const notificationsResponse = await getNotificationsForUser(
+                    userData?.userId,
+                    userData?.accessToken
+                );
+                const notificationsData = notificationsResponse.data;
+                if (notificationsData.length > 0) {
+                    const notificationsToShow = notificationsData.filter(
+                        (n) => n.type === 'thankyou' && !n.isRead
+                    );
+                    if (notificationsToShow.length > 0) {
+                        setThankYouNotifications(notificationsToShow);
+                        setThankYouModalVisible(true);
+                    }
+                }
+            } else {
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }]
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotifications();
+        }, [])
+    );
+
+    useEffect(() => {
+        if (thankYouModalVisible) {
+            Animated.timing(overlayOpacity, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: true
+            }).start();
+        } else {
+            Animated.timing(overlayOpacity, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: true
+            }).start();
+        }
+    }, [thankYouModalVisible]);
+
     const renderTasks = (tasks = []) => {
         let filteredTasks = tasks;
+
         if (activeTab === 'Open') {
             filteredTasks = tasks.filter(
                 (task) => task.status === 'undone' && !task.assignedUserId
             );
         } else if (activeTab === 'My') {
             filteredTasks = tasks.filter(
-                (task) => task.assignedUserId && task.assignedUserId === userId
+                (task) =>
+                    task.assignedUserId &&
+                    task.assignedUserId === userData?.userId
             );
         }
 
-        if (filteredTasks.length === 0) {
+        if (filteredTasks?.length === 0) {
             return (
                 <View style={stylesSuppHome.tasksContainer}>
                     <ScrollView
@@ -204,7 +209,7 @@ export default function HomeSupporterScreen({ navigation }) {
 
         const displayedTasks = filteredTasks.slice(
             0,
-            showAllOpenTasks || showAllMyTasks ? filteredTasks.length : 3
+            showAllOpenTasks || showAllMyTasks ? filteredTasks?.length : 3
         );
 
         return (
@@ -215,10 +220,6 @@ export default function HomeSupporterScreen({ navigation }) {
                             <OpenTask
                                 key={task.taskId}
                                 task={task}
-                                title={task.title}
-                                startTime={task.startDateTime}
-                                endTime={task.endDateTime}
-                                category={task.category}
                                 taskModal={() => setTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
                             />
@@ -226,27 +227,16 @@ export default function HomeSupporterScreen({ navigation }) {
                             <MyTask
                                 key={task.taskId}
                                 task={task}
-                                title={task.title}
-                                firstName={
-                                    task.assignee ? task.assignee.firstName : ''
-                                }
-                                lastName={
-                                    task.assignee ? task.assignee.lastName : ''
-                                }
-                                startTime={task.startDateTime}
-                                endTime={task.endDateTime}
-                                category={task.category}
                                 taskModal={() => setMyTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
                                 isCheckbox={true}
-                                onTaskStatusChange={handleTaskStatusChange}
                             />
                         )
                     )}
-                    {(filteredTasks.length > 3 &&
+                    {(filteredTasks?.length > 3 &&
                         !showAllOpenTasks &&
                         activeTab === 'Open') ||
-                    (filteredTasks.length > 3 &&
+                    (filteredTasks?.length > 3 &&
                         !showAllMyTasks &&
                         activeTab === 'My') ? (
                         <TouchableOpacity
@@ -268,26 +258,27 @@ export default function HomeSupporterScreen({ navigation }) {
 
     return (
         <>
+            <StatusBar style="dark" translucent={true} hidden={false} />
             <SafeAreaView style={styles.safeArea}>
                 <View style={stylesSuppHome.topBar}>
                     <View
                         style={[
                             stylesSuppHome.selectedEmojiItem,
-                            { borderColor: color }
+                            { borderColor: userData?.color }
                         ]}
                     >
                         <Text style={stylesSuppHome.selectedEmojiText}>
-                            {emoji}
+                            {userData?.emoji}
                         </Text>
                     </View>
                     <View style={{ flexShrink: 1 }}>
                         <Text style={stylesSuppHome.greetingsText}>
-                            Hey {firstName}
+                            Hey {userData?.firstName}
                         </Text>
                         <Text style={stylesSuppHome.thanksText}>
                             Thanks for being here for{' '}
                             <Text style={stylesSuppHome.nameText}>
-                                {leadFirstName} {leadLastName}!
+                                {leadUserName}!
                             </Text>
                         </Text>
                     </View>
@@ -312,7 +303,7 @@ export default function HomeSupporterScreen({ navigation }) {
                                     paddingRight: 10
                                 }}
                             >
-                                {tasks.length > 0 ? (
+                                {tasks?.length > 0 ? (
                                     <Text
                                         style={
                                             stylesSuppHome.inspirationalQuoteText
@@ -347,41 +338,31 @@ export default function HomeSupporterScreen({ navigation }) {
                         styles.contentContainer
                     ]}
                 >
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('Open')}
-                        style={[
-                            stylesSuppHome.tab,
-                            activeTab === 'Open' && stylesSuppHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesSuppHome.tabText,
-                                activeTab === 'Open' &&
-                                    stylesSuppHome.activeTabText
-                            ]}
-                        >
-                            Open tasks
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('My')}
-                        style={[
-                            stylesSuppHome.tab,
-                            activeTab === 'My' && stylesSuppHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesSuppHome.tabText,
-                                activeTab === 'My' &&
-                                    stylesSuppHome.activeTabText
-                            ]}
-                        >
-                            My tasks
-                        </Text>
-                    </TouchableOpacity>
+                    <Tab
+                        clickHandler={() => handleTabPress('Open')}
+                        label={'Open tasks'}
+                        isActive={activeTab === 'Open'}
+                    />
+                    <Tab
+                        clickHandler={() => handleTabPress('My')}
+                        label={'My tasks'}
+                        isActive={activeTab === 'My'}
+                    />
                 </View>
+                {leadUser?.awaitingApproval && (
+                    <View
+                        style={{
+                            maxWidth: '80%',
+                            marginHorizontal: 'auto',
+                            marginTop: 50
+                        }}
+                    >
+                        <Text style={stylesSuppHome.tasksDescription}>
+                            We are waiting for {leadUserName} to approve you in
+                            to their circle.
+                        </Text>
+                    </View>
+                )}
                 {isLoading ? (
                     <View
                         style={{
@@ -394,7 +375,7 @@ export default function HomeSupporterScreen({ navigation }) {
                     </View>
                 ) : (
                     <>
-                        {tasks.length > 0 && (
+                        {tasks?.length > 0 && (
                             <View style={stylesSuppHome.tabsContentContainer}>
                                 {renderTasks(tasks)}
                             </View>
@@ -414,7 +395,6 @@ export default function HomeSupporterScreen({ navigation }) {
                     visible={taskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
-                    updateTask={() => fetchTasks()}
                 />
             )}
 
@@ -424,6 +404,15 @@ export default function HomeSupporterScreen({ navigation }) {
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
                     updateTask={() => fetchTasks()}
+                />
+            )}
+
+            {thankYouModalVisible && (
+                <ThankYouModal
+                    visible={thankYouModalVisible}
+                    setVisible={setThankYouModalVisible}
+                    thankYouNotifications={thankYouNotifications}
+                    setThankYouNotifications={setThankYouNotifications}
                 />
             )}
         </>
@@ -501,26 +490,6 @@ const stylesSuppHome = StyleSheet.create({
         justifyContent: 'center',
         gap: 15,
         marginVertical: 10
-    },
-    tab: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderColor: '#1C4837',
-        borderWidth: 1,
-        borderRadius: 20,
-        alignItems: 'center'
-    },
-    activeTab: {
-        backgroundColor: '#1C4837'
-    },
-    tabText: {
-        color: '#000',
-        fontFamily: 'poppins-regular',
-        fontSize: 13,
-        lineHeight: 17
-    },
-    activeTabText: {
-        color: '#fff'
     },
     tabsContentContainer: {
         flex: 1

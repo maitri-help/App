@@ -1,8 +1,8 @@
 module.exports = {
     expo: {
         name: 'Maitri',
-        slug: 'Maitri',
-        version: '1.0.9',
+        slug: 'MaitriApp',
+        version: '1.0.10',
         orientation: 'portrait',
         icon: './assets/icon.png',
         userInterfaceStyle: 'light',
@@ -14,12 +14,18 @@ module.exports = {
         assetBundlePatterns: ['**/*'],
         ios: {
             supportsTablet: true,
-            bundleIdentifier: 'Maitri'
+            bundleIdentifier: 'com.maitrihelp.maitri'
         },
         android: {
             adaptiveIcon: {
                 foregroundImage: './assets/adaptive-icon.png',
                 backgroundColor: '#ffffff'
+            },
+            androidStatusBar: {
+                backgroundColor: '#ffffff',
+                barStyle: 'dark-content',
+                translucent: true,
+                hidden: false
             },
             package: 'com.Maitri.MaitriApp',
             config: {
@@ -27,8 +33,9 @@ module.exports = {
                     apiKey: process.env.GOOGLE_MAPS_API_KEY
                 }
             },
+            permissions: ['ACCESS_FINE_LOCATION', 'ACCESS_COARSE_LOCATION'],
             versionCode: 1,
-            versionName: '1.0.9'
+            versionName: '1.0.10'
         },
         web: {
             favicon: './assets/favicon.png'

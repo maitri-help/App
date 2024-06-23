@@ -20,37 +20,7 @@ import ExclamationIcon from '../assets/icons/exclamation-icon.svg';
 import ArrowIcon from '../assets/icons/arrow-icon.svg';
 import handleSignUp from '../hooks/handleSignUp';
 import { useToast } from 'react-native-toast-notifications';
-
-const validationSchema = yup.object().shape({
-    fullName: yup
-        .string()
-        .matches(
-            /^[a-zA-Z\s'‘’"”]+$/,
-            'Full Name can only contain letters, spaces, and certain punctuation (e.g., \' " ‘ ’)'
-        )
-        .matches(
-            /^[A-Za-z]+\s[A-Za-z][A-Za-z\s]*$/,
-            'Full Name should be at least 2 words long'
-        )
-        .required('Full Name is required'),
-    email: yup
-        .string()
-        .email('Enter a valid email')
-        .required('Email is required'),
-    phoneNumber: yup
-        .string()
-        .matches(
-            /^(?:(?:\+|00)(?:[1-9]\d{0,2}))?(?:\s*\d{7,})$/,
-            'Enter a valid phone number - No spaces or any special characters only "+" allowed.'
-        )
-        .required('Phone Number is required'),
-    acceptedTerms: yup
-        .boolean()
-        .oneOf(
-            [true],
-            'You must accept the Privacy Policy and Terms & Conditions'
-        )
-});
+import { registrationValidationSchema } from '../utils/validationSchemas';
 
 export default function RegisterScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
@@ -98,14 +68,14 @@ export default function RegisterScreen({ navigation }) {
                     acceptedTerms: false
                 }}
                 onSubmit={handleFormSubmit}
-                validationSchema={validationSchema}
+                validationSchema={registrationValidationSchema}
                 validateOnChange={true}
                 validateOnBlur={false}
                 validateOnMount={false}
                 initialErrors={{}}
                 enableReinitialize={true}
                 validate={(values) => {
-                    validationSchema
+                    registrationValidationSchema
                         .validate(values, { abortEarly: false })
                         .then(() => {
                             setIsFormValid(true);

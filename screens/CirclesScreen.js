@@ -403,7 +403,6 @@ export default function CirclesScreen({ navigation }) {
             <SendInviteScreen
                 visible={sendInvitesModalVisible}
                 onClose={() => setSendInvitesModalVisible(false)}
-                navigation={navigation}
             />
 
             <SupporterCardScreen

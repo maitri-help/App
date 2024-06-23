@@ -4,14 +4,14 @@ import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
 import CloseIcon from '../../assets/icons/close-icon.svg';
 import { GEOLOCATION_API_KEY } from '../../constants/config';
+import { useLocation } from '../../context/LocationContext';
 
 Geocoder.init(GEOLOCATION_API_KEY);
 
 export default function LocationPicker({
     onSelect,
     selectedLocation,
-    disabled,
-    deviceLocation
+    disabled
 }) {
     const [showMap, setShowMap] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -23,6 +23,7 @@ export default function LocationPicker({
 
         // Default cooridnates for Europe
     });
+    const { deviceLocation } = useLocation();
 
     useEffect(() => {
         const getAddressFromCoordinates = () => {
@@ -73,12 +74,12 @@ export default function LocationPicker({
                 latitudeDelta: 0.002,
                 longitudeDelta: 0.002
             }));
-            onSelect(deviceLocation);
+            onSelect((prev) => ({ ...prev, location: deviceLocation }));
         }
     }, [selectedLocation, deviceLocation]);
 
     const handleLocationSelect = (location) => {
-        onSelect(location);
+        onSelect((prev) => ({ ...prev, location }));
         setShowMap(false);
     };
 

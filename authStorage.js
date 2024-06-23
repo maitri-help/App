@@ -112,7 +112,7 @@ export const updateUserTypeInStorage = async (userType) => {
             const updatedUserData = { ...userData, userType };
             await storeUserData(updatedUserData);
         } else {
-            console.log('No user data found');
+            console.log('No user data found update user type');
         }
     } catch (error) {
         console.error('Error updating user type in storage:', error);
@@ -128,6 +128,7 @@ export const checkAuthentication = async () => {
                     Authorization: `Bearer ${accessToken}`
                 }
             });
+
             const userData = response.data;
             userData.accessToken = accessToken;
             return userData;

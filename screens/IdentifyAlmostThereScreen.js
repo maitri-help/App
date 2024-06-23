@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     View,
     Text,
@@ -9,22 +9,12 @@ import {
     TouchableWithoutFeedback
 } from 'react-native';
 import { Formik } from 'formik';
-import * as yup from 'yup';
 import { useToast } from 'react-native-toast-notifications';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import Modal from '../components/Modal';
-
-const TRIBE_LENGTH = 6;
-
-const validationSchema = yup.object().shape({
-    tribe: yup
-        .string()
-        .required('Code is required')
-        .matches(/^\d+$/, 'Code must be numeric')
-        .min(TRIBE_LENGTH, `Code must be exactly ${TRIBE_LENGTH} digits`)
-        .max(TRIBE_LENGTH, `Code must be exactly ${TRIBE_LENGTH} digits`)
-});
+import { tribeValidationSchema } from '../utils/validationSchemas';
+import { TRIBE_LENGTH } from '../constants/variables';
 
 export default function IdentifyAlmostThereScreen({
     visible,
@@ -51,7 +41,7 @@ export default function IdentifyAlmostThereScreen({
             </TouchableOpacity>
             <Formik
                 initialValues={{ tribe: '' }}
-                validationSchema={validationSchema}
+                validationSchema={tribeValidationSchema}
             >
                 {({
                     handleChange,
@@ -109,7 +99,11 @@ export default function IdentifyAlmostThereScreen({
                                                         );
                                                         navigation.reset({
                                                             index: 0,
-                                                            routes: [{ name: 'SuppGreatNews' }]
+                                                            routes: [
+                                                                {
+                                                                    name: 'SuppGreatNews'
+                                                                }
+                                                            ]
                                                         });
                                                         onClose();
                                                     })

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -9,33 +9,25 @@ import {
     Modal,
     Linking
 } from 'react-native';
-import { modalServices } from '../data/ModalServices';
 import AddToCalICon from '../assets/icons/add-to-cal-icon.svg';
 import { getAccessToken } from '../authStorage';
 import { updateTask } from '../hooks/api';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { useToast } from 'react-native-toast-notifications';
 import * as Calendar from 'expo-calendar';
+import { findIcon, sortTasksByStartDate } from '../helpers/task.helpers';
+import { formatTaskItemDate } from '../helpers/date';
+import { useTask } from '../context/TaskContext';
 
-export default function Task({
+export default function MyTask({
     task,
-    title,
-    firstName,
-    lastName,
-    startTime,
-    endTime,
     taskModal,
     onTaskItemClick,
-    category,
-    isCheckbox,
-    onTaskStatusChange
+    isCheckbox
 }) {
-    const [isChecked, setIsChecked] = useState(task.status === 'done');
+    const isChecked = task.status === 'done' ? true : false;
     const toast = useToast();
-
-    useEffect(() => {
-        setIsChecked(task.status === 'done');
-    }, [task.status]);
+    const { setTasks } = useTask();
 
     const handleToggleCheckbox = async () => {
         const newStatus = isChecked ? 'undone' : 'done';
@@ -43,41 +35,26 @@ export default function Task({
 
         try {
             const accessToken = await getAccessToken();
-            await updateTask(task.taskId, updatedTask, accessToken);
-            setIsChecked(!isChecked);
+            const res = await updateTask(task.taskId, updatedTask, accessToken);
+            setTasks((prev) => {
+                //remove the updated task from the list
+                const filteredTasks = prev.filter(
+                    (task) => task.taskId !== res?.data.taskId
+                );
+                const newTasks = sortTasksByStartDate([
+                    res?.data,
+                    ...filteredTasks
+                ]);
+                return newTasks;
+            });
             toast.show(`Task is set to: ${newStatus}`, { type: 'success' });
-            onTaskStatusChange();
         } catch (error) {
             toast.show('Error updating task status', { type: 'error' });
             console.error('Error updating task:', error);
         }
     };
 
-    const formatDateTime = () => {
-        const formattedStartDateTime = formatDate(startTime);
-        const formattedEndDateTime = formatDate(endTime);
-        return `${formattedStartDateTime} - ${formattedEndDateTime}`;
-    };
-
-    const formatDate = (date) => {
-        const options = {
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        };
-        return new Date(date).toLocaleDateString('en-US', options);
-    };
-
-    const findIcon = () => {
-        const service = modalServices.find(
-            (service) => service.title === category
-        );
-        return service ? service.icon : null;
-    };
-
-    const icon = findIcon();
+    const icon = findIcon(task);
 
     const handleClick = () => {
         onTaskItemClick(task);
@@ -116,9 +93,9 @@ export default function Task({
         }
 
         const event = {
-            title: task.title,
-            startDate: new Date(task.startDateTime),
-            endDate: new Date(task.endDateTime),
+            title: task?.title,
+            startDate: new Date(task.startDate),
+            endDate: new Date(task.endDate),
             notes: task.description
         };
 
@@ -181,13 +158,15 @@ export default function Task({
                                 isChecked && stylesTask.greyedOut
                             ]}
                         >
-                            {title}
+                            {task?.title}
                         </Text>
-                        {firstName && lastName && (
-                            <Text style={stylesTask.taskAssignee}>
-                                {firstName} {lastName}
-                            </Text>
-                        )}
+                        {task?.assignee?.firstName &&
+                            task?.assignee?.lastName && (
+                                <Text style={stylesTask.taskAssignee}>
+                                    {task?.assignee?.firstName}{' '}
+                                    {task?.assignee?.lastName}
+                                </Text>
+                            )}
                         <Text
                             style={[
                                 stylesTask.taskTime,
@@ -195,7 +174,7 @@ export default function Task({
                                 isChecked && stylesTask.greyedOut
                             ]}
                         >
-                            {formatDateTime()}
+                            {formatTaskItemDate(task)}
                         </Text>
                     </View>
                 </View>

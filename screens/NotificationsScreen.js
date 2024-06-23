@@ -31,7 +31,7 @@ if (Platform.OS === 'android') {
 export default function NotificationsScreen({ navigation }) {
     const [notifications, setNotifications] = useState([]);
     const [showAllEarlier, setShowAllEarlier] = useState(false);
-    const [listHeight, setListHeight] = useState(null);
+    const [visibleNotifications, setVisibleNotifications] = useState([]);
 
     useEffect(() => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -50,6 +50,7 @@ export default function NotificationsScreen({ navigation }) {
                         accessToken
                     );
                     setNotifications(response.data);
+                    setVisibleNotifications(response.data.slice(0, 2)); // Show only the latest and one earlier notification initially
                 }
             } catch (error) {
                 console.error('Error fetching notifications:', error);
@@ -77,6 +78,11 @@ export default function NotificationsScreen({ navigation }) {
                         (n) => n.notificationId !== notification.notificationId
                     )
                 );
+                setVisibleNotifications(
+                    visibleNotifications.filter(
+                        (n) => n.notificationId !== notification.notificationId
+                    )
+                );
             }
         } catch (error) {
             console.error('Error accepting request:', error.response.data);
@@ -85,10 +91,11 @@ export default function NotificationsScreen({ navigation }) {
 
     const handleToggleShowAllEarlier = () => {
         setShowAllEarlier(!showAllEarlier);
-    };
-
-    const handleListLayout = ({ nativeEvent }) => {
-        setListHeight(nativeEvent.layout.height);
+        if (!showAllEarlier) {
+            setVisibleNotifications(notifications);
+        } else {
+            setVisibleNotifications(notifications.slice(0, 2));
+        }
     };
 
     const handleMarkAllAsRead = async () => {
@@ -110,8 +117,8 @@ export default function NotificationsScreen({ navigation }) {
 
     useFocusEffect(
         useCallback(() => {
-            handleMarkAllAsRead()
-        })
+            handleMarkAllAsRead();
+        }, [notifications])
     );
 
     const onNavigateBack = () => {
@@ -128,7 +135,7 @@ export default function NotificationsScreen({ navigation }) {
     };
 
     const renderNotifications = (filterFn, type) => {
-        const filteredNotifications = notifications.filter(filterFn);
+        const filteredNotifications = visibleNotifications.filter(filterFn);
 
         if (filteredNotifications.length === 0) {
             return (
@@ -250,21 +257,13 @@ export default function NotificationsScreen({ navigation }) {
                             Earlier
                         </Text>
                     </View>
-                    <View
-                        style={{
-                            overflow: 'hidden',
-                            marginBottom: 10,
-                            height: showAllEarlier ? 'auto' : listHeight
-                        }}
-                    >
-                        <View
-                            onLayout={handleListLayout}
-                            style={stylesNotifications.notificationsGroupList}
-                        >
-                            {renderNotifications((n) => n.isRead, 'earlier')}
-                        </View>
+                    <View style={stylesNotifications.notificationsGroupList}>
+                        {renderNotifications(
+                            (n) => n.isRead,
+                            'earlier'
+                        )}
                     </View>
-                    {notifications.filter((n) => n.isRead).length > 2 && (
+                    {notifications.filter((n) => n.isRead).length > 1 && (
                         <TouchableOpacity
                             onPress={handleToggleShowAllEarlier}
                             style={stylesNotifications.notificationsGroupLink}

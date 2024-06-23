@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -12,18 +12,13 @@ import {
 } from 'react-native';
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
-import {
-    checkAuthentication,
-    clearUserData,
-    clearAccessToken,
-    getAccessToken
-} from '../authStorage';
-import { getLeadUser } from '../hooks/api';
 import FilterIcon from '../assets/icons/filter-icon.svg';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import TaskFilterModal from '../components/plusModalSteps/TaskFilterModal';
 import Button from '../components/Button';
-import { useFocusEffect } from '@react-navigation/native';
+import { isWithinTimeframe, mergeDateAndTime } from '../helpers/date';
+import { isWeekend } from 'date-fns';
+import { useTask } from '../context/TaskContext';
 
 const TIME_FILTER_HOURS = {
     Morning: { start: 6, end: 12 },
@@ -32,63 +27,19 @@ const TIME_FILTER_HOURS = {
     Night: { start: 22, end: 6 }
 };
 
-export default function OpenTasksSupporterScreen({ navigation }) {
+export default function OpenTasksSupporterScreen() {
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [TimeFilterList, setTimeFilterList] = useState([]);
     const [TypeFilterList, setTypeFilterList] = useState([]);
-    const [tasks, setTasks] = useState([]);
+
     const [filteredTasks, setFilteredTasks] = useState([]);
     const [taskRemoval, setTaskRemoval] = useState(0);
-    const [leadId, setLeadId] = useState('');
 
-    const [isLoading, setIsLoading] = useState(false);
+    const { tasks, isLoading } = useTask();
+
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        async function fetchUserData() {
-            try {
-                const userData = await checkAuthentication();
-                if (userData) {
-                    const accessToken = await getAccessToken();
-                    const leadUserData = await getLeadUser(accessToken);
-                    setLeadId(leadUserData.data[0].userId);
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-                navigation.navigate('Login');
-            }
-        }
-        fetchUserData();
-    }, []);
-
-    async function fetchTasks() {
-        try {
-            setIsLoading(true);
-            if (leadId) {
-                const accessToken = await getAccessToken();
-                const tasksResponse = await getLeadUser(accessToken);
-
-                setTasks(tasksResponse.data[0].tasks);
-                setFilteredTasks(tasksResponse.data[0].tasks);
-            } else {
-                console.error('No user data found or leadId not available');
-            }
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error fetching tasks:', error);
-            setIsLoading(false);
-        }
-    }
-
-    useFocusEffect(
-        useCallback(() => {
-            if (leadId) fetchTasks();
-        }, [leadId])
-    );
 
     const handleRemoveFilter = (filter, setSelectedFilters) => {
         setSelectedFilters((selectedFilters) =>
@@ -99,7 +50,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
 
     useEffect(() => {
         filterTasks();
-    }, [taskRemoval]);
+    }, [taskRemoval, tasks]);
 
     useEffect(() => {
         if (taskModalVisible || isFilterOpen) {
@@ -134,27 +85,6 @@ export default function OpenTasksSupporterScreen({ navigation }) {
         setIsFilterOpen(false);
     };
 
-    const isWithinTimeframe = (date, range) => {
-        const hours = date.getHours();
-
-        if (range.start <= range.end) {
-            return hours >= range.start && hours < range.end;
-        } else {
-            // Handles the wrap-around for night timeframe
-            return hours >= range.start || hours < range.end;
-        }
-    };
-
-    const isWeekend = (date) => {
-        const day = date.getDay();
-        return day === 0 || day === 6;
-    };
-
-    const isWeekday = (date) => {
-        const day = date.getDay();
-        return day >= 1 && day <= 5;
-    };
-
     const filterTasks = () => {
         // Reset list if no filters are selected
         if (TimeFilterList.length === 0 && TypeFilterList.length === 0) {
@@ -164,8 +94,19 @@ export default function OpenTasksSupporterScreen({ navigation }) {
 
         // Filter tasks based on selected filters
         const filtered = tasks.filter((task) => {
-            const start = new Date(task.startDateTime);
-            const end = new Date(task.endDateTime);
+            let start;
+            let end;
+            if (task?.startTime) {
+                start = mergeDateAndTime(task?.startDate, task?.startTime);
+            } else {
+                start = new Date(task.startDate);
+            }
+
+            if (task?.endTime) {
+                end = mergeDateAndTime(task?.endDate, task?.endTime);
+            } else {
+                end = new Date(task.endDate);
+            }
 
             const duration = (end - start) / (1000 * 60 * 60 * 24);
 
@@ -203,7 +144,7 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                     if (filter === 'Weekend') {
                         return isWeekend(start) && isWeekend(end);
                     } else if (filter === 'Weekday') {
-                        return isWeekday(start) && isWeekday(end);
+                        return !isWeekend(start) && !isWeekend(end);
                     }
                     return false;
                 });
@@ -238,32 +179,9 @@ export default function OpenTasksSupporterScreen({ navigation }) {
     };
 
     const renderTasks = (tasks) => {
-        const openTasks = tasks.filter(
+        const openTasks = tasks?.filter(
             (task) => task.status === 'undone' && !task.assignedUserId
         );
-
-        /* if (openTasks.length === 0) {
-            return (
-                <View style={stylesSuppOT.tasksContainer}>
-                    <ScrollView contentContainerStyle={stylesSuppOT.tasksScrollEmpty}>
-                        <View style={[styles.contentContainer, stylesSuppOT.tasksEmpty]}>
-                            <View style={stylesSuppOT.tasksTop}>
-                                <Text style={[styles.text, stylesSuppOT.tasksDescription, { marginBottom: 30 }]}>
-                                    No open tasks yet.
-                                </Text>
-                                <Text style={[styles.text, stylesSuppOT.tasksDescription, { marginBottom: 60, paddingHorizontal: 30 }]}>
-                                    Check back in later!
-                                </Text>
-                                <Image
-                                    source={require('../assets/img/mimi-illustration.png')}
-                                    style={stylesSuppOT.rightImageStyle}
-                                />
-                            </View>
-                        </View>
-                    </ScrollView>
-                </View>
-            );
-        } */
 
         return (
             <>
@@ -403,10 +321,6 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                             <OpenTask
                                 key={task.taskId}
                                 task={task}
-                                title={task.title}
-                                startTime={task.startDateTime}
-                                endTime={task.endDateTime}
-                                category={task.category}
                                 taskModal={() => setTaskModalVisible(true)}
                                 onTaskItemClick={handleTaskItemClick}
                             />
@@ -499,7 +413,6 @@ export default function OpenTasksSupporterScreen({ navigation }) {
                     visible={taskModalVisible}
                     selectedTask={selectedTask}
                     onClose={handleTaskModalClose}
-                    updateTask={() => fetchTasks()}
                 />
             )}
         </>

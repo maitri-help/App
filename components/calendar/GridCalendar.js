@@ -18,7 +18,6 @@ export default function GridCalendar({
     currentMonthProp,
     setCurrentYear,
     setCurrentMonth,
-    setWeekStartDate,
     tasks
 }) {
     const [monthDates, setMonthDates] = useState([]);
@@ -89,15 +88,15 @@ export default function GridCalendar({
                 currentDate.toDateString() === new Date().toDateString();
 
             const daysTasks = tasks?.filter((task) => {
-                const taskStartDate = new Date(task?.startDateTime);
-                const taskEndDate = new Date(task?.endDateTime);
+                const taskStartDate = new Date(task?.startDate);
+                const taskEndDate = new Date(task?.endDate);
                 return (
                     currentDate >= taskStartDate && currentDate <= taskEndDate
                 );
             });
 
             const taskRange = daysTasks?.map(
-                (task) => new Date(task.startDateTime)
+                (task) => new Date(task.startDate)
             );
 
             const singleDayTasks = tasks.filter((task) => {
@@ -106,12 +105,12 @@ export default function GridCalendar({
                     .toString()
                     .padStart(2, '0')}`;
 
-                return task.startDateTime.startsWith(dateStringForI);
+                return task.startDate.startsWith(dateStringForI);
             });
 
             const isUnassigned = tasks.some((task) => {
-                const taskStartDate = new Date(task.startDateTime);
-                const taskEndDate = new Date(task.endDateTime);
+                const taskStartDate = new Date(task.startDate);
+                const taskEndDate = new Date(task.endDate);
                 const isInDateRange =
                     currentDate >= taskStartDate && currentDate <= taskEndDate;
                 const isStartDay = taskStartDate.getDate() === i;
@@ -162,8 +161,6 @@ export default function GridCalendar({
             ...currentMonthDays,
             ...nextMonthDays
         ]);
-
-        setWeekStartDate(weekStartDate);
     }, [currentYearProp, currentMonthProp, selectedDate, tasks]);
 
     const nextMonth = () => {

@@ -10,41 +10,21 @@ import {
     ActivityIndicator
 } from 'react-native';
 import styles from '../Styles';
-import {
-    checkAuthentication,
-    clearUserData,
-    clearAccessToken
-} from '../authStorage';
+import { clearUserData } from '../authStorage';
 import LogoutModal from '../components/profileModals/LogoutModal';
 import DeleteModal from '../components/profileModals/DeleteModal';
 import { Platform } from 'react-native';
+import { OneSignal } from 'react-native-onesignal';
+import { useUser } from '../context/UserContext';
+import { useTask } from '../context/TaskContext';
 
 export default function ProfileSupporterScreen({ navigation }) {
-    const [userData, setUserData] = useState(null);
     const [logoutModalVisible, setLogoutModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        async function fetchUserData() {
-            try {
-                setIsLoading(true);
-                const userData = await checkAuthentication();
-                if (userData) {
-                    setUserData(userData);
-                }
-                setIsLoading(false);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-                navigation.navigate('Login');
-                setIsLoading(false);
-            }
-        }
-        fetchUserData();
-    }, []);
+    const { userData, loading, setUserData } = useUser();
+    const { setTasks } = useTask();
 
     const handleContactSupport = () => {
         Linking.openURL('mailto:contact@maitrihelp.com');
@@ -53,7 +33,9 @@ export default function ProfileSupporterScreen({ navigation }) {
     const handleLogout = async () => {
         try {
             await clearUserData();
-            await clearAccessToken();
+            setUserData(null);
+            setTasks([]);
+            OneSignal.logout();
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Login' }]
@@ -86,7 +68,7 @@ export default function ProfileSupporterScreen({ navigation }) {
                     <Text style={stylesProfile.greetingsText}>My Profile</Text>
                 </View>
                 <View style={[styles.container, stylesProfile.container]}>
-                    {isLoading ? (
+                    {loading ? (
                         <View
                             style={{
                                 minHeight: 210,
@@ -102,26 +84,26 @@ export default function ProfileSupporterScreen({ navigation }) {
                                 <View
                                     style={[
                                         stylesProfile.selectedEmojiItem,
-                                        { borderColor: userData.color }
+                                        { borderColor: userData?.color }
                                     ]}
                                 >
                                     <Text
                                         style={stylesProfile.selectedEmojiText}
                                     >
-                                        {userData.emoji}
+                                        {userData?.emoji}
                                     </Text>
                                 </View>
                             </View>
 
                             <Text style={stylesProfile.topContentName}>
-                                {userData.firstName} {userData.lastName} (
-                                {userData.userType})
+                                {userData?.firstName} {userData?.lastName} (
+                                {userData?.userType})
                             </Text>
                             <Text style={stylesProfile.topContentText}>
-                                {userData.email}
+                                {userData?.email}
                             </Text>
                             <Text style={stylesProfile.topContentText}>
-                                {userData.phoneNumber}
+                                {userData?.phoneNumber}
                             </Text>
                         </View>
                     )}
@@ -174,27 +156,44 @@ export default function ProfileSupporterScreen({ navigation }) {
                                     </Text>
                                 </TouchableOpacity>
                             </View>
-                                <View style={stylesProfile.linksWrapper}>
+                            <View style={stylesProfile.linksWrapper}>
                                 <TouchableOpacity style={stylesProfile.link}>
-                                    <Text style={stylesProfile.linkText} 
-                                onPress={() =>
-                                        Linking.openURL(
-                                            'https://www.maitrihelp.com/privacy-policy'
-                                        )
-                                    }>
-                                    Privacy Policy
+                                    <Text
+                                        style={stylesProfile.linkText}
+                                        onPress={() =>
+                                            Linking.openURL(
+                                                'https://www.maitrihelp.com/privacy-policy'
+                                            )
+                                        }
+                                    >
+                                        Privacy Policy
                                     </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={stylesProfile.link} onPress={() =>
-                                    Linking.openURL(
-                                        'https://www.maitrihelp.com/terms-conditions'
-                                    )
-                                }>
+                                <TouchableOpacity
+                                    style={stylesProfile.link}
+                                    onPress={() =>
+                                        Linking.openURL(
+                                            'https://docs.google.com/forms/d/19ZBmxPhj-EFbeM-HVExMkpEcQPfajSOBh2MXulrcNUI/edit'
+                                        )
+                                    }
+                                >
+                                    <Text style={stylesProfile.linkText}>
+                                        Report an issue
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={stylesProfile.link}
+                                    onPress={() =>
+                                        Linking.openURL(
+                                            'https://www.maitrihelp.com/terms-conditions'
+                                        )
+                                    }
+                                >
                                     <Text style={stylesProfile.linkText}>
                                         Terms & Conditions
                                     </Text>
                                 </TouchableOpacity>
-                                </View>
+                            </View>
                         </View>
                     </View>
                 </View>

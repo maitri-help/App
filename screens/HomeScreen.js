@@ -13,41 +13,30 @@ import {
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import TaskItem from '../components/TaskItem';
-import { getTasksForUser, getNotificationsForUser } from '../hooks/api';
-import {
-    checkAuthentication,
-    clearUserData,
-    clearAccessToken
-} from '../authStorage';
+import { getNotificationsForUser, getThankYouCardsForUser } from '../hooks/api';
+import { checkAuthentication } from '../authStorage';
 import TaskModal from '../components/TaskModal';
 import { useFocusEffect } from '@react-navigation/native';
 import LeadBoxes from '../components/Lead/LeadBoxes';
+import { sortTasksByStartDate, stripCircles } from '../helpers/task.helpers';
+import { StatusBar } from 'expo-status-bar';
+import PlusModal from '../components/PlusModal';
+import LocationPermissionModal from '../components/Modals/LocationPermissionModal';
+import { useLocation } from '../context/LocationContext';
+import { useTask } from '../context/TaskContext';
+import Tab from '../components/common/Tab';
+import { generateGreetings } from '../helpers';
+import { useUser } from '../context/UserContext';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
-    const [firstName, setFirstName] = useState('');
-    const [greetingText, setGreetingText] = useState('');
-    const [tasks, setTasks] = useState([]);
+
+    const { tasks, isLoading } = useTask();
+    const [plusModalVisible, setPlusModalVisible] = useState(false);
 
     const [taskModalVisible, setTaskModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-
-    const [taskModalSelectedCircle, setTaskModalSelectedCircle] =
-        useState('Personal');
-    const [taskModalTaskName, setTaskModalTaskName] = useState('');
-    const [taskModalTaskId, setTaskModalTaskId] = useState('');
-    const [taskModaldescription, setTaskModalDescription] = useState('');
-    const [taskModalSelectedLocation, setTaskModalSelectedLocation] =
-        useState('');
-    const [taskModalStartDate, setTaskModalStartDate] = useState(null);
-    const [taskModalEndDate, setTaskModalEndDate] = useState(null);
-    const [taskModalStartTime, setTaskModalStartTime] = useState(null);
-    const [taskModalEndTime, setTaskModalEndTime] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [assigneeFirstName, setAssigneeFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [color, setColor] = useState('');
-    const [emoji, setEmoji] = useState('');
+    const { userData } = useUser();
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
 
@@ -55,59 +44,9 @@ export default function HomeScreen({ navigation }) {
     const [hasUnreadPendingRequest, setHasUnreadPendingRequest] =
         useState(false);
 
-    useEffect(() => {
-        async function fetchUserData() {
-            try {
-                const userData = await checkAuthentication();
-                if (userData) {
-                    setFirstName(userData.firstName);
+    const [thankYouCards, setThankYouCards] = useState([]);
 
-                    const currentHour = new Date().getHours();
-                    if (currentHour < 12) {
-                        setGreetingText('Good morning');
-                    } else if (currentHour < 18) {
-                        setGreetingText('Good afternoon');
-                    } else {
-                        setGreetingText('Good evening');
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                clearUserData();
-                clearAccessToken();
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }]
-                });
-            }
-        }
-        fetchUserData();
-    }, []);
-
-    async function fetchTasks() {
-        try {
-            setIsLoading(true);
-            const userData = await checkAuthentication();
-            if (userData) {
-                const tasksResponse = await getTasksForUser(
-                    userData?.userId,
-                    userData?.accessToken
-                );
-
-                setTasks(tasksResponse?.data);
-            } else {
-                console.error('No user data found');
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }]
-                });
-            }
-            setIsLoading(false);
-        } catch (error) {
-            console.error('Error fetching tasks:', error);
-            setIsLoading(false);
-        }
-    }
+    const { locationPermissionNeeded } = useLocation();
 
     async function fetchNotifications() {
         try {
@@ -123,11 +62,11 @@ export default function HomeScreen({ navigation }) {
                 const hasUnreadPending = notificationsData.some(
                     (notification) =>
                         notification.isRead === false ||
-                        notification.type === 'pending_request' && notification.isRead === false
+                        (notification.type === 'pending_request' &&
+                            notification.isRead === false)
                 );
                 setHasUnreadPendingRequest(hasUnreadPending);
             } else {
-                console.error('No user data found');
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'Login' }]
@@ -138,15 +77,44 @@ export default function HomeScreen({ navigation }) {
         }
     }
 
+    async function fetchThankYouCards() {
+        try {
+            const userData = await checkAuthentication();
+            if (userData) {
+                const thankYouCardsResponse = await getThankYouCardsForUser(
+                    userData.userId,
+                    userData.accessToken
+                );
+                if (
+                    thankYouCardsResponse.data &&
+                    thankYouCardsResponse.data.length > 0
+                ) {
+                    setThankYouCards(thankYouCardsResponse.data);
+                }
+            } else {
+                console.error('No user data found');
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }]
+                });
+            }
+        } catch (error) {
+            console.error(
+                'Error fetching thank you cards:',
+                error.response.data
+            );
+        }
+    }
+
     useFocusEffect(
         React.useCallback(() => {
-            fetchTasks();
             fetchNotifications();
+            fetchThankYouCards();
         }, [])
     );
 
     useEffect(() => {
-        if (taskModalVisible) {
+        if (taskModalVisible || plusModalVisible) {
             Animated.timing(overlayOpacity, {
                 toValue: 1,
                 duration: 300,
@@ -159,60 +127,23 @@ export default function HomeScreen({ navigation }) {
                 useNativeDriver: true
             }).start();
         }
-    }, [taskModalVisible]);
+    }, [taskModalVisible, plusModalVisible]);
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
-        fetchTasks();
     };
 
     const handleTaskItemClick = async (task) => {
-        setSelectedTask(task);
+        const newSelectedTask = stripCircles(task);
+        setSelectedTask(newSelectedTask);
     };
 
     const handleTaskModalClose = () => {
         setTaskModalVisible(false);
     };
 
-    const handleDateTimeSelectTask = ({ startDateTime, endDateTime }) => {
-        setTaskModalStartDate(startDateTime);
-        setTaskModalEndDate(endDateTime);
-    };
-
-    const handleDayPressTask = (day) => {
-        if (taskModalStartDate && taskModalEndDate) {
-            setTaskModalStartDate(day.dateString);
-            setTaskModalEndDate(null);
-        } else if (taskModalStartDate && !taskModalEndDate) {
-            const startDate = new Date(taskModalStartDate);
-            const endDate = new Date(day.dateString);
-
-            if (startDate <= endDate) {
-                setTaskModalEndDate(day.dateString);
-            } else {
-                setTaskModalStartDate(day.dateString);
-                setTaskModalEndDate(null);
-            }
-        } else {
-            setTaskModalStartDate(day.dateString);
-        }
-    };
-
-    const getDaysBetween = (start, end) => {
-        let currentDate = new Date(start);
-        const endDate = new Date(end);
-        let markedDates = {};
-        currentDate.setDate(currentDate.getDate() + 1);
-        while (currentDate < endDate) {
-            const dateString = currentDate.toISOString().split('T')[0];
-            markedDates[dateString] = { color: '#1C4837', textColor: '#fff' };
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-        return markedDates;
-    };
-
     const renderTasks = (tasks) => {
-        if (tasks.length === 0) {
+        if (tasks?.length === 0) {
             switch (activeTab) {
                 case 'All':
                     return (
@@ -354,25 +285,21 @@ export default function HomeScreen({ navigation }) {
             }
         }
 
-        let filteredTasks = tasks?.sort((taskA, taskB) => {
-            return (
-                new Date(taskA.startTime).getTime() -
-                new Date(taskB.startTime).getTime()
-            );
-        });
+        let filteredTasks = sortTasksByStartDate(tasks);
+
         switch (activeTab) {
             case 'Unassigned':
-                filteredTasks = tasks.filter(
+                filteredTasks = tasks?.filter(
                     (task) =>
-                        (!task?.assignee || task?.status === 'undone') &&
-                        !task.circles.some(
+                        !task?.assignee &&
+                        !task?.circles.some(
                             (circle) => circle.circleLevel === 'Personal'
                         )
                 );
                 break;
             case 'Personal':
-                filteredTasks = tasks.filter((task) =>
-                    task.circles.some(
+                filteredTasks = tasks?.filter((task) =>
+                    task?.circles.some(
                         (circle) => circle.circleLevel === 'Personal'
                     )
                 );
@@ -381,25 +308,14 @@ export default function HomeScreen({ navigation }) {
                 break;
         }
 
-        filteredTasks = filteredTasks.sort((a, b) => {
-            if (a.status === 'done' && b.status !== 'done') {
-                return 1;
-            } else if (a.status !== 'done' && b.status === 'done') {
-                return -1;
-            } else {
-                return (
-                    new Date(a.startTime).getTime() -
-                    new Date(b.startTime).getTime()
-                );
-            }
-        });
+        filteredTasks = sortTasksByStartDate(filteredTasks);
 
         return (
             <View style={stylesHome.tasksContainer}>
                 <ScrollView contentContainerStyle={stylesHome.tasksScroll}>
-                    {filteredTasks.map((task) => (
+                    {filteredTasks?.map((task) => (
                         <TaskItem
-                            key={task.taskId}
+                            key={task?.taskId}
                             task={task}
                             taskModal={() => setTaskModalVisible(true)}
                             onTaskItemClick={handleTaskItemClick}
@@ -412,10 +328,11 @@ export default function HomeScreen({ navigation }) {
 
     return (
         <>
+            <StatusBar style="dark" translucent={true} hidden={false} />
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.topBar}>
                     <Text style={stylesHome.greetingsText}>
-                        {greetingText} {firstName}!
+                        {generateGreetings()} {userData?.firstName}!
                     </Text>
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Notifications')}
@@ -427,60 +344,30 @@ export default function HomeScreen({ navigation }) {
                         )}
                     </TouchableOpacity>
                 </View>
-                <LeadBoxes navigation={navigation} />
+                <LeadBoxes
+                    navigation={navigation}
+                    thankYouCards={thankYouCards}
+                    setThankYouCards={setThankYouCards}
+                    onAddNewTask={() => setPlusModalVisible(true)}
+                />
                 <View
                     style={[stylesHome.tabsContainer, styles.contentContainer]}
                 >
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('All')}
-                        style={[
-                            stylesHome.tab,
-                            activeTab === 'All' && stylesHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesHome.tabText,
-                                activeTab === 'All' && stylesHome.activeTabText
-                            ]}
-                        >
-                            All tasks
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('Unassigned')}
-                        style={[
-                            stylesHome.tab,
-                            activeTab === 'Unassigned' && stylesHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesHome.tabText,
-                                activeTab === 'Unassigned' &&
-                                    stylesHome.activeTabText
-                            ]}
-                        >
-                            Unassigned
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => handleTabPress('Personal')}
-                        style={[
-                            stylesHome.tab,
-                            activeTab === 'Personal' && stylesHome.activeTab
-                        ]}
-                    >
-                        <Text
-                            style={[
-                                stylesHome.tabText,
-                                activeTab === 'Personal' &&
-                                    stylesHome.activeTabText
-                            ]}
-                        >
-                            Personal
-                        </Text>
-                    </TouchableOpacity>
+                    <Tab
+                        clickHandler={() => handleTabPress('All')}
+                        label={'All tasks'}
+                        isActive={activeTab === 'All'}
+                    />
+                    <Tab
+                        clickHandler={() => handleTabPress('Unassigned')}
+                        label={'Unassigned'}
+                        isActive={activeTab === 'Unassigned'}
+                    />
+                    <Tab
+                        clickHandler={() => handleTabPress('Personal')}
+                        label={'Personal'}
+                        isActive={activeTab === 'Personal'}
+                    />
                 </View>
 
                 {isLoading ? (
@@ -499,49 +386,25 @@ export default function HomeScreen({ navigation }) {
                     </View>
                 )}
             </SafeAreaView>
-
-            {taskModalVisible && (
+            {(taskModalVisible || plusModalVisible) && (
                 <Animated.View
                     style={[styles.overlay, { opacity: overlayOpacity }]}
                 />
             )}
+            <PlusModal
+                visible={plusModalVisible}
+                onClose={() => setPlusModalVisible(false)}
+            />
+
+            {locationPermissionNeeded && <LocationPermissionModal />}
 
             <TaskModal
                 visible={taskModalVisible}
                 onClose={handleTaskModalClose}
-                selectedCircle={taskModalSelectedCircle}
-                setSelectedCircle={setTaskModalSelectedCircle}
-                taskId={taskModalTaskId}
-                setTaskId={setTaskModalTaskId}
-                taskName={taskModalTaskName}
-                setTaskName={setTaskModalTaskName}
-                description={taskModaldescription}
-                setDescription={setTaskModalDescription}
-                selectedLocation={taskModalSelectedLocation}
-                setSelectedLocation={setTaskModalSelectedLocation}
-                startDate={taskModalStartDate}
-                setStartDate={setTaskModalStartDate}
-                endDate={taskModalEndDate}
-                setEndDate={setTaskModalEndDate}
-                startTime={taskModalStartTime}
-                setStartTime={setTaskModalStartTime}
-                endTime={taskModalEndTime}
-                setEndTime={setTaskModalEndTime}
-                handleDayPress={handleDayPressTask}
-                getDaysBetween={getDaysBetween}
-                handleDateTimeSelect={handleDateTimeSelectTask}
                 selectedTask={selectedTask}
-                firstName={assigneeFirstName}
-                setFirstName={setAssigneeFirstName}
-                lastName={lastName}
-                setLastName={setLastName}
-                color={color}
-                setColor={setColor}
-                emoji={emoji}
-                setEmoji={setEmoji}
+                setSelectedTask={setSelectedTask}
                 isEditable={isEditable}
                 setIsEditable={setIsEditable}
-                onTaskCreated={() => fetchTasks()}
             />
         </>
     );
@@ -581,26 +444,6 @@ const stylesHome = StyleSheet.create({
         justifyContent: 'center',
         gap: 15,
         marginVertical: 10
-    },
-    tab: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderColor: '#1C4837',
-        borderWidth: 1,
-        borderRadius: 20,
-        alignItems: 'center'
-    },
-    activeTab: {
-        backgroundColor: '#1C4837'
-    },
-    tabText: {
-        color: '#000',
-        fontFamily: 'poppins-regular',
-        fontSize: 13,
-        lineHeight: 17
-    },
-    activeTabText: {
-        color: '#fff'
     },
     tabsContentContainer: {
         flex: 1

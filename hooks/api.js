@@ -2,6 +2,7 @@ import axios from 'axios';
 import { API_URL } from '../constants/config';
 
 const baseUrl = API_URL;
+//const baseUrl = 'https://maitri-backend.cubicfoxdev.com:3000';
 
 export function resendOtp(phoneNumber) {
     return axios.post(`${baseUrl}/auth/otp/resend`, { phoneNumber });
@@ -154,3 +155,33 @@ export async function deleteUser(userId, accessToken) {
         }
     });
 }
+
+export async function getThankYouCardsForUser(userId, accessToken) {
+    return axios.get(`${baseUrl}/thankyoucard/${userId}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
+
+export async function sendThankYouCard(thankYouCardId, accessToken) {
+    return axios.patch(`${baseUrl}/thankyoucard/${thankYouCardId}/send`, null, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
+
+export const fetchTasks = async (userData) => {
+    if (!userData) return [];
+
+    if (userData.userType === 'Lead') {
+        return await getTasksForUser(userData.userId, userData.accessToken)
+            .then((res) => res.data)
+            .catch((err) => console.log(err.response.data.message));
+    } else {
+        return await getLeadUser(userData?.accessToken)
+            .then((res) => res.data[0].tasks)
+            .catch((err) => console.log(err.response.data.message));
+    }
+};

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     TouchableOpacity,
@@ -18,19 +18,19 @@ export default function EmojiPickerModal({
     visible,
     onClose,
     onEmojiSelect,
-    selectedEmoji,
     selectedColor
 }) {
-    const [userId, setUserId] = useState(null);
     const [pressedItem, setPressedItem] = useState(null);
     const toast = useToast();
+
+    const [userData, setUserData] = useState(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const userData = await checkAuthentication();
                 if (userData) {
-                    setUserId(userData.userId);
+                    setUserData(userData);
                 }
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -49,7 +49,7 @@ export default function EmojiPickerModal({
             const userDataToUpdate = {
                 emoji: emoji
             };
-            await updateUser(userId, userDataToUpdate, accessToken);
+            await updateUser(userData?.userId, userDataToUpdate, accessToken);
             toast.show('Emoji changed successfully', { type: 'success' });
 
             onClose();

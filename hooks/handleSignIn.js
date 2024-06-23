@@ -9,15 +9,16 @@ export default function handleSignIn(values) {
             .then((response) => {
                 if (response.status === 200) {
                     storeUserData(response.data);
-                    return { userId: response.data.userId };
+
+                    return response.data;
                 } else {
                     reject(new Error('Phone number not found'));
                 }
             })
-            .then(({ userId }) => {
+            .then((userData) => {
                 return sendOtp(phoneNumber).then((otpResponse) => {
                     if (otpResponse && otpResponse.data) {
-                        resolve({ userId, otpResponse: otpResponse.data });
+                        resolve(userData);
                     } else {
                         reject(new Error('No OTP response received'));
                     }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
@@ -9,52 +9,14 @@ import { useToast } from 'react-native-toast-notifications';
 import Modal from '../Modal';
 import Button from '../Button';
 import { ScrollView } from 'react-native-gesture-handler';
+import { generateDateString } from '../../helpers/date';
+import { useTask } from '../../context/TaskContext';
+import { sortTasksByStartDate } from '../../helpers/task.helpers';
 
-export default function TaskDetailsModal({
-    visible,
-    selectedTask,
-    onClose,
-    updateTask
-}) {
-    const [dateTimeText, setDateTimeText] = useState(null);
+export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
     const toast = useToast();
 
-    const [taskId, setTaskId] = useState(null);
-    const [taskName, setTaskName] = useState(null);
-    const [description, setDescription] = useState(null);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [startDateTime, setStartDateTime] = useState(null);
-    const [endDateTime, setEndDateTime] = useState(null);
-
-    useEffect(() => {
-        if (selectedTask) {
-            setTaskId(selectedTask.taskId);
-            setTaskName(selectedTask.title);
-            setDescription(selectedTask.description);
-            setSelectedLocation(selectedTask.location);
-
-            setStartDateTime(selectedTask.startDateTime);
-            setEndDateTime(selectedTask.endDateTime);
-        }
-    }, [selectedTask, setStartDateTime, setEndDateTime]);
-
-    useEffect(() => {
-        if (startDateTime && endDateTime) {
-            const options = {
-                month: 'long',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                hour12: true
-            };
-            const start = new Date(startDateTime).toLocaleString(
-                'en-US',
-                options
-            );
-            const end = new Date(endDateTime).toLocaleString('en-US', options);
-            setDateTimeText(`${start} - ${end}`);
-        }
-    }, [startDateTime, endDateTime]);
+    const { setTasks } = useTask();
 
     const handleSubmit = async () => {
         try {
@@ -68,12 +30,27 @@ export default function TaskDetailsModal({
                 return;
             }
 
-            await assingUserToTask(taskId, accessToken);
+            const res = await assingUserToTask(
+                selectedTask?.taskId,
+                accessToken
+            );
+
+            setTasks((prev) => {
+                //remove the updated task from the list
+                const filteredTasks = prev.filter(
+                    (task) => task.taskId !== res.data?.taskId
+                );
+
+                const newTasks = sortTasksByStartDate([
+                    res.data,
+                    ...filteredTasks
+                ]);
+                return newTasks;
+            });
 
             toast.show('Assigned to task successfully', { type: 'success' });
 
             onClose();
-            updateTask();
         } catch (error) {
             console.error('Error updating task:', error);
 
@@ -96,15 +73,24 @@ export default function TaskDetailsModal({
                         />
                     </TouchableOpacity>
                     <Text style={[stylesModal.field, stylesModal.fieldTask]}>
-                        {taskName}
+                        {selectedTask?.title}
                     </Text>
                 </View>
             </View>
-            <View style={[styles.contentContainer, stylesModal.topDescription]}>
-                <View style={stylesModal.topDescription}>
-                    <Text style={[styles.text]}>{description}</Text>
+            {selectedTask?.description && (
+                <View
+                    style={[
+                        styles.contentContainer,
+                        stylesModal.topDescription
+                    ]}
+                >
+                    <View style={stylesModal.topDescription}>
+                        <Text style={[styles.text]}>
+                            {selectedTask?.description}
+                        </Text>
+                    </View>
                 </View>
-            </View>
+            )}
             <View style={{ flex: 1 }}>
                 <ScrollView>
                     <View style={[stylesModal.group, stylesModal.groupFirst]}>
@@ -119,35 +105,38 @@ export default function TaskDetailsModal({
                             </Text>
                             <View style={stylesModal.fieldWrapper}>
                                 <Text style={stylesModal.fieldText}>
-                                    {dateTimeText}
+                                    {generateDateString(
+                                        selectedTask?.startDate,
+                                        selectedTask?.endDate,
+                                        selectedTask?.startTime,
+                                        selectedTask?.endTime
+                                    )}
                                 </Text>
                             </View>
                         </View>
                     </View>
-                    <View style={stylesModal.group}>
-                        <View
-                            style={[
-                                styles.contentContainer,
-                                stylesModal.groupInner
-                            ]}
-                        >
-                            <Text style={stylesModal.groupTitle}>Location</Text>
-                            <View style={stylesModal.fieldWrapper}>
-                                <LocationPicker
-                                    selectedLocation={selectedLocation}
-                                    disabled
-                                />
+                    {selectedTask?.location && (
+                        <View style={stylesModal.group}>
+                            <View
+                                style={[
+                                    styles.contentContainer,
+                                    stylesModal.groupInner
+                                ]}
+                            >
+                                <Text style={stylesModal.groupTitle}>
+                                    Location
+                                </Text>
+                                <View style={stylesModal.fieldWrapper}>
+                                    <LocationPicker
+                                        selectedLocation={
+                                            selectedTask?.location
+                                        }
+                                        disabled
+                                    />
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    {/* <View style={[stylesModal.group, { borderBottomWidth: 0 }]}>
-                        <View style={[styles.contentContainer, stylesModal.groupInner]}>
-                            <Text style={[stylesModal.groupTitle]}>Notes</Text>
-                            <Text style={stylesModal.fieldText}>
-                                {description}
-                            </Text>
-                        </View>
-                    </View> */}
+                    )}
                 </ScrollView>
             </View>
 
