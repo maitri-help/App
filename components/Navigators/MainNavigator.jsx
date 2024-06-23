@@ -23,12 +23,14 @@ const MainNavigator = () => {
             <Stack.Navigator
                 initialRouteName={
                     !isLoggedIn
-                        ? hasCompletedOnboarding
-                            ? 'Login'
-                            : 'Onboarding'
-                        : userData && userData?.userType === 'Supporter'
-                        ? 'MainSupporter'
-                        : 'Main'
+                    ? hasCompletedOnboarding
+                        ? 'Login'
+                        : 'Onboarding'
+                    : userData && userData.userType === 'Supporter'
+                    ? 'MainSupporter'
+                    : userData && userData.userType === 'default'
+                    ? 'Identify'
+                    : 'Main'
                 }
                 screenOptions={{ headerShown: false }}
             >
@@ -74,10 +76,10 @@ const MainNavigator = () => {
                     component={SuccessScreen}
                     options={{ gestureEnabled: !isLoggedIn }}
                 />
-                <Stack.Screen
+                    <Stack.Screen
                     name="Identify"
                     component={IdentifyScreen}
-                    options={{ gestureEnabled: false }}
+                    initialParams={{ userId: userData?.userId }}
                 />
                 <Stack.Screen
                     name="Notifications"
