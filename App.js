@@ -2,6 +2,9 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import MainNavigator from './components/Navigators/MainNavigator';
 import { Providers } from './providers/Providers';
+import LogRocket from '@logrocket/react-native';
+
+LogRocket.init('ooup7k/maitri');
 
 export default function App() {
     return (

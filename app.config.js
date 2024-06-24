@@ -40,7 +40,12 @@ module.exports = {
         web: {
             favicon: './assets/favicon.png'
         },
-        plugins: ['expo-font', 'expo-location', 'expo-calendar'],
+        plugins: [
+            'expo-font',
+            'expo-location',
+            'expo-calendar',
+            '@logrocket/react-native'
+        ],
         extra: {
             eas: {
                 projectId: '3a482699-39fe-4fe2-880c-012d3fed9f60'
