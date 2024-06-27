@@ -21,14 +21,25 @@ import ArrowIcon from '../assets/icons/arrow-icon.svg';
 import handleSignUp from '../hooks/handleSignUp';
 import { useToast } from 'react-native-toast-notifications';
 import { registrationValidationSchema } from '../utils/validationSchemas';
+import PhoneInput from 'react-native-international-phone-number';
+import RightChevron from '../assets/icons/chevron-right-icon.svg';
 
 export default function RegisterScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const toast = useToast();
+    const [responseLoading, setResponseLoading] = useState(false);
 
     const handleFormSubmit = async (values) => {
+        const data = {
+            fullName: values.fullName,
+            email: values.email,
+            acceptedTerms: values.acceptedTerms,
+            phoneNumber: values.phoneCountry.callingCode + values.phoneNumber.replace(/\s/g, '')
+        }
+        setResponseLoading(true);
+
         try {
-            const signUpResponse = await handleSignUp(values, navigation);
+            const signUpResponse = await handleSignUp(data, navigation);
 
             const { exists, userId } = signUpResponse;
 
@@ -36,17 +47,19 @@ export default function RegisterScreen({ navigation }) {
                 toast.show('User with phone number already exists', {
                     type: 'error'
                 });
+                setResponseLoading(false);
                 return;
             }
 
             if (userId) {
                 navigation.navigate('VerifyNumber', {
-                    phoneNumber: values.phoneNumber,
+                    phoneNumber: data.phoneNumber,
                     userId
                 });
-                toast.show('Code sent successfully to: ' + values.phoneNumber, {
+                toast.show('Code sent successfully to: ' + data.phoneNumber, {
                     type: 'success'
                 });
+                setResponseLoading(false);
             }
         } catch (error) {
             if (error.response.status === 409) {
@@ -55,6 +68,7 @@ export default function RegisterScreen({ navigation }) {
             }
             console.error('Sign up error:', error);
             toast.show('Sign up failed. Please try again.', { type: 'error' });
+            setResponseLoading(false);
         }
     };
 
@@ -64,6 +78,7 @@ export default function RegisterScreen({ navigation }) {
                 initialValues={{
                     fullName: '',
                     email: '',
+                    phoneCountry: null,
                     phoneNumber: '',
                     acceptedTerms: false
                 }}
@@ -168,43 +183,31 @@ export default function RegisterScreen({ navigation }) {
                                         {errors.email}
                                     </Text>
                                 )}
-                                <View style={styles.inputWrapper}>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="+1 Phone Number"
-                                        value={values.phoneNumber}
-                                        onChangeText={(text) => {
-                                            const newValue = text.replace(
-                                                /\s/g,
-                                                ''
-                                            );
-                                            setFieldValue(
-                                                'phoneNumber',
-                                                newValue
-                                            );
-                                        }}
-                                        keyboardType="phone-pad"
-                                        onBlur={() =>
-                                            setFieldTouched('phoneNumber')
-                                        }
-                                    />
-                                    {touched.phoneNumber &&
-                                    errors.phoneNumber ? (
-                                        <ExclamationIcon
-                                            style={styles.inputErrorIcon}
-                                            width={20}
-                                            height={20}
-                                        />
-                                    ) : (
-                                        <PhoneIcon
-                                            style={styles.inputIcon}
-                                            width={20}
-                                            height={20}
-                                        />
-                                    )}
-                                </View>
+                                <PhoneInput
+                                    value={values.phoneNumber}
+                                    onChangePhoneNumber={(phoneNumber) => {
+                                        setFieldValue('phoneNumber', phoneNumber);
+                                    }}
+                                    selectedCountry={values.phoneCountry}
+                                    onChangeSelectedCountry={(country) => {
+                                        setFieldValue('phoneCountry', country);
+                                    }}
+                                    placeholder="Phone Number"
+                                    defaultCountry="US"
+                                    onBlur={() => setFieldTouched('phoneNumber')}
+                                    phoneInputStyles={styles.phoneInputStyles}
+                                    customCaret={
+                                        <RightChevron style={{
+                                            color: '#1C4837',
+                                            transform: [{ rotate: '90deg' }],
+                                        }} />
+                                    }
+                                    modalStyles={styles.phoneModalStyles}
+                                    //modalNotFoundCountryMessage="Sorry, country not found"
+                                    //modalSearchInputPlaceholder="Search..."
+                                />
                                 {touched.phoneNumber && errors.phoneNumber && (
-                                    <Text style={styles.errorText}>
+                                    <Text style={[styles.errorText, { marginTop: 5 }]}>
                                         {errors.phoneNumber}
                                     </Text>
                                 )}
@@ -301,7 +304,7 @@ export default function RegisterScreen({ navigation }) {
                                             styles.submitButton,
                                             !isFormValid && { opacity: 0.5 }
                                         ]}
-                                        disabled={!isFormValid}
+                                        disabled={!isFormValid || responseLoading}
                                     >
                                         <ArrowIcon
                                             width={18}

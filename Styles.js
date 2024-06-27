@@ -239,4 +239,61 @@ export default styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 10,
     },
+    phoneInputStyles: {
+        container: {
+            height: 50,
+            borderColor: 'transparent',
+            borderBottomColor: '#666666',
+            borderRadius: 0,
+            marginBottom: 10,
+        },
+        flagContainer: {
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            backgroundColor: 'transparent',
+        },
+        caret: {
+            // ...
+        },
+        divider: {
+            color: '#1C4837',
+        },
+        callingCode: {
+            fontFamily: 'poppins-regular',
+            fontSize: 14,
+        },
+        input: {
+            fontFamily: 'poppins-regular',
+            fontSize: 14,
+        }
+    },
+    phoneModalStyles: {
+        countriesList: {
+            marginTop: 10,
+        },
+        searchInput: {
+            marginTop: 5,
+            fontFamily: 'poppins-regular',
+            fontSize: 14,
+            borderColor: 'transparent',
+            borderBottomColor: '#666666',
+            borderRadius: 0,
+        },
+        countryButton: {
+            borderColor: 'transparent',
+        },
+        noCountryText: {
+            fontFamily: 'poppins-regular',
+            fontSize: 14,
+        },
+        noCountryContainer: {},
+        callingCode: {
+            fontFamily: 'poppins-regular',
+            fontSize: 14,
+        },
+        countryName: {
+            fontFamily: 'poppins-regular',
+            fontSize: 14,
+        },
+    }
 });
