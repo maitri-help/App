@@ -17,22 +17,31 @@ import styles from '../Styles';
 import handleSignIn from '../hooks/handleSignIn';
 import { useToast } from 'react-native-toast-notifications';
 import { loginValidationSchema } from '../utils/validationSchemas';
+import PhoneInput from 'react-native-international-phone-number';
+import RightChevron from '../assets/icons/chevron-right-icon.svg';
+
 
 export default function LoginScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const toast = useToast();
+    const [responseLoading, setResponseLoading] = useState(false);
 
     const handleFormSubmit = async (values) => {
+        const data = {
+            phoneNumber: values.phoneCountry.callingCode + values.phoneNumber.replace(/\s/g, '')
+        }
+        setResponseLoading(true);
         try {
-            const userData = await handleSignIn(values);
+            const userData = await handleSignIn(data);
 
-            toast.show('Code is sent to: ' + values.phoneNumber, {
+            toast.show('Code is sent to: ' + data.phoneNumber, {
                 type: 'success'
             });
             navigation.navigate('AlmostThere', {
-                phoneNumber: values.phoneNumber,
+                phoneNumber: data.phoneNumber,
                 userId: userData?.userId
             });
+            setResponseLoading(false);
         } catch (error) {
             console.error('Sign in error:', error);
             if (error.message) {
@@ -40,13 +49,14 @@ export default function LoginScreen({ navigation }) {
             } else {
                 toast.show('Unknown error', { type: 'error' });
             }
+            setResponseLoading(false);
         }
     };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <Formik
-                initialValues={{ phoneNumber: '' }}
+                initialValues={{ phoneNumber: '', phoneCountry: null }}
                 onSubmit={handleFormSubmit}
                 validationSchema={loginValidationSchema}
                 validateOnChange={true}
@@ -91,41 +101,29 @@ export default function LoginScreen({ navigation }) {
                                     stylesLogin.formContainer
                                 ]}
                             >
-                                <View style={styles.inputWrapper}>
-                                    <TextInput
-                                        style={styles.input}
-                                        placeholder="+1 Phone Number"
-                                        value={values.phoneNumber}
-                                        onChangeText={(text) => {
-                                            const newValue = text.replace(
-                                                /\s/g,
-                                                ''
-                                            );
-                                            setFieldValue(
-                                                'phoneNumber',
-                                                newValue
-                                            );
-                                        }}
-                                        keyboardType="phone-pad"
-                                        onBlur={() =>
-                                            setFieldTouched('phoneNumber')
-                                        }
-                                    />
-                                    {touched.phoneNumber &&
-                                    errors.phoneNumber ? (
-                                        <ExclamationIcon
-                                            style={styles.inputErrorIcon}
-                                            width={20}
-                                            height={20}
-                                        />
-                                    ) : (
-                                        <PhoneIcon
-                                            style={styles.inputIcon}
-                                            width={20}
-                                            height={20}
-                                        />
-                                    )}
-                                </View>
+                                <PhoneInput
+                                    value={values.phoneNumber}
+                                    onChangePhoneNumber={(phoneNumber) => {
+                                        setFieldValue('phoneNumber', phoneNumber);
+                                    }}
+                                    selectedCountry={values.phoneCountry}
+                                    onChangeSelectedCountry={(country) => {
+                                        setFieldValue('phoneCountry', country);
+                                    }}
+                                    placeholder="Phone Number"
+                                    defaultCountry="US"
+                                    onBlur={() => setFieldTouched('phoneNumber')}
+                                    phoneInputStyles={styles.phoneInputStyles}
+                                    customCaret={
+                                        <RightChevron style={{
+                                            color: '#1C4837',
+                                            transform: [{ rotate: '90deg' }],
+                                        }} />
+                                    }
+                                    modalStyles={styles.phoneModalStyles}
+                                    //modalNotFoundCountryMessage="Sorry, country not found"
+                                    //modalSearchInputPlaceholder="Search..."
+                                />
                                 {touched.phoneNumber && errors.phoneNumber && (
                                     <Text style={styles.errorText}>
                                         {errors.phoneNumber}
@@ -139,7 +137,7 @@ export default function LoginScreen({ navigation }) {
                                         styles.submitButton,
                                         !isFormValid && { opacity: 0.5 }
                                     ]}
-                                    disabled={!isFormValid}
+                                    disabled={!isFormValid || responseLoading}
                                 >
                                     <ArrowIcon
                                         width={18}

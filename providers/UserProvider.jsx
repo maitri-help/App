@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import useFonts from '../hooks/useFonts';
 import { Image } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import LogRocket from '@logrocket/react-native';
 
 export const UserProvider = ({ children }) => {
     const [userData, setUserData] = useState([]);
@@ -21,6 +22,13 @@ export const UserProvider = ({ children }) => {
         const checkAuthAndOnboarding = async () => {
             try {
                 const userData = await checkAuthentication();
+
+                // LogRocket.identify is used to identify the user in LogRocket
+                LogRocket.identify(`${userData?.userId}`, {
+                    name: `${userData?.firstName} ${userData?.lastName}`,
+                    email: userData?.email
+                });
+
                 setUserData(userData);
                 setIsLoggedIn(userData !== null);
 

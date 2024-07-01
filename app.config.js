@@ -2,7 +2,7 @@ module.exports = {
     expo: {
         name: 'Maitri',
         slug: 'MaitriApp',
-        version: '1.0.10',
+        version: '1.0.13',
         orientation: 'portrait',
         icon: './assets/icon.png',
         userInterfaceStyle: 'light',
@@ -35,12 +35,17 @@ module.exports = {
             },
             permissions: ['ACCESS_FINE_LOCATION', 'ACCESS_COARSE_LOCATION'],
             versionCode: 1,
-            versionName: '1.0.10'
+            versionName: '1.0.13'
         },
         web: {
             favicon: './assets/favicon.png'
         },
-        plugins: ['expo-font', 'expo-location', 'expo-calendar'],
+        plugins: [
+            'expo-font',
+            'expo-location',
+            'expo-calendar',
+            '@logrocket/react-native'
+        ],
         extra: {
             eas: {
                 projectId: '3a482699-39fe-4fe2-880c-012d3fed9f60'

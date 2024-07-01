@@ -4,10 +4,10 @@ import { OTP_LENGTH, TRIBE_LENGTH } from '../constants/variables';
 export const loginValidationSchema = yup.object().shape({
     phoneNumber: yup
         .string()
-        .matches(
+        /* .matches(
             /^(?:(?:\+|00)(?:[1-9]\d{0,2}))?(?:\s*\d{7,})$/,
             'Enter a valid phone number - No spaces or any special characters only "+" allowed.'
-        )
+        ) */
         .required('Phone Number is required')
 });
 
@@ -47,10 +47,10 @@ export const registrationValidationSchema = yup.object().shape({
         .required('Email is required'),
     phoneNumber: yup
         .string()
-        .matches(
+        /* .matches(
             /^(?:(?:\+|00)(?:[1-9]\d{0,2}))?(?:\s*\d{7,})$/,
             'Enter a valid phone number - No spaces or any special characters only "+" allowed.'
-        )
+        ) */
         .required('Phone Number is required'),
     acceptedTerms: yup
         .boolean()
