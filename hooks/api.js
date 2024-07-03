@@ -36,8 +36,10 @@ export function createUser(data) {
     return axios.post(`${baseUrl}/users`, data);
 }
 
-export function updateUserType(userId, userType) {
-    return axios.patch(`${baseUrl}/users/${userId}/user/type`, { userType });
+export function updateUserType(userId, userType, accessToken) {
+    return axios.patch(`${baseUrl}/users/${userId}/user/type`, { userType }, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
 }
 
 export function joinTribe(userId, tribeCode) {
