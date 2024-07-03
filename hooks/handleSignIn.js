@@ -1,11 +1,12 @@
-import { storeUserData } from '../authStorage';
+import { getAccessToken, storeUserData } from '../authStorage';
 import { sendOtp, getUser } from './api';
 
-export default function handleSignIn(values) {
+export default async function handleSignIn(values) {
     const { phoneNumber } = values;
+    const accessToken = await getAccessToken();
 
     return new Promise((resolve, reject) => {
-        getUser(phoneNumber)
+        getUser(phoneNumber, accessToken)
             .then((response) => {
                 if (response.status === 200) {
                     storeUserData(response.data);

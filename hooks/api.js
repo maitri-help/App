@@ -16,8 +16,12 @@ export function verifyOtp(phoneNumber, otp) {
     return axios.post(`${baseUrl}/auth/otp/verify`, { phoneNumber, otp });
 }
 
-export function getUser(phoneNumber) {
-    return axios.get(`${baseUrl}/users/${phoneNumber}`);
+export function getUser(phoneNumber, accessToken) {
+    return axios.get(`${baseUrl}/users/${phoneNumber}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
 }
 
 export function getLeadUser(accessToken) {

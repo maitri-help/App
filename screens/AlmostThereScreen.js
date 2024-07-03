@@ -74,7 +74,7 @@ export default function AlmostThereScreen({ route, navigation }) {
                 storeAccessToken(accessToken);
                 OneSignal.login(`${userId}`); // OneSignal requires a string
 
-                getUser(phoneNumber)
+                getUser(phoneNumber, accessToken)
                     .then((response) => {
                         const userData = response.data;
                         const userType = userData.userType;
