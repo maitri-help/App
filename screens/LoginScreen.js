@@ -25,6 +25,7 @@ export default function LoginScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const toast = useToast();
     const [responseLoading, setResponseLoading] = useState(false);
+    console.log('responseLoading:', responseLoading);
 
     const handleFormSubmit = async (values) => {
         const data = {
@@ -32,7 +33,10 @@ export default function LoginScreen({ navigation }) {
         }
         setResponseLoading(true);
         try {
-            const userData = await handleSignIn(data);
+            const userData = await handleSignIn(data)
+                .then(() => {
+                    setResponseLoading(false);
+                })
 
             toast.show('Code is sent to: ' + data.phoneNumber, {
                 type: 'success'
@@ -41,7 +45,6 @@ export default function LoginScreen({ navigation }) {
                 phoneNumber: data.phoneNumber,
                 userId: userData?.userId
             });
-            setResponseLoading(false);
         } catch (error) {
             console.error('Sign in error:', error);
             if (error.message) {
@@ -135,7 +138,7 @@ export default function LoginScreen({ navigation }) {
                                     onPress={handleSubmit}
                                     style={[
                                         styles.submitButton,
-                                        !isFormValid && { opacity: 0.5 }
+                                        (!isFormValid || responseLoading) && { opacity: 0.5 }
                                     ]}
                                     disabled={!isFormValid || responseLoading}
                                 >

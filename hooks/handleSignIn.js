@@ -1,29 +1,22 @@
-import { getAccessToken, storeUserData } from '../authStorage';
-import { sendOtp, getUser } from './api';
+import { sendOtp, getUserExists } from './api';
 
 export default async function handleSignIn(values) {
     const { phoneNumber } = values;
-    const accessToken = await getAccessToken();
 
     return new Promise((resolve, reject) => {
-        getUser(phoneNumber, accessToken)
+        getUserExists(phoneNumber)
             .then((response) => {
                 if (response.status === 200) {
-                    storeUserData(response.data);
-
-                    return response.data;
+                    return sendOtp(phoneNumber).then((otpResponse) => {
+                        if (otpResponse && otpResponse.data) {
+                            resolve(response.data);
+                        } else {
+                            reject(new Error('No OTP response received'));
+                        }
+                    });
                 } else {
                     reject(new Error('Phone number not found'));
                 }
-            })
-            .then((userData) => {
-                return sendOtp(phoneNumber).then((otpResponse) => {
-                    if (otpResponse && otpResponse.data) {
-                        resolve(userData);
-                    } else {
-                        reject(new Error('No OTP response received'));
-                    }
-                });
             })
             .catch((error) => {
                 const e = error.toJSON();
@@ -44,8 +37,6 @@ export default async function handleSignIn(values) {
                 } else {
                     reject(new Error('Unknown error'));
                 }
-                /* console.error('Sign In Error:', error);
-                reject(error); */
             });
     });
 }

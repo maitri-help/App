@@ -24,6 +24,10 @@ export function getUser(phoneNumber, accessToken) {
     });
 }
 
+export function getUserExists(phoneNumber) {
+    return axios.get(`${baseUrl}/users/exists/${phoneNumber}`);
+}
+
 export function getLeadUser(accessToken) {
     return axios.get(`${baseUrl}/users/supporter/lead-user`, {
         headers: {
