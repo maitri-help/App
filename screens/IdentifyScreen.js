@@ -40,9 +40,9 @@ export default function IdentifyScreen({ navigation, route }) {
             <SafeAreaView style={styles.safeArea}>
                 <Formik
                     initialValues={{ role: '' }}
-                    onSubmit={(values) => {
+                    onSubmit={async (values) => {
                         setIsLoading(true);
-                        const accessToken = getAccessToken();
+                        const accessToken = await getAccessToken();
                         if (values.role === 'Lead') {
                             updateUserType(userId, values.role, accessToken)
                                 .then(() => {
