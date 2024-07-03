@@ -39,35 +39,20 @@ export default function RegisterScreen({ navigation }) {
         setResponseLoading(true);
 
         try {
-            const signUpResponse = await handleSignUp(data, navigation);
+            await handleSignUp(data)
+                .then((response) => {
+                    setResponseLoading(false);
 
-            const { exists, userId } = signUpResponse;
-
-            if (exists) {
-                toast.show('User with phone number already exists', {
-                    type: 'error'
-                });
-                setResponseLoading(false);
-                return;
-            }
-
-            if (userId) {
-                navigation.navigate('VerifyNumber', {
-                    phoneNumber: data.phoneNumber,
-                    userId
-                });
-                toast.show('Code sent successfully to: ' + data.phoneNumber, {
-                    type: 'success'
-                });
-                setResponseLoading(false);
-            }
+                    toast.show('Code sent successfully to: ' + data.phoneNumber, {
+                        type: 'success'
+                    });
+                    navigation.navigate('VerifyNumber', {
+                        phoneNumber: data.phoneNumber,
+                        userId: response?.userId
+                    });
+                }); 
         } catch (error) {
-            if (error.response.status === 409) {
-                toast.show('User with email already exists', { type: 'error' });
-                return;
-            }
-            console.error('Sign up error:', error);
-            toast.show('Sign up failed. Please try again.', { type: 'error' });
+            toast.show(error.message, { type: 'error' });
             setResponseLoading(false);
         }
     };
