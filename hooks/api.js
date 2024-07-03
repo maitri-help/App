@@ -42,8 +42,10 @@ export function updateUserType(userId, userType, accessToken) {
     });
 }
 
-export function joinTribe(userId, tribeCode) {
-    return axios.post(`${baseUrl}/users/${userId}/join/tribe`, { tribeCode });
+export function joinTribe(userId, tribeCode, accessToken) {
+    return axios.post(`${baseUrl}/users/${userId}/join/tribe`, { tribeCode }, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
 }
 
 export function createTask(data, accessToken) {

@@ -15,6 +15,7 @@ import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import Modal from '../components/Modal';
 import { tribeValidationSchema } from '../utils/validationSchemas';
 import { TRIBE_LENGTH } from '../constants/variables';
+import { getAccessToken } from '../authStorage';
 
 export default function IdentifyAlmostThereScreen({
     visible,
@@ -78,7 +79,7 @@ export default function IdentifyAlmostThereScreen({
                                                 ? stylesVerify.errorInput
                                                 : null
                                         ]}
-                                        onChangeText={(text) => {
+                                        onChangeText={async (text) => {
                                             const newTribeValues = [
                                                 ...tribeValues
                                             ];
@@ -91,7 +92,8 @@ export default function IdentifyAlmostThereScreen({
                                                 enteredTribe.length ===
                                                 TRIBE_LENGTH
                                             ) {
-                                                joinTribe(userId, enteredTribe)
+                                                const accessToken = await getAccessToken();
+                                                joinTribe(userId, enteredTribe, accessToken)
                                                     .then(() => {
                                                         toast.show(
                                                             'Welcome to Maitri!',
