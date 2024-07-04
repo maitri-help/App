@@ -163,7 +163,7 @@ export default function EditForm({
             })
             .catch((error) => {
                 console.error('Error adding event to calendar:', error);
-                toast.show('Failed to add event to calendar', { type: 'error' });
+                toast.show(error.message || 'Failed to add event to calendar', { type: 'error' });
             });
     };
 
