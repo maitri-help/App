@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    Linking,
     Modal,
     Platform,
     StyleSheet,
@@ -11,6 +12,11 @@ import { useLocation } from '../../context/LocationContext';
 
 const LocationPermissionModal = () => {
     const { locationPermissionNeeded } = useLocation();
+
+    const handleGoToSettings = () => {
+        Linking.openSettings();
+    };
+
     return (
         <Modal
             visible={locationPermissionNeeded}
