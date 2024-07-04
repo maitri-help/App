@@ -2,25 +2,23 @@ import * as Calendar from 'expo-calendar';
 import { Platform } from 'react-native';
 
 export async function createCalendarEvent(task) {
-    const calendars = await Calendar.getCalendarsAsync(
-        Calendar.EntityTypes.EVENT
-    );
-
     let defaultCalendar = null;
 
     if (Platform.OS === 'ios') {
-        defaultCalendar = Calendar.getDefaultCalendarAsync();
+        defaultCalendar = await Calendar.getDefaultCalendarAsync();
     } else {
+        const calendars = await Calendar.getCalendarsAsync(
+            Calendar.EntityTypes.EVENT
+        );
+
         defaultCalendar = calendars.find(
             (cal) =>
-                cal.accessLevel === 'owner' && cal.name === cal.ownerAccount
+                cal.isPrimary || (cal.accessLevel === 'owner' && cal.name === cal.ownerAccount)
         );
     }
 
     if (!defaultCalendar) {
-        console.error('Default calendar not found');
-        toast.show('Default calendar not found', { type: 'error' });
-        return;
+        throw new Error('No default calendar found');
     }
 
     const isAllDay = !task?.startTime && !task?.endTime && !task?.endDate;
