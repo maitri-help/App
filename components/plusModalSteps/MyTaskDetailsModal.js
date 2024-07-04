@@ -88,41 +88,14 @@ export default function MyTaskDetailsModal({ visible, selectedTask, onClose }) {
             return;
         }
 
-        const calendars = await Calendar.getCalendarsAsync(
-            Calendar.EntityTypes.EVENT
-        );
-
-        const defaultCalendar = Platform.select({
-            ios: calendars.find(
-                (cal) =>
-                    cal.allowsModifications /* && cal.source.name === 'Default' */
-            ),
-            android: calendars.find(
-                (cal) =>
-                    cal.accessLevel === 'owner' && cal.name === cal.ownerAccount
-            )
-        });
-
-        if (!defaultCalendar) {
-            console.error('Default calendar not found');
-            toast.show('Default calendar not found', { type: 'error' });
-            return;
-        }
-
-        const event = {
-            title: selectedTask?.title,
-            startDate: new Date(selectedTask?.startDate),
-            endDate: new Date(selectedTask?.endDate),
-            notes: selectedTask?.description
-        };
-
-        await Calendar.createEventAsync(defaultCalendar.id, event)
-            .then((event) => {
+        await createCalendarEvent(task)
+            .then((res) => {
+                console.log('Event added to calendar:', res);
                 toast.show('Event added to calendar', { type: 'success' });
             })
             .catch((error) => {
                 console.error('Error adding event to calendar:', error);
-                toast.show('Error adding event to calendar', { type: 'error' });
+                toast.show('Failed to add event to calendar', { type: 'error' });
             });
     };
 

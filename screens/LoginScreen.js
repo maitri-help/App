@@ -25,7 +25,6 @@ export default function LoginScreen({ navigation }) {
     const [isFormValid, setIsFormValid] = useState(false);
     const toast = useToast();
     const [responseLoading, setResponseLoading] = useState(false);
-    console.log('responseLoading:', responseLoading);
 
     const handleFormSubmit = async (values) => {
         const data = {

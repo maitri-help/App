@@ -18,6 +18,8 @@ import * as Calendar from 'expo-calendar';
 import { findIcon, sortTasksByStartDate } from '../helpers/task.helpers';
 import { formatTaskItemDate } from '../helpers/date';
 import { useTask } from '../context/TaskContext';
+import CalendarPermissionModal from './Modals/CalendarPermissionModal';
+import { createCalendarEvent } from '../helpers/calendar.helper';
 
 export default function MyTask({
     task,
@@ -71,47 +73,15 @@ export default function MyTask({
             return;
         }
 
-        const calendars = await Calendar.getCalendarsAsync(
-            Calendar.EntityTypes.EVENT
-        );
-
-        const defaultCalendar = Platform.select({
-            ios: calendars.find(
-                (cal) =>
-                    cal.allowsModifications /* && cal.source.name === 'Default' */
-            ),
-            android: calendars.find(
-                (cal) =>
-                    cal.accessLevel === 'owner' && cal.name === cal.ownerAccount
-            )
-        });
-
-        if (!defaultCalendar) {
-            console.error('Default calendar not found');
-            toast.show('Default calendar not found', { type: 'error' });
-            return;
-        }
-
-        const event = {
-            title: task?.title,
-            startDate: new Date(task.startDate),
-            endDate: new Date(task.endDate),
-            notes: task.description
-        };
-
-        await Calendar.createEventAsync(defaultCalendar.id, event)
-            .then((event) => {
+        await createCalendarEvent(task)
+            .then((res) => {
+                console.log('Event added to calendar:', res);
                 toast.show('Event added to calendar', { type: 'success' });
             })
             .catch((error) => {
                 console.error('Error adding event to calendar:', error);
-                toast.show('Error adding event to calendar', { type: 'error' });
+                toast.show('Failed to add event to calendar', { type: 'error' });
             });
-    };
-
-    const handleGoToSettings = () => {
-        Linking.openSettings();
-        setCalendarPermissionNeeded(false);
     };
 
     return (
@@ -198,48 +168,10 @@ export default function MyTask({
             </TouchableOpacity>
 
             {calendarPermissionNeeded && (
-                <Modal
-                    visible={calendarPermissionNeeded}
-                    onRequestClose={() => console.log('close')}
-                    animationType="fade"
-                    transparent
-                >
-                    <TouchableOpacity
-                        onPress={() => console.log('close')}
-                        style={stylesTask.innerModalContainer}
-                    >
-                        <View style={stylesTask.innerModalContent}>
-                            <View style={stylesTask.innerModalTexts}>
-                                <Text style={stylesTask.innerModalTitle}>
-                                    Please provide access for this app to your
-                                    calendar.
-                                </Text>
-                                <Text style={stylesTask.innerModalSubtitle}>
-                                    Without acces we cannot export this event to
-                                    your calendar.
-                                </Text>
-                            </View>
-                            <View style={stylesTask.innerModalButtons}>
-                                <TouchableOpacity
-                                    style={[
-                                        stylesTask.innerModalButton,
-                                        stylesTask.innerModalButtonRed
-                                    ]}
-                                    onPress={handleGoToSettings}
-                                >
-                                    <Text
-                                        style={[
-                                            stylesTask.innerModalButtonText,
-                                            stylesTask.innerModalButtonRedText
-                                        ]}
-                                    >
-                                        Go to Settings
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                </Modal>
+                <CalendarPermissionModal
+                    calendarPermissionNeeded={calendarPermissionNeeded}
+                    setCalendarPermissionNeeded={setCalendarPermissionNeeded}
+                />
             )}
         </>
     );
