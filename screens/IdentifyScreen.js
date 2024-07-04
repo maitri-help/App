@@ -6,7 +6,7 @@ import { useToast } from 'react-native-toast-notifications';
 import IdentifyAlmostThereScreen from './IdentifyAlmostThereScreen';
 import ThankYouScreen from './ThankYouScreen';
 import { joinTribe, updateUserType } from '../hooks/api';
-import { updateUserTypeInStorage } from '../authStorage';
+import { getAccessToken, updateUserTypeInStorage } from '../authStorage';
 import RoleSelector from '../components/RoleSelector';
 
 export default function IdentifyScreen({ navigation, route }) {
@@ -40,10 +40,11 @@ export default function IdentifyScreen({ navigation, route }) {
             <SafeAreaView style={styles.safeArea}>
                 <Formik
                     initialValues={{ role: '' }}
-                    onSubmit={(values) => {
+                    onSubmit={async (values) => {
                         setIsLoading(true);
+                        const accessToken = await getAccessToken();
                         if (values.role === 'Lead') {
-                            updateUserType(userId, values.role)
+                            updateUserType(userId, values.role, accessToken)
                                 .then(() => {
                                     toast.show('Welcome to Maitri!', {
                                         type: 'success'

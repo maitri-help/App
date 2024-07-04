@@ -67,7 +67,7 @@ export default function VerifyNumberScreen({ route, navigation }) {
                 const accessToken = response.data.accessToken;
                 storeAccessToken(accessToken);
 
-                getUser(phoneNumber)
+                getUser(phoneNumber, accessToken)
                     .then((response) => {
                         const userData = response.data;
                         setUserData({ ...userData, accessToken });

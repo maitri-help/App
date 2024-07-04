@@ -201,7 +201,6 @@ export default function ProfileScreen({ navigation }) {
             <DeleteModal
                 visible={deleteModalVisible}
                 onClose={() => setDeleteModalVisible(false)}
-                deleteAccount={handleLogout}
                 navigation={navigation}
             />
         </>

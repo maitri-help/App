@@ -29,6 +29,8 @@ import {
     sortTasksByStartDate
 } from '../../helpers/task.helpers';
 import { useTask } from '../../context/TaskContext';
+import CalendarPermissionModal from '../Modals/CalendarPermissionModal';
+import { createCalendarEvent } from '../../helpers/calendar.helper';
 
 export default function EditForm({
     currentStep,
@@ -44,8 +46,6 @@ export default function EditForm({
     const toast = useToast();
 
     const [confirmationVisible, setConfirmationVisible] = useState(false);
-    const [calendarPermissionNeeded, setCalendarPermissionNeeded] =
-        useState(false);
 
     const { setTasks } = useTask();
 
@@ -146,79 +146,25 @@ export default function EditForm({
         }
     };
 
-    const requestCalendarPermission = async () => {
-        const permission = await Calendar.requestCalendarPermissionsAsync();
-
-        if (!permission.granted) {
-            setCalendarPermissionNeeded(true);
-            return false;
-        }
-        return true;
-    };
+    const [calendarPermission] = Calendar.useCalendarPermissions();
+    const [calendarPermissionNeeded, setCalendarPermissionNeeded] =
+        useState(false);
 
     const handleOpenCalendar = async () => {
-        const permissionGranted = await requestCalendarPermission();
-
-        if (!permissionGranted) {
+        if (!calendarPermission.granted) {
+            setCalendarPermissionNeeded(true);
             return;
         }
 
-        const calendars = await Calendar.getCalendarsAsync(
-            Calendar.EntityTypes.EVENT
-        );
-
-        const defaultCalendar = Platform.select({
-            ios: calendars.find(
-                (cal) => cal.allowsModifications && cal.source.name === 'iCloud'
-            ),
-            android: calendars.find(
-                (cal) =>
-                    cal.accessLevel === 'owner' && cal.name === cal.ownerAccount
-            )
-        });
-
-        if (!defaultCalendar) {
-            console.error('Default calendar not found');
-            toast.show('Default calendar not found', { type: 'error' });
-            return;
-        }
-
-        const isAllDay = !task?.startTime && !task?.endTime && !task?.endDate;
-
-        let endDate;
-
-        const startDate = task?.startTime
-            ? mergeDateAndTime(task?.startDate, task?.startTime)
-            : new Date(task?.startDate);
-
-        if (task?.endDate) {
-            endDate = task?.endTime
-                ? mergeDateAndTime(task?.endDate, task?.endTime)
-                : new Date(task?.endDate);
-        }
-
-        const event = {
-            title: task?.title,
-            startDate: startDate,
-            endDate: endDate ? endDate : startDate,
-            notes: task?.description,
-            allDay: isAllDay
-        };
-
-        await Calendar.createEventAsync(defaultCalendar.id, event)
-            .then((event) => {
-                console.log('Event added to calendar:', event);
+        await createCalendarEvent(task)
+            .then((res) => {
+                console.log('Event added to calendar:', res);
                 toast.show('Event added to calendar', { type: 'success' });
             })
             .catch((error) => {
                 console.error('Error adding event to calendar:', error);
-                toast.show('Error adding event to calendar', { type: 'error' });
+                toast.show('Failed to add event to calendar', { type: 'error' });
             });
-    };
-
-    const handleGoToSettings = () => {
-        Linking.openSettings();
-        setCalendarPermissionNeeded(false);
     };
 
     return (
@@ -518,48 +464,10 @@ export default function EditForm({
             )}
 
             {calendarPermissionNeeded && (
-                <Modal
-                    visible={calendarPermissionNeeded}
-                    onRequestClose={() => console.log('close')}
-                    animationType="fade"
-                    transparent
-                >
-                    <TouchableOpacity
-                        onPress={() => console.log('close')}
-                        style={stylesReview.innerModalContainer}
-                    >
-                        <View style={stylesReview.innerModalContent}>
-                            <View style={stylesReview.innerModalTexts}>
-                                <Text style={stylesReview.innerModalTitle}>
-                                    Please provide access for this app to your
-                                    calendar.
-                                </Text>
-                                <Text style={stylesReview.innerModalSubtitle}>
-                                    Without access we cannot export this event
-                                    to your calendar.
-                                </Text>
-                            </View>
-                            <View style={stylesReview.innerModalButtons}>
-                                <TouchableOpacity
-                                    style={[
-                                        stylesReview.innerModalButton,
-                                        stylesReview.innerModalButtonRed
-                                    ]}
-                                    onPress={handleGoToSettings}
-                                >
-                                    <Text
-                                        style={[
-                                            stylesReview.innerModalButtonText,
-                                            stylesReview.innerModalButtonRedText
-                                        ]}
-                                    >
-                                        Go to Settings
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                </Modal>
+                <CalendarPermissionModal
+                    calendarPermissionNeeded={calendarPermissionNeeded}
+                    setCalendarPermissionNeeded={setCalendarPermissionNeeded}
+                />
             )}
         </>
     );

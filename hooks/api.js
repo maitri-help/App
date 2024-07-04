@@ -16,8 +16,16 @@ export function verifyOtp(phoneNumber, otp) {
     return axios.post(`${baseUrl}/auth/otp/verify`, { phoneNumber, otp });
 }
 
-export function getUser(phoneNumber) {
-    return axios.get(`${baseUrl}/users/${phoneNumber}`);
+export function getUser(phoneNumber, accessToken) {
+    return axios.get(`${baseUrl}/users/${phoneNumber}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}
+
+export function getUserExists(phoneNumber) {
+    return axios.get(`${baseUrl}/users/exists/${phoneNumber}`);
 }
 
 export function getLeadUser(accessToken) {
@@ -32,12 +40,16 @@ export function createUser(data) {
     return axios.post(`${baseUrl}/users`, data);
 }
 
-export function updateUserType(userId, userType) {
-    return axios.patch(`${baseUrl}/users/${userId}/user/type`, { userType });
+export function updateUserType(userId, userType, accessToken) {
+    return axios.patch(`${baseUrl}/users/${userId}/user/type`, { userType }, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
 }
 
-export function joinTribe(userId, tribeCode) {
-    return axios.post(`${baseUrl}/users/${userId}/join/tribe`, { tribeCode });
+export function joinTribe(userId, tribeCode, accessToken) {
+    return axios.post(`${baseUrl}/users/${userId}/join/tribe`, { tribeCode }, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
 }
 
 export function createTask(data, accessToken) {
