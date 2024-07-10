@@ -250,6 +250,9 @@ export default function RegisterScreen({ navigation }) {
                                             </Text>
                                         </Text>
                                     </TouchableOpacity>
+                                    <Text style={stylesRegister.additionalText}>
+                                        By clicking you agree to receiving text messages to confirm your account. Carrier fees may apply.
+                                    </Text>
                                     {touched.acceptedTerms &&
                                         !values.acceptedTerms &&
                                         errors.acceptedTerms && (
@@ -331,5 +334,11 @@ const stylesRegister = StyleSheet.create({
     },
     submitButtonContainer: {
         paddingTop: 40
-    }
+    },
+    additionalText: {
+        fontSize: 12,
+        color: 'gray',
+        textAlign: 'center',
+        marginTop: 10,
+    },
 });
