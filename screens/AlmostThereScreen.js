@@ -23,6 +23,7 @@ import { OneSignal } from 'react-native-onesignal';
 import { OTP_LENGTH } from '../constants/variables';
 import { otpValidationSchema } from '../utils/validationSchemas';
 import { useUser } from '../context/UserContext';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function AlmostThereScreen({ route, navigation }) {
     const { phoneNumber, userId } = route.params;
@@ -108,91 +109,93 @@ export default function AlmostThereScreen({ route, navigation }) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <Formik
-                initialValues={{ otp: '' }}
-                onSubmit={() => {}}
-                validationSchema={otpValidationSchema}
-            >
-                {({ handleChange, setErrors, errors, touched }) => (
-                    <View style={[styles.container, styles.authContainer]}>
-                        <TouchableOpacity
-                            onPress={() => navigation.goBack()}
-                            style={styles.backLink}
-                        >
-                            <ArrowLeftIcon
-                                width={18}
-                                height={18}
-                                style={styles.backLinkIcon}
-                            />
-                        </TouchableOpacity>
-                        <View style={styles.topTextsContainer}>
-                            <Text style={[styles.title, stylesVerify.title]}>
-                                Almost there!
-                            </Text>
-                            <Text style={[styles.text, stylesVerify.text]}>
-                                Enter the 6-digit code verification code sent to
-                                your phone
-                            </Text>
-                        </View>
-                        <View style={stylesVerify.otpInputContainer}>
-                            {otp.map((value, index) => (
-                                <TextInput
-                                    key={index}
-                                    style={[
-                                        stylesVerify.otpInput,
-                                        index === OTP_LENGTH - 1 && value !== ''
-                                            ? stylesVerify.lastInput
-                                            : null,
-                                        errors.otp &&
-                                        touched.otp &&
-                                        touched.otp[index]
-                                            ? stylesVerify.errorInput
-                                            : null
-                                    ]}
-                                    onChangeText={(text) =>
-                                        handleOtpChange(index, text, setErrors)
-                                    }
-                                    value={value}
-                                    keyboardType="numeric"
-                                    maxLength={1}
-                                    ref={(ref) =>
-                                        (otpInputRef.current[index] = ref)
-                                    }
-                                />
-                            ))}
-                        </View>
-                        {touched.otp && errors.otp && (
-                            <Text style={styles.errorText}>{errors.otp}</Text>
-                        )}
-
-                        <View style={stylesVerify.bottomTextsContainer}>
-                            <Text style={stylesVerify.bottomTitle}>
-                                Didn't receive a code?{' '}
-                            </Text>
+            <ScrollView>
+                <Formik
+                    initialValues={{ otp: '' }}
+                    onSubmit={() => {}}
+                    validationSchema={otpValidationSchema}
+                >
+                    {({ handleChange, setErrors, errors, touched }) => (
+                        <View style={[styles.container, styles.authContainer]}>
                             <TouchableOpacity
-                                onPress={
-                                    resendClickable ? handleResendPress : null
-                                }
+                                onPress={() => navigation.goBack()}
+                                style={styles.backLink}
                             >
-                                <Text
-                                    style={[
-                                        stylesVerify.bottomText,
-                                        resendClickable
-                                            ? stylesVerify.resendClickable
-                                            : null
-                                    ]}
-                                >
-                                    {countdown > 0
-                                        ? `Resend in 00:${countdown
-                                              .toString()
-                                              .padStart(2, '0')}s`
-                                        : 'Resend'}
-                                </Text>
+                                <ArrowLeftIcon
+                                    width={18}
+                                    height={18}
+                                    style={styles.backLinkIcon}
+                                />
                             </TouchableOpacity>
+                            <View style={styles.topTextsContainer}>
+                                <Text style={[styles.title, stylesVerify.title]}>
+                                    Almost there!
+                                </Text>
+                                <Text style={[styles.text, stylesVerify.text]}>
+                                    Enter the 6-digit code verification code sent to
+                                    your phone
+                                </Text>
+                            </View>
+                            <View style={stylesVerify.otpInputContainer}>
+                                {otp.map((value, index) => (
+                                    <TextInput
+                                        key={index}
+                                        style={[
+                                            stylesVerify.otpInput,
+                                            index === OTP_LENGTH - 1 && value !== ''
+                                                ? stylesVerify.lastInput
+                                                : null,
+                                            errors.otp &&
+                                            touched.otp &&
+                                            touched.otp[index]
+                                                ? stylesVerify.errorInput
+                                                : null
+                                        ]}
+                                        onChangeText={(text) =>
+                                            handleOtpChange(index, text, setErrors)
+                                        }
+                                        value={value}
+                                        keyboardType="numeric"
+                                        maxLength={1}
+                                        ref={(ref) =>
+                                            (otpInputRef.current[index] = ref)
+                                        }
+                                    />
+                                ))}
+                            </View>
+                            {touched.otp && errors.otp && (
+                                <Text style={styles.errorText}>{errors.otp}</Text>
+                            )}
+
+                            <View style={stylesVerify.bottomTextsContainer}>
+                                <Text style={stylesVerify.bottomTitle}>
+                                    Didn't receive a code?{' '}
+                                </Text>
+                                <TouchableOpacity
+                                    onPress={
+                                        resendClickable ? handleResendPress : null
+                                    }
+                                >
+                                    <Text
+                                        style={[
+                                            stylesVerify.bottomText,
+                                            resendClickable
+                                                ? stylesVerify.resendClickable
+                                                : null
+                                        ]}
+                                    >
+                                        {countdown > 0
+                                            ? `Resend in 00:${countdown
+                                                .toString()
+                                                .padStart(2, '0')}s`
+                                            : 'Resend'}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
-                )}
-            </Formik>
+                    )}
+                </Formik>
+            </ScrollView>
         </SafeAreaView>
     );
 }

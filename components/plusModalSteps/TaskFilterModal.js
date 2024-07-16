@@ -4,6 +4,7 @@ import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import Modal from '../Modal';
 import Button from '../Button';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function TaskFilterModal({
     visible,
@@ -74,110 +75,112 @@ export default function TaskFilterModal({
                     </Text>
                 </View>
             </View>
-            <View style={stylesReview.group}>
-                <View style={styles.contentContainer}>
-                    <Text style={stylesReview.groupTitle}>Time</Text>
-                    <View style={[stylesReview.groupInner]}>
-                        {TimeFilters.map((filter) => (
-                            <Button
-                                key={filter}
-                                buttonSmall={true}
-                                textStyle={{
-                                    ...{
-                                        fontSize: 14,
-                                        lineHeight: 18,
-                                        paddingHorizontal: 2,
-                                        color: '#000'
-                                    },
-                                    color: TimeFilterList.includes(filter)
-                                        ? 'white'
-                                        : 'black'
-                                }}
-                                buttonStyle={{
-                                    ...{
-                                        width: 'auto',
-                                        height: 30,
-                                        paddingHorizontal: 10,
-                                        paddingVertical: 6,
-                                        borderRadius: 100
-                                    },
-                                    backgroundColor: TimeFilterList.includes(
-                                        filter
-                                    )
-                                        ? '#6AAA5F'
-                                        : '#f7f7f7'
-                                }}
-                                title={filter}
-                                onPress={() =>
-                                    toggleFilter(filter, setTimeFilterList)
-                                }
-                            />
-                        ))}
+            <ScrollView>
+                <View style={stylesReview.group}>
+                    <View style={styles.contentContainer}>
+                        <Text style={stylesReview.groupTitle}>Time</Text>
+                        <View style={[stylesReview.groupInner]}>
+                            {TimeFilters.map((filter) => (
+                                <Button
+                                    key={filter}
+                                    buttonSmall={true}
+                                    textStyle={{
+                                        ...{
+                                            fontSize: 14,
+                                            lineHeight: 18,
+                                            paddingHorizontal: 2,
+                                            color: '#000'
+                                        },
+                                        color: TimeFilterList.includes(filter)
+                                            ? 'white'
+                                            : 'black'
+                                    }}
+                                    buttonStyle={{
+                                        ...{
+                                            width: 'auto',
+                                            height: 30,
+                                            paddingHorizontal: 10,
+                                            paddingVertical: 6,
+                                            borderRadius: 100
+                                        },
+                                        backgroundColor: TimeFilterList.includes(
+                                            filter
+                                        )
+                                            ? '#6AAA5F'
+                                            : '#f7f7f7'
+                                    }}
+                                    title={filter}
+                                    onPress={() =>
+                                        toggleFilter(filter, setTimeFilterList)
+                                    }
+                                />
+                            ))}
+                        </View>
                     </View>
                 </View>
-            </View>
-            <View style={stylesReview.group}>
-                <View style={styles.contentContainer}>
-                    <Text style={stylesReview.groupTitle}>Type</Text>
-                    <View style={[stylesReview.groupInner]}>
-                        {TypeFilters.map((filter) => (
-                            <Button
-                                key={filter}
-                                buttonSmall={true}
-                                textStyle={{
-                                    ...{
-                                        fontSize: 14,
-                                        lineHeight: 18,
-                                        paddingHorizontal: 2,
-                                        color: '#000'
-                                    },
-                                    color: TypeFilterList.includes(filter)
-                                        ? 'white'
-                                        : 'black'
-                                }}
-                                buttonStyle={{
-                                    ...{
-                                        width: 'auto',
-                                        height: 30,
-                                        paddingHorizontal: 10,
-                                        paddingVertical: 6,
-                                        borderRadius: 100
-                                    },
-                                    backgroundColor: TypeFilterList.includes(
-                                        filter
-                                    )
-                                        ? '#6AAA5F'
-                                        : '#f7f7f7'
-                                }}
-                                title={filter}
-                                onPress={() =>
-                                    toggleFilter(filter, setTypeFilterList)
-                                }
-                            />
-                        ))}
+                <View style={stylesReview.group}>
+                    <View style={styles.contentContainer}>
+                        <Text style={stylesReview.groupTitle}>Type</Text>
+                        <View style={[stylesReview.groupInner]}>
+                            {TypeFilters.map((filter) => (
+                                <Button
+                                    key={filter}
+                                    buttonSmall={true}
+                                    textStyle={{
+                                        ...{
+                                            fontSize: 14,
+                                            lineHeight: 18,
+                                            paddingHorizontal: 2,
+                                            color: '#000'
+                                        },
+                                        color: TypeFilterList.includes(filter)
+                                            ? 'white'
+                                            : 'black'
+                                    }}
+                                    buttonStyle={{
+                                        ...{
+                                            width: 'auto',
+                                            height: 30,
+                                            paddingHorizontal: 10,
+                                            paddingVertical: 6,
+                                            borderRadius: 100
+                                        },
+                                        backgroundColor: TypeFilterList.includes(
+                                            filter
+                                        )
+                                            ? '#6AAA5F'
+                                            : '#f7f7f7'
+                                    }}
+                                    title={filter}
+                                    onPress={() =>
+                                        toggleFilter(filter, setTypeFilterList)
+                                    }
+                                />
+                            ))}
+                        </View>
                     </View>
                 </View>
-            </View>
 
-            <View style={[styles.contentContainer, { marginTop: 40 }]}>
-                <Button title="Filter" onPress={onClose} />
-            </View>
-            <View style={{ paddingTop: 20 }}>
-                <TouchableOpacity onPress={handleResetFilters}>
-                    <Text
-                        style={[
-                            styles.text,
-                            {
-                                alignSelf: 'center',
-                                color: '#55884C',
-                                textDecorationLine: 'underline'
-                            }
-                        ]}
-                    >
-                        Reset
-                    </Text>
-                </TouchableOpacity>
-            </View>
+                <View style={[styles.contentContainer, { marginTop: 40 }]}>
+                    <Button title="Filter" onPress={onClose} />
+                </View>
+                <View style={{ paddingTop: 20 }}>
+                    <TouchableOpacity onPress={handleResetFilters}>
+                        <Text
+                            style={[
+                                styles.text,
+                                {
+                                    alignSelf: 'center',
+                                    color: '#55884C',
+                                    textDecorationLine: 'underline'
+                                }
+                            ]}
+                        >
+                            Reset
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
         </Modal>
     );
 }

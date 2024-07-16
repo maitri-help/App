@@ -8,7 +8,10 @@ import {
     ScrollView,
     Image,
     Animated,
-    ActivityIndicator
+    ActivityIndicator,
+    Dimensions,
+    PixelRatio,
+    Platform
 } from 'react-native';
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
@@ -27,9 +30,17 @@ import { useTask } from '../context/TaskContext';
 import Tab from '../components/common/Tab';
 import { generateGreetings } from '../helpers';
 import { useUser } from '../context/UserContext';
+import { LARGE_FONT_SCALE, SMALL_SCREEN_HEIGHT } from '../constants/variables';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
+
+    const isAndroid = Platform.OS === 'android';
+    const { height } = Dimensions.get('window');
+    console.log('height', height);
+
+    const fontScale = PixelRatio.getFontScale();
+    console.log('fontScale', fontScale);
 
     const { tasks, isLoading } = useTask();
     const [plusModalVisible, setPlusModalVisible] = useState(false);
@@ -326,24 +337,9 @@ export default function HomeScreen({ navigation }) {
         );
     };
 
-    return (
-        <>
-            <StatusBar style="dark" translucent={true} hidden={false} />
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.topBar}>
-                    <Text style={stylesHome.greetingsText}>
-                        {generateGreetings()} {userData?.firstName}!
-                    </Text>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('Notifications')}
-                        style={stylesHome.bellWrapper}
-                    >
-                        <BellIcon style={stylesHome.bellIcon} />
-                        {hasUnreadPendingRequest && (
-                            <View style={stylesHome.indicator}></View>
-                        )}
-                    </TouchableOpacity>
-                </View>
+    const renderContent = () => {
+        return (
+            <>
                 <LeadBoxes
                     navigation={navigation}
                     thankYouCards={thankYouCards}
@@ -385,6 +381,33 @@ export default function HomeScreen({ navigation }) {
                         {renderTasks(tasks)}
                     </View>
                 )}
+            </>
+        );
+    };
+
+    return (
+        <>
+            <StatusBar style="dark" translucent={true} hidden={false} />
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.topBar}>
+                    <Text style={stylesHome.greetingsText}>
+                        {generateGreetings()} {userData?.firstName}!
+                    </Text>
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('Notifications')}
+                        style={stylesHome.bellWrapper}
+                    >
+                        <BellIcon style={stylesHome.bellIcon} />
+                        {hasUnreadPendingRequest && (
+                            <View style={stylesHome.indicator}></View>
+                        )}
+                    </TouchableOpacity>
+                </View>
+                {(isAndroid && height < SMALL_SCREEN_HEIGHT) || (!isAndroid && fontScale > LARGE_FONT_SCALE) ? (
+                    <ScrollView>
+                        {renderContent()}
+                    </ScrollView>
+                ) : renderContent()}
             </SafeAreaView>
             {(taskModalVisible || plusModalVisible) && (
                 <Animated.View

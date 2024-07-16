@@ -17,6 +17,7 @@ import { Platform } from 'react-native';
 import { OneSignal } from 'react-native-onesignal';
 import { useUser } from '../context/UserContext';
 import { useTask } from '../context/TaskContext';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function ProfileSupporterScreen({ navigation }) {
     const [logoutModalVisible, setLogoutModalVisible] = useState(false);
@@ -64,139 +65,141 @@ export default function ProfileSupporterScreen({ navigation }) {
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
-                <View style={[styles.topBar, { borderBottomWidth: 0 }]}>
-                    <Text style={stylesProfile.greetingsText}>My Profile</Text>
-                </View>
-                <View style={[styles.container, stylesProfile.container]}>
-                    {loading ? (
-                        <View
-                            style={{
-                                minHeight: 210,
-                                justifyContent: 'center',
-                                alignItems: 'center'
-                            }}
-                        >
-                            <ActivityIndicator size="large" />
-                        </View>
-                    ) : (
-                        <View style={stylesProfile.topContent}>
-                            <View style={{ paddingBottom: 20 }}>
-                                <View
-                                    style={[
-                                        stylesProfile.selectedEmojiItem,
-                                        { borderColor: userData?.color }
-                                    ]}
-                                >
-                                    <Text
-                                        style={stylesProfile.selectedEmojiText}
+                <ScrollView>
+                    <View style={[styles.topBar, { borderBottomWidth: 0 }]}>
+                        <Text style={stylesProfile.greetingsText}>My Profile</Text>
+                    </View>
+                    <View style={[styles.container, stylesProfile.container]}>
+                        {loading ? (
+                            <View
+                                style={{
+                                    minHeight: 210,
+                                    justifyContent: 'center',
+                                    alignItems: 'center'
+                                }}
+                            >
+                                <ActivityIndicator size="large" />
+                            </View>
+                        ) : (
+                            <View style={stylesProfile.topContent}>
+                                <View style={{ paddingBottom: 20 }}>
+                                    <View
+                                        style={[
+                                            stylesProfile.selectedEmojiItem,
+                                            { borderColor: userData?.color }
+                                        ]}
                                     >
-                                        {userData?.emoji}
-                                    </Text>
+                                        <Text
+                                            style={stylesProfile.selectedEmojiText}
+                                        >
+                                            {userData?.emoji}
+                                        </Text>
+                                    </View>
                                 </View>
-                            </View>
 
-                            <Text style={stylesProfile.topContentName}>
-                                {userData?.firstName} {userData?.lastName} (
-                                {userData?.userType})
-                            </Text>
-                            <Text style={stylesProfile.topContentText}>
-                                {userData?.email}
-                            </Text>
-                            <Text style={stylesProfile.topContentText}>
-                                {userData?.phoneNumber}
-                            </Text>
-                        </View>
-                    )}
+                                <Text style={stylesProfile.topContentName}>
+                                    {userData?.firstName} {userData?.lastName} (
+                                    {userData?.userType})
+                                </Text>
+                                <Text style={stylesProfile.topContentText}>
+                                    {userData?.email}
+                                </Text>
+                                <Text style={stylesProfile.topContentText}>
+                                    {userData?.phoneNumber}
+                                </Text>
+                            </View>
+                        )}
 
-                    <View style={stylesProfile.contentContainer}>
-                        <View style={stylesProfile.buttons}>
-                            <View style={stylesProfile.buttonWrapper}>
-                                <TouchableOpacity
-                                    style={stylesProfile.button}
-                                    onPress={handleContactSupport}
-                                >
-                                    <Text style={stylesProfile.buttonText}>
-                                        Contact support
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={stylesProfile.buttonWrapper}>
-                                <TouchableOpacity
-                                    style={[
-                                        stylesProfile.button,
-                                        stylesProfile.logoutButton
-                                    ]}
-                                    onPress={() => setLogoutModalVisible(true)}
-                                >
-                                    <Text
-                                        style={[
-                                            stylesProfile.buttonText,
-                                            stylesProfile.logoutButtonText
-                                        ]}
+                        <View style={stylesProfile.contentContainer}>
+                            <View style={stylesProfile.buttons}>
+                                <View style={stylesProfile.buttonWrapper}>
+                                    <TouchableOpacity
+                                        style={stylesProfile.button}
+                                        onPress={handleContactSupport}
                                     >
-                                        Log Out
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={stylesProfile.buttonWrapper}>
-                                <TouchableOpacity
-                                    style={[
-                                        stylesProfile.button,
-                                        stylesProfile.logoutButton
-                                    ]}
-                                    onPress={() => setDeleteModalVisible(true)}
-                                >
-                                    <Text
+                                        <Text style={stylesProfile.buttonText}>
+                                            Contact support
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={stylesProfile.buttonWrapper}>
+                                    <TouchableOpacity
                                         style={[
-                                            stylesProfile.buttonText,
-                                            stylesProfile.logoutButtonText
+                                            stylesProfile.button,
+                                            stylesProfile.logoutButton
                                         ]}
+                                        onPress={() => setLogoutModalVisible(true)}
                                     >
-                                        Delete Account
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={stylesProfile.linksWrapper}>
-                                <TouchableOpacity style={stylesProfile.link}>
-                                    <Text
-                                        style={stylesProfile.linkText}
+                                        <Text
+                                            style={[
+                                                stylesProfile.buttonText,
+                                                stylesProfile.logoutButtonText
+                                            ]}
+                                        >
+                                            Log Out
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={stylesProfile.buttonWrapper}>
+                                    <TouchableOpacity
+                                        style={[
+                                            stylesProfile.button,
+                                            stylesProfile.logoutButton
+                                        ]}
+                                        onPress={() => setDeleteModalVisible(true)}
+                                    >
+                                        <Text
+                                            style={[
+                                                stylesProfile.buttonText,
+                                                stylesProfile.logoutButtonText
+                                            ]}
+                                        >
+                                            Delete Account
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={stylesProfile.linksWrapper}>
+                                    <TouchableOpacity style={stylesProfile.link}>
+                                        <Text
+                                            style={stylesProfile.linkText}
+                                            onPress={() =>
+                                                Linking.openURL(
+                                                    'https://www.maitrihelp.com/privacy-policy'
+                                                )
+                                            }
+                                        >
+                                            Privacy Policy
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={stylesProfile.link}
                                         onPress={() =>
                                             Linking.openURL(
-                                                'https://www.maitrihelp.com/privacy-policy'
+                                                'https://docs.google.com/forms/d/19ZBmxPhj-EFbeM-HVExMkpEcQPfajSOBh2MXulrcNUI/edit'
                                             )
                                         }
                                     >
-                                        Privacy Policy
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={stylesProfile.link}
-                                    onPress={() =>
-                                        Linking.openURL(
-                                            'https://docs.google.com/forms/d/19ZBmxPhj-EFbeM-HVExMkpEcQPfajSOBh2MXulrcNUI/edit'
-                                        )
-                                    }
-                                >
-                                    <Text style={stylesProfile.linkText}>
-                                        Report an issue
-                                    </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={stylesProfile.link}
-                                    onPress={() =>
-                                        Linking.openURL(
-                                            'https://www.maitrihelp.com/terms-conditions'
-                                        )
-                                    }
-                                >
-                                    <Text style={stylesProfile.linkText}>
-                                        Terms & Conditions
-                                    </Text>
-                                </TouchableOpacity>
+                                        <Text style={stylesProfile.linkText}>
+                                            Report an issue
+                                        </Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={stylesProfile.link}
+                                        onPress={() =>
+                                            Linking.openURL(
+                                                'https://www.maitrihelp.com/terms-conditions'
+                                            )
+                                        }
+                                    >
+                                        <Text style={stylesProfile.linkText}>
+                                            Terms & Conditions
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                     </View>
-                </View>
+                </ScrollView>
             </SafeAreaView>
 
             {(logoutModalVisible || deleteModalVisible) && (

@@ -260,134 +260,136 @@ export default function HomeSupporterScreen({ navigation }) {
         <>
             <StatusBar style="dark" translucent={true} hidden={false} />
             <SafeAreaView style={styles.safeArea}>
-                <View style={stylesSuppHome.topBar}>
-                    <View
-                        style={[
-                            stylesSuppHome.selectedEmojiItem,
-                            { borderColor: userData?.color }
-                        ]}
-                    >
-                        <Text style={stylesSuppHome.selectedEmojiText}>
-                            {userData?.emoji}
-                        </Text>
-                    </View>
-                    <View style={{ flexShrink: 1 }}>
-                        <Text style={stylesSuppHome.greetingsText}>
-                            Hey {userData?.firstName}
-                        </Text>
-                        <Text style={stylesSuppHome.thanksText}>
-                            Thanks for being here for{' '}
-                            <Text style={stylesSuppHome.nameText}>
-                                {leadUserName}!
-                            </Text>
-                        </Text>
-                    </View>
-                </View>
-
-                {isViewActive && (
-                    <View
-                        style={[
-                            styles.contentContainer,
-                            { paddingTop: 5, paddingBottom: 15, width: '100%' }
-                        ]}
-                    >
-                        <ImageBackground
-                            source={initalBackground}
-                            style={stylesSuppHome.roundedRectangleContainer}
+                <ScrollView>
+                    <View style={stylesSuppHome.topBar}>
+                        <View
+                            style={[
+                                stylesSuppHome.selectedEmojiItem,
+                                { borderColor: userData?.color }
+                            ]}
                         >
-                            <View
-                                style={{
-                                    alignItems: 'left',
-                                    flexDirection: 'column',
-                                    flex: 1,
-                                    paddingRight: 10
-                                }}
+                            <Text style={stylesSuppHome.selectedEmojiText}>
+                                {userData?.emoji}
+                            </Text>
+                        </View>
+                        <View style={{ flexShrink: 1 }}>
+                            <Text style={stylesSuppHome.greetingsText}>
+                                Hey {userData?.firstName}
+                            </Text>
+                            <Text style={stylesSuppHome.thanksText}>
+                                Thanks for being here for{' '}
+                                <Text style={stylesSuppHome.nameText}>
+                                    {leadUserName}!
+                                </Text>
+                            </Text>
+                        </View>
+                    </View>
+
+                    {isViewActive && (
+                        <View
+                            style={[
+                                styles.contentContainer,
+                                { paddingTop: 5, paddingBottom: 15, width: '100%' }
+                            ]}
+                        >
+                            <ImageBackground
+                                source={initalBackground}
+                                style={stylesSuppHome.roundedRectangleContainer}
                             >
-                                {tasks?.length > 0 ? (
-                                    <Text
-                                        style={
-                                            stylesSuppHome.inspirationalQuoteText
-                                        }
-                                    >
-                                        {randomInspirationalQuote}
-                                    </Text>
-                                ) : (
-                                    <>
+                                <View
+                                    style={{
+                                        alignItems: 'left',
+                                        flexDirection: 'column',
+                                        flex: 1,
+                                        paddingRight: 10
+                                    }}
+                                >
+                                    {tasks?.length > 0 ? (
                                         <Text
-                                            style={stylesSuppHome.welcomeText}
+                                            style={
+                                                stylesSuppHome.inspirationalQuoteText
+                                            }
                                         >
-                                            Welcome to your home page
+                                            {randomInspirationalQuote}
                                         </Text>
-                                        <Text style={stylesSuppHome.infoText}>
-                                            Tasks will show up below
-                                        </Text>
-                                    </>
-                                )}
-                            </View>
-                            <Image
-                                source={require('../assets/img/mimi-flower-illustration.png')}
-                                style={stylesSuppHome.rightImageStyle}
-                            />
-                        </ImageBackground>
-                    </View>
-                )}
+                                    ) : (
+                                        <>
+                                            <Text
+                                                style={stylesSuppHome.welcomeText}
+                                            >
+                                                Welcome to your home page
+                                            </Text>
+                                            <Text style={stylesSuppHome.infoText}>
+                                                Tasks will show up below
+                                            </Text>
+                                        </>
+                                    )}
+                                </View>
+                                <Image
+                                    source={require('../assets/img/mimi-flower-illustration.png')}
+                                    style={stylesSuppHome.rightImageStyle}
+                                />
+                            </ImageBackground>
+                        </View>
+                    )}
 
-                <View
-                    style={[
-                        stylesSuppHome.tabsContainer,
-                        styles.contentContainer
-                    ]}
-                >
-                    <Tab
-                        clickHandler={() => handleTabPress('Open')}
-                        label={'Open tasks'}
-                        isActive={activeTab === 'Open'}
-                    />
-                    <Tab
-                        clickHandler={() => handleTabPress('My')}
-                        label={'My tasks'}
-                        isActive={activeTab === 'My'}
-                    />
-                </View>
-                {leadUser?.awaitingApproval && (
                     <View
-                        style={{
-                            maxWidth: '80%',
-                            marginHorizontal: 'auto',
-                            marginTop: 50
-                        }}
+                        style={[
+                            stylesSuppHome.tabsContainer,
+                            styles.contentContainer
+                        ]}
                     >
-                        <Text style={stylesSuppHome.tasksDescription}>
-                            We are waiting for {leadUserName} to approve you in
-                            to their circle.
-                        </Text>
+                        <Tab
+                            clickHandler={() => handleTabPress('Open')}
+                            label={'Open tasks'}
+                            isActive={activeTab === 'Open'}
+                        />
+                        <Tab
+                            clickHandler={() => handleTabPress('My')}
+                            label={'My tasks'}
+                            isActive={activeTab === 'My'}
+                        />
                     </View>
-                )}
-                {isLoading ? (
-                    <View
-                        style={{
-                            minHeight: 80,
-                            justifyContent: 'center',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <ActivityIndicator size="large" />
-                    </View>
-                ) : (
-                    <>
-                        {tasks?.length > 0 && (
-                            <View style={stylesSuppHome.tabsContentContainer}>
-                                {renderTasks(tasks)}
-                            </View>
-                        )}
-                    </>
-                )}
+                    {leadUser?.awaitingApproval && (
+                        <View
+                            style={{
+                                maxWidth: '80%',
+                                marginHorizontal: 'auto',
+                                marginTop: 50
+                            }}
+                        >
+                            <Text style={stylesSuppHome.tasksDescription}>
+                                We are waiting for {leadUserName} to approve you in
+                                to their circle.
+                            </Text>
+                        </View>
+                    )}
+                    {isLoading ? (
+                        <View
+                            style={{
+                                minHeight: 80,
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <ActivityIndicator size="large" />
+                        </View>
+                    ) : (
+                        <>
+                            {tasks?.length > 0 && (
+                                <View style={stylesSuppHome.tabsContentContainer}>
+                                    {renderTasks(tasks)}
+                                </View>
+                            )}
+                        </>
+                    )}
 
-                {(taskModalVisible || myTaskModalVisible) && (
-                    <Animated.View
-                        style={[styles.overlay, { opacity: overlayOpacity }]}
-                    />
-                )}
+                    {(taskModalVisible || myTaskModalVisible) && (
+                        <Animated.View
+                            style={[styles.overlay, { opacity: overlayOpacity }]}
+                        />
+                    )}
+                </ScrollView>
             </SafeAreaView>
 
             {taskModalVisible && (

@@ -19,6 +19,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { loginValidationSchema } from '../utils/validationSchemas';
 import PhoneInput from 'react-native-international-phone-number';
 import RightChevron from '../assets/icons/chevron-right-icon.svg';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 export default function LoginScreen({ navigation }) {
@@ -57,116 +58,118 @@ export default function LoginScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <Formik
-                initialValues={{ phoneNumber: '', phoneCountry: null }}
-                onSubmit={handleFormSubmit}
-                validationSchema={loginValidationSchema}
-                validateOnChange={true}
-                validateOnBlur={false}
-                validateOnMount={false}
-                initialErrors={{}}
-                enableReinitialize={true}
-                validate={(values) => {
-                    loginValidationSchema
-                        .validate(values, { abortEarly: false })
-                        .then(() => {
-                            setIsFormValid(true);
-                        })
-                        .catch(() => {
-                            setIsFormValid(false);
-                        });
-                }}
-            >
-                {({
-                    handleChange,
-                    handleSubmit,
-                    values,
-                    errors,
-                    touched,
-                    setFieldValue,
-                    setFieldTouched,
-                    isValid
-                }) => (
-                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                        <View style={[styles.container, styles.authContainer]}>
-                            <View style={styles.topTextsContainer}>
-                                <Text style={[styles.title, stylesLogin.title]}>
-                                    Welcome Back!
-                                </Text>
-                                <Text style={[styles.text, stylesLogin.text]}>
-                                    Login to your Maitri account
-                                </Text>
-                            </View>
-                            <View
-                                style={[
-                                    styles.formContainer,
-                                    stylesLogin.formContainer
-                                ]}
-                            >
-                                <PhoneInput
-                                    value={values.phoneNumber}
-                                    onChangePhoneNumber={(phoneNumber) => {
-                                        setFieldValue('phoneNumber', phoneNumber);
-                                    }}
-                                    selectedCountry={values.phoneCountry}
-                                    onChangeSelectedCountry={(country) => {
-                                        setFieldValue('phoneCountry', country);
-                                    }}
-                                    placeholder="Phone Number"
-                                    defaultCountry="US"
-                                    onBlur={() => setFieldTouched('phoneNumber')}
-                                    phoneInputStyles={styles.phoneInputStyles}
-                                    customCaret={
-                                        <RightChevron style={{
-                                            color: '#1C4837',
-                                            transform: [{ rotate: '90deg' }],
-                                        }} />
-                                    }
-                                    modalStyles={styles.phoneModalStyles}
-                                    //modalNotFoundCountryMessage="Sorry, country not found"
-                                    //modalSearchInputPlaceholder="Search..."
-                                />
-                                {touched.phoneNumber && errors.phoneNumber && (
-                                    <Text style={styles.errorText}>
-                                        {errors.phoneNumber}
+            <ScrollView>
+                <Formik
+                    initialValues={{ phoneNumber: '', phoneCountry: null }}
+                    onSubmit={handleFormSubmit}
+                    validationSchema={loginValidationSchema}
+                    validateOnChange={true}
+                    validateOnBlur={false}
+                    validateOnMount={false}
+                    initialErrors={{}}
+                    enableReinitialize={true}
+                    validate={(values) => {
+                        loginValidationSchema
+                            .validate(values, { abortEarly: false })
+                            .then(() => {
+                                setIsFormValid(true);
+                            })
+                            .catch(() => {
+                                setIsFormValid(false);
+                            });
+                    }}
+                >
+                    {({
+                        handleChange,
+                        handleSubmit,
+                        values,
+                        errors,
+                        touched,
+                        setFieldValue,
+                        setFieldTouched,
+                        isValid
+                    }) => (
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <View style={[styles.container, styles.authContainer]}>
+                                <View style={styles.topTextsContainer}>
+                                    <Text style={[styles.title, stylesLogin.title]}>
+                                        Welcome Back!
                                     </Text>
-                                )}
-                            </View>
-                            <View style={styles.submitButtonContainer}>
-                                <TouchableOpacity
-                                    onPress={handleSubmit}
+                                    <Text style={[styles.text, stylesLogin.text]}>
+                                        Login to your Maitri account
+                                    </Text>
+                                </View>
+                                <View
                                     style={[
-                                        styles.submitButton,
-                                        (!isFormValid || responseLoading) && { opacity: 0.5 }
+                                        styles.formContainer,
+                                        stylesLogin.formContainer
                                     ]}
-                                    disabled={!isFormValid || responseLoading}
                                 >
-                                    <ArrowIcon
-                                        width={18}
-                                        height={18}
-                                        color={'#fff'}
+                                    <PhoneInput
+                                        value={values.phoneNumber}
+                                        onChangePhoneNumber={(phoneNumber) => {
+                                            setFieldValue('phoneNumber', phoneNumber);
+                                        }}
+                                        selectedCountry={values.phoneCountry}
+                                        onChangeSelectedCountry={(country) => {
+                                            setFieldValue('phoneCountry', country);
+                                        }}
+                                        placeholder="Phone Number"
+                                        defaultCountry="US"
+                                        onBlur={() => setFieldTouched('phoneNumber')}
+                                        phoneInputStyles={styles.phoneInputStyles}
+                                        customCaret={
+                                            <RightChevron style={{
+                                                color: '#1C4837',
+                                                transform: [{ rotate: '90deg' }],
+                                            }} />
+                                        }
+                                        modalStyles={styles.phoneModalStyles}
+                                        //modalNotFoundCountryMessage="Sorry, country not found"
+                                        //modalSearchInputPlaceholder="Search..."
                                     />
-                                </TouchableOpacity>
-                            </View>
-                            <View style={stylesLogin.bottomContainer}>
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        navigation.navigate('Register')
-                                    }
-                                    style={stylesLogin.registerTextLink}
-                                >
-                                    <Text style={stylesLogin.newHereText}>
-                                        New Here?{' '}
-                                        <Text style={stylesLogin.registerText}>
-                                            Sign Up
+                                    {touched.phoneNumber && errors.phoneNumber && (
+                                        <Text style={styles.errorText}>
+                                            {errors.phoneNumber}
                                         </Text>
-                                    </Text>
-                                </TouchableOpacity>
+                                    )}
+                                </View>
+                                <View style={styles.submitButtonContainer}>
+                                    <TouchableOpacity
+                                        onPress={handleSubmit}
+                                        style={[
+                                            styles.submitButton,
+                                            (!isFormValid || responseLoading) && { opacity: 0.5 }
+                                        ]}
+                                        disabled={!isFormValid || responseLoading}
+                                    >
+                                        <ArrowIcon
+                                            width={18}
+                                            height={18}
+                                            color={'#fff'}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={stylesLogin.bottomContainer}>
+                                    <TouchableOpacity
+                                        onPress={() =>
+                                            navigation.navigate('Register')
+                                        }
+                                        style={stylesLogin.registerTextLink}
+                                    >
+                                        <Text style={stylesLogin.newHereText}>
+                                            New Here?{' '}
+                                            <Text style={stylesLogin.registerText}>
+                                                Sign Up
+                                            </Text>
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        </View>
-                    </TouchableWithoutFeedback>
-                )}
-            </Formik>
+                        </TouchableWithoutFeedback>
+                    )}
+                </Formik>
+            </ScrollView>
         </SafeAreaView>
     );
 }

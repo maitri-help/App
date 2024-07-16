@@ -4,7 +4,9 @@ import {
     Text,
     TouchableOpacity,
     StyleSheet,
-    Platform
+    Platform,
+    Dimensions,
+    PixelRatio
 } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
@@ -21,9 +23,16 @@ import RejectTaskModal from '../Modals/RejectTaskModal';
 import CalendarPermissionModal from '../Modals/CalendarPermissionModal';
 import { useTask } from '../../context/TaskContext';
 import { sortTasksByStartDate } from '../../helpers/task.helpers';
+import { LARGE_FONT_SCALE, SMALL_SCREEN_HEIGHT } from '../../constants/variables';
 
 export default function MyTaskDetailsModal({ visible, selectedTask, onClose }) {
     const toast = useToast();
+
+    const { height } = Dimensions.get('window');
+    const fontScale = PixelRatio.getFontScale();
+    console.log('fontScale', fontScale);
+    const isAndroid = Platform.OS === 'android';
+    console.log(!isAndroid && fontScale > LARGE_FONT_SCALE);
 
     const [showInnerModal, setShowInnerModal] = useState(false);
     const { setTasks } = useTask();
@@ -122,7 +131,7 @@ export default function MyTaskDetailsModal({ visible, selectedTask, onClose }) {
                 <View
                     style={[
                         styles.contentContainer,
-                        stylesModal.topDescription
+                        (isAndroid && height > SMALL_SCREEN_HEIGHT) || (!isAndroid && fontScale < LARGE_FONT_SCALE) && stylesModal.topDescription
                     ]}
                 >
                     <View style={stylesModal.topDescription}>
@@ -177,7 +186,7 @@ export default function MyTaskDetailsModal({ visible, selectedTask, onClose }) {
             </View>
 
             <View style={styles.contentContainer}>
-                <View style={stylesModal.calendarButtonContainer}>
+                <View style={(isAndroid && height < SMALL_SCREEN_HEIGHT) || (!isAndroid && fontScale > LARGE_FONT_SCALE) ? { marginTop: 20 } : stylesModal.calendarButtonContainer }>
                     <TouchableOpacity
                         style={stylesModal.calendarButton}
                         onPress={handleOpenCalendar}
@@ -193,7 +202,7 @@ export default function MyTaskDetailsModal({ visible, selectedTask, onClose }) {
             <View
                 style={[
                     styles.contentContainer,
-                    { marginTop: 50, marginBottom: 60 }
+                    (isAndroid && height < SMALL_SCREEN_HEIGHT) || (!isAndroid && fontScale > LARGE_FONT_SCALE) ? { marginVertical: 10 } : { marginTop: 50, marginBottom: 60 }
                 ]}
             >
                 <TouchableOpacity
@@ -304,7 +313,7 @@ const stylesModal = StyleSheet.create({
         textAlign: 'center'
     },
     calendarButtonContainer: {
-        marginTop: 70,
+        marginTop: 30,
         marginHorizontal: 35
     },
     calendarButton: {

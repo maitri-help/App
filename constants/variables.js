@@ -14,3 +14,5 @@ export const COLORS = [
     '#FF9A00',
     '#FF4E92'
 ];
+export const SMALL_SCREEN_HEIGHT = 650;
+export const LARGE_FONT_SCALE = 1.4;

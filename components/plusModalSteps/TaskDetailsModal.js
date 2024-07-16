@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, PixelRatio, Platform } from 'react-native';
 import styles from '../../Styles';
 import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import LocationPicker from './LocationPicker';
@@ -12,9 +12,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { generateDateString } from '../../helpers/date';
 import { useTask } from '../../context/TaskContext';
 import { sortTasksByStartDate } from '../../helpers/task.helpers';
+import { LARGE_FONT_SCALE, SMALL_SCREEN_HEIGHT } from '../../constants/variables';
 
 export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
     const toast = useToast();
+
+    const { height } = Dimensions.get('window');
+    const fontScale = PixelRatio.getFontScale();
+    const isAndroid = Platform.OS === 'android';
 
     const { setTasks } = useTask();
 
@@ -81,7 +86,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
                 <View
                     style={[
                         styles.contentContainer,
-                        stylesModal.topDescription
+                        (isAndroid && height > SMALL_SCREEN_HEIGHT) || (!isAndroid && fontScale < LARGE_FONT_SCALE) && stylesModal.topDescription
                     ]}
                 >
                     <View style={stylesModal.topDescription}>
@@ -143,7 +148,7 @@ export default function TaskDetailsModal({ visible, selectedTask, onClose }) {
             <View
                 style={[
                     styles.contentContainer,
-                    { marginTop: 40, marginBottom: 60 }
+                    (isAndroid && height < SMALL_SCREEN_HEIGHT) || (!isAndroid && fontScale > LARGE_FONT_SCALE) ? { marginVertical: 20 } : { marginTop: 40, marginBottom: 60 }
                 ]}
             >
                 <Button title="I'm In!" onPress={handleSubmit} />
