@@ -35,12 +35,9 @@ import { LARGE_FONT_SCALE, SMALL_SCREEN_HEIGHT } from '../constants/variables';
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
 
-    const isAndroid = Platform.OS === 'android';
     const { height } = Dimensions.get('window');
-    console.log('height', height);
-
     const fontScale = PixelRatio.getFontScale();
-    console.log('fontScale', fontScale);
+    const isAndroid = Platform.OS === 'android';
 
     const { tasks, isLoading } = useTask();
     const [plusModalVisible, setPlusModalVisible] = useState(false);

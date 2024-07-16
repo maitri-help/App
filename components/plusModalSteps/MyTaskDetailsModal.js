@@ -30,9 +30,7 @@ export default function MyTaskDetailsModal({ visible, selectedTask, onClose }) {
 
     const { height } = Dimensions.get('window');
     const fontScale = PixelRatio.getFontScale();
-    console.log('fontScale', fontScale);
     const isAndroid = Platform.OS === 'android';
-    console.log(!isAndroid && fontScale > LARGE_FONT_SCALE);
 
     const [showInnerModal, setShowInnerModal] = useState(false);
     const { setTasks } = useTask();
