@@ -394,6 +394,7 @@ export default function HomeScreen({ navigation }) {
             <PlusModal
                 visible={plusModalVisible}
                 onClose={() => setPlusModalVisible(false)}
+                selectedDate={null}
             />
 
             {locationPermissionNeeded && <LocationPermissionModal />}

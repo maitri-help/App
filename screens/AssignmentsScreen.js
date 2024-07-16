@@ -146,7 +146,7 @@ export default function AssignmentsScreen({ navigation }) {
             <PlusModal
                 visible={plusModalVisible}
                 onClose={handlePlusModalClose}
-                deviceLocation={deviceLocation}
+                selectedDate={selectedDate}
             />
 
             <TaskModal

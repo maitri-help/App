@@ -15,7 +15,7 @@ import FormFields from './plusModalSteps/FormFields';
 import DateTime from './plusModalSteps/DateTime';
 import { defaultTask } from '../constants/task';
 
-export default function PlusModal({ visible, onClose }) {
+export default function PlusModal({ visible, onClose, selectedDate }) {
     const [currentStep, setCurrentStep] = useState(1);
     const [selectedService, setSelectedService] = useState({
         id: null,
@@ -25,12 +25,12 @@ export default function PlusModal({ visible, onClose }) {
 
     const [isOtherTask, setIsOtherTask] = useState(false);
 
-    const [task, setTask] = useState(defaultTask);
+    const [task, setTask] = useState({...defaultTask, startDate: selectedDate});
 
     const [confirmationVisible, setConfirmationVisible] = useState(false);
 
     useEffect(() => {
-        if (!visible) {
+        if (visible) {
             resetModalState();
         }
     }, [visible]);
@@ -39,7 +39,7 @@ export default function PlusModal({ visible, onClose }) {
         setConfirmationVisible(false);
         setCurrentStep(1);
         setSelectedService({ id: null, title: '', icon: null });
-        setTask(defaultTask);
+        setTask({...defaultTask, startDate: selectedDate});
         setIsOtherTask(false);
     };
 
@@ -107,6 +107,7 @@ export default function PlusModal({ visible, onClose }) {
                     onTaskCreated={() => {
                         resetModalState();
                     }}
+                    selectedDate={selectedDate}
                 />
             )}
             {currentStep === 4 && (
