@@ -65,7 +65,11 @@ export default function EditForm({
     };
 
     const toggleEditable = () => {
-        setIsEditable(!isEditable);
+        if (isEditable) {
+            handleSubmit();
+        } else {
+            setIsEditable(!isEditable);
+        }
     };
     const handleSelectOption = (option) => {
         const updatedCircles = getSelectedCircles(task, option);
@@ -169,7 +173,7 @@ export default function EditForm({
 
     return (
         <>
-            <View style={[styles.modalTopNav, stylesReview.modalTopNav]}>
+            <View style={stylesReview.modalTopNav}>
                 <View style={stylesReview.modalTopNavLeft}>
                     <TouchableOpacity
                         onPress={onClose ? onClose : handleBack}
@@ -181,16 +185,24 @@ export default function EditForm({
                             style={styles.backLinkIcon}
                         />
                     </TouchableOpacity>
-                    <TextInput
-                        style={[stylesReview.field, stylesReview.fieldTask]}
-                        placeholder="Task name"
-                        placeholderTextColor="#737373"
-                        onChangeText={(text) =>
-                            setTask((prev) => ({ ...prev, title: text }))
-                        }
-                        value={task?.title}
-                        editable={isEditable}
-                    />
+                    {isEditable ? (
+                        <TextInput
+                            style={[stylesReview.field, stylesReview.fieldTask]}
+                            placeholder="Task name"
+                            height={40}
+                            placeholderTextColor="#737373"
+                            onChangeText={(text) =>
+                                setTask((prev) => ({ ...prev, title: text }))
+                            }
+                            value={task?.title}
+                            editable={isEditable}
+                            multiline
+                        />
+                    ) : (
+                        <Text style={stylesReview.fieldTask}>
+                            {task?.title}
+                        </Text>
+                    )}
                 </View>
 
                 <View style={stylesReview.icons}>
@@ -475,12 +487,20 @@ export default function EditForm({
 
 const stylesReview = StyleSheet.create({
     modalTopNav: {
-        justifyContent: 'space-between'
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        paddingHorizontal: 25,
+        paddingVertical: 25,
+        gap: 12,
+        position: 'relative',
+        justifyContent: 'space-between',
     },
     modalTopNavLeft: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12
+        gap: 12,
+        width: '70%',
     },
     topDescription: {
         marginBottom: 20
@@ -498,7 +518,7 @@ const stylesReview = StyleSheet.create({
     fieldTask: {
         fontSize: 16,
         lineHeight: 22,
-        fontFamily: 'poppins-medium'
+        fontFamily: 'poppins-medium',
     },
     fieldLink: {
         flexDirection: 'row',
