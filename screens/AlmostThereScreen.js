@@ -22,6 +22,7 @@ import { useUser } from '../context/UserContext';
 import { ScrollView } from 'react-native-gesture-handler';
 import { OtpInput } from 'react-native-otp-entry';
 import { OTP_LENGTH } from '../constants/variables';
+import LogRocket from '@logrocket/react-native';
 
 export default function AlmostThereScreen({ route, navigation }) {
     const { phoneNumber, userId } = route.params;
@@ -67,6 +68,11 @@ export default function AlmostThereScreen({ route, navigation }) {
                         const userData = response.data;
                         const userType = userData.userType;
                         setUserData({ ...userData, accessToken });
+                        // LogRocket.identify is used to identify the user in LogRocket
+                        LogRocket.identify(`${userData?.userId}`, {
+                            name: `${userData?.firstName} ${userData?.lastName}`,
+                            email: userData?.email
+                        });
                         if (userType === 'default') {
                             navigation.navigate('Identify', { userId });
                         } else if (userType === 'Supporter') {
