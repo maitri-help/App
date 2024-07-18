@@ -3,28 +3,26 @@ import {
     View,
     Text,
     StyleSheet,
-    TextInput,
     TouchableOpacity,
     SafeAreaView
 } from 'react-native';
-import { Formik } from 'formik';
 import styles from '../Styles';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import { getUser, verifyOtp } from '../hooks/api';
 import { clearUserData, storeAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
 import { handleResend } from '../hooks/handleResend';
-import { otpValidationSchema } from '../utils/validationSchemas';
 import { OTP_LENGTH } from '../constants/variables';
 import { useUser } from '../context/UserContext';
+import { ScrollView } from 'react-native-gesture-handler';
+import { OtpInput } from 'react-native-otp-entry';
 
 export default function VerifyNumberScreen({ route, navigation }) {
     const { phoneNumber, userId } = route.params;
     const toast = useToast();
     const { setUserData } = useUser();
 
-    const otpInputRef = useRef([]);
-    const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
+    const [errors, setErrors] = useState({});
     const [countdown, setCountdown] = useState(30);
     const [resendClickable, setResendClickable] = useState(false);
 
@@ -46,22 +44,12 @@ export default function VerifyNumberScreen({ route, navigation }) {
         handleResend(phoneNumber, setCountdown, setResendClickable, toast);
     };
 
-    const handleOtpChange = (index, value, setErrors) => {
-        if (isNaN(value)) return;
-        const newOtp = [...otp];
-        newOtp[index] = value;
-        setOtp(newOtp);
-        if (index < OTP_LENGTH - 1 && value !== '') {
-            otpInputRef.current[index + 1].focus();
-        }
-        if (index === OTP_LENGTH - 1 && value !== '') {
-            const enteredOtp = newOtp.join('');
-            handleSubmit(enteredOtp);
-        }
-        setErrors({});
-    };
-
     const handleSubmit = (enteredOtp) => {
+        if (!enteredOtp.match(/^\d+$/) || enteredOtp.length !== OTP_LENGTH) {
+            setErrors({ otp: 'Invalid Code. Only numbers allowed.' });
+            return;
+        }
+
         verifyOtp(phoneNumber, enteredOtp)
             .then((response) => {
                 const accessToken = response.data.accessToken;
@@ -82,6 +70,7 @@ export default function VerifyNumberScreen({ route, navigation }) {
             })
             .catch((error) => {
                 console.error('OTP Verification Error:', error);
+                setErrors({ otp: 'Invalid Code. Please try again.' });
                 toast.show('Invalid Code. Please try again.', {
                     type: 'error'
                 });
@@ -90,91 +79,77 @@ export default function VerifyNumberScreen({ route, navigation }) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <Formik
-                initialValues={{ otp: '' }}
-                onSubmit={() => {}}
-                validationSchema={otpValidationSchema}
-            >
-                {({ handleChange, setErrors, errors, touched }) => (
-                    <View style={[styles.container, styles.authContainer]}>
-                        <TouchableOpacity
-                            onPress={() => navigation.goBack()}
-                            style={styles.backLink}
-                        >
-                            <ArrowLeftIcon
-                                width={18}
-                                height={18}
-                                style={styles.backLinkIcon}
-                            />
-                        </TouchableOpacity>
-                        <View style={styles.topTextsContainer}>
-                            <Text style={[styles.title, stylesVerify.title]}>
-                                Verify your Number
-                            </Text>
-                            <Text style={[styles.text, stylesVerify.text]}>
-                                Enter the 6-digit code verification code sent to
-                                your phone
-                            </Text>
-                        </View>
-                        <View style={stylesVerify.otpInputContainer}>
-                            {otp.map((value, index) => (
-                                <TextInput
-                                    key={index}
-                                    style={[
-                                        stylesVerify.otpInput,
-                                        index === OTP_LENGTH - 1 && value !== ''
-                                            ? stylesVerify.lastInput
-                                            : null,
-                                        errors.otp &&
-                                        touched.otp &&
-                                        touched.otp[index]
-                                            ? stylesVerify.errorInput
-                                            : null
-                                    ]}
-                                    onChangeText={(text) =>
-                                        handleOtpChange(index, text, setErrors)
-                                    }
-                                    value={value}
-                                    keyboardType="numeric"
-                                    maxLength={1}
-                                    ref={(ref) =>
-                                        (otpInputRef.current[index] = ref)
-                                    }
-                                />
-                            ))}
-                        </View>
-                        {touched.otp && errors.otp && (
-                            <Text style={styles.errorText}>{errors.otp}</Text>
-                        )}
-
-                        <View style={stylesVerify.bottomTextsContainer}>
-                            <Text style={stylesVerify.bottomTitle}>
-                                Didn't receive a code?{' '}
-                            </Text>
-                            <TouchableOpacity
-                                onPress={
-                                    resendClickable ? handleResendPress : null
-                                }
-                            >
-                                <Text
-                                    style={[
-                                        stylesVerify.bottomText,
-                                        resendClickable
-                                            ? stylesVerify.resendClickable
-                                            : null
-                                    ]}
-                                >
-                                    {countdown > 0
-                                        ? `Resend in 00:${countdown
-                                              .toString()
-                                              .padStart(2, '0')}s`
-                                        : 'Resend'}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
+            <ScrollView>
+                <View style={[styles.container, styles.authContainer]}>
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}
+                        style={styles.backLink}
+                    >
+                        <ArrowLeftIcon
+                            width={18}
+                            height={18}
+                            style={styles.backLinkIcon}
+                        />
+                    </TouchableOpacity>
+                    <View style={styles.topTextsContainer}>
+                        <Text style={[styles.title, stylesVerify.title]}>
+                            Verify your Number
+                        </Text>
+                        <Text style={[styles.text, stylesVerify.text]}>
+                            Enter the 6-digit code verification code sent to
+                            your phone
+                        </Text>
                     </View>
-                )}
-            </Formik>
+                    <OtpInput 
+                        numberOfDigits={OTP_LENGTH}
+                        type={'numeric'}
+                        onTextChange={() => setErrors({})}
+                        onFilled={(text) => handleSubmit(text)}
+                        theme={{
+                            containerStyle: stylesVerify.otpInputContainer,
+                            pinCodeContainerStyle: {
+                                ...stylesVerify.otpInput, 
+                                ...errors.otp && stylesVerify.errorInput
+                            },
+                            focusStickStyle: stylesVerify.otpInputStick,
+                            pinCodeTextStyle: stylesVerify.otpInputText,
+                            focusedPinCodeContainerStyle: {
+                                ...stylesVerify.otpInputFocused, 
+                                ...errors.otp && stylesVerify.errorInputFocused
+                            },
+                        }}
+                    />
+                    {errors.otp && (
+                        <Text style={[styles.errorText, stylesVerify.errorMessage]}>{errors.otp}</Text>
+                    )}
+
+                    <View style={stylesVerify.bottomTextsContainer}>
+                        <Text style={stylesVerify.bottomTitle}>
+                            Didn't receive a code?{' '}
+                        </Text>
+                        <TouchableOpacity
+                            onPress={
+                                resendClickable ? handleResendPress : null
+                            }
+                        >
+                            <Text
+                                style={[
+                                    stylesVerify.bottomText,
+                                    resendClickable
+                                        ? stylesVerify.resendClickable
+                                        : null
+                                ]}
+                            >
+                                {countdown > 0
+                                    ? `Resend in 00:${countdown
+                                            .toString()
+                                            .padStart(2, '0')}s`
+                                    : 'Resend'}
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
@@ -187,11 +162,21 @@ const stylesVerify = StyleSheet.create({
         textAlign: 'center'
     },
     otpInputContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 10,
+        gap: 10, 
         marginTop: 100,
-        marginBottom: 15
+        marginBottom: 15,
+        width: 'auto',
+    },
+    otpInputStick: {
+        backgroundColor: '#1C4837',
+        height: 20
+    },
+    otpInputText: {
+        textAlign: 'center',
+        fontSize: 16,
+        lineHeight: 24,
+        color: '#252525',
+        fontFamily: 'poppins-regular'
     },
     otpInput: {
         width: 40,
@@ -199,13 +184,17 @@ const stylesVerify = StyleSheet.create({
         borderRadius: 8,
         borderWidth: 1,
         borderColor: '#000',
-        textAlign: 'center',
-        fontSize: 16,
-        lineHeight: 23,
-        color: '#252525',
-        fontFamily: 'poppins-regular'
+    },
+    otpInputFocused: {
+        borderColor: '#1C4837',
+    },
+    errorMessage: {
+        marginLeft: 25
     },
     errorInput: {
+        borderColor: '#EE0004'
+    },
+    errorInputFocused: {
         borderColor: '#EE0004'
     },
     bottomTextsContainer: {

@@ -20,15 +20,6 @@ export const tribeValidationSchema = yup.object().shape({
         .max(TRIBE_LENGTH, `Code must be exactly ${TRIBE_LENGTH} digits`)
 });
 
-export const otpValidationSchema = yup.object().shape({
-    otp: yup
-        .string()
-        .required('Code is required')
-        .matches(/^\d+$/, 'Code must be numeric')
-        .min(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`)
-        .max(OTP_LENGTH, `Code must be exactly ${OTP_LENGTH} digits`)
-});
-
 export const registrationValidationSchema = yup.object().shape({
     fullName: yup
         .string()
