@@ -13,6 +13,7 @@ import ArrowLeftIcon from '../../assets/icons/arrow-left-icon.svg';
 import ArrowIcon from '../../assets/icons/arrow-icon.svg';
 import { useToast } from 'react-native-toast-notifications';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { CALENDAR_THEME_SETTINGS } from '../../constants/calendar';
 import { formatDate, getDaysBetween } from '../../helpers/date';
 
@@ -171,7 +172,7 @@ export default function DateTime({
                                 </Text>
                             </TouchableOpacity>
 
-                            {isStartTimePickerVisible && (
+                            {isStartTimePickerVisible && Platform.OS === 'android' && (
                                 <DateTimePicker
                                     mode="time"
                                     testID="startDateTimePicker"
@@ -182,6 +183,20 @@ export default function DateTime({
                                     }
                                     themeVariant="light"
                                     onChange={handleStartTimeConfirm}
+                                />
+                            )}
+                            {Platform.OS === 'ios' && (
+                                <DateTimePickerModal
+                                    mode="time"
+                                    date={
+                                        task?.startTime
+                                            ? new Date("1970-01-01T" + task?.startTime + ":00") // picker requires a full date
+                                            : new Date()
+                                    }
+                                    themeVariant="light"
+                                    isVisible={isStartTimePickerVisible}
+                                    onConfirm={(time) => handleStartTimeConfirm(null, time)}
+                                    onCancel={() => setStartTimePickerVisible(false)}
                                 />
                             )}
                         </View>
@@ -203,7 +218,7 @@ export default function DateTime({
                                         : 'Select End Time'}
                                 </Text>
                             </TouchableOpacity>
-                            {isEndTimePickerVisible && (
+                            {isEndTimePickerVisible && Platform.OS === 'android' && (
                                 <DateTimePicker
                                     mode="time"
                                     testID="endDateTimePicker"
@@ -214,6 +229,23 @@ export default function DateTime({
                                     }
                                     themeVariant="light"
                                     onChange={handleEndTimeConfirm}
+                                />
+                            )}
+
+                            {Platform.OS === 'ios' && (
+                                <DateTimePickerModal
+                                    mode="time"
+                                    date={
+                                        task?.endTime
+                                            ? new Date("1970-01-01T" + task?.endTime + ":00")
+                                            : task?.startTime
+                                            ? new Date("1970-01-01T" + task?.startTime + ":00")
+                                            : new Date()
+                                    }
+                                    themeVariant="light"
+                                    isVisible={isEndTimePickerVisible}
+                                    onConfirm={(time) => handleEndTimeConfirm(null, time)}
+                                    onCancel={() => setEndTimePickerVisible(false)}
                                 />
                             )}
                         </View>

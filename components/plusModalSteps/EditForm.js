@@ -54,8 +54,16 @@ export default function EditForm({
     };
 
     const handleBack = () => {
-        if (currentStep > 1) {
-            onBack();
+        if (isEditable) {
+            setIsEditable(!isEditable);
+        }
+
+        if (onClose) {
+            onClose();
+        } else {
+            if (currentStep > 1) {
+                onBack();
+            }
         }
     };
 
@@ -176,7 +184,7 @@ export default function EditForm({
             <View style={stylesReview.modalTopNav}>
                 <View style={stylesReview.modalTopNavLeft}>
                     <TouchableOpacity
-                        onPress={onClose ? onClose : handleBack}
+                        onPress={handleBack}
                         style={[styles.backLinkInline]}
                     >
                         <ArrowLeftIcon
