@@ -19,6 +19,9 @@ import Tab from '../components/common/Tab';
 import Fab from '../components/common/Fab';
 import { useLocation } from '../context/LocationContext';
 import { useTask } from '../context/TaskContext';
+import { useUser } from '../context/UserContext';
+import { fetchTasks } from '../hooks/api';
+import { FlatList, RefreshControl, ScrollView } from 'react-native-gesture-handler';
 
 export default function AssignmentsScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Month');
@@ -38,7 +41,8 @@ export default function AssignmentsScreen({ navigation }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
 
-    const { tasks, isLoading } = useTask();
+    const { tasks, isLoading, setTasks } = useTask();
+    const { userData } = useUser();
 
     const handleTaskItemClick = async (task) => {
         const newSelectedTask = stripCircles(task);
@@ -72,6 +76,23 @@ export default function AssignmentsScreen({ navigation }) {
     const handleTaskModalClose = () => {
         setTaskModalVisible(false);
     };
+
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        fetchTasks(userData)
+            .then((resTasks) => {
+                setTimeout(() => {
+                    setTasks(resTasks);
+                    setRefreshing(false);
+                }, 600);
+            })
+            .catch((err) => {
+                console.error(err);
+                setRefreshing(false);
+            });
+    }, []);
 
     return (
         <>
@@ -115,6 +136,8 @@ export default function AssignmentsScreen({ navigation }) {
                                         }
                                         activeTab={activeTab}
                                         isLoading={isLoading}
+                                        refreshing={refreshing}
+                                        onRefresh={onRefresh}
                                     />
                                 ) : (
                                     <CustomWeekCalendar
@@ -125,6 +148,8 @@ export default function AssignmentsScreen({ navigation }) {
                                         setTaskModalVisible={
                                             setTaskModalVisible
                                         }
+                                        refreshing={refreshing}
+                                        onRefresh={onRefresh}
                                     />
                                 )}
                             </>

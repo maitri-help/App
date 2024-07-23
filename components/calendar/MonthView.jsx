@@ -11,6 +11,7 @@ import GridCalendar from './GridCalendar';
 import { formatDate, isDateInRange } from '../../helpers/date';
 import TaskItem from '../TaskItem';
 import Styles from '../../Styles';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 
 const MonthView = ({
     tasks,
@@ -19,7 +20,9 @@ const MonthView = ({
     setTaskModalVisible,
     handleTaskItemClick,
     activeTab,
-    isLoading
+    isLoading,
+    refreshing,
+    onRefresh,
 }) => {
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
@@ -80,26 +83,36 @@ const MonthView = ({
                 />
             </View>
             {filteredTasks.length === 0 ? (
-                <View style={stylesCal.calendarEmpty}>
-                    <View style={stylesCal.calendarEmptyImgWrapper}>
+                <ScrollView 
+                    contentContainerStyle={{ flex: 1 }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
+                >
+                    <View style={stylesCal.calendarEmpty}>
+                        <View style={stylesCal.calendarEmptyImgWrapper}>
+                            <Image
+                                source={require('../../assets/img/tasks-placeholder.png')}
+                                style={stylesCal.calendarEmptyImg}
+                            />
+                        </View>
+                        <Text style={stylesCal.calendarEmptyText}>
+                            {!isLoading && tasks.length
+                                ? 'No tasks on this date'
+                                : 'Your list is empty'}
+                        </Text>
+                        <Text style={stylesCal.calendarEmptyTitle}>
+                            Click here to add your first task
+                        </Text>
                         <Image
-                            source={require('../../assets/img/tasks-placeholder.png')}
-                            style={stylesCal.calendarEmptyImg}
+                            source={require('../../assets/img/purple-arrow-right.png')}
+                            style={stylesCal.calendarEmptyArrow}
                         />
                     </View>
-                    <Text style={stylesCal.calendarEmptyText}>
-                        {!isLoading && tasks.length
-                            ? 'No tasks on this date'
-                            : 'Your list is empty'}
-                    </Text>
-                    <Text style={stylesCal.calendarEmptyTitle}>
-                        Click here to add your first task
-                    </Text>
-                    <Image
-                        source={require('../../assets/img/purple-arrow-right.png')}
-                        style={stylesCal.calendarEmptyArrow}
-                    />
-                </View>
+                </ScrollView>
             ) : (
                 <FlatList
                     contentContainerStyle={[
@@ -131,6 +144,12 @@ const MonthView = ({
                             }
                         });
                     }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
                 />
             )}
         </View>

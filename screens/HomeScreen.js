@@ -16,7 +16,7 @@ import {
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
 import TaskItem from '../components/TaskItem';
-import { getNotificationsForUser, getThankYouCardsForUser } from '../hooks/api';
+import { fetchTasks, getNotificationsForUser, getThankYouCardsForUser } from '../hooks/api';
 import { checkAuthentication } from '../authStorage';
 import TaskModal from '../components/TaskModal';
 import { useFocusEffect } from '@react-navigation/native';
@@ -31,6 +31,7 @@ import Tab from '../components/common/Tab';
 import { generateGreetings } from '../helpers';
 import { useUser } from '../context/UserContext';
 import { LARGE_FONT_SCALE, SMALL_SCREEN_HEIGHT } from '../constants/variables';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 export default function HomeScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('All');
@@ -39,7 +40,7 @@ export default function HomeScreen({ navigation }) {
     const fontScale = PixelRatio.getFontScale();
     const isAndroid = Platform.OS === 'android';
 
-    const { tasks, isLoading } = useTask();
+    const { tasks, isLoading, setTasks } = useTask();
     const [plusModalVisible, setPlusModalVisible] = useState(false);
 
     const [taskModalVisible, setTaskModalVisible] = useState(false);
@@ -382,29 +383,55 @@ export default function HomeScreen({ navigation }) {
         );
     };
 
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        fetchTasks(userData)
+            .then((resTasks) => {
+                setTimeout(() => {
+                    setTasks(resTasks);
+                    setRefreshing(false);
+                }, 600);
+            })
+            .catch((err) => {
+                console.error(err);
+                setRefreshing(false);
+            });
+    }, []);
+
     return (
         <>
             <StatusBar style="dark" translucent={true} hidden={false} />
             <SafeAreaView style={styles.safeArea}>
-                <View style={styles.topBar}>
-                    <Text style={stylesHome.greetingsText}>
-                        {generateGreetings()} {userData?.firstName}!
-                    </Text>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('Notifications')}
-                        style={stylesHome.bellWrapper}
-                    >
-                        <BellIcon style={stylesHome.bellIcon} />
-                        {hasUnreadPendingRequest && (
-                            <View style={stylesHome.indicator}></View>
-                        )}
-                    </TouchableOpacity>
-                </View>
-                {(isAndroid && height < SMALL_SCREEN_HEIGHT) || (!isAndroid && fontScale > LARGE_FONT_SCALE) ? (
-                    <ScrollView>
-                        {renderContent()}
-                    </ScrollView>
-                ) : renderContent()}
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
+                >
+                    <View style={styles.topBar}>
+                        <Text style={stylesHome.greetingsText}>
+                            {generateGreetings()} {userData?.firstName}!
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('Notifications')}
+                            style={stylesHome.bellWrapper}
+                        >
+                            <BellIcon style={stylesHome.bellIcon} />
+                            {hasUnreadPendingRequest && (
+                                <View style={stylesHome.indicator}></View>
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                    {(isAndroid && height < SMALL_SCREEN_HEIGHT) || (!isAndroid && fontScale > LARGE_FONT_SCALE) ? (
+                        <ScrollView>
+                            {renderContent()}
+                        </ScrollView>
+                    ) : renderContent()}
+                </ScrollView>
             </SafeAreaView>
             {(taskModalVisible || plusModalVisible) && (
                 <Animated.View

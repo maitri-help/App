@@ -14,14 +14,32 @@ import MyTask from '../components/MyTask';
 import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
 import { useTask } from '../context/TaskContext';
 import { useUser } from '../context/UserContext';
+import { fetchTasks } from '../hooks/api';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 export default function MyTasksSupporterScreen() {
     const [myTaskModalVisible, setMyTaskModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
 
-    const { tasks, isLoading } = useTask();
+    const { tasks, isLoading, setTasks } = useTask();
     const { userData } = useUser();
     const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        fetchTasks(userData)
+            .then((resTasks) => {
+                setTimeout(() => {
+                    setTasks(resTasks);
+                    setRefreshing(false);
+                }, 600);
+            })
+            .catch((err) => {
+                console.error(err);
+                setRefreshing(false);
+            });
+    }, []);
 
     useEffect(() => {
         if (myTaskModalVisible) {
@@ -63,6 +81,12 @@ export default function MyTasksSupporterScreen() {
                 <View style={stylesSuppMT.tasksContainer}>
                     <ScrollView
                         contentContainerStyle={stylesSuppMT.tasksScrollEmpty}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
                     >
                         <View
                             style={[
@@ -106,7 +130,15 @@ export default function MyTasksSupporterScreen() {
 
         return (
             <View style={stylesSuppMT.tasksContainer}>
-                <ScrollView contentContainerStyle={stylesSuppMT.tasksScroll}>
+                <ScrollView 
+                    contentContainerStyle={stylesSuppMT.tasksScroll}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
+                >
                     {myTasks?.map((task) => (
                         <MyTask
                             key={task.taskId}

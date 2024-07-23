@@ -14,7 +14,7 @@ import {
 import styles from '../Styles';
 import OpenTask from '../components/OpenTask';
 import MyTask from '../components/MyTask';
-import { getLeadUser, getNotificationsForUser } from '../hooks/api';
+import { fetchTasks, getLeadUser, getNotificationsForUser } from '../hooks/api';
 import { checkAuthentication, getAccessToken } from '../authStorage';
 import TaskDetailsModal from '../components/plusModalSteps/TaskDetailsModal';
 import MyTaskDetailsModal from '../components/plusModalSteps/MyTaskDetailsModal';
@@ -28,6 +28,7 @@ import { StatusBar } from 'expo-status-bar';
 import Tab from '../components/common/Tab';
 import { useTask } from '../context/TaskContext';
 import { useUser } from '../context/UserContext';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 export default function HomeSupporterScreen({ navigation }) {
     const [activeTab, setActiveTab] = useState('Open');
@@ -44,7 +45,7 @@ export default function HomeSupporterScreen({ navigation }) {
     const [myTaskModalVisible, setMyTaskModalVisible] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
-    const { tasks, isLoading } = useTask();
+    const { tasks, isLoading, setTasks } = useTask();
     const { userData } = useUser();
 
     useEffect(() => {
@@ -154,6 +155,23 @@ export default function HomeSupporterScreen({ navigation }) {
         }
     }, [thankYouModalVisible]);
 
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        fetchTasks(userData)
+            .then((resTasks) => {
+                setTimeout(() => {
+                    setTasks(resTasks);
+                    setRefreshing(false);
+                }, 600);
+            })
+            .catch((err) => {
+                console.error(err);
+                setRefreshing(false);
+            });
+    }, []);
+
     const renderTasks = (tasks = []) => {
         let filteredTasks = tasks;
 
@@ -260,7 +278,14 @@ export default function HomeSupporterScreen({ navigation }) {
         <>
             <StatusBar style="dark" translucent={true} hidden={false} />
             <SafeAreaView style={styles.safeArea}>
-                <ScrollView>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
+                >
                     <View style={stylesSuppHome.topBar}>
                         <View
                             style={[

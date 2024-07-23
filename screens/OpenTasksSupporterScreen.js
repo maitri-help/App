@@ -19,6 +19,9 @@ import Button from '../components/Button';
 import { isWithinTimeframe, mergeDateAndTime } from '../helpers/date';
 import { isWeekend } from 'date-fns';
 import { useTask } from '../context/TaskContext';
+import { fetchTasks } from '../hooks/api';
+import { RefreshControl } from 'react-native-gesture-handler';
+import { useUser } from '../context/UserContext';
 
 const TIME_FILTER_HOURS = {
     Morning: { start: 6, end: 12 },
@@ -37,9 +40,26 @@ export default function OpenTasksSupporterScreen() {
     const [filteredTasks, setFilteredTasks] = useState([]);
     const [taskRemoval, setTaskRemoval] = useState(0);
 
-    const { tasks, isLoading } = useTask();
+    const { tasks, isLoading, setTasks } = useTask();
+    const { userData } = useUser();
 
     const overlayOpacity = useRef(new Animated.Value(0)).current;
+
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        fetchTasks(userData)
+            .then((resTasks) => {
+                setTimeout(() => {
+                    setTasks(resTasks);
+                    setRefreshing(false);
+                }, 600);
+            })
+            .catch((err) => {
+                console.error(err);
+                setRefreshing(false);
+            });
+    }, []);
 
     const handleRemoveFilter = (filter, setSelectedFilters) => {
         setSelectedFilters((selectedFilters) =>
@@ -246,6 +266,12 @@ export default function OpenTasksSupporterScreen() {
                 {openTasks.length === 0 ? (
                     <ScrollView
                         contentContainerStyle={stylesSuppOT.tasksScrollEmpty}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
                     >
                         <View
                             style={[
@@ -316,6 +342,12 @@ export default function OpenTasksSupporterScreen() {
                 ) : (
                     <ScrollView
                         contentContainerStyle={stylesSuppOT.tasksScroll}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
                     >
                         {openTasks.map((task) => (
                             <OpenTask

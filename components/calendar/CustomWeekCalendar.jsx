@@ -11,11 +11,14 @@ import {
     generateAgendaItems,
     getMarkedDates
 } from '../../helpers/agendaItems.helpers';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 export default function CustomWeekCalendar({
     tasks,
     handleTaskItemClick,
-    setTaskModalVisible
+    setTaskModalVisible,
+    refreshing,
+    onRefresh
 }) {
     const agendaItems = generateAgendaItems(tasks);
 
@@ -52,6 +55,12 @@ export default function CustomWeekCalendar({
                     sections={agendaItems}
                     renderItem={renderItem}
                     sectionStyle={styles.section}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
                 />
             </CalendarProvider>
         </View>
