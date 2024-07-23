@@ -69,8 +69,11 @@ export default function MyTask({
 
     const handleOpenCalendar = async () => {
         if (!calendarPermission.granted) {
-            setCalendarPermissionNeeded(true);
-            return;
+            const permission = await Calendar.requestCalendarPermissionsAsync();
+            if (!permission.granted) {
+                setCalendarPermissionNeeded(true);
+                return;
+            }
         }
 
         await createCalendarEvent(task)
