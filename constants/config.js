@@ -11,4 +11,4 @@ export const GEOLOCATION_API_KEY = EXPO_PUBLIC_GEOLOCATION_API_KEY || '';
 export const GOOGLE_STORE_URL =
     'https://play.google.com/store/apps/details?id=com.Maitri.MaitriApp';
 export const APPLE_STORE_URL = 'https://apps.apple.com/app/id6503946923';
-export const LOGROCKET_APP_ID = EXPO_PUBLIC_LOGROCKET_APP_ID | '';
+export const LOGROCKET_APP_ID = EXPO_PUBLIC_LOGROCKET_APP_ID || '';
