@@ -23,7 +23,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as Calendar from 'expo-calendar';
 import { circles } from '../../constants/variables';
-import { generateDateString, mergeDateAndTime } from '../../helpers/date';
+import { generateDateString } from '../../helpers/date';
 import {
     getSelectedCircles,
     sortTasksByStartDate

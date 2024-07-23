@@ -1,5 +1,6 @@
 import * as Calendar from 'expo-calendar';
 import { Platform } from 'react-native';
+import { mergeDateAndTime } from './date';
 
 export async function createCalendarEvent(task) {
     let defaultCalendar = null;
@@ -38,7 +39,7 @@ export async function createCalendarEvent(task) {
     const event = {
         title: task?.title,
         startDate: startDate,
-        endDate: endDate ? endDate : startDate,
+        endDate: (endDate && endDate > startDate) ? endDate : startDate,
         notes: task?.description,
         allDay: isAllDay
     };
