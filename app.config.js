@@ -28,6 +28,7 @@ module.exports = {
                 hidden: false
             },
             package: 'com.Maitri.MaitriApp',
+            //softwareKeyboardLayoutMode: 'pan',
             config: {
                 googleMaps: {
                     apiKey: process.env.GOOGLE_MAPS_API_KEY

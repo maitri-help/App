@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { TouchableOpacity, Text, StyleSheet, View, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
 import CloseIcon from '../../assets/icons/close-icon.svg';
-import { GEOLOCATION_API_KEY } from '../../constants/config';
+import { GEOLOCATION_API_KEY, GOOGLE_MAPS_API_KEY } from '../../constants/config';
 import { useLocation } from '../../context/LocationContext';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 Geocoder.init(GEOLOCATION_API_KEY);
 
@@ -15,6 +16,12 @@ export default function LocationPicker({
 }) {
     const [showMap, setShowMap] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
+    const searchRef = useRef();
+
+    /* useEffect(() => {
+        searchRef.current?.setAddressText('Some Text');
+    }, []); */
+
     const [mapRegion, setMapRegion] = useState({
         latitude: 51.1657,
         longitude: 10.4515,
@@ -94,28 +101,98 @@ export default function LocationPicker({
                         <CloseIcon style={stylesLocation.closeIcon} />
                     </TouchableOpacity>
                     {!disabled && (
-                        <MapView
-                            style={{ width: '100%', height: 200 }}
-                            region={mapRegion}
-                            onPress={(e) =>
-                                handleLocationSelect(
-                                    `${e.nativeEvent.coordinate.latitude},${e.nativeEvent.coordinate.longitude}`
-                                )
-                            }
-                        >
-                            {selectedLocation && (
-                                <Marker
-                                    coordinate={{
-                                        latitude: parseFloat(
-                                            selectedLocation.split(',')[0]
-                                        ),
-                                        longitude: parseFloat(
-                                            selectedLocation.split(',')[1]
-                                        )
+                        <>
+                            <View style={{ width: '100%' }}>
+                                <GooglePlacesAutocomplete
+                                    query={{
+                                        key: GOOGLE_MAPS_API_KEY,
+                                        language: 'en'
+                                    }}
+                                    placeholder="Search for places..."
+                                    fetchDetails={true}
+                                    GooglePlacesDetailsQuery={{ fields: "geometry" }}
+                                    onPress={(data, details) => {
+                                        setTimeout(() => {
+                                            handleLocationSelect(
+                                                `${details.geometry.location.lat},${details.geometry.location.lng}`
+                                            );
+                                        }, 50);
+                                    }}
+                                    onFail={(error) => console.error(error)}
+                                    enablePoweredByContainer={false}
+                                    disableScroll={true}
+                                    /* currentLocation={true}
+                                    currentLocationLabel='Current location' */
+                                    predefinedPlaces={[
+                                        {
+                                            description: 'Home',
+                                            geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
+                                        },
+                                        {
+                                            description: 'Work',
+                                            geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
+                                        } 
+                                    ]}
+                                    textInputProps={{
+                                        placeholderTextColor: '#9F9F9F',
+                                    }}          
+                                    styles={{
+                                        container: {
+                                            flex: 0,
+                                            width: '100%',
+                                        },
+                                        textInput: {
+                                            borderRadius: 0,
+                                            borderBottomColor: '#E5E5E5',
+                                            borderBottomWidth: 1,
+                                            paddingHorizontal: 0,
+                                            paddingVertical: 0,
+                                            fontFamily: 'poppins-regular',
+                                            fontSize: 13,
+                                            color: '#000',
+                                        },
+                                        predefinedPlacesDescription: {
+                                            color: '#1C4837',
+                                        },
+                                        row: {
+                                            paddingHorizontal: 0,
+                                            paddingVertical: 10,
+                                        },
+                                        separator: {
+                                            height: 0.5,
+                                            backgroundColor: '#E5E5E5',
+                                        },
+                                        description: {
+                                            fontFamily: 'poppins-regular',
+                                            fontSize: 13,
+                                            color: '#9F9F9F',
+                                        },
                                     }}
                                 />
-                            )}
-                        </MapView>
+                            </View>
+                            <MapView
+                                style={{ width: '100%', height: 200 }}
+                                region={mapRegion}
+                                onPress={(e) =>
+                                    handleLocationSelect(
+                                        `${e.nativeEvent.coordinate.latitude},${e.nativeEvent.coordinate.longitude}`
+                                    )
+                                }
+                            >
+                                {selectedLocation && (
+                                    <Marker
+                                        coordinate={{
+                                            latitude: parseFloat(
+                                                selectedLocation.split(',')[0]
+                                            ),
+                                            longitude: parseFloat(
+                                                selectedLocation.split(',')[1]
+                                            )
+                                        }}
+                                    />
+                                )}
+                            </MapView>
+                        </>
                     )}
                 </>
             ) : (

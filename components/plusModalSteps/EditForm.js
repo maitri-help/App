@@ -268,7 +268,7 @@ export default function EditForm({
                     />
                 </View>
             </View>
-            <ScrollView>
+            <ScrollView keyboardShouldPersistTaps="handled">
                 {/* <SelectCircles task={task} setTask={setTask} /> */}
                 <View style={[stylesReview.group, stylesReview.groupFirst]}>
                     <View
