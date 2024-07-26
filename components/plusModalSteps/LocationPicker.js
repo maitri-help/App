@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, Text, StyleSheet, View, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
@@ -6,6 +6,7 @@ import CloseIcon from '../../assets/icons/close-icon.svg';
 import { GEOLOCATION_API_KEY, GOOGLE_MAPS_API_KEY } from '../../constants/config';
 import { useLocation } from '../../context/LocationContext';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import SearchIcon from '../../assets/icons/search-icon.svg';
 
 Geocoder.init(GEOLOCATION_API_KEY);
 
@@ -16,11 +17,6 @@ export default function LocationPicker({
 }) {
     const [showMap, setShowMap] = useState(false);
     const [selectedAddress, setSelectedAddress] = useState(null);
-    const searchRef = useRef();
-
-    /* useEffect(() => {
-        searchRef.current?.setAddressText('Some Text');
-    }, []); */
 
     const [mapRegion, setMapRegion] = useState({
         latitude: 51.1657,
@@ -31,6 +27,8 @@ export default function LocationPicker({
         // Default cooridnates for Europe
     });
     const { deviceLocation } = useLocation();
+
+    const [predefinedSearchPlaces, setPredefinedSearchPlaces] = useState([]);
 
     useEffect(() => {
         const getAddressFromCoordinates = () => {
@@ -85,6 +83,24 @@ export default function LocationPicker({
         }
     }, [selectedLocation, deviceLocation]);
 
+    useEffect(() => {
+        if (deviceLocation) {
+            const [latitude, longitude] = deviceLocation.split(',').map(parseFloat);
+            setPredefinedSearchPlaces((prev) => [
+                {
+                    description: 'Current location',
+                    geometry: {
+                        location: {
+                            lat: latitude,
+                            lng: longitude
+                        }
+                    }
+                },
+                ...prev
+            ]);
+        }
+    }, [deviceLocation, setPredefinedSearchPlaces]);
+
     const handleLocationSelect = (location) => {
         onSelect((prev) => ({ ...prev, location }));
         setShowMap(false);
@@ -123,16 +139,23 @@ export default function LocationPicker({
                                     disableScroll={true}
                                     /* currentLocation={true}
                                     currentLocationLabel='Current location' */
-                                    predefinedPlaces={[
-                                        {
-                                            description: 'Home',
-                                            geometry: { location: { lat: 48.8152937, lng: 2.4597668 } },
-                                        },
-                                        {
-                                            description: 'Work',
-                                            geometry: { location: { lat: 48.8496818, lng: 2.2940881 } },
-                                        } 
-                                    ]}
+                                    predefinedPlaces={predefinedSearchPlaces}
+                                    renderLeftButton={() => 
+                                        <View style={{
+                                            height: 38,
+                                            borderBottomColor: '#E5E5E5',
+                                            borderBottomWidth: 1,
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            paddingRight: 10,
+                                        }}>
+                                            <SearchIcon
+                                                width={16}
+                                                height={16}
+                                                color="#9F9F9F"
+                                            />
+                                        </View>
+                                    }
                                     textInputProps={{
                                         placeholderTextColor: '#9F9F9F',
                                     }}          
@@ -142,6 +165,7 @@ export default function LocationPicker({
                                             width: '100%',
                                         },
                                         textInput: {
+                                            height: 38,
                                             borderRadius: 0,
                                             borderBottomColor: '#E5E5E5',
                                             borderBottomWidth: 1,
