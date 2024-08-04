@@ -62,6 +62,10 @@ export default function ProfileScreen({ navigation }) {
         Linking.openURL('mailto:contact@maitrihelp.com');
     };
 
+    const handleSavedLocations = () => {
+        navigation.navigate('ManageLocations');
+    }
+
     return (
         <>
             <SafeAreaView style={styles.safeArea}>
@@ -93,6 +97,16 @@ export default function ProfileScreen({ navigation }) {
                         )}
                         <View style={stylesProfile.contentContainer}>
                             <View style={stylesProfile.buttons}>
+                                <View style={stylesProfile.buttonWrapper}>
+                                    <TouchableOpacity
+                                        style={stylesProfile.button}
+                                        onPress={handleSavedLocations}
+                                    >
+                                        <Text style={stylesProfile.buttonText}>
+                                            Manage saved locations
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
                                 <View style={stylesProfile.buttonWrapper}>
                                     <TouchableOpacity
                                         style={stylesProfile.button}

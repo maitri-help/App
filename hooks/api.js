@@ -197,3 +197,21 @@ export const fetchTasks = async (userData) => {
             .catch((err) => console.log(err.response.data.message));
     }
 };
+
+export const saveLocation = async (data, accessToken) => {
+    return await axios.post(`${baseUrl}/users/location`, data, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+};
+
+export const deleteLocation = async (locationId, accessToken) => {
+    return await axios.delete(`${baseUrl}/users/location/${locationId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+}
+
+export const updateLocation = async (locationId, data, accessToken) => {
+    return await axios.patch(`${baseUrl}/users/location/${locationId}`, data, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+}

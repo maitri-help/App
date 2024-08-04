@@ -14,6 +14,7 @@ import SuppIDScreen from '../../screens/SuppIDScreen';
 import SuppNavigator from './SuppNavigator';
 import LeadNavigator from './LeadNavigator';
 import { useUser } from '../../context/UserContext';
+import ManageLocationsScreen from '../../screens/ManageLocationsScreen';
 
 const Stack = createStackNavigator();
 const MainNavigator = () => {
@@ -94,6 +95,7 @@ const MainNavigator = () => {
                     component={SuppGreatNewsScreen}
                 />
                 <Stack.Screen name="SuppID" component={SuppIDScreen} />
+                <Stack.Screen name="ManageLocations" component={ManageLocationsScreen} />
             </Stack.Navigator>
         </>
     );
