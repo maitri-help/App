@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     Text,
@@ -61,9 +61,14 @@ export default function TaskItem({
         taskModal();
     };
 
-    const isDue = calcIsDue(task);
-
     const icon = findIcon(task);
+
+    //const isDue = calcIsDue(task);
+    const [isDue, setIsDue] = useState(false);
+
+    useEffect(() => {
+        setIsDue(calcIsDue(task));
+    }, [task]);
 
     const isPersonal =
         task.circles &&
@@ -80,25 +85,17 @@ export default function TaskItem({
                 <View
                     style={[
                         styles.emojiWrapper,
-                        task.assignee
-                            ? {
-                                  borderColor: task.assignee.color
-                                      ? task.assignee.color
-                                      : '#1C4837'
-                              }
-                            : ''
+                        {
+                            borderColor: isDue
+                                ? '#FF5454'
+                                : '#1C4837'
+                        }
                     ]}
                 >
-                    {isPersonal ? (
-                        icon ? (
-                            <Image source={icon} style={styles.emojiIMG} />
-                        ) : (
-                            <Text style={styles.emoji}>👤</Text>
-                        )
+                    {icon ? (
+                        <Image source={icon} style={styles.emojiIMG} />
                     ) : (
-                        <Text style={styles.emoji}>
-                            {task.assignee ? task.assignee.emoji : ''}
-                        </Text>
+                        <Text style={styles.emoji}>👤</Text>
                     )}
                 </View>
 
@@ -138,7 +135,7 @@ export default function TaskItem({
                             </Text>
                         )
                     )}
-                    {task.startDate && task.endDate && (
+                    {task.startDate && (
                         <Text
                             style={[
                                 styles.time,
@@ -233,7 +230,7 @@ const styles = StyleSheet.create({
         marginBottom: 2
     },
     assignee: {
-        color: '#747474',
+        color: '#000',
         fontSize: 12,
         fontFamily: 'poppins-regular',
         lineHeight: 14

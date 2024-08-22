@@ -15,7 +15,7 @@ import { updateTask } from '../hooks/api';
 import CheckIcon from '../assets/icons/check-medium-icon.svg';
 import { useToast } from 'react-native-toast-notifications';
 import * as Calendar from 'expo-calendar';
-import { findIcon, sortTasksByStartDate } from '../helpers/task.helpers';
+import { calcIsDue, findIcon, sortTasksByStartDate } from '../helpers/task.helpers';
 import { formatTaskItemDate } from '../helpers/date';
 import { useTask } from '../context/TaskContext';
 import CalendarPermissionModal from './Modals/CalendarPermissionModal';
@@ -57,6 +57,7 @@ export default function MyTask({
     };
 
     const icon = findIcon(task);
+    const isDue = calcIsDue(task);
 
     const handleClick = () => {
         onTaskItemClick(task);
@@ -128,7 +129,8 @@ export default function MyTask({
                             style={[
                                 stylesTask.taskTitle,
                                 isChecked ? stylesTask.textStriked : '',
-                                isChecked && stylesTask.greyedOut
+                                isChecked && stylesTask.greyedOut,
+                                (!isChecked && isDue) && stylesTask.dueText
                             ]}
                         >
                             {task?.title}
@@ -144,7 +146,8 @@ export default function MyTask({
                             style={[
                                 stylesTask.taskTime,
                                 isChecked ? stylesTask.textStriked : '',
-                                isChecked && stylesTask.greyedOut
+                                isChecked && stylesTask.greyedOut,
+                                (!isChecked && isDue) && stylesTask.dueText
                             ]}
                         >
                             {formatTaskItemDate(task)}
@@ -294,6 +297,9 @@ const stylesTask = StyleSheet.create({
     },
     greyedOut: {
         color: '#B0B0B0'
+    },
+    dueText: {
+        color: '#FF5454'
     },
     innerModalContainer: {
         ...StyleSheet.absoluteFillObject,

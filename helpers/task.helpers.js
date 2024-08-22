@@ -34,17 +34,21 @@ export const findIcon = (task) => {
 };
 
 export const calcIsDue = (task) => {
-    if (!task?.endDate) return false;
-
-    const endDate = new Date(task?.endDate);
+    const timeToCheck = new Date(task?.endDate ?? task?.startDate);
     const today = new Date();
-    const nextDay = new Date(endDate);
-    nextDay.setDate(endDate.getDate() + 1);
 
-    const isDue = task?.status === 'undone' && today >= nextDay;
+    if (task?.endTime || task?.startTime) {
+        const time = task?.endTime ?? task?.startTime;
+        const [hours, minutes] = time.split(':');
+        timeToCheck.setHours(hours, minutes);
+    }
+
+    // if time is in the past or in the next 12 hours then it is due
+    const isDue = timeToCheck < today || timeToCheck < new Date(today.getTime() + 12 * 60 * 60 * 1000);
 
     return isDue;
 };
+
 export const sortTasksByStartDate = (tasks) => {
     return tasks?.sort((a, b) => {
         if (a.status === 'done' && b.status !== 'done') {

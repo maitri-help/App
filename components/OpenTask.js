@@ -7,7 +7,7 @@ import {
     Platform,
     Image
 } from 'react-native';
-import { findIcon } from '../helpers/task.helpers';
+import { calcIsDue, findIcon } from '../helpers/task.helpers';
 import { formatTaskItemDate } from '../helpers/date';
 
 export default function OpenTask({ task, taskModal, onTaskItemClick }) {
@@ -17,6 +17,7 @@ export default function OpenTask({ task, taskModal, onTaskItemClick }) {
     };
 
     const icon = findIcon(task);
+    const isDue = calcIsDue(task);
 
     return (
         <TouchableOpacity
@@ -24,12 +25,19 @@ export default function OpenTask({ task, taskModal, onTaskItemClick }) {
             activeOpacity={0.7}
             onPress={handleClick}
         >
-            <View style={[stylesTask.serviceIconWrapper]}>
+            <View style={[
+                stylesTask.serviceIconWrapper, 
+                {
+                    borderColor: isDue
+                        ? '#FF5454'
+                        : '#1C4837'
+                }
+            ]}>
                 {icon && <Image source={icon} style={stylesTask.serviceIcon} />}
             </View>
             <View style={stylesTask.taskInfoContainer}>
-                <Text style={stylesTask.taskTitle}>{task?.title}</Text>
-                <Text style={stylesTask.taskTime}>
+                <Text style={[stylesTask.taskTitle, isDue && stylesTask.dueText]}>{task?.title}</Text>
+                <Text style={[stylesTask.taskTime, isDue && stylesTask.dueText]}>
                     {formatTaskItemDate(task)}
                 </Text>
             </View>
@@ -59,7 +67,6 @@ const stylesTask = StyleSheet.create({
         height: 50,
         borderRadius: 25,
         borderWidth: 2,
-        borderColor: '#1C4837',
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -90,5 +97,8 @@ const stylesTask = StyleSheet.create({
         fontSize: 12,
         fontFamily: 'poppins-light',
         lineHeight: 14
+    },
+    dueText: {
+        color: '#FF5454'
     }
 });

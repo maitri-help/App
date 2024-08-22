@@ -2,7 +2,7 @@ module.exports = {
     expo: {
         name: 'Maitri',
         slug: 'MaitriApp',
-        version: '1.0.17',
+        version: '1.0.18',
         orientation: 'portrait',
         icon: './assets/icon.png',
         userInterfaceStyle: 'light',
@@ -36,7 +36,7 @@ module.exports = {
             },
             permissions: ['ACCESS_FINE_LOCATION', 'ACCESS_COARSE_LOCATION'],
             versionCode: 1,
-            versionName: '1.0.17'
+            versionName: '1.0.18'
         },
         web: {
             favicon: './assets/favicon.png'

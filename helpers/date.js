@@ -63,7 +63,17 @@ export const formatTaskItemDate = (task) => {
     const end = new Date(task?.endDate);
     const isSameDay = start.getTime() === end.getTime();
 
-    const formatOptions = (options) => formatDate(task?.startDate, options);
+    if (task?.startTime) {
+        start.setHours(task?.startTime.split(':')[0]);
+        start.setMinutes(task?.startTime.split(':')[1]);
+    }
+
+    if (task?.endTime) {
+        end.setHours(task?.endTime.split(':')[0]);
+        end.setMinutes(task?.endTime.split(':')[1]);
+    }
+
+    const formatOptions = (options) => formatDate(start, options);
 
     if (
         task?.startDate &&
@@ -102,6 +112,21 @@ export const formatTaskItemDate = (task) => {
             task?.endDate,
             options
         )}`;
+    }
+
+    if (task?.startTime && !task?.endTime) {
+        const options = { formatString: "MMMM d 'at' p" };
+        return `${formatOptions(options)} - ${formatDate(
+            task?.endDate,
+            { formatString: 'MMMM dd' }
+        )}`;
+    }
+
+    if (!task?.startTime && task?.endTime) {
+        const options = { formatString: "MMMM d 'at' p" };
+        return `${formatDate(task?.startDate, {
+            formatString: 'MMMM dd'
+        })} - ${formatDate(end, options)}`;
     }
 
     return '';
