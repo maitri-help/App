@@ -411,6 +411,7 @@ export default function HomeScreen({ navigation }) {
                             onRefresh={onRefresh}
                         />
                     }
+                    contentContainerStyle={{ flex: 1 }}
                 >
                     <View style={styles.topBar}>
                         <Text style={stylesHome.greetingsText}>
