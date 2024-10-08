@@ -8,10 +8,13 @@ import { useEffect, useState, useRef } from 'react';
 import { findIcon } from '../helpers/task.helpers';
 import { sendChatMessage } from '../hooks/api';
 import { getAccessToken } from '../authStorage';
+import { useToast } from 'react-native-toast-notifications';
 
 export default function ChatScreen({ navigation }) {
     const { userData } = useUser();
     const scrollViewRef = useRef(null);
+
+    const toast = useToast();
 
     const [userMessage, setUserMessage] = useState('');
     const [messages, setMessages] = useState([]);
@@ -44,13 +47,12 @@ export default function ChatScreen({ navigation }) {
             { messages: [...messages, newMessage] },
             accessToken
         ).then((res) => {
-            console.log(res.data);
             if (res.data.message) {
                 setMessages([...messages, newMessage, res.data.message]);
                 scrollViewRef.current?.scrollToEnd({ animated: true });
             }
         }).catch((err) => {
-            console.log(err.response.data.message);
+            toast.show(`${err.response?.data?.message ?? 'An error occured while getting an answer'}`, { type: 'error' });
         }).finally(() => {
             setResponseLoading(false);
         });
