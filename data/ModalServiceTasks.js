@@ -27,7 +27,7 @@ export const modalServiceTasks = {
     'Doctor visit',
     'Prescription pickup',
     'Manage medication',
-    'Dietary plan',
+    'Scheduling appointments',
     'Appointment reminder',
     'Symptom tracking',
   ],
