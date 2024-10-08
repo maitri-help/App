@@ -215,3 +215,9 @@ export const updateLocation = async (locationId, data, accessToken) => {
         headers: { Authorization: `Bearer ${accessToken}` }
     });
 }
+
+export const sendChatMessage = async (data, accessToken) => {
+    return await axios.post(`${baseUrl}/chat`, data, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+}

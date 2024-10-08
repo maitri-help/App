@@ -1,4 +1,4 @@
-import { Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import styles from '../Styles';
 import ArrowBackIcon from '../assets/icons/arrow-left-icon.svg';
 import ChatHeartIcon from '../assets/icons/chat-heart-icon.svg';
@@ -6,6 +6,8 @@ import SendMessageIcon from '../assets/icons/send-message-icon.svg';
 import { useUser } from '../context/UserContext';
 import { useEffect, useState, useRef } from 'react';
 import { findIcon } from '../helpers/task.helpers';
+import { sendChatMessage } from '../hooks/api';
+import { getAccessToken } from '../authStorage';
 
 export default function ChatScreen({ navigation }) {
     const { userData } = useUser();
@@ -13,6 +15,7 @@ export default function ChatScreen({ navigation }) {
 
     const [userMessage, setUserMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [responseLoading, setResponseLoading] = useState(false);
 
     useEffect(() => {
         if (userData) {
@@ -21,10 +24,38 @@ export default function ChatScreen({ navigation }) {
                     text: `Hi ${userData.firstName ?? 'Ben'}! I’m Mimi, your personal help concierge. What can I do for you today?`,
                     isBot: true,
                     suggestions: [],
-                }
+                },
             ])
         }
     }, [userData]);
+
+    const handleSubmit = async () => {
+        if (userMessage === '') return;
+        setResponseLoading(true);
+
+        const accessToken = await getAccessToken();
+        const newMessage = { text: userMessage, isBot: false };
+        setMessages([...messages, newMessage]);
+        setUserMessage('');
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+        Keyboard.dismiss();
+
+        await sendChatMessage(
+            { messages: [...messages, newMessage] },
+            accessToken
+        ).then((res) => {
+            console.log(res.data);
+            if (res.data.message) {
+                setMessages([...messages, newMessage, res.data.message]);
+                scrollViewRef.current?.scrollToEnd({ animated: true });
+            }
+        }).catch((err) => {
+            console.log(err.response.data.message);
+        }).finally(() => {
+            setResponseLoading(false);
+        });
+
+    }
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -49,8 +80,8 @@ export default function ChatScreen({ navigation }) {
                 />
             </View>
             <ScrollView 
-                style={{ flex: 1, paddingHorizontal: 20 }}
-                contentContainerStyle={{ paddingBottom: 90 }}
+                style={{ flex: 1 }}
+                contentContainerStyle={{ paddingBottom: 100 }}
                 automaticallyAdjustKeyboardInsets={true}
                 ref={scrollViewRef}
                 //onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
@@ -112,19 +143,19 @@ export default function ChatScreen({ navigation }) {
                         style={stylesChat.input}
                     />
                     <Pressable
-                        onPress={() => {
-                            setMessages([...messages, { text: userMessage, isBot: false }]);
-                            setUserMessage('');
-                            scrollViewRef.current?.scrollToEnd({ animated: true });
-                            Keyboard.dismiss();
-                        }}
+                        onPress={handleSubmit}
                         style={{marginRight: 16}}
+                        disabled={responseLoading}
                     >
-                        <SendMessageIcon
-                            width={20}
-                            height={20}
-                            color={'#1C4837'}
-                        />
+                        {responseLoading ? (
+                            <ActivityIndicator size="small" color={'#1C4837'} />
+                        ) : (
+                            <SendMessageIcon
+                                width={20}
+                                height={20}
+                                color={'#3369FF'}
+                            />
+                        )}
                     </Pressable>
                 </View>
             </KeyboardAvoidingView>
@@ -154,6 +185,7 @@ const stylesChat = StyleSheet.create({
         marginVertical: 10,
         display: 'flex',
         flexDirection: 'row',
+        paddingHorizontal: 20,
     },
     messageAvatar: {
         width: 30,
@@ -166,10 +198,10 @@ const stylesChat = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#fff',
 
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        elevation: 4,
     },
     messageBox: {
         borderRadius: 30,
@@ -178,7 +210,7 @@ const stylesChat = StyleSheet.create({
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
-        elevation: 3,
+        elevation: 4,
     },
     botMessage: {
         backgroundColor: '#eeeeee',
@@ -190,6 +222,7 @@ const stylesChat = StyleSheet.create({
         backgroundColor: '#A4BE7B',
         borderTopRightRadius: 0,
         //borderBottomRightRadius: 30,
+        maxWidth: '90%',
     },
     messageText: {
         fontSize: 13,
@@ -252,16 +285,16 @@ const stylesChat = StyleSheet.create({
         alignItems: 'center',
 
         shadowColor: '#000',
-        shadowOffset: { width: 5, height: 4 },
+        shadowOffset: { width: 0, height: 4 },
         shadowRadius: 20,
-        shadowOpacity: 0.13,
-        elevation: 2,
+        shadowOpacity: 0.25,
+        elevation: 4,
     },
     input: {
         height: 56,
         paddingHorizontal: 20,
         fontSize: 14,
         flex: 1,
-        fontFamily: 'poppins-regular',
+        fontFamily: 'poppins-medium',
     }
 });
