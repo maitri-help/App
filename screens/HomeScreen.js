@@ -422,15 +422,17 @@ export default function HomeScreen({ navigation }) {
                         </ScrollView>
                     ) : renderContent()}
                 </ScrollView>
-                <Pressable 
-                    style={stylesHome.mimiContainer}
-                    onPress={() => navigation.navigate('Chat')}
-                >
-                    <Image
-                        source={require('../assets/img/mimi-illustration.png')}
-                        style={stylesHome.mimi}
-                    />
-                </Pressable>
+                {userData && userData.chatAvailable && (
+                    <Pressable 
+                        style={stylesHome.mimiContainer}
+                        onPress={() => navigation.navigate('Chat')}
+                    >
+                        <Image
+                            source={require('../assets/img/mimi-illustration.png')}
+                            style={stylesHome.mimi}
+                        />
+                    </Pressable>
+                )}
             </SafeAreaView>
             {(taskModalVisible || plusModalVisible) && (
                 <Animated.View
@@ -573,7 +575,7 @@ const stylesHome = StyleSheet.create({
     },
     mimiContainer: {
         position: 'absolute',
-        bottom: 0,
+        bottom: 5,
         right: 5,
     },
     mimi: {
