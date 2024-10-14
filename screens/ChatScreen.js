@@ -4,11 +4,13 @@ import ArrowBackIcon from '../assets/icons/arrow-left-icon.svg';
 import ChatHeartIcon from '../assets/icons/chat-heart-icon.svg';
 import SendMessageIcon from '../assets/icons/send-message-icon.svg';
 import { useUser } from '../context/UserContext';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { findIcon } from '../helpers/task.helpers';
-import { sendChatMessage } from '../hooks/api';
+import { getChatMessages, sendChatMessage } from '../hooks/api';
 import { getAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
+import { FlatList, RefreshControl } from 'react-native-gesture-handler';
+import { formatDate } from '../helpers/date';
 
 export default function ChatScreen({ navigation }) {
     const { userData } = useUser();
@@ -20,17 +22,53 @@ export default function ChatScreen({ navigation }) {
     const [messages, setMessages] = useState([]);
     const [responseLoading, setResponseLoading] = useState(false);
 
+    const [loadEarlier, setLoadEarlier] = useState(false);
+    const [offset, setOffset] = useState(0);
+
+    const LIMIT = 10;
+
     useEffect(() => {
+        async function fetchMessages() {
+            const accessToken = await getAccessToken();
+            await getChatMessages(LIMIT, offset, accessToken)
+                .then((res) => {
+                    if (res.data && res.data.length > 0) {  
+                        setOffset(offset + LIMIT);
+
+                        res.data.forEach((message, index) => {
+                            // insert bot message at every date change
+                            /* if (index - 1 > 0 && formatDate(new Date(res.data[index - 1].createdAt)) !== formatDate(new Date(message.createdAt))) {
+                                setMessages((prevMessages) => [...prevMessages,  {
+                                    text: `Hi ${userData.firstName ?? 'Ben'}! I’m Mimi, your personal help concierge. What can I do for you today?`,
+                                    isBot: true,
+                                    suggestions: [],
+                                }]);
+                            } */
+
+                            setMessages((prevMessages) => [...prevMessages, {
+                                text: message.message,
+                                isBot: message.isBot,
+                                suggestions: message.suggestions,
+                                createdAt: message.createdAt,
+                            }]);
+                        });
+                    }
+                })
+                .catch((err) => console.log(err?.response?.data?.message));
+        }
+
         if (userData) {
-            setMessages([
+            /* setMessages([
                 {
                     text: `Hi ${userData.firstName ?? 'Ben'}! I’m Mimi, your personal help concierge. What can I do for you today?`,
                     isBot: true,
                     suggestions: [],
                 },
-            ])
+            ]); */
+            fetchMessages();
+            scrollViewRef.current?.scrollToEnd({ animated: true });
         }
-    }, [userData]);
+    }, [userData, LIMIT]);
 
     const handleSubmit = async () => {
         if (userMessage === '') return;
@@ -43,8 +81,10 @@ export default function ChatScreen({ navigation }) {
         scrollViewRef.current?.scrollToEnd({ animated: true });
         Keyboard.dismiss();
 
+        // the last 50 messages will be sent
+        const postMessages = [...messages, newMessage].slice(-50);
         await sendChatMessage(
-            { messages: [...messages, newMessage] },
+            { messages: postMessages },
             accessToken
         ).then((res) => {
             if (res.data.message) {
@@ -57,7 +97,7 @@ export default function ChatScreen({ navigation }) {
             setResponseLoading(false);
         });
 
-    }
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -81,7 +121,63 @@ export default function ChatScreen({ navigation }) {
                     style={stylesChat.mimi}
                 />
             </View>
-            <ScrollView 
+            <FlatList
+                data={messages}
+                contentContainerStyle={{ paddingTop: 100 }}
+                inverted
+                onEndReached={() => {
+                    console.log('end reached');
+                }}
+                renderItem={({ item, index }) => (
+                    <View>
+                        {index - 1 > 0 && new Date(messages[index - 1].createdAt).getDate() < new Date(item.createdAt).getDate() && (
+                            <View style={stylesChat.dateDivider}>
+                                <View style={stylesChat.dateDividerLine} />
+                                <View style={stylesChat.dateDividerTextContainer}>
+                                    <Text style={stylesChat.dateDividerText}>{formatDate(new Date(item.createdAt))}</Text> 
+                                </View>
+                            </View>
+                        )}
+                        <View 
+                            style={[
+                                stylesChat.messageContainer,
+                                item.isBot ? { alignItems: 'flex-end' } : { justifyContent: 'flex-end'}
+                            ]}
+                        >
+                            {item.isBot && (
+                                <View style={stylesChat.messageAvatar}>
+                                    <ChatHeartIcon width={20} height={22}/>
+                                </View>
+                            )}
+                            <View style={[stylesChat.messageBox, item.isBot ? stylesChat.botMessage : stylesChat.userMessage]}>
+                                <Text style={[stylesChat.messageText, item.isBot ? stylesChat.botText : stylesChat.userText]}>
+                                    {`${item.text}`}
+                                </Text>
+                                {item.isBot && item.suggestions && item.suggestions.length !== 0 && (
+                                    item.suggestions.map((suggestion, index) => (
+                                        <View key={index} style={stylesChat.suggestion}>
+                                            <View style={stylesChat.suggestionLeft}>
+                                                <View style={stylesChat.suggestionIconWrapper}>
+                                                    <Image source={findIcon(suggestion)} style={stylesChat.suggestionIcon} />
+                                                </View>
+                                                <Text key={index} style={[stylesChat.messageText, stylesChat.botText]}>
+                                                    {suggestion.title}
+                                                </Text>
+                                            </View>
+                                            <Pressable style={stylesChat.suggestionBtn} onPress={() => console.log(suggestion.title)}>
+                                                <Text style={[stylesChat.messageText, stylesChat.userText]}>
+                                                    Add
+                                                </Text>
+                                            </Pressable>
+                                        </View>
+                                    ))
+                                )}
+                            </View> 
+                        </View>
+                    </View>
+                )}
+            />
+            {/* <ScrollView 
                 style={{ flex: 1 }}
                 contentContainerStyle={{ paddingBottom: 100 }}
                 automaticallyAdjustKeyboardInsets={true}
@@ -90,45 +186,54 @@ export default function ChatScreen({ navigation }) {
             >
                 <View style={{ height: 20 }} />
                 {messages.length !== 0 && messages.map((message, index) => (
-                    <View 
-                        key={index}
-                        style={[
-                            stylesChat.messageContainer,
-                            message.isBot ? { alignItems: 'flex-end' } : { justifyContent: 'flex-end'}
-                        ]}
-                    >
-                        {message.isBot && (
-                            <View style={stylesChat.messageAvatar}>
-                                <ChatHeartIcon width={20} height={22}/>
+                    <View key={index}>
+                        {index - 1 > 0 && new Date(messages[index - 1].createdAt).getDate() < new Date(message.createdAt).getDate() && (
+                            <View style={stylesChat.dateDivider}>
+                                <View style={stylesChat.dateDividerLine} />
+                                <View style={stylesChat.dateDividerTextContainer}>
+                                    <Text style={stylesChat.dateDividerText}>{formatDate(new Date(message.createdAt))}</Text> 
+                                </View>
                             </View>
                         )}
-                        <View style={[stylesChat.messageBox, message.isBot ? stylesChat.botMessage : stylesChat.userMessage]}>
-                            <Text style={[stylesChat.messageText, message.isBot ? stylesChat.botText : stylesChat.userText]}>
-                                {`${message.text}`}
-                            </Text>
-                            {message.isBot && message.suggestions && message.suggestions.length !== 0 && (
-                                message.suggestions.map((suggestion, index) => (
-                                    <View key={index} style={stylesChat.suggestion}>
-                                        <View style={stylesChat.suggestionLeft}>
-                                            <View style={stylesChat.suggestionIconWrapper}>
-                                                <Image source={findIcon(suggestion)} style={stylesChat.suggestionIcon} />
-                                            </View>
-                                            <Text key={index} style={[stylesChat.messageText, stylesChat.botText]}>
-                                                {suggestion.title}
-                                            </Text>
-                                        </View>
-                                        <Pressable style={stylesChat.suggestionBtn} onPress={() => console.log(suggestion.title)}>
-                                            <Text style={[stylesChat.messageText, stylesChat.userText]}>
-                                                Add
-                                            </Text>
-                                        </Pressable>
-                                    </View>
-                                ))
+                        <View 
+                            style={[
+                                stylesChat.messageContainer,
+                                message.isBot ? { alignItems: 'flex-end' } : { justifyContent: 'flex-end'}
+                            ]}
+                        >
+                            {message.isBot && (
+                                <View style={stylesChat.messageAvatar}>
+                                    <ChatHeartIcon width={20} height={22}/>
+                                </View>
                             )}
-                        </View> 
+                            <View style={[stylesChat.messageBox, message.isBot ? stylesChat.botMessage : stylesChat.userMessage]}>
+                                <Text style={[stylesChat.messageText, message.isBot ? stylesChat.botText : stylesChat.userText]}>
+                                    {`${message.text}`}
+                                </Text>
+                                {message.isBot && message.suggestions && message.suggestions.length !== 0 && (
+                                    message.suggestions.map((suggestion, index) => (
+                                        <View key={index} style={stylesChat.suggestion}>
+                                            <View style={stylesChat.suggestionLeft}>
+                                                <View style={stylesChat.suggestionIconWrapper}>
+                                                    <Image source={findIcon(suggestion)} style={stylesChat.suggestionIcon} />
+                                                </View>
+                                                <Text key={index} style={[stylesChat.messageText, stylesChat.botText]}>
+                                                    {suggestion.title}
+                                                </Text>
+                                            </View>
+                                            <Pressable style={stylesChat.suggestionBtn} onPress={() => console.log(suggestion.title)}>
+                                                <Text style={[stylesChat.messageText, stylesChat.userText]}>
+                                                    Add
+                                                </Text>
+                                            </Pressable>
+                                        </View>
+                                    ))
+                                )}
+                            </View> 
+                        </View>
                     </View>
                 ))}
-            </ScrollView>
+            </ScrollView> */}
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : null}
                 style={[
@@ -201,8 +306,8 @@ const stylesChat = StyleSheet.create({
         backgroundColor: '#fff',
 
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
         elevation: 4,
     },
     messageBox: {
@@ -210,8 +315,8 @@ const stylesChat = StyleSheet.create({
         padding: 15,
 
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
         elevation: 4,
     },
     botMessage: {
@@ -249,8 +354,8 @@ const stylesChat = StyleSheet.create({
         borderRadius: 25,
 
         shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
         elevation: 2,
     },
     suggestionLeft: {
@@ -287,9 +392,9 @@ const stylesChat = StyleSheet.create({
         alignItems: 'center',
 
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 20,
-        shadowOpacity: 0.25,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 5,
+        shadowOpacity: 0.15,
         elevation: 4,
     },
     input: {
@@ -298,5 +403,28 @@ const stylesChat = StyleSheet.create({
         fontSize: 14,
         flex: 1,
         fontFamily: 'poppins-medium',
+    },
+    dateDivider: { 
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        marginVertical: 20,
+        position: 'relative'
+    },
+    dateDividerLine: { 
+        backgroundColor: '#1C4837',
+        height: 0.5,
+        width: '90%'
+    },
+    dateDividerTextContainer: {
+        position: 'absolute',
+        backgroundColor: '#fff',
+        paddingHorizontal: 10
+    },
+    dateDividerText: {
+        fontSize: 12,
+        fontFamily: 'poppins-regular',
+        color: '#1C4837',
     }
 });

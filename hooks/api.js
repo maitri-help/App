@@ -221,3 +221,9 @@ export const sendChatMessage = async (data, accessToken) => {
         headers: { Authorization: `Bearer ${accessToken}` }
     });
 }
+
+export const getChatMessages = async (limit, offset, accessToken) => {
+    return await axios.get(`${baseUrl}/messages?limit=${limit}&offset=${offset}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+}
