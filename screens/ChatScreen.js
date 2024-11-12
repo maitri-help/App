@@ -1,20 +1,19 @@
-import { ActivityIndicator, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, Keyboard, KeyboardAvoidingView, Platform, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import styles from '../Styles';
 import ArrowBackIcon from '../assets/icons/arrow-left-icon.svg';
 import ChatHeartIcon from '../assets/icons/chat-heart-icon.svg';
 import SendMessageIcon from '../assets/icons/send-message-icon.svg';
 import { useUser } from '../context/UserContext';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { findIcon } from '../helpers/task.helpers';
 import { getChatMessages, sendChatMessage } from '../hooks/api';
 import { getAccessToken } from '../authStorage';
 import { useToast } from 'react-native-toast-notifications';
-import { FlatList, RefreshControl } from 'react-native-gesture-handler';
+import { FlatList } from 'react-native-gesture-handler';
 import { formatDate } from '../helpers/date';
 
 export default function ChatScreen({ navigation }) {
     const { userData } = useUser();
-    const scrollViewRef = useRef(null);
 
     const toast = useToast();
 
@@ -23,28 +22,15 @@ export default function ChatScreen({ navigation }) {
     const [responseLoading, setResponseLoading] = useState(false);
 
     const [loadEarlier, setLoadEarlier] = useState(false);
-    const [offset, setOffset] = useState(0);
-
     const LIMIT = 10;
 
     useEffect(() => {
         async function fetchMessages() {
             const accessToken = await getAccessToken();
-            await getChatMessages(LIMIT, offset, accessToken)
+            await getChatMessages(LIMIT, 0, accessToken)
                 .then((res) => {
                     if (res.data && res.data.length > 0) {  
-                        setOffset(offset + LIMIT);
-
                         res.data.forEach((message, index) => {
-                            // insert bot message at every date change
-                            /* if (index - 1 > 0 && formatDate(new Date(res.data[index - 1].createdAt)) !== formatDate(new Date(message.createdAt))) {
-                                setMessages((prevMessages) => [...prevMessages,  {
-                                    text: `Hi ${userData.firstName ?? 'Ben'}! I’m Mimi, your personal help concierge. What can I do for you today?`,
-                                    isBot: true,
-                                    suggestions: [],
-                                }]);
-                            } */
-
                             setMessages((prevMessages) => [...prevMessages, {
                                 text: message.message,
                                 isBot: message.isBot,
@@ -52,44 +38,43 @@ export default function ChatScreen({ navigation }) {
                                 createdAt: message.createdAt,
                             }]);
                         });
+                    } else if (res.data && res.data.length === 0) {
+                        setMessages([
+                            {
+                                text: `Hi ${userData.firstName ?? 'Ben'}! I’m Mimi, your personal help concierge. What can I do for you today?`,
+                                isBot: true,
+                                createdAt: new Date().toISOString(),
+                                suggestions: [],
+                            },
+                        ]);
                     }
                 })
                 .catch((err) => console.log(err?.response?.data?.message));
         }
 
         if (userData) {
-            /* setMessages([
-                {
-                    text: `Hi ${userData.firstName ?? 'Ben'}! I’m Mimi, your personal help concierge. What can I do for you today?`,
-                    isBot: true,
-                    suggestions: [],
-                },
-            ]); */
             fetchMessages();
-            scrollViewRef.current?.scrollToEnd({ animated: true });
         }
-    }, [userData, LIMIT]);
+    }, [userData]);
 
     const handleSubmit = async () => {
         if (userMessage === '') return;
         setResponseLoading(true);
 
         const accessToken = await getAccessToken();
-        const newMessage = { text: userMessage, isBot: false };
-        setMessages([...messages, newMessage]);
+        const newMessage = { text: userMessage, isBot: false, createdAt: new Date().toISOString() };
+        setMessages([newMessage, ...messages ]);
         setUserMessage('');
-        scrollViewRef.current?.scrollToEnd({ animated: true });
         Keyboard.dismiss();
 
         // the last 50 messages will be sent
-        const postMessages = [...messages, newMessage].slice(-50);
+        const postMessages = [newMessage, ...messages].reverse().slice(-50);
         await sendChatMessage(
             { messages: postMessages },
             accessToken
         ).then((res) => {
             if (res.data.message) {
-                setMessages([...messages, newMessage, res.data.message]);
-                scrollViewRef.current?.scrollToEnd({ animated: true });
+                setMessages([res.data.message, newMessage, ...messages]);
             }
         }).catch((err) => {
             toast.show(`${err.response?.data?.message ?? 'An error occured while getting an answer'}`, { type: 'error' });
@@ -97,6 +82,29 @@ export default function ChatScreen({ navigation }) {
             setResponseLoading(false);
         });
 
+    };
+
+    const onLoadEarlier = async (offset) => {
+        setLoadEarlier(true);
+        const accessToken = await getAccessToken();
+
+        await getChatMessages(LIMIT, offset, accessToken)
+            .then((res) => {
+                if (res.data && res.data.length > 0) {
+                    res.data.forEach((message, index) => {
+                        setMessages((prevMessages) => [...prevMessages, {
+                            text: message.message,
+                            isBot: message.isBot,
+                            suggestions: message.suggestions,
+                            createdAt: message.createdAt,
+                        }]);
+                    });
+                }
+            })
+            .catch((err) => console.log(err?.response?.data?.message))
+            .finally(() => {
+                setLoadEarlier(false);
+            });
     };
 
     return (
@@ -121,16 +129,24 @@ export default function ChatScreen({ navigation }) {
                     style={stylesChat.mimi}
                 />
             </View>
+            {loadEarlier && (
+                <View style={{ position: 'relative', width: '100%', zIndex: 1, display: 'flex', alignItems: 'center' }}>
+                    <View style={{ position: 'absolute', top: 10, width: 30, height: 30, backgroundColor: 'white', elevation: 10, borderRadius: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <ActivityIndicator size={25} color={'#1C4837'} />
+                    </View>
+                </View>
+            )}
             <FlatList
                 data={messages}
-                contentContainerStyle={{ paddingTop: 100 }}
+                contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end', paddingTop: 100, paddingBottom: 10 }}
                 inverted
                 onEndReached={() => {
-                    console.log('end reached');
+                    onLoadEarlier(messages.length);
                 }}
+                onEndReachedThreshold={0.2}
                 renderItem={({ item, index }) => (
                     <View>
-                        {index - 1 > 0 && new Date(messages[index - 1].createdAt).getDate() < new Date(item.createdAt).getDate() && (
+                        {index === messages.length - 1 && (
                             <View style={stylesChat.dateDivider}>
                                 <View style={stylesChat.dateDividerLine} />
                                 <View style={stylesChat.dateDividerTextContainer}>
@@ -174,66 +190,23 @@ export default function ChatScreen({ navigation }) {
                                 )}
                             </View> 
                         </View>
-                    </View>
-                )}
-            />
-            {/* <ScrollView 
-                style={{ flex: 1 }}
-                contentContainerStyle={{ paddingBottom: 100 }}
-                automaticallyAdjustKeyboardInsets={true}
-                ref={scrollViewRef}
-                //onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
-            >
-                <View style={{ height: 20 }} />
-                {messages.length !== 0 && messages.map((message, index) => (
-                    <View key={index}>
-                        {index - 1 > 0 && new Date(messages[index - 1].createdAt).getDate() < new Date(message.createdAt).getDate() && (
+                        {index - 1 > 0 && new Date(messages[index - 1].createdAt).getDate() !== new Date(item.createdAt).getDate() && (
                             <View style={stylesChat.dateDivider}>
                                 <View style={stylesChat.dateDividerLine} />
                                 <View style={stylesChat.dateDividerTextContainer}>
-                                    <Text style={stylesChat.dateDividerText}>{formatDate(new Date(message.createdAt))}</Text> 
+                                    <Text style={stylesChat.dateDividerText}>
+                                        {
+                                            new Date().getDate() === new Date(messages[index - 1].createdAt).getDate() 
+                                                ? `Today` 
+                                                : formatDate(new Date(messages[index - 1].createdAt))
+                                        }
+                                    </Text> 
                                 </View>
                             </View>
                         )}
-                        <View 
-                            style={[
-                                stylesChat.messageContainer,
-                                message.isBot ? { alignItems: 'flex-end' } : { justifyContent: 'flex-end'}
-                            ]}
-                        >
-                            {message.isBot && (
-                                <View style={stylesChat.messageAvatar}>
-                                    <ChatHeartIcon width={20} height={22}/>
-                                </View>
-                            )}
-                            <View style={[stylesChat.messageBox, message.isBot ? stylesChat.botMessage : stylesChat.userMessage]}>
-                                <Text style={[stylesChat.messageText, message.isBot ? stylesChat.botText : stylesChat.userText]}>
-                                    {`${message.text}`}
-                                </Text>
-                                {message.isBot && message.suggestions && message.suggestions.length !== 0 && (
-                                    message.suggestions.map((suggestion, index) => (
-                                        <View key={index} style={stylesChat.suggestion}>
-                                            <View style={stylesChat.suggestionLeft}>
-                                                <View style={stylesChat.suggestionIconWrapper}>
-                                                    <Image source={findIcon(suggestion)} style={stylesChat.suggestionIcon} />
-                                                </View>
-                                                <Text key={index} style={[stylesChat.messageText, stylesChat.botText]}>
-                                                    {suggestion.title}
-                                                </Text>
-                                            </View>
-                                            <Pressable style={stylesChat.suggestionBtn} onPress={() => console.log(suggestion.title)}>
-                                                <Text style={[stylesChat.messageText, stylesChat.userText]}>
-                                                    Add
-                                                </Text>
-                                            </Pressable>
-                                        </View>
-                                    ))
-                                )}
-                            </View> 
-                        </View>
                     </View>
-                ))}
-            </ScrollView> */}
+                )}
+            />
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : null}
                 style={[
