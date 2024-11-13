@@ -26,15 +26,16 @@ export default function ChatScreen({ navigation }) {
 
     useEffect(() => {
         async function fetchMessages() {
+            setMessages([]);
             const accessToken = await getAccessToken();
             await getChatMessages(LIMIT, 0, accessToken)
                 .then((res) => {
                     if (res.data && res.data.length > 0) {  
-                        res.data.forEach((message, index) => {
+                        res.data.forEach((message) => {
                             setMessages((prevMessages) => [...prevMessages, {
                                 text: message.message,
                                 isBot: message.isBot,
-                                suggestions: message.suggestions,
+                                suggestions: message.suggestions || [],
                                 createdAt: message.createdAt,
                             }]);
                         });
@@ -49,7 +50,9 @@ export default function ChatScreen({ navigation }) {
                         ]);
                     }
                 })
-                .catch((err) => console.log(err?.response?.data?.message));
+                .catch((err) => {
+                    toast.show(`${err.response?.data?.message ?? 'An error occured while fetching messages'}`, { type: 'error' });
+                });
         }
 
         if (userData) {
@@ -67,7 +70,7 @@ export default function ChatScreen({ navigation }) {
         setUserMessage('');
         Keyboard.dismiss();
 
-        // the last 50 messages will be sent
+        // max. the last 50 messages will be sent
         const postMessages = [newMessage, ...messages].reverse().slice(-50);
         await sendChatMessage(
             { messages: postMessages },
@@ -85,23 +88,28 @@ export default function ChatScreen({ navigation }) {
     };
 
     const onLoadEarlier = async (offset) => {
+        if (!messages.length) return;
+        if (messages.length % LIMIT !== 0) return;
+
         setLoadEarlier(true);
         const accessToken = await getAccessToken();
 
         await getChatMessages(LIMIT, offset, accessToken)
             .then((res) => {
                 if (res.data && res.data.length > 0) {
-                    res.data.forEach((message, index) => {
+                    res.data.forEach((message) => {
                         setMessages((prevMessages) => [...prevMessages, {
                             text: message.message,
                             isBot: message.isBot,
-                            suggestions: message.suggestions,
+                            suggestions: message.suggestions || [],
                             createdAt: message.createdAt,
                         }]);
                     });
                 }
             })
-            .catch((err) => console.log(err?.response?.data?.message))
+            .catch((err) => {
+                toast.show(`${err.response?.data?.message ?? 'An error occured while fetching messages'}`, { type: 'error' });
+            })
             .finally(() => {
                 setLoadEarlier(false);
             });
@@ -130,8 +138,8 @@ export default function ChatScreen({ navigation }) {
                 />
             </View>
             {loadEarlier && (
-                <View style={{ position: 'relative', width: '100%', zIndex: 1, display: 'flex', alignItems: 'center' }}>
-                    <View style={{ position: 'absolute', top: 10, width: 30, height: 30, backgroundColor: 'white', elevation: 10, borderRadius: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={stylesChat.loaderContainer}>
+                    <View style={stylesChat.loaderInnerContainer}>
                         <ActivityIndicator size={25} color={'#1C4837'} />
                     </View>
                 </View>
@@ -399,5 +407,29 @@ const stylesChat = StyleSheet.create({
         fontSize: 12,
         fontFamily: 'poppins-regular',
         color: '#1C4837',
+    },
+    loaderContainer: { 
+        position: 'relative',
+        width: '100%',
+        zIndex: 1,
+        display: 'flex',
+        alignItems: 'center'
+    },
+    loaderInnerContainer: { 
+        position: 'absolute',
+        top: 10,
+        width: 30,
+        height: 30,
+        backgroundColor: 'white',
+        borderRadius: 30,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+        elevation: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        
     }
 });
