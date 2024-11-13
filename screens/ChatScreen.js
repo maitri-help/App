@@ -158,7 +158,13 @@ export default function ChatScreen({ navigation }) {
                             <View style={stylesChat.dateDivider}>
                                 <View style={stylesChat.dateDividerLine} />
                                 <View style={stylesChat.dateDividerTextContainer}>
-                                    <Text style={stylesChat.dateDividerText}>{formatDate(new Date(item.createdAt))}</Text> 
+                                    <Text style={stylesChat.dateDividerText}>
+                                        {
+                                            new Date().getDate() === new Date(item.createdAt).getDate() 
+                                                ? `Today` 
+                                                : formatDate(new Date(item.createdAt))
+                                        }    
+                                    </Text> 
                                 </View>
                             </View>
                         )}
