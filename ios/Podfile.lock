@@ -65,6 +65,8 @@ PODS:
   - FBLazyVector (0.74.1)
   - Firebase (11.5.0):
     - Firebase/Core (= 11.5.0)
+  - Firebase/Analytics (11.5.0):
+    - Firebase/Core
   - Firebase/Core (11.5.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (~> 11.5.0)
@@ -1416,6 +1418,10 @@ PODS:
     - React-Core
   - RNDateTimePicker (8.0.1):
     - React-Core
+  - RNFBAnalytics (21.5.0):
+    - Firebase/Analytics (= 11.5.0)
+    - React-Core
+    - RNFBApp
   - RNFBApp (21.5.0):
     - Firebase/CoreOnly (= 11.5.0)
     - React-Core
@@ -1568,6 +1574,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
+  - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -1734,6 +1741,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNDateTimePicker:
     :path: "../node_modules/@react-native-community/datetimepicker"
+  RNFBAnalytics:
+    :path: "../node_modules/@react-native-firebase/analytics"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNGestureHandler:
@@ -1831,6 +1840,7 @@ SPEC CHECKSUMS:
   ReactCommon: f42444e384d82ab89184aed5d6f3142748b54768
   RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
   RNDateTimePicker: b6a9b35a785ecbe12b4e7d6de5439d0aa4614146
+  RNFBAnalytics: 7f86e9f4eab59a6b2ac1de5000449bceefbd017e
   RNFBApp: b955f412aceea6bb76a5c60191ef4d3e862d8b02
   RNGestureHandler: 2282cfbcf86c360d29f44ace393203afd5c6cff7
   RNReanimated: 35f9ac9c3ac42d0497ebd1cce5c39d7687a8493e
