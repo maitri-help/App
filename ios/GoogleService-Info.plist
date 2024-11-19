@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyAm5NaWInsaIR1OIcIC1D5x1Wlsa5ShYSQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>729712250818</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.maitrihelp.maitri</string>
+	<key>PROJECT_ID</key>
+	<string>maitri-c9f6a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>maitri-c9f6a.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:729712250818:ios:bcdfc7a1ef790e9cda505b</string>
+</dict>
+</plist>
