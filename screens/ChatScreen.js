@@ -137,120 +137,128 @@ export default function ChatScreen({ navigation }) {
                     style={stylesChat.mimi}
                 />
             </View>
-            {loadEarlier && (
-                <View style={stylesChat.loaderContainer}>
-                    <View style={stylesChat.loaderInnerContainer}>
-                        <ActivityIndicator size={25} color={'#1C4837'} />
-                    </View>
-                </View>
-            )}
-            <FlatList
-                data={messages}
-                contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end', paddingTop: 100, paddingBottom: 10 }}
-                inverted
-                onEndReached={() => {
-                    onLoadEarlier(messages.length);
-                }}
-                onEndReachedThreshold={0.2}
-                renderItem={({ item, index }) => (
-                    <View>
-                        {index === messages.length - 1 && (
-                            <View style={stylesChat.dateDivider}>
-                                <View style={stylesChat.dateDividerLine} />
-                                <View style={stylesChat.dateDividerTextContainer}>
-                                    <Text style={stylesChat.dateDividerText}>
-                                        {
-                                            new Date().getDate() === new Date(item.createdAt).getDate() 
-                                                ? `Today` 
-                                                : formatDate(new Date(item.createdAt))
-                                        }    
-                                    </Text> 
-                                </View>
-                            </View>
-                        )}
-                        <View 
-                            style={[
-                                stylesChat.messageContainer,
-                                item.isBot ? { alignItems: 'flex-end' } : { justifyContent: 'flex-end'}
-                            ]}
-                        >
-                            {item.isBot && (
-                                <View style={stylesChat.messageAvatar}>
-                                    <ChatHeartIcon width={20} height={22}/>
-                                </View>
-                            )}
-                            <View style={[stylesChat.messageBox, item.isBot ? stylesChat.botMessage : stylesChat.userMessage]}>
-                                <Text style={[stylesChat.messageText, item.isBot ? stylesChat.botText : stylesChat.userText]}>
-                                    {`${item.text}`}
-                                </Text>
-                                {item.isBot && item.suggestions && item.suggestions.length !== 0 && (
-                                    item.suggestions.map((suggestion, index) => (
-                                        <View key={index} style={stylesChat.suggestion}>
-                                            <View style={stylesChat.suggestionLeft}>
-                                                <View style={stylesChat.suggestionIconWrapper}>
-                                                    <Image source={findIcon(suggestion)} style={stylesChat.suggestionIcon} />
-                                                </View>
-                                                <Text key={index} style={[stylesChat.messageText, stylesChat.botText]}>
-                                                    {suggestion.title}
-                                                </Text>
-                                            </View>
-                                            <Pressable style={stylesChat.suggestionBtn} onPress={() => console.log(suggestion.title)}>
-                                                <Text style={[stylesChat.messageText, stylesChat.userText]}>
-                                                    Add
-                                                </Text>
-                                            </Pressable>
-                                        </View>
-                                    ))
-                                )}
-                            </View> 
-                        </View>
-                        {index - 1 > 0 && new Date(messages[index - 1].createdAt).getDate() !== new Date(item.createdAt).getDate() && (
-                            <View style={stylesChat.dateDivider}>
-                                <View style={stylesChat.dateDividerLine} />
-                                <View style={stylesChat.dateDividerTextContainer}>
-                                    <Text style={stylesChat.dateDividerText}>
-                                        {
-                                            new Date().getDate() === new Date(messages[index - 1].createdAt).getDate() 
-                                                ? `Today` 
-                                                : formatDate(new Date(messages[index - 1].createdAt))
-                                        }
-                                    </Text> 
-                                </View>
-                            </View>
-                        )}
-                    </View>
-                )}
-            />
+
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : null}
                 style={[
-                    {position: 'absolute', width: '100%', paddingHorizontal: 20},
-                    Platform.OS === 'ios' ? { bottom: 50 } : { bottom: 30 }
+                    { flex: 1 }
                 ]}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
+                keyboardVerticalOffset={0}
             >
-                <View style={stylesChat.inputContainer}>
-                    <TextInput
-                        placeholder="Write your message"
-                        value={userMessage}
-                        onChangeText={(text) => setUserMessage(text)}
-                        style={stylesChat.input}
-                    />
-                    <Pressable
-                        onPress={handleSubmit}
-                        style={{marginRight: 16}}
-                        disabled={responseLoading}
-                    >
-                        {responseLoading ? (
-                            <ActivityIndicator size="small" color={'#1C4837'} />
-                        ) : (
-                            <SendMessageIcon
-                                width={20}
-                                height={20}
-                                color={'#3369FF'}
-                            />
+                <View style={{ flex: 1 }}>
+                    {loadEarlier && (
+                        <View style={stylesChat.loaderContainer}>
+                            <View style={stylesChat.loaderInnerContainer}>
+                                <ActivityIndicator size={25} color={'#1C4837'} />
+                            </View>
+                        </View>
+                    )}
+                    <FlatList
+                        data={messages}
+                        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end', paddingTop: 100, paddingBottom: 10 }}
+                        inverted
+                        onEndReached={() => {
+                            onLoadEarlier(messages.length);
+                        }}
+                        onEndReachedThreshold={0.2}
+                        renderItem={({ item, index }) => (
+                            <View>
+                                {index === messages.length - 1 && (
+                                    <View style={stylesChat.dateDivider}>
+                                        <View style={stylesChat.dateDividerLine} />
+                                        <View style={stylesChat.dateDividerTextContainer}>
+                                            <Text style={stylesChat.dateDividerText}>
+                                                {
+                                                    new Date().getDate() === new Date(item.createdAt).getDate() 
+                                                        ? `Today` 
+                                                        : formatDate(new Date(item.createdAt))
+                                                }    
+                                            </Text> 
+                                        </View>
+                                    </View>
+                                )}
+                                <View 
+                                    style={[
+                                        stylesChat.messageContainer,
+                                        item.isBot ? { alignItems: 'flex-end' } : { justifyContent: 'flex-end'}
+                                    ]}
+                                >
+                                    {item.isBot && (
+                                        <View style={stylesChat.messageAvatar}>
+                                            <ChatHeartIcon width={20} height={22}/>
+                                        </View>
+                                    )}
+                                    <View style={[stylesChat.messageBox, item.isBot ? stylesChat.botMessage : stylesChat.userMessage]}>
+                                        <Text style={[stylesChat.messageText, item.isBot ? stylesChat.botText : stylesChat.userText]}>
+                                            {`${item.text}`}
+                                        </Text>
+                                        {item.isBot && item.suggestions && item.suggestions.length !== 0 && (
+                                            item.suggestions.map((suggestion, index) => (
+                                                <View key={index} style={stylesChat.suggestion}>
+                                                    <View style={stylesChat.suggestionLeft}>
+                                                        <View style={stylesChat.suggestionIconWrapper}>
+                                                            <Image source={findIcon(suggestion)} style={stylesChat.suggestionIcon} />
+                                                        </View>
+                                                        <Text key={index} style={[stylesChat.messageText, stylesChat.botText]}>
+                                                            {suggestion.title}
+                                                        </Text>
+                                                    </View>
+                                                    <Pressable style={stylesChat.suggestionBtn} onPress={() => console.log(suggestion.title)}>
+                                                        <Text style={[stylesChat.messageText, stylesChat.userText]}>
+                                                            Add
+                                                        </Text>
+                                                    </Pressable>
+                                                </View>
+                                            ))
+                                        )}
+                                    </View> 
+                                </View>
+                                {index - 1 > 0 && new Date(messages[index - 1].createdAt).getDate() !== new Date(item.createdAt).getDate() && (
+                                    <View style={stylesChat.dateDivider}>
+                                        <View style={stylesChat.dateDividerLine} />
+                                        <View style={stylesChat.dateDividerTextContainer}>
+                                            <Text style={stylesChat.dateDividerText}>
+                                                {
+                                                    new Date().getDate() === new Date(messages[index - 1].createdAt).getDate() 
+                                                        ? `Today` 
+                                                        : formatDate(new Date(messages[index - 1].createdAt))
+                                                }
+                                            </Text> 
+                                        </View>
+                                    </View>
+                                )}
+                            </View>
                         )}
-                    </Pressable>
+                    />
+                    <View
+                        style={[
+                            {position: 'absolute', width: '100%', paddingHorizontal: 20, bottom: 20},
+                        ]}
+                    >
+                        <View style={stylesChat.inputContainer}>
+                            <TextInput
+                                placeholder="How can I help?"
+                                value={userMessage}
+                                onChangeText={(text) => setUserMessage(text)}
+                                style={stylesChat.input}
+                            />
+                            <Pressable
+                                onPress={handleSubmit}
+                                style={{marginRight: 16}}
+                                disabled={responseLoading}
+                            >
+                                {responseLoading ? (
+                                    <ActivityIndicator size="small" color={'#1C4837'} />
+                                ) : (
+                                    <SendMessageIcon
+                                        width={20}
+                                        height={20}
+                                        color={'#3369FF'}
+                                    />
+                                )}
+                            </Pressable>
+                        </View>
+                    </View>
                 </View>
             </KeyboardAvoidingView>
         </SafeAreaView>
