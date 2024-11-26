@@ -117,25 +117,29 @@ export default function ChatScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <View style={styles.topBar}>
-                <View style={stylesChat.topBarLeft}>
-                    <Pressable
-                        onPress={() => navigation.goBack()}
-                    >
-                        <ArrowBackIcon
-                            width={19}
-                            height={19}
-                            color={'#000'}
-                        />
-                    </Pressable>
-                    <Text style={stylesChat.topBarTitle}>
-                        Mimi
-                    </Text>
+            <View style={stylesChat.topBarContainer}>
+                <View style={[stylesChat.topBar]}>
+                    <View style={stylesChat.topBarLeft}>
+                        <Pressable
+                            onPress={() => navigation.goBack()}
+                        >
+                            <ArrowBackIcon
+                                width={19}
+                                height={19}
+                                color={'#000'}
+                            />
+                        </Pressable>
+                        <Text style={stylesChat.topBarTitle}>
+                            Mimi
+                        </Text>
+                    </View>
+                    <Image
+                        source={require('../assets/img/mimi-flower-illustration.png')}
+                        style={stylesChat.mimi}
+                    />
                 </View>
-                <Image
-                    source={require('../assets/img/mimi-flower-illustration.png')}
-                    style={stylesChat.mimi}
-                />
+                <Text style={[stylesChat.topBarText, { marginBottom: 5 } ]}>Hi there! I’m Mimi 👋 Nice to meet you!</Text>
+                <Text style={stylesChat.topBarText}>For anything you need help with - big or small - I’m here to make things easier. I can answer questions, help get more information, brainstorm or just be there to listen.</Text>
             </View>
 
             <KeyboardAvoidingView
@@ -266,6 +270,19 @@ export default function ChatScreen({ navigation }) {
 }
 
 const stylesChat = StyleSheet.create({
+    topBarContainer: {
+        paddingVertical: 18,
+        paddingHorizontal: 25,
+        backgroundColor: '#fff',
+        borderBottomColor: '#E5E5E5',
+        borderBottomWidth: 1,
+    }, 
+    topBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 12,
+    },
     topBarLeft: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -278,10 +295,16 @@ const stylesChat = StyleSheet.create({
         color: '#1C4837',
     },
     mimi: {
-        width: 66,
-        height: 66,
+        width: 60,
+        height: 60,
         marginRight: 10,
         resizeMode: 'contain'
+    }, 
+    topBarText: {
+        fontSize: 13,
+        lineHeight: 18,
+        fontFamily: 'poppins-regular',
+        color: "#1C4837",
     },
     messageContainer: {
         marginVertical: 10,
