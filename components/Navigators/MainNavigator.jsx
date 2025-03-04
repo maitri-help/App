@@ -15,6 +15,8 @@ import SuppNavigator from './SuppNavigator';
 import LeadNavigator from './LeadNavigator';
 import { useUser } from '../../context/UserContext';
 import ManageLocationsScreen from '../../screens/ManageLocationsScreen';
+import LimitReachedScreen from '../../screens/LimitReachedScreen';
+import GetMoreScreen from '../../screens/GetMoreScreen';
 
 const Stack = createStackNavigator();
 const MainNavigator = () => {
@@ -60,6 +62,16 @@ const MainNavigator = () => {
                 <Stack.Screen
                     name="Register"
                     component={RegisterScreen}
+                    options={{ gestureEnabled: !isLoggedIn }}
+                />
+                <Stack.Screen
+                    name="LimitReached"
+                    component={LimitReachedScreen}
+                    options={{ gestureEnabled: !isLoggedIn }}
+                />
+                <Stack.Screen
+                    name="GetMore"
+                    component={GetMoreScreen}
                     options={{ gestureEnabled: !isLoggedIn }}
                 />
                 <Stack.Screen

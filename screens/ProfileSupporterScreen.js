@@ -30,6 +30,18 @@ export default function ProfileSupporterScreen({ navigation }) {
     const handleContactSupport = () => {
         Linking.openURL('mailto:contact@maitrihelp.com');
     };
+    
+    const handleLimitReached = (level) => {
+            navigation.navigate('LimitReached', {
+              title: 'Oh, you reached the limit.',
+                  month: 6,
+                  price: 8.33,
+            });
+        };
+    
+        const handleGetMore = () => {
+            navigation.navigate('GetMore');
+        };
 
     const handleLogout = async () => {
         try {
@@ -197,6 +209,39 @@ export default function ProfileSupporterScreen({ navigation }) {
                                     </TouchableOpacity>
                                 </View>
                             </View>
+                        </View>
+                        <View style={stylesProfile.buttonWrapper}>
+                            <TouchableOpacity
+                                style={[
+                                    stylesProfile.button
+                                ]}
+                                onPress={() => handleLimitReached()}
+                            >
+                                <Text
+                                    style={[
+                                        stylesProfile.buttonText
+                                    ]}
+                                >
+                                  Limit reached
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                        
+                        <View style={stylesProfile.buttonWrapper}>
+                            <TouchableOpacity
+                                style={[
+                                    stylesProfile.button
+                                ]}
+                                onPress={() => handleGetMore()}
+                            >
+                                <Text
+                                    style={[
+                                        stylesProfile.buttonText
+                                    ]}
+                                >
+                                  Get More
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </ScrollView>

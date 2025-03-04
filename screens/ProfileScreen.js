@@ -192,6 +192,7 @@ export default function ProfileScreen({ navigation }) {
                                     </TouchableOpacity>
                                 </View>
                             </View>
+                            
                             <View style={stylesProfile.illustrationWrapper}>
                                 <Image
                                     source={require('../assets/img/mimi-flower-illustration.png')}
@@ -199,6 +200,7 @@ export default function ProfileScreen({ navigation }) {
                                 />
                             </View>
                         </View>
+                        
                     </View>
                 </ScrollView>
             </SafeAreaView>
