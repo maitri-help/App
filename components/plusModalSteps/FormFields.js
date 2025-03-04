@@ -18,6 +18,7 @@ import { generateDateString } from '../../helpers/date';
 import SelectCircles from './SelectCircles';
 import { useTask } from '../../context/TaskContext';
 import { sortTasksByStartDate } from '../../helpers/task.helpers';
+import { useNavigation } from '@react-navigation/native';
 
 export default function FormFields({
     selectedService,
@@ -29,6 +30,7 @@ export default function FormFields({
     setTask
 }) {
     const toast = useToast();
+    const navigation = useNavigation();
 
     const handleBack = () => {
         if (currentStep > 1) {
@@ -82,7 +84,14 @@ export default function FormFields({
         } catch (error) {
             console.error('Error creating task:', error);
 
-            if (error.response && error.response.status === 400) {
+            if (error.response && error.response.status === 400 && error.response.data.message.includes('task limit')) {
+                onClose();
+                navigation.navigate('LimitReached', {
+                    title: "You've reached your task limit!",
+                    month: 1,
+                    price: 9.99
+                });
+            } else if (error.response && error.response.status === 400) {
                 toast.show('Error creating task. Please try again.', {
                     type: 'error'
                 });

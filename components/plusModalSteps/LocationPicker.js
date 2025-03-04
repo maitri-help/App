@@ -74,24 +74,22 @@ export default function LocationPicker({
             const [latitude, longitude] = selectedLocation
                 .split(',')
                 .map(parseFloat);
-            setMapRegion((prevRegion) => ({
-                ...prevRegion,
+            setMapRegion({
                 latitude,
                 longitude,
                 latitudeDelta: 0.002,
                 longitudeDelta: 0.002
-            }));
+            });
         } else if (deviceLocation) {
             const [latitude, longitude] = deviceLocation
                 .split(',')
                 .map(parseFloat);
-            setMapRegion((prevRegion) => ({
-                ...prevRegion,
+            setMapRegion({
                 latitude,
                 longitude,
                 latitudeDelta: 0.002,
                 longitudeDelta: 0.002
-            }));
+            });
         }
     }, [selectedLocation, deviceLocation]);
 
@@ -118,21 +116,33 @@ export default function LocationPicker({
             const [latitude, longitude] = currentSelectedLocation
                 .split(',')
                 .map(parseFloat);
-            setMapRegion((prevRegion) => ({
-                ...prevRegion,
+            setMapRegion({
                 latitude,
                 longitude,
                 latitudeDelta: 0.002,
                 longitudeDelta: 0.002
-            }));
+            });
         }
     }, [currentSelectedLocation]);
 
-    const getPredefinedSearchPlaces = (refresh = false) => {
-        setPredefinedSearchPlaces([]);
+    useEffect(() => {
+        if (userData?.savedLocations) {
+            const predefinedPlaces = [];
+            
+            if (deviceLocation) {
+                const [latitude, longitude] = deviceLocation.split(',').map(parseFloat);
+                predefinedPlaces.push({
+                    description: 'Current location',
+                    geometry: {
+                        location: {
+                            lat: latitude,
+                            lng: longitude
+                        }
+                    }
+                });
+            }
 
-        if (userData.savedLocations && userData.savedLocations.length > 0) {
-            setPredefinedSearchPlaces((prev) => [
+            predefinedPlaces.push(
                 ...userData.savedLocations.map((savedLocation) => ({
                     description: savedLocation.description,
                     geometry: {
@@ -141,32 +151,12 @@ export default function LocationPicker({
                             lng: savedLocation.location.split(',')[1]
                         }
                     }
-                })),
-                ...prev
-            ]);
-        }
+                }))
+            );
 
-        if (deviceLocation && !refresh) {
-            const [latitude, longitude] = deviceLocation.split(',').map(parseFloat);
-            setPredefinedSearchPlaces((prev) => [
-                {
-                    description: 'Current location',
-                    geometry: {
-                        location: {
-                            lat: latitude,
-                            lng: longitude
-                        }
-                    }
-                },
-                ...prev
-            ]);
+            setPredefinedSearchPlaces(predefinedPlaces);
         }
-    };
-
-    useEffect(() => {
-        if (predefinedSearchPlaces.length > 0) return;
-        getPredefinedSearchPlaces();
-    }, [predefinedSearchPlaces]);
+    }, [userData?.savedLocations, deviceLocation]);
 
     const handleLocationChange = (location) => {
         setCurrentSelectedLocation(location);

@@ -1,50 +1,95 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
 import ArrowLeftIcon from '../assets/icons/arrow-left-icon.svg';
 import CheckIcon from '../assets/icons/check-icon.svg';
 import { Dimensions } from 'react-native';
-
+import IAPService from '../services/IAPService';
+import { useToast } from 'react-native-toast-notifications';
 
 export default function LimitReachedScreen({ route, navigation }) {
-    const { title = "Oh, you reached the limit.", month = 1, price = 9.99 } = route.params;
+    const { title = "Oh, you reached the limit." } = route.params;
+    const toast = useToast();
+    const [loading, setLoading] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    
+    useEffect(() => {
+        const initIAP = async () => {
+            try {
+                await IAPService.init();
+                const availableProducts = await IAPService.getAvailableSubscriptions();
+                setProducts(availableProducts);
+                if (availableProducts.length > 0) {
+                    setSelectedProduct(availableProducts[0]); // Default to first product
+                }
+            } catch (error) {
+                console.error('Error initializing IAP:', error);
+                toast.show('Failed to load subscription options', { type: 'error' });
+            }
+        };
+
+        initIAP();
+
+        return () => {
+            IAPService.cleanup();
+        };
+    }, []);
+
+    const handlePurchase = async () => {
+        if (!selectedProduct) {
+            toast.show('No subscription plan selected', { type: 'error' });
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await IAPService.purchaseSubscription(selectedProduct.productId);
+            toast.show('Thank you for subscribing!', { type: 'success' });
+            navigation.goBack();
+        } catch (error) {
+            console.error('Purchase error:', error);
+            toast.show('Purchase failed. Please try again.', { type: 'error' });
+        } finally {
+            setLoading(false);
+        }
+    };
     
     const getEllipseStyles = () => {
-            const screenWidth = Dimensions.get('window').width;
-            const screenHeight = Dimensions.get('window').height;
-            
-            return {
-                ellipse1: {
-                    position: 'absolute',
-                    width: screenWidth * 1.05,
-                    height: screenHeight * 0.55,
-                    left: screenWidth * -0.635,
-                    top: screenHeight * 0.65,
-                    backgroundColor: '#EDE3FE',
-                    borderRadius: screenHeight * 0.3
-                },
-                ellipse2: {
-                    position: 'absolute',
-                    width: screenWidth * 0.45,
-                    height: screenHeight * 0.26,
-                    left: screenWidth * 0.245,
-                    top: screenHeight * 0.8,
-                    backgroundColor: '#EDE3FE',
-                    borderRadius: screenHeight * 0.15
-                },
-                ellipse3: {
-                    position: 'absolute',
-                    width: screenWidth * 0.94,
-                    height: screenHeight * 0.49,
-                    left: screenWidth * 0.619,
-                    top: screenHeight * 0.71,
-                    backgroundColor: '#EDE3FE',
-                    borderRadius: screenHeight * 0.3
-                }
-            };
+        const screenWidth = Dimensions.get('window').width;
+        const screenHeight = Dimensions.get('window').height;
+        
+        return {
+            ellipse1: {
+                position: 'absolute',
+                width: screenWidth * 1.05,
+                height: screenHeight * 0.55,
+                left: screenWidth * -0.635,
+                top: screenHeight * 0.65,
+                backgroundColor: '#EDE3FE',
+                borderRadius: screenHeight * 0.3
+            },
+            ellipse2: {
+                position: 'absolute',
+                width: screenWidth * 0.45,
+                height: screenHeight * 0.26,
+                left: screenWidth * 0.245,
+                top: screenHeight * 0.8,
+                backgroundColor: '#EDE3FE',
+                borderRadius: screenHeight * 0.15
+            },
+            ellipse3: {
+                position: 'absolute',
+                width: screenWidth * 0.94,
+                height: screenHeight * 0.49,
+                left: screenWidth * 0.619,
+                top: screenHeight * 0.71,
+                backgroundColor: '#EDE3FE',
+                borderRadius: screenHeight * 0.3
+            }
         };
-    
-        // Get dynamic styles
-        const ellipseStyles = getEllipseStyles();
+    };
+
+    const ellipseStyles = getEllipseStyles();
     
     const features = [
         "Access to premium features",
@@ -69,7 +114,7 @@ export default function LimitReachedScreen({ route, navigation }) {
                 </TouchableOpacity>
 
                 <Text style={styles.mainTitle}>
-                  {title}
+                    {title}
                 </Text>
                 <Text style={styles.mainTitleBold}>
                     Get more with Maitri Premium!
@@ -84,21 +129,34 @@ export default function LimitReachedScreen({ route, navigation }) {
                     ))}
                 </View>
 
-                <Text style={styles.pricingText}>
-                    Get <Text style={styles.pricingTextBold}>{month} month</Text> Premium for{' '}
-                    <Text style={styles.pricingTextBold}>${price}/mo</Text>
-                </Text>
+                {selectedProduct && (
+                    <Text style={styles.pricingText}>
+                        Get <Text style={styles.pricingTextBold}>Premium</Text> for{' '}
+                        <Text style={styles.pricingTextBold}>{selectedProduct.localizedPrice}/mo</Text>
+                    </Text>
+                )}
 
-                <TouchableOpacity style={styles.continueButton}>
-                    <Text style={styles.continueButtonText}>Continue</Text>
+                <TouchableOpacity 
+                    style={[styles.continueButton, loading && styles.continueButtonDisabled]}
+                    onPress={handlePurchase}
+                    disabled={loading || !selectedProduct}
+                >
+                    {loading ? (
+                        <ActivityIndicator color="#000000" />
+                    ) : (
+                        <Text style={styles.continueButtonText}>Continue</Text>
+                    )}
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.moreOptionsLink}>
+                <TouchableOpacity 
+                    style={styles.moreOptionsLink}
+                    onPress={() => navigation.navigate('GetMore')}
+                >
                     <Text style={styles.moreOptionsText}>See more options</Text>
                 </TouchableOpacity>
                 <View style={ellipseStyles.ellipse1} />
-                                    <View style={ellipseStyles.ellipse2} />
-                                    <View style={ellipseStyles.ellipse3} />
+                <View style={ellipseStyles.ellipse2} />
+                <View style={ellipseStyles.ellipse3} />
             </View>
         </SafeAreaView>
     );
@@ -246,8 +304,10 @@ const styles = StyleSheet.create({
             width: '100%',
             height: '100%',
             zIndex: -1
-        }
-        
+        },
+    continueButtonDisabled: {
+        opacity: 0.5
+    }
 });
 
 
