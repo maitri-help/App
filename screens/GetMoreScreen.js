@@ -4,9 +4,14 @@ import CheckIcon from '../assets/icons/check-icon.svg';
 import XIcon from '../assets/icons/ph-x-light.svg';
 import { Dimensions, Image } from 'react-native';
 import MimiImage from '../assets/img/mimi-flower-illustration.png';
+import IAPService from '../services/IAPService';
+import { useToast } from 'react-native-toast-notifications';
 
 
 export default function GetMoreScreen({ navigation }) {
+    const [selectedSubscription, setSelectedSubscription] = React.useState(6); // Default 6 months selected
+    const toast = useToast();
+
     const features = [
         "Unlimited tasks",
         "Unlimited supporters",
@@ -18,6 +23,65 @@ export default function GetMoreScreen({ navigation }) {
         { months: 3, price: 9.33, total: 27.99 },
         { months: 6, price: 8.33, total: 49.99 }
     ];
+    
+    const handleSubscriptionSelect = async (months) => {
+        try {
+            console.log(`Selected subscription: ${months} months`);
+            setSelectedSubscription(months);
+            
+            // Meghatározzuk a megfelelő product ID-t
+            let productId;
+            switch(months) {
+                case 1:
+                    productId = 'com.maitri.premium.monthly';
+                    break;
+                case 3:
+                    productId = 'com.maitri.premium.quarterly';
+                    break;
+                case 6:
+                    productId = 'com.maitri.premium.biannual';
+                    break;
+                default:
+                    console.error('Invalid subscription period');
+                    return;
+            }
+
+            // Elindítjuk a vásárlást
+            const result = await IAPService.purchaseSubscription(productId);
+            console.log('Purchase result:', result);
+            
+            if (result.success) {
+                toast.show('Thank you for subscribing!', { type: 'success' });
+                navigation.goBack();
+            } else {
+                toast.show('Purchase was not completed', { type: 'error' });
+            }
+        } catch (error) {
+            console.error('Purchase error:', error);
+            toast.show('Purchase failed. Please try again.', { type: 'error' });
+        }
+    };
+
+    const handleLifetimeSelect = async () => {
+        try {
+            console.log('Selected lifetime subscription');
+            setSelectedSubscription('lifetime');
+            
+            // Elindítjuk a lifetime előfizetés vásárlását
+            const result = await IAPService.purchaseSubscription('com.maitri.premium.lifetime');
+            console.log('Purchase result:', result);
+            
+            if (result.success) {
+                toast.show('Thank you for subscribing!', { type: 'success' });
+                navigation.goBack();
+            } else {
+                toast.show('Purchase was not completed', { type: 'error' });
+            }
+        } catch (error) {
+            console.error('Purchase error:', error);
+            toast.show('Purchase failed. Please try again.', { type: 'error' });
+        }
+    };
     
     const getEllipseStyles = () => {
             const screenWidth = Dimensions.get('window').width;
@@ -104,8 +168,9 @@ export default function GetMoreScreen({ navigation }) {
                         key={index} 
                         style={[
                             styles.subscriptionButton,
-                            sub.months === 6 && styles.selectedSubscription
+                            selectedSubscription === sub.months && styles.selectedSubscription
                         ]}
+                        onPress={() => handleSubscriptionSelect(sub.months)}
                     >
                         <View style={styles.subscriptionInfo}>
                             <Text style={styles.monthText}>
@@ -121,7 +186,13 @@ export default function GetMoreScreen({ navigation }) {
                     </TouchableOpacity>
                 ))}
 
-                <TouchableOpacity style={styles.subscriptionButton}>
+                <TouchableOpacity 
+                    style={[
+                        styles.subscriptionButton,
+                        selectedSubscription === 'lifetime' && styles.selectedSubscription
+                    ]}
+                    onPress={handleLifetimeSelect}
+                >
                     <View style={styles.subscriptionInfo}>
                         <Text style={styles.monthText}>Lifetime</Text>
                         <Text style={styles.totalText}>One time payment</Text>

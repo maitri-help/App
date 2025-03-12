@@ -6,6 +6,13 @@ import { Dimensions } from 'react-native';
 import IAPService from '../services/IAPService';
 import { useToast } from 'react-native-toast-notifications';
 
+const SUBSCRIPTION_PLANS = [
+    { id: 'com.maitri.premium.monthly', months: 1, price: 9.99 },
+    { id: 'com.maitri.premium.quarterly', months: 3, price: 27.99 },
+    { id: 'com.maitri.premium.biannual', months: 6, price: 49.99 },
+    { id: 'com.maitri.premium.lifetime', months: 'lifetime', price: 99, label: 'One Time Payment' }
+];
+
 export default function LimitReachedScreen({ route, navigation }) {
     const { title = "Oh, you reached the limit." } = route.params;
     const toast = useToast();
@@ -53,7 +60,7 @@ export default function LimitReachedScreen({ route, navigation }) {
             setLoading(false);
         }
     };
-    
+
     const getEllipseStyles = () => {
         const screenWidth = Dimensions.get('window').width;
         const screenHeight = Dimensions.get('window').height;
@@ -154,6 +161,7 @@ export default function LimitReachedScreen({ route, navigation }) {
                 >
                     <Text style={styles.moreOptionsText}>See more options</Text>
                 </TouchableOpacity>
+
                 <View style={ellipseStyles.ellipse1} />
                 <View style={ellipseStyles.ellipse2} />
                 <View style={ellipseStyles.ellipse3} />
@@ -224,53 +232,45 @@ const styles = StyleSheet.create({
         color: '#000000'
     },
     pricingText: {
-        width: 282,
-        marginTop: 30,
         fontFamily: 'Poppins',
         fontSize: 14,
-        lineHeight: 17,
-        textAlign: 'center',
-        letterSpacing: -0.005,
-        color: '#000000'
+        color: '#000000',
+        marginTop: 20
     },
     pricingTextBold: {
-        width: 282,
-        marginTop: 30,
         fontFamily: 'Poppins',
-        fontSize: 14,
-        fontWeight: '700',
-        lineHeight: 17,
-        textAlign: 'center',
-        letterSpacing: -0.005,
+        fontWeight: '600',
         color: '#000000'
     },
     continueButton: {
-        width: 295,
-        height: 54,
-        marginTop: 20,
+        padding: 10,
         backgroundColor: '#FFFFFF',
-        borderRadius: 25,
-        justifyContent: 'center',
-        alignItems: 'center'
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#000000'
+    },
+    continueButtonDisabled: {
+        opacity: 0.5
     },
     continueButtonText: {
         fontFamily: 'Poppins',
-        fontSize: 18,
-        lineHeight: 27,
-        textTransform: 'capitalize',
+        fontSize: 14,
+        fontWeight: '600',
         color: '#000000'
     },
     moreOptionsLink: {
-        marginTop: 10,
-        height: 18
+        padding: 10,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#000000',
+        marginTop: 20
     },
     moreOptionsText: {
         fontFamily: 'Poppins',
-        fontSize: 12,
-        lineHeight: 18,
-        textDecorationLine: 'underline',
-        color: '#000000',
-        textAlign: 'center'
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#000000'
     },
     backgroundEllipse1: {
         position: 'absolute',
@@ -305,8 +305,9 @@ const styles = StyleSheet.create({
             height: '100%',
             zIndex: -1
         },
-    continueButtonDisabled: {
-        opacity: 0.5
+    backIcon: {
+        width: 18,
+        height: 18
     }
 });
 

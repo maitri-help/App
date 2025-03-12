@@ -14,7 +14,8 @@ module.exports = {
         assetBundlePatterns: ['**/*'],
         ios: {
             supportsTablet: true,
-            bundleIdentifier: 'com.maitrihelp.maitri'
+            bundleIdentifier: 'com.maitrihelp.maitri',
+            usesIAP: true
         },
         android: {
             adaptiveIcon: {

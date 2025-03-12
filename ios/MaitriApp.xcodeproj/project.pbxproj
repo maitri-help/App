@@ -17,6 +17,8 @@
 		9F91B9E1E4A24699B595C6F8 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 46ED965F652B4AE589DCC534 /* NotificationService.m */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		ED5A8A862D80829700C1B2C8 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED5A8A852D80829700C1B2C8 /* StoreKit.framework */; };
+		ED5A8A882D80831600C1B2C8 /* MaitriStoreKit.storekit in Resources */ = {isa = PBXBuildFile; fileRef = ED5A8A872D80831600C1B2C8 /* MaitriStoreKit.storekit */; };
 		FEC22469D6C849868B3EA9B3 /* OneSignalNotificationServiceExtension.appex in Copy Files */ = {isa = PBXBuildFile; fileRef = DBB589D36AFC49B292B1E05F /* OneSignalNotificationServiceExtension.appex */; };
 /* End PBXBuildFile section */
 
@@ -67,6 +69,8 @@
 		DBB589D36AFC49B292B1E05F /* OneSignalNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; fileEncoding = 9; includeInIndex = 0; path = OneSignalNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E222640B9B06E64EBD32A093 /* Pods-OneSignalNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; path = "Target Support Files/Pods-OneSignalNotificationServiceExtension/Pods-OneSignalNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		ED5A8A852D80829700C1B2C8 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		ED5A8A872D80831600C1B2C8 /* MaitriStoreKit.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = MaitriStoreKit.storekit; sourceTree = "<group>"; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-MaitriApp/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,6 +80,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				96905EF65AED1B983A6B3ABC /* libPods-MaitriApp.a in Frameworks */,
+				ED5A8A862D80829700C1B2C8 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +125,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				ED5A8A852D80829700C1B2C8 /* StoreKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-MaitriApp.a */,
 				7D67CC1B227272FEAC6017EE /* libPods-OneSignalNotificationServiceExtension.a */,
@@ -137,6 +143,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				ED5A8A872D80831600C1B2C8 /* MaitriStoreKit.storekit */,
 				13B07FAE1A68108700A75B9A /* MaitriApp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -279,6 +286,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
+				ED5A8A882D80831600C1B2C8 /* MaitriStoreKit.storekit in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 			);

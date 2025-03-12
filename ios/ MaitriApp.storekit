@@ -1,0 +1,122 @@
+{
+  "appPolicies": {
+    "eula": "",
+    "policies": [
+      {
+        "locale": "en_US",
+        "policyText": "",
+        "policyURL": ""
+      }
+    ]
+  },
+  "identifier": "19987722",
+  "nonRenewingSubscriptions": [
+    {
+      "referenceName": "Lifetime Premium",
+      "productID": "com.maitri.premium.lifetime",
+      "price": 99.99,
+      "familyShareable": false,
+      "name": "Lifetime Premium",
+      "description": "Lifetime Premium Access",
+      "locale": "en_US"
+    }
+  ],
+  "products": [
+
+  ],
+  "settings": {
+    "_applicationInternalID": "6503946923",
+    "_developerTeamID": "83BVYMYD82",
+    "_failTransactionsEnabled": false,
+    "_lastSynchronizedDate": 763378007.41084099,
+    "_storeKitErrors": [
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Load Products"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Purchase"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Verification"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "App Store Sync"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Subscription Status"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "App Transaction"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Manage Subscriptions Sheet"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Refund Request Sheet"
+      },
+      {
+        "current": null,
+        "enabled": false,
+        "name": "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups": [
+    {
+      "referenceName": "Maitri Premium",
+      "identifier": "group.maitri.premium",
+      "subscriptions": [
+        {
+          "referenceName": "Monthly Premium",
+          "productID": "com.maitri.premium.monthly",
+          "name": "Monthly Premium",
+          "locale": "en_US",
+          "subscriptionPeriod": "P1M",
+          "price": 9.99,
+          "familyShareable": false,
+          "description": "Monthly Premium subscription"
+        },
+        {
+          "referenceName": "Quarterly Premium",
+          "productID": "com.maitri.premium.quarterly",
+          "name": "Quarterly Premium",
+          "locale": "en_US",
+          "subscriptionPeriod": "P3M",
+          "price": 27.99,
+          "familyShareable": false,
+          "description": "Quarterly Premium subscription"
+        },
+        {
+          "referenceName": "Biannual Premium",
+          "productID": "com.maitri.premium.biannual",
+          "name": "Biannual Premium",
+          "locale": "en_US",
+          "subscriptionPeriod": "P6M",
+          "price": 49.99,
+          "familyShareable": false,
+          "description": "Biannual Premium subscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 4,
+    "minor": 0
+  }
+}

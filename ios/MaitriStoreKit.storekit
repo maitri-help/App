@@ -1,0 +1,173 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "EAEAB3D0",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6503946923",
+    "_developerTeamID" : "83BVYMYD82",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 763472626.27784896,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21644669",
+      "localizations" : [
+
+      ],
+      "name" : "Maitri Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "27.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6743126397",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Maitri 3 Month",
+              "displayName" : "Maitri 3 Month",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.maitri.premium.3month",
+          "recurringSubscriptionPeriod" : "P3M",
+          "referenceName" : " Maitri Premium 3 Month",
+          "subscriptionGroupID" : "21644669",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "49.99",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "6743126358",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Maitri 6 Month",
+              "displayName" : "Maitri 6 Month",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.maitri.premium.6month",
+          "recurringSubscriptionPeriod" : "P6M",
+          "referenceName" : " Maitri Premium 6 Month",
+          "subscriptionGroupID" : "21644669",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6742786573",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Maitri Premium Monthly",
+              "displayName" : "Maitri Premium Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.maitri.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Maitri Premium Monthly",
+          "subscriptionGroupID" : "21644669",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
