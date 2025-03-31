@@ -15,6 +15,7 @@ import SuppNavigator from './SuppNavigator';
 import LeadNavigator from './LeadNavigator';
 import { useUser } from '../../context/UserContext';
 import ManageLocationsScreen from '../../screens/ManageLocationsScreen';
+import ChatScreen from '../../screens/ChatScreen';
 
 const Stack = createStackNavigator();
 const MainNavigator = () => {
@@ -96,6 +97,7 @@ const MainNavigator = () => {
                 />
                 <Stack.Screen name="SuppID" component={SuppIDScreen} />
                 <Stack.Screen name="ManageLocations" component={ManageLocationsScreen} />
+                <Stack.Screen name="Chat" component={ChatScreen} />
             </Stack.Navigator>
         </>
     );
