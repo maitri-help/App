@@ -215,3 +215,11 @@ export const updateLocation = async (locationId, data, accessToken) => {
         headers: { Authorization: `Bearer ${accessToken}` }
     });
 }
+
+export function getSubscriptionStatus(accessToken) {
+    return axios.get(`${baseUrl}/subscription/status`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
+}

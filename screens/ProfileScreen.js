@@ -18,14 +18,40 @@ import { OneSignal } from 'react-native-onesignal';
 import { useUser } from '../context/UserContext';
 import { useTask } from '../context/TaskContext';
 import { ScrollView } from 'react-native-gesture-handler';
+import { getSubscriptionStatus } from '../hooks/api';
 
 export default function ProfileScreen({ navigation }) {
     const [logoutModalVisible, setLogoutModalVisible] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const overlayOpacity = useRef(new Animated.Value(0)).current;
+    const [subscriptionStatus, setSubscriptionStatus] = useState(null);
+    const [isSubLoading, setIsSubLoading] = useState(true);
 
     const { userData, loading, setUserData } = useUser();
     const { setTasks } = useTask();
+
+    useEffect(() => {
+        const fetchSubscription = async () => {
+            if (userData?.accessToken) {
+                setIsSubLoading(true);
+                try {
+                    const response = await getSubscriptionStatus(userData.accessToken);
+                    setSubscriptionStatus(response.data);
+                    console.log('Subscription status:', response.data);
+                } catch (error) {
+                    console.error('Error fetching subscription status:', error.response?.data || error.message);
+                    setSubscriptionStatus(null);
+                } finally {
+                    setIsSubLoading(false);
+                }
+            } else {
+                setSubscriptionStatus(null);
+                setIsSubLoading(false);
+            }
+        };
+
+        fetchSubscription();
+    }, [userData?.accessToken]);
 
     const handleLogout = async () => {
         try {
@@ -65,6 +91,15 @@ export default function ProfileScreen({ navigation }) {
     const handleSavedLocations = () => {
         navigation.navigate('ManageLocations');
     }
+
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        try {
+            return new Date(dateString).toLocaleDateString();
+        } catch (e) {
+            return 'Invalid Date';
+        }
+    };
 
     return (
         <>
@@ -116,6 +151,34 @@ export default function ProfileScreen({ navigation }) {
                                             Contact support
                                         </Text>
                                     </TouchableOpacity>
+                                </View>
+                                <View style={stylesProfile.buttonWrapper}> 
+                                    <View style={stylesProfile.button}> 
+                                        <View style={{ flex: 1, flexDirection: 'column' }}> 
+                                            <Text style={stylesProfile.buttonText}>Subscription</Text>
+                                            {isSubLoading ? (
+                                                <ActivityIndicator size="small" style={{ marginTop: 8, alignSelf: 'flex-start' }}/>
+                                            ) : subscriptionStatus ? (
+                                                <View style={stylesProfile.subscriptionDetailsContainer}>
+                                                    <Text style={stylesProfile.subscriptionDetailText}> 
+                                                        Tier: {subscriptionStatus.tier || 'Free'}
+                                                    </Text>
+                                                    <Text style={stylesProfile.subscriptionDetailText}>
+                                                        Status: {subscriptionStatus.isActive ? 'Active' : 'Inactive'}
+                                                    </Text>
+                                                    {subscriptionStatus.endDate && (
+                                                        <Text style={stylesProfile.subscriptionDetailText}>
+                                                            Expires: {formatDate(subscriptionStatus.endDate)}
+                                                        </Text>
+                                                    )}
+                                                </View>
+                                            ) : (
+                                                <Text style={[stylesProfile.subscriptionDetailText, { marginTop: 8 }]}>
+                                                    No active subscription found.
+                                                </Text>
+                                            )}
+                                        </View>
+                                    </View>
                                 </View>
                                 <View style={stylesProfile.buttonWrapper}>
                                     <TouchableOpacity
@@ -301,5 +364,15 @@ const stylesProfile = StyleSheet.create({
         width: 130,
         height: 130,
         resizeMode: 'contain'
+    },
+    subscriptionDetailsContainer: {
+        marginTop: 8,
+        paddingLeft: 5,
+    },
+    subscriptionDetailText: {
+        fontSize: 13,
+        fontFamily: 'poppins-regular',
+        color: '#555',
+        lineHeight: 18,
     }
 });
