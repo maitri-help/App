@@ -223,3 +223,15 @@ export function getSubscriptionStatus(accessToken) {
         }
     });
 }
+export const sendChatMessage = async (data, accessToken) => {
+    return await axios.post(`${baseUrl}/chat`, data, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+}
+
+export const getChatMessages = async (limit, offset, accessToken) => {
+    return await axios.get(`${baseUrl}/messages?limit=${limit}&offset=${offset}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+}
+}

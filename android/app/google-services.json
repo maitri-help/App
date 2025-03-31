@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "729712250818",
+    "project_id": "maitri-c9f6a",
+    "storage_bucket": "maitri-c9f6a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729712250818:android:d398eccb53e2b890da505b",
+        "android_client_info": {
+          "package_name": "com.Maitri.MaitriApp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBucjlgUmPxFhjWv0ZlmSsYUkuxiZyZ_Wc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

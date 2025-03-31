@@ -11,7 +11,8 @@ import {
     ActivityIndicator,
     Dimensions,
     PixelRatio,
-    Platform
+    Platform,
+    Pressable
 } from 'react-native';
 import styles from '../Styles';
 import BellIcon from '../assets/icons/bell-icon.svg';
@@ -152,7 +153,30 @@ export default function HomeScreen({ navigation }) {
     };
 
     const renderTasks = (tasks) => {
-        if (tasks?.length === 0) {
+        let filteredTasks = sortTasksByStartDate(tasks);
+
+        switch (activeTab) {
+            case 'Unassigned':
+                filteredTasks = filteredTasks?.filter(
+                    (task) =>
+                        !task?.assignee &&
+                        !task?.circles.some(
+                            (circle) => circle.circleLevel === 'Personal'
+                        )
+                );
+                break;
+            case 'Personal':
+                filteredTasks = filteredTasks?.filter((task) =>
+                    task?.circles.some(
+                        (circle) => circle.circleLevel === 'Personal'
+                    )
+                );
+                break;
+            default:
+                break;
+        }
+
+        if (tasks?.length === 0 || filteredTasks?.length === 0) {
             switch (activeTab) {
                 case 'All':
                     return (
@@ -229,16 +253,6 @@ export default function HomeScreen({ navigation }) {
                                                 All tasks have been assigned
                                             </Text>
                                         </View>
-                                        <View
-                                            style={
-                                                stylesHome.illustrationWrapper
-                                            }
-                                        >
-                                            <Image
-                                                source={require('../assets/img/mimi-illustration.png')}
-                                                style={stylesHome.illustration}
-                                            />
-                                        </View>
                                     </View>
                                 </View>
                             </ScrollView>
@@ -293,31 +307,6 @@ export default function HomeScreen({ navigation }) {
                     return null;
             }
         }
-
-        let filteredTasks = sortTasksByStartDate(tasks);
-
-        switch (activeTab) {
-            case 'Unassigned':
-                filteredTasks = tasks?.filter(
-                    (task) =>
-                        !task?.assignee &&
-                        !task?.circles.some(
-                            (circle) => circle.circleLevel === 'Personal'
-                        )
-                );
-                break;
-            case 'Personal':
-                filteredTasks = tasks?.filter((task) =>
-                    task?.circles.some(
-                        (circle) => circle.circleLevel === 'Personal'
-                    )
-                );
-                break;
-            default:
-                break;
-        }
-
-        filteredTasks = sortTasksByStartDate(filteredTasks);
 
         return (
             <View style={stylesHome.tasksContainer}>
@@ -433,6 +422,17 @@ export default function HomeScreen({ navigation }) {
                         </ScrollView>
                     ) : renderContent()}
                 </ScrollView>
+                {userData && userData.chatAvailable && (
+                    <Pressable 
+                        style={stylesHome.mimiContainer}
+                        onPress={() => navigation.navigate('Chat')}
+                    >
+                        <Image
+                            source={require('../assets/img/mimi-illustration.png')}
+                            style={stylesHome.mimi}
+                        />
+                    </Pressable>
+                )}
             </SafeAreaView>
             {(taskModalVisible || plusModalVisible) && (
                 <Animated.View
@@ -572,5 +572,15 @@ const stylesHome = StyleSheet.create({
     tasksPersonalTop: {
         justifyContent: 'center',
         flex: 1
+    },
+    mimiContainer: {
+        position: 'absolute',
+        bottom: 5,
+        right: 5,
+    },
+    mimi: {
+        width: 111,
+        height: 102,
+        resizeMode: 'contain',
     }
 });
